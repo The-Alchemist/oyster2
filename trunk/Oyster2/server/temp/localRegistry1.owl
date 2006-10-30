@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY a 'http://omv.ontoware.org/2005/05/ontology#'>
+    <!ENTITY b 'file:///C:/GuoRui/doc/'>
+    <!ENTITY c 'http://localhost/basicRegistry#'>
+    <!ENTITY e 'http://semanticworld.com/'>
+    <!ENTITY f 'http://semanticworks.com/'>
+    <!ENTITY g 'http://data.org/'>
+    <!ENTITY h 'http://data.com/'>
+    <!ENTITY i 'http://semanticweb.com/'>
+    <!ENTITY j 'http://w3c.org/'>
+    <!ENTITY k '#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/localRegistry"
+    xmlns:a="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:b="http://localhost/basicRegistry#"
+    xmlns:c="http://localhost/localRegistry#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="&xsd;string">An example of local expertise registry</rdfs:comment>
+    <rdfs:label rdf:datatype="&xsd;string">Local Expertise Registry</rdfs:label>
+    <owl:imports rdf:resource="&b;acm.rdf"/>
+    <owl:imports rdf:resource="&b;peersExpertiseRegistry.owl"/>
+    <owl:versionInfo rdf:datatype="&xsd;string">14</owl:versionInfo>
+</owl:Ontology>
+
+<c:TopicAdd rdf:ID="topic1"/>
+
+<a:OntologyDocument rdf:about="&b;HardwareOntology.owl">
+    <a:docName rdf:datatype="&xsd;string">Hardward ontology</a:docName>
+    <a:ontologyURL rdf:datatype="&xsd;string">http://hardward.org/hardware</a:ontologyURL>
+</a:OntologyDocument>
+
+<a:OntologyDocument rdf:about="&b;dataStorage">
+    <a:docName rdf:datatype="&xsd;string">DataStorage ontology</a:docName>
+    <a:ontologyURL rdf:datatype="&xsd;string">http://data.org/dataStorage</a:ontologyURL>
+    <a:imports rdf:resource="&b;dataStorage-inc"/>
+</a:OntologyDocument>
+
+<a:OntologyDocument rdf:about="&b;dataStorage-inc">
+    <a:docName rdf:datatype="&xsd;string">data storage ontology</a:docName>
+    <a:ontologyURL rdf:datatype="&xsd;string">http://dataStorage.org/dataStorage-inc</a:ontologyURL>
+</a:OntologyDocument>
+
+<a:OntologyDocument rdf:about="&h;database-inc"/>
+
+<a:OntologyDocument rdf:about="&g;JDBCServer?172.22.131.26"/>
+
+<b:Peer rdf:ID="laurent"/>
+
+<b:Peer rdf:ID="rui"/>
+
+<a:OntologyDocument rdf:about="&i;ontologyLanguages"/>
+
+<a:OntologyDocument rdf:about="&f;example"/>
+
+<a:OntologyDocument rdf:about="&e;tutorial"/>
+
+<a:OntologyDocument rdf:about="&j;semanticRetrieval"/>
+
+<a:OntologyDocument rdf:about="&j;similarityRetrieval"/>
+
+<owl:Class rdf:about="&c;Peer"/>
+
+<owl:Class rdf:ID="TopicAdd"/>
+
+<owl:Class rdf:about="&a;OntologyDocument"/>
+
+<owl:DatatypeProperty rdf:about="&a;docName"/>
+
+<owl:DatatypeProperty rdf:about="&a;ontologyURL"/>
+
+<owl:ObjectProperty rdf:about="&a;imports"/>
+
+</rdf:RDF>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE swrlx:Ontology [
+    <!ENTITY a 'http://protege.stanford.edu/rdf#'>
+    <!ENTITY b 'http://swrc.ontoware.org/ontology#'>
+]>
+
+<swrlx:Ontology swrlx:name="http://mapping.org/bt_swrc"
+    xml:base="http://mapping.org/bt_swrc"
+    xmlns:owlx="http://www.w3.org/2003/05/owl-xml#"
+    xmlns:ruleml="http://www.w3.org/2003/11/ruleml#"
+    xmlns:swrlx="http://www.w3.org/2003/11/swrlx#">
+
+<ruleml:imp>
+    <ruleml:_head>
+        <swrlx:classAtom>
+            <owlx:Class owlx:name="&a;ConferencePaper"/>
+            <ruleml:var>X</ruleml:var>
+        </swrlx:classAtom>
+    </ruleml:_head>
+    <ruleml:_body>
+        <swrlx:classAtom>
+            <owlx:Class owlx:name="&b;InProceedings"/>
+            <ruleml:var>X</ruleml:var>
+        </swrlx:classAtom>
+    </ruleml:_body>
+</ruleml:imp>
+<ruleml:imp>
+    <ruleml:_head>
+        <swrlx:classAtom>
+            <owlx:Class owlx:name="&b;InProceedings"/>
+            <ruleml:var>X</ruleml:var>
+        </swrlx:classAtom>
+    </ruleml:_head>
+    <ruleml:_body>
+        <swrlx:classAtom>
+            <owlx:Class owlx:name="&a;ConferencePaper"/>
+            <ruleml:var>X</ruleml:var>
+        </swrlx:classAtom>
+    </ruleml:_body>
+</ruleml:imp>
+<ruleml:imp>
+    <ruleml:_head>
+        <swrlx:datavaluedPropertyAtom swrlx:property="&b;keywords">
+            <ruleml:var>X</ruleml:var>
+            <ruleml:var>Z</ruleml:var>
+        </swrlx:datavaluedPropertyAtom>
+    </ruleml:_head>
+    <ruleml:_body>
+        <swrlx:classAtom>
+            <owlx:Class owlx:name="&a;Article"/>
+            <ruleml:var>X</ruleml:var>
+        </swrlx:classAtom>
+        <swrlx:individualPropertyAtom swrlx:property="&a;hasDescriptor">
+            <ruleml:var>X</ruleml:var>
+            <ruleml:var>Y</ruleml:var>
+        </swrlx:individualPropertyAtom>
+        <swrlx:datavaluedPropertyAtom swrlx:property="&a;descriptorTerm">
+            <ruleml:var>Y</ruleml:var>
+            <ruleml:var>Z</ruleml:var>
+        </swrlx:datavaluedPropertyAtom>
+    </ruleml:_body>
+</ruleml:imp>
+
+</swrlx:Ontology>

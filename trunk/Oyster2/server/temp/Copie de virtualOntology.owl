@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY a 'http://data.org/'>
+    <!ENTITY b 'http://localhost/localRegistry#'>
+    <!ENTITY c 'http://daml.umbc.edu/ontologies/topic-ont#ACMTopic/'>
+    <!ENTITY d 'http://data.com/'>
+    <!ENTITY e 'file:///C:/GuoRui/doc/'>
+    <!ENTITY f 'http://omv.ontoware.org/2005/05/ontology#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/virtualOntology"
+    xmlns:a="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:b="http://localhost/basicRegistry#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="&d;database-inc"/>
+    <owl:imports rdf:resource="&a;dataStorage-inc"/>
+</owl:Ontology>
+
+<a:OntologyDocument rdf:about="&e;acm.rdf"/>
+
+<a:OntologyDocument rdf:about="&d;database-inc">
+    <a:docName rdf:datatype="&xsd;string">Database introduction ontology</a:docName>
+    <a:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/database-inc.owl</a:ontologyURL>
+    <a:baseSubject rdf:resource="&c;Computing_Milieux"/>
+    <a:imports rdf:resource="&e;acm.rdf"/>
+    <a:location rdf:resource="&b;laurent"/>
+    <a:location rdf:resource="&b;rui"/>
+</a:OntologyDocument>
+
+<a:OntologyDocument rdf:about="&a;dataStorage-inc">
+    <a:docName rdf:datatype="&xsd;string">data storage ontology</a:docName>
+    <a:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/dataStorage-inc.owl</a:ontologyURL>
+    <a:baseSubject rdf:resource="&c;Computing_Milieux"/>
+    <a:location rdf:resource="&b;muriel"/>
+    <a:location rdf:resource="&b;rui"/>
+</a:OntologyDocument>
+
+<rdf:Description rdf:about="&b;laurent">
+    <b:IPAdress rdf:datatype="&xsd;string">localhost</b:IPAdress>
+</rdf:Description>
+
+<rdf:Description rdf:about="&b;rui">
+    <b:IPAdress rdf:datatype="&xsd;string">localhost</b:IPAdress>
+</rdf:Description>
+
+<owl:Class rdf:about="&f;OntologyDocument"/>
+
+<owl:DatatypeProperty rdf:about="http://localhost/basicRegistry#IPAdress"/>
+
+<owl:DatatypeProperty rdf:about="&f;docName"/>
+
+<owl:DatatypeProperty rdf:about="&f;ontologyURL"/>
+
+<owl:ObjectProperty rdf:about="&f;baseSubject"/>
+
+<owl:ObjectProperty rdf:about="&f;imports"/>
+
+<owl:ObjectProperty rdf:about="&f;location"/>
+
+</rdf:RDF>

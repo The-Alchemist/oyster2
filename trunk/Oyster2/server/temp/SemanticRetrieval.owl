@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY b 'http://swrc.ontoware.org/ontology#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://w3c.org/semanticRetrieval"
+    xmlns:a="http://swrc.ontoware.org/ontology#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://swrc.ontoware.org/ontology"/>
+</owl:Ontology>
+
+<a:Person rdf:ID="Alan_Moffet">
+    <a:name rdf:datatype="&xsd;string">Alan Moffet</a:name>
+</a:Person>
+
+<a:InProceedings rdf:ID="Functional_Programming">
+    <a:title rdf:datatype="&xsd;string">Functional Programming Discussion</a:title>
+    <a:year rdf:datatype="&xsd;string">2001</a:year>
+    <a:author rdf:resource="#Guo_Rui"/>
+</a:InProceedings>
+
+<a:PhDStudent rdf:ID="Guo_Rui">
+    <a:name rdf:datatype="&xsd;string">Guo Rui</a:name>
+</a:PhDStudent>
+
+<a:Book rdf:ID="Oriente_Programming">
+    <a:title rdf:datatype="&xsd;string">Object Oriente Programming</a:title>
+    <a:year rdf:datatype="&xsd;string">2003</a:year>
+    <a:author rdf:resource="#Alan_Moffet"/>
+</a:Book>
+
+<owl:Class rdf:about="&b;Book"/>
+
+<owl:Class rdf:about="&b;InProceedings"/>
+
+<owl:Class rdf:about="&b;Person"/>
+
+<owl:Class rdf:about="&b;PhDStudent"/>
+
+<owl:DatatypeProperty rdf:about="&b;name"/>
+
+<owl:DatatypeProperty rdf:about="&b;title"/>
+
+<owl:DatatypeProperty rdf:about="&b;year"/>
+
+<owl:ObjectProperty rdf:about="&b;author"/>
+
+</rdf:RDF>
