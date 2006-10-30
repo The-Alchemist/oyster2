@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+	<!ENTITY b 'http://localhost/basicRegistry#'>
+	<!ENTITY d 'http://omv.ontoware.org/2005/05/ontology#'>
+	<!ENTITY e 'http://semanticworld.com/'>
+	<!ENTITY f 'http://semanticworks.com/'>
+	<!ENTITY g 'http://data.org/'>
+	<!ENTITY h 'http://data.com/'>
+	<!ENTITY i 'http://semanticweb.com/'>
+	<!ENTITY j 'http://w3c.org/'>
+	<!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+	<!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+<rdf:RDF xml:base="http://localhost/localRegistry" xmlns:acm="http://daml.umbc.edu/ontologies/topic-ont#" xmlns:b="http://localhost/basicRegistry#" xmlns:omv="http://omv.ontoware.org/2005/05/ontology#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+	<owl:Ontology rdf:about="">
+		<rdfs:comment rdf:datatype="&xsd;string">An example of local expertise registry</rdfs:comment>
+		<rdfs:label rdf:datatype="&xsd;string">Local Expertise Registry</rdfs:label>
+		<owl:imports rdf:resource="file:///C:/GuoRui/doc/acm.rdf"/>
+		<owl:imports rdf:resource="file:///C:/GuoRui/doc/peersExpertiseRegistry.owl"/>
+		<owl:versionInfo rdf:datatype="&xsd;string">14</owl:versionInfo>
+	</owl:Ontology>
+	<omv:OntologyDocument rdf:about="file:///C:/GuoRui/doc/HardwareOntology.owl">
+		<omv:docName rdf:datatype="&xsd;string">Hardward ontology</omv:docName>
+		<omv:ontologyURL rdf:datatype="&xsd;string">http://hardward.org/hardware</omv:ontologyURL>
+		<omv:baseSubject>
+			<rdf:Description rdf:about="http://daml.umbc.edu/ontologies/topic-ont#ACMTopic/Hardware"/>
+		</omv:baseSubject>
+	</omv:OntologyDocument>
+	<omv:OntologyDocument rdf:about="http://data.org/dataStorage">
+		<omv:docName rdf:datatype="&xsd;string">DataStorage ontology</omv:docName>
+		<omv:ontologyURL rdf:datatype="http://www.w3.org/2001/XMLSchema#string">file///C:/GuoRui/doc/dataStorage.owl</omv:ontologyURL>
+		<omv:imports rdf:resource="http://daml.umbc.edu/ontologies/topic-ont"/>
+		<omv:baseSubject>
+			<rdf:Description rdf:about="http://daml.umbc.edu/ontologies/topic-ont#ACMTopic/Data"/>
+		</omv:baseSubject>
+		<omv:imports>
+			<rdf:Description rdf:about="file:///C:/GuoRui/doc/acm.rdf">
+				<rdf:type>
+					<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+				</rdf:type>
+			</rdf:Description>
+		</omv:imports>
+	</omv:OntologyDocument>
+	<omv:OntologyDocument rdf:about="http://data.org/dataStorage-inc">
+		<omv:docName rdf:datatype="&xsd;string">data storage ontology</omv:docName>
+		<omv:ontologyURL rdf:datatype="http://www.w3.org/2001/XMLSchema#string">file:///C:/GuoRui/doc/dataStorage-inc.owl</omv:ontologyURL>
+		<omv:baseSubject>
+			<rdf:Description rdf:about="http://daml.umbc.edu/ontologies/topic-ont#ACMTopic/Data"/>
+		</omv:baseSubject>
+	</omv:OntologyDocument>
+	<omv:OntologyDocument rdf:about="http://data.org/JDBCServer?172.22.131.26"/>
+	<b:Peer rdf:ID="rui">
+		<b:IPAdress>localhost</b:IPAdress>
+		<b:provideOntology>
+			<rdf:Description rdf:about="http://data.org/dataStorage"/>
+		</b:provideOntology>
+	</b:Peer>
+	<omv:OntologyDocument rdf:about="http://semanticweb.com/ontologyLanguages"/>
+	<omv:OntologyDocument rdf:about="http://semanticworks.com/example"/>
+	<omv:OntologyDocument rdf:about="http://semanticworld.com/tutorial"/>
+	<omv:OntologyDocument rdf:about="http://w3c.org/semanticRetrieval"/>
+	<omv:OntologyDocument rdf:about="http://w3c.org/similarityRetrieval"/>
+	<owl:Class rdf:about="http://localhost/basicRegistry#Peer"/>
+	<owl:Class rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+	<owl:DatatypeProperty rdf:about="http://omv.ontoware.org/2005/05/ontology#docName"/>
+	<owl:DatatypeProperty rdf:about="http://omv.ontoware.org/2005/05/ontology#ontologyURL"/>
+	<owl:ObjectProperty rdf:about="http://omv.ontoware.org/2005/05/ontology#imports"/>
+	<rdf:Description rdf:about="file:///C:/GuoRui/doc/peersExpertiseRegistry.owl">
+		<rdf:type>
+			<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+		</rdf:type>
+	</rdf:Description>
+	<rdf:Description rdf:about="#mapping1">
+		<b:mappingProvider>
+			<rdf:Description rdf:about="#rui"/>
+		</b:mappingProvider>
+		<omv:ontologyURL>file:///C:/GuoRui/doc/swrc-bt.owl</omv:ontologyURL>
+		<rdf:type>
+			<rdf:Description rdf:about="http://localhost/basicRegistry#Mapping">
+				<rdfs:subClassOf>
+					<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+				</rdfs:subClassOf>
+			</rdf:Description>
+		</rdf:type>
+		<b:mappingSource>
+			<rdf:Description rdf:about="http://swrc.ontoware.org/ontology"/>
+		</b:mappingSource>
+		<b:mappingTarget>
+			<rdf:Description rdf:about="http://protege.stanford.edu/rdf#"/>
+		</b:mappingTarget>
+	</rdf:Description>
+	<rdf:Description rdf:about="http://swrc.ontoware.org/ontology">
+		<rdf:type>
+			<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+		</rdf:type>
+	</rdf:Description>
+	<rdf:Description rdf:about="http://protege.stanford.edu/rdf#">
+		<rdf:type>
+			<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+		</rdf:type>
+	</rdf:Description>
+	<rdf:Description rdf:about="file:///C:/GuoRui/doc/omv.owl">
+		<rdf:type>
+			<rdf:Description rdf:about="http://omv.ontoware.org/2005/05/ontology#OntologyDocument"/>
+		</rdf:type>
+	</rdf:Description>
+	<rdf:Description rdf:about="#mapping2">
+		<b:mappingProvider>
+			<rdf:Description rdf:about="#rui"/>
+		</b:mappingProvider>
+		<b:mappingSource>
+			<rdf:Description rdf:about="http://protege.stanford.edu/rdf#"/>
+		</b:mappingSource>
+		<b:mappingTarget>
+			<rdf:Description rdf:about="http://swrc.ontoware.org/ontology"/>
+		</b:mappingTarget>
+		<rdf:type>
+			<rdf:Description rdf:about="http://localhost/basicRegistry#Mapping"/>
+		</rdf:type>
+		<omv:ontologyURL>file:///C:/GuoRui/doc/bt-swrc.owl</omv:ontologyURL>
+	</rdf:Description>
+	<rdf:Description rdf:about="#mapping3">
+		<b:mappingProvider>
+			<rdf:Description rdf:about="#rui"/>
+		</b:mappingProvider>
+		<b:mappingSource>
+			<rdf:Description rdf:about="file:///C:/GuoRui/doc/dmoz.owl">
+				<rdf:type>
+					<rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+				</rdf:type>
+			</rdf:Description>
+		</b:mappingSource>
+		<b:mappingTarget>
+			<rdf:Description rdf:about="file:///C:/GuoRui/doc/acm.rdf"/>
+		</b:mappingTarget>
+		<rdf:type>
+			<rdf:Description rdf:about="http://localhost/basicRegistry#Mapping"/>
+		</rdf:type>
+		<omv:ontologyURL>file:///C:/GuoRui/doc/dmoz-acm</omv:ontologyURL>
+	</rdf:Description>
+	<rdf:Description rdf:about="http://daml.umbc.edu/ontologies/topic-ont#Topic">
+		<rdf:type>
+			<rdf:Description rdf:about="http://localhost/basicRegistry#Topic"/>
+		</rdf:type>
+	</rdf:Description>
+</rdf:RDF>

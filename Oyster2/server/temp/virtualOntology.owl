@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/virtualOntology"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://localhost/localRegistry"/>
+    <owl:imports rdf:resource="http://mapping.org/bt_swrc"/>
+    <owl:imports rdf:resource="http://w3c.org/similarityAnalysis"/>
+</owl:Ontology>
+
+</rdf:RDF>

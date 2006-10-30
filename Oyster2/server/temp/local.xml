@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<rdf:RDF xml:base="http://s.com/localExpertiseRegistry" xmlns:a="http://h.com/peersExpertiseRegistry#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+	<a:Ontology rdf:about="http://a.com/dataStorage">
+		<a:importOntology rdf:resource="http://a.com/dataStorage-inc"/>
+		<a:importOntology rdf:resource="http://data.com/database-inc"/>
+	</a:Ontology>
+	<a:Ontology rdf:about="http://a.com/dataStorage-inc"/>
+	<a:Ontology rdf:about="http://b.com/database?172.22.131.26"/>
+	<a:Ontology rdf:about="http://data.com/database-inc"/>
+	<owl:Class rdf:about="http://h.com/peersExpertiseRegistry#Ontology"/>
+	<owl:Class rdf:about="http://h.com/peersExpertiseRegistry#Topic"/>
+	<owl:Class rdf:about="http://h.com/peersExpertiseRegistry#Version"/>
+	<owl:ObjectProperty rdf:about="http://h.com/peersExpertiseRegistry#expertiseOntology"/>
+	<owl:ObjectProperty rdf:about="http://h.com/peersExpertiseRegistry#importOntology"/>
+	<owl:ObjectProperty rdf:about="http://h.com/peersExpertiseRegistry#subTopic"/>
+	<owl:ObjectProperty rdf:about="http://h.com/peersExpertiseRegistry#subTopicOf"/>
+	<owl:DatatypeProperty rdf:about="http://h.com/peersExpertiseRegistry#versionNo"/>
+	<a:Ontology rdf:about="http://hardward.com/tutorial">
+		<a:importOntology rdf:resource="http://hardward.com/tutorial-inc"/>
+		<a:importOntology rdf:resource="http://hardworld.com/computerSystem"/>
+	</a:Ontology>
+	<a:Ontology rdf:about="http://hardward.com/tutorial-inc"/>
+	<a:Ontology rdf:about="http://hardworld.com/computerSystem"/>
+	<a:Ontology rdf:about="http://hardworld.com/coreDesign"/>
+	<owl:Ontology rdf:about="">
+		<rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An example of local expertise registry</rdfs:comment>
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Local Expertise Registry</rdfs:label>
+		<owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4</owl:versionInfo>
+	</owl:Ontology>
+	<a:Topic rdf:about="#CPU_Architecture">
+		<a:expertiseOntology rdf:resource="http://hardward.com/tutorial"/>
+		<a:expertiseOntology rdf:resource="http://hardworld.com/coreDesign"/>
+		<a:subTopicOf rdf:resource="#Hardware"/>
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CPU Architecture Design</rdfs:label>
+	</a:Topic>
+	<a:Topic rdf:about="#Hardware">
+		<a:subTopic rdf:resource="#CPU_Architecture"/>
+		<a:subTopic rdf:resource="#Hardware_General"/>
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hardware</rdfs:label>
+	</a:Topic>
+	<a:Topic rdf:about="#Hardware_General">
+		<a:expertiseOntology rdf:resource="http://hardward.com/tutorial"/>
+		<a:expertiseOntology rdf:resource="http://hardworld.com/computerSystem"/>
+		<a:subTopicOf rdf:resource="#Hardware"/>
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hardware_General</rdfs:label>
+	</a:Topic>
+	<a:Topic rdf:about="#OWL">
+		<a:expertiseOntology rdf:resource="http://semanticweb.com/ontologyLanguages"/>
+		<a:expertiseOntology rdf:resource="http://semanticworks.com/example"/>
+		<a:subTopicOf rdf:resource="#web"/>
+	</a:Topic>
+	<a:Topic rdf:about="#SQL">
+		<a:expertiseOntology rdf:resource="http://a.com/dataStorage"/>
+		<a:expertiseOntology rdf:resource="http://b.com/database?172.22.131.26"/>
+		<a:subTopic rdf:resource="#SQLIntroduction"/>
+		<a:subTopicOf rdf:resource="#database"/>
+	</a:Topic>
+	<a:Topic rdf:about="#SQLIntroduction">
+		<a:subTopicOf rdf:resource="#SQL"/>
+	</a:Topic>
+	<a:Topic rdf:about="#database">
+		<a:subTopic rdf:resource="#SQL"/>
+		<a:subTopic rdf:resource="#relationalDataBase"/>
+	</a:Topic>
+	<a:Topic rdf:about="#infoRetrieval">
+		<a:expertiseOntology rdf:resource="http://w3c.org/semanticRetrieval"/>
+		<a:expertiseOntology rdf:resource="http://w3c.org/similarityRetrieval"/>
+	</a:Topic>
+	<a:Topic rdf:about="#relationalDataBase">
+		<a:expertiseOntology rdf:resource="http://b.com/database?172.22.131.26"/>
+		<a:subTopicOf rdf:resource="#database"/>
+	</a:Topic>
+	<a:Topic rdf:about="#semanticweb">
+		<a:expertiseOntology rdf:resource="http://semanticworks.com/example"/>
+		<a:expertiseOntology rdf:resource="http://semanticworld.com/tutorial"/>
+		<a:subTopicOf rdf:resource="#web"/>
+	</a:Topic>
+	<a:Version rdf:about="#version">
+		<a:versionNo xml:lang="0"/>
+	</a:Version>
+	<a:Topic rdf:about="#web">
+		<a:subTopic rdf:resource="#OWL"/>
+		<a:subTopic rdf:resource="#semanticweb"/>
+	</a:Topic>
+	<a:Ontology rdf:about="http://semanticweb.com/ontologyLanguages"/>
+	<a:Ontology rdf:about="http://semanticworks.com/example"/>
+	<a:Ontology rdf:about="http://semanticworld.com/tutorial"/>
+	<a:Ontology rdf:about="http://w3c.org/semanticRetrieval"/>
+	<a:Ontology rdf:about="http://w3c.org/similarityRetrieval"/>
+</rdf:RDF>

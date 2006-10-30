@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY b 'http://swrc.ontoware.org/ontology#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://hardware.org/Hardware"
+    xmlns:a="http://swrc.ontoware.org/ontology#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about=""/>
+
+<a:Book rdf:ID="CPU_Architecture">
+    <a:year rdf:datatype="&xsd;string">1999</a:year>
+    <a:author rdf:resource="#Peter_Wang"/>
+</a:Book>
+
+<a:Book rdf:ID="Computer_Hardware">
+    <a:year rdf:datatype="&xsd;string">2000</a:year>
+    <a:author rdf:resource="#Julia_Robert"/>
+</a:Book>
+
+<a:Person rdf:ID="Julia_Robert">
+    <a:name rdf:datatype="&xsd;string">Julia_Robert</a:name>
+</a:Person>
+
+<a:PhDStudent rdf:ID="Peter_Wang">
+    <a:name rdf:datatype="&xsd;string">Peter Wang</a:name>
+</a:PhDStudent>
+
+<owl:Class rdf:about="&b;Book"/>
+
+<owl:Class rdf:about="&b;Person"/>
+
+<owl:Class rdf:about="&b;PhDStudent"/>
+
+<owl:DatatypeProperty rdf:about="&b;name"/>
+
+<owl:DatatypeProperty rdf:about="&b;year"/>
+
+<owl:ObjectProperty rdf:about="&b;author"/>
+
+</rdf:RDF>

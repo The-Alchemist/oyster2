@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY a 'http://protege.stanford.edu/rdf#'>
+    <!ENTITY c 'http://malta/'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://malta/mimp"
+    xmlns:a="http://protege.stanford.edu/rdf#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about=""/>
+
+<owl:Class rdf:about="&a;Abstract">
+    <rdfs:label rdf:datatype="&xsd;string">Abstract</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Entity"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Affiliation">
+    <rdfs:label rdf:datatype="&xsd;string">Affiliation</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;JobPosition"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Agent">
+    <rdfs:label rdf:datatype="&xsd;string">Agent</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Object"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Article">
+    <rdfs:label rdf:datatype="&xsd;string">Article</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;PublishedMaterial"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Book">
+    <rdfs:label rdf:datatype="&xsd;string">Book</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Article"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;BookChapter">
+    <rdfs:label rdf:datatype="&xsd;string">BookChapter</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Article"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Brand">
+    <rdfs:label rdf:datatype="&xsd;string">Brand</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;BusinessObject"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;BusinessObject">
+    <rdfs:label rdf:datatype="&xsd;string">BusinessObject</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Object"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Conference">
+    <rdfs:label rdf:datatype="&xsd;string">Conference</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;PeriodicalPublication"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;ConferencePaper">
+    <rdfs:label rdf:datatype="&xsd;string">ConferencePaper</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Article"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;ConferenceProceedings">
+    <rdfs:label rdf:datatype="&xsd;string">ConferenceProceedings</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Article"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;DataSet">
+    <rdfs:label rdf:datatype="&xsd;string">DataSet</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;InformationResource"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Descriptor">
+    <rdfs:label rdf:datatype="&xsd;string">Descriptor</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;DataSet"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Document">
+    <rdfs:label rdf:datatype="&xsd;string">Document</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;InformationResource"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Entity">
+    <rdfs:label rdf:datatype="&xsd;string">Entity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&rdfs;Resource"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Happening">
+    <rdfs:label rdf:datatype="&xsd;string">Happening</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Entity"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;InformationResource">
+    <rdfs:label rdf:datatype="&xsd;string">InformationResource</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Statement"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;InspecRecord">
+    <rdfs:label rdf:datatype="&xsd;string">InspecRecord</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;DataSet"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;IssueOfPeriodical">
+    <rdfs:label rdf:datatype="&xsd;string">IssueOfPeriodical</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;PublishedMaterial"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;JobPosition">
+    <rdfs:label rdf:datatype="&xsd;string">JobPosition</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Situation"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;JournalArticle">
+    <rdfs:label rdf:datatype="&xsd;string">JournalArticle</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Article"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Magazine">
+    <rdfs:label rdf:datatype="&xsd;string">Magazine</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;PeriodicalPublication"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;MagazineIssue">
+    <rdfs:label rdf:datatype="&xsd;string">MagazineIssue</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;IssueOfPeriodical"/>
+    <rdfs:subClassOf rdf:resource="&a;ResourceCollection"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;MediaBrand">
+    <rdfs:label rdf:datatype="&xsd;string">MediaBrand</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Brand"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;MediaProduct">
+    <rdfs:label rdf:datatype="&xsd;string">MediaProduct</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Product"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Object">
+    <rdfs:label rdf:datatype="&xsd;string">Object</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Entity"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;PeriodicalPublication">
+    <rdfs:label rdf:datatype="&xsd;string">PeriodicalPublication</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;MediaBrand"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Person">
+    <rdfs:label rdf:datatype="&xsd;string">Person</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Agent"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Product">
+    <rdfs:label rdf:datatype="&xsd;string">Product</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;BusinessObject"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;PublishedMaterial">
+    <rdfs:label rdf:datatype="&xsd;string">PublishedMaterial</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Document"/>
+    <rdfs:subClassOf rdf:resource="&a;MediaProduct"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;ResourceCollection">
+    <rdfs:label rdf:datatype="&xsd;string">ResourceCollection</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;InformationResource"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Situation">
+    <rdfs:label rdf:datatype="&xsd;string">Situation</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Happening"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Statement">
+    <rdfs:label rdf:datatype="&xsd;string">Statement</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Object"/>
+</owl:Class>
+
+<owl:Class rdf:about="&a;Topic">
+    <rdfs:label rdf:datatype="&xsd;string">Topic</rdfs:label>
+    <rdfs:subClassOf rdf:resource="&a;Abstract"/>
+</owl:Class>
+
+<owl:DatatypeProperty rdf:about="&a;ISSN">
+    <rdfs:label rdf:datatype="&xsd;string">ISSN</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;datePublished">
+    <rdfs:label rdf:datatype="&xsd;string">datePublished</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;descriptorTerm">
+    <rdfs:label rdf:datatype="&xsd;string">descriptorTerm</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;documentAbstract">
+    <rdfs:label rdf:datatype="&xsd;string">documentAbstract</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;hasAccessionNo">
+    <rdfs:label rdf:datatype="&xsd;string">hasAccessionNo</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;hasClassificationCodes">
+    <rdfs:label rdf:datatype="&xsd;string">hasClassificationCodes</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;hasCoden">
+    <rdfs:label rdf:datatype="&xsd;string">hasCoden</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;isOnPageNo">
+    <rdfs:label rdf:datatype="&xsd;string">isOnPageNo</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;personName">
+    <rdfs:label rdf:datatype="&xsd;string">personName</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="&a;title">
+    <rdfs:label rdf:datatype="&xsd;string">title</rdfs:label>
+</owl:DatatypeProperty>
+
+<owl:ObjectProperty rdf:about="&a;articleRef">
+    <rdfs:label rdf:datatype="&xsd;string">articleRef</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Descriptor"/>
+    <rdfs:range rdf:resource="&a;Article"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;descriptorBroaderTerm">
+    <rdfs:label rdf:datatype="&xsd;string">descriptorBroaderTerm</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Descriptor"/>
+    <rdfs:range rdf:resource="&a;Descriptor"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasAffiliate">
+    <rdfs:label rdf:datatype="&xsd;string">hasAffiliate</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Affiliation"/>
+    <rdfs:range rdf:resource="&a;Person"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasAffiliation">
+    <rdfs:label rdf:datatype="&xsd;string">hasAffiliation</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Person"/>
+    <rdfs:range rdf:resource="&a;Affiliation"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasBookChapter">
+    <rdfs:label rdf:datatype="&xsd;string">BookChapter</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Book"/>
+    <rdfs:range rdf:resource="&a;BookChapter"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasConference">
+    <rdfs:label rdf:datatype="&xsd;string">Conference</rdfs:label>
+    <rdfs:domain rdf:resource="&a;ConferenceProceedings"/>
+    <rdfs:range rdf:resource="&a;Conference"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasConferencePaper">
+    <rdfs:label rdf:datatype="&xsd;string">ConferencePaper</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasConferenceProceedings">
+    <rdfs:label rdf:datatype="&xsd;string">ConferenceProceedings</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Conference"/>
+    <rdfs:range rdf:resource="&a;ConferenceProceedings"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasDescriptor">
+    <rdfs:label rdf:datatype="&xsd;string">hasDescriptor</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasJournalArticle">
+    <rdfs:label rdf:datatype="&xsd;string">hasJournalArticle</rdfs:label>
+    <rdfs:domain rdf:resource="&a;MagazineIssue"/>
+    <rdfs:range rdf:resource="&a;JournalArticle"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasMagIss">
+    <rdfs:label rdf:datatype="&xsd;string">hasMagIss</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Magazine"/>
+    <rdfs:range rdf:resource="&a;MagazineIssue"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;hasSubject">
+    <rdfs:label rdf:datatype="&xsd;string">hasSubject</rdfs:label>
+    <rdfs:domain rdf:resource="&a;InformationResource"/>
+    <rdfs:range rdf:resource="&a;Topic"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;isAuthorOf">
+    <rdfs:label rdf:datatype="&xsd;string">isAuthorOf</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Person"/>
+    <rdfs:range rdf:resource="&a;Article"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;issueOf">
+    <rdfs:label rdf:datatype="&xsd;string">issueOf</rdfs:label>
+    <rdfs:domain rdf:resource="&a;IssueOfPeriodical"/>
+    <rdfs:range rdf:resource="&a;PeriodicalPublication"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;producedBy">
+    <rdfs:label rdf:datatype="&xsd;string">producedBy</rdfs:label>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="&a;publishedWithin">
+    <rdfs:label rdf:datatype="&xsd;string">publishedWithin</rdfs:label>
+    <rdfs:domain rdf:resource="&a;Article"/>
+    <rdfs:range rdf:resource="&a;ResourceCollection"/>
+</owl:ObjectProperty>
+
+<a:Affiliation rdf:about="&c;AFF1">
+    <rdfs:label rdf:datatype="&xsd;string">Dept. of Ind. Eng. &amp; Eng. Manage., Stanford Univ., CA, USA</rdfs:label>
+    <a:hasAffiliate rdf:resource="#PER_Adler,_P.S."/>
+</a:Affiliation>
+
+<a:Affiliation rdf:about="&c;AFF_Salford_Univ">
+    <rdfs:label rdf:datatype="&xsd;string">Salford Univ., UK</rdfs:label>
+    <a:hasAffiliate rdf:resource="#PER_Chadwick,_D.W."/>
+</a:Affiliation>
+
+<a:Affiliation rdf:ID="AFF_Unisys_West_Coast_Res">
+    <rdfs:label rdf:datatype="&xsd;string">Unisys West Coast Res. Center, Santa Monica, CA, USA</rdfs:label>
+    <a:hasAffiliate rdf:resource="#PER_Sheth,_A.P."/>
+</a:Affiliation>
+
+<a:Conference rdf:ID="CON_IEE_Colloquium_on_The_Global">
+    <rdfs:label rdf:datatype="&xsd;string">IEE Colloquium on The Global Directory (Digest No.067):: 19 April 1990</rdfs:label>
+    <a:hasConferencePaper rdf:resource="#CP_ART_3678329_The_1992_Directory_standards"/>
+</a:Conference>
+
+<a:Conference rdf:ID="CON_Proceedings_Fifth_International_Conference_on_Data_Engineering">
+    <rdfs:label rdf:datatype="&xsd;string">Proceedings Fifth International Conference on Data Engineering (IEEE Cat. No.89CH2695-5):: 6-10 Feb. 1989</rdfs:label>
+    <a:hasConferencePaper rdf:resource="#CP_ART_3406304_Does_loose_AI-DBMS_coupling_stand_a_chance?"/>
+</a:Conference>
+
+<a:Conference rdf:ID="CON_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988">
+    <rdfs:label rdf:datatype="&xsd;string">Proceedings IEEE International Symposium on Intelligent Control 1988:: 24-26 Aug. 1988</rdfs:label>
+    <a:hasConferenceProceedings rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Conference>
+
+<a:ConferenceProceedings rdf:ID="CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988">
+    <rdfs:label rdf:datatype="&xsd;string">Proceedings IEEE International Symposium on Intelligent Control 1988</rdfs:label>
+    <a:documentAbstract rdf:datatype="&xsd;string">The following topics are dealt with: intelligent machines, perception, knowledge management, planning, actuation, learning and adaptation, computer architectures, and applications</a:documentAbstract>
+    <a:hasAccessionNo rdf:datatype="&xsd;string">3668430</a:hasAccessionNo>
+    <a:title rdf:datatype="&xsd;string">Proceedings IEEE International Symposium on Intelligent Control 1988</a:title>
+    <a:hasDescriptor rdf:resource="#DE_artificial_intelligence"/>
+    <a:hasDescriptor rdf:resource="#DE_computer_architecture"/>
+    <a:hasDescriptor rdf:resource="#DE_knowledge_engineering"/>
+    <a:hasDescriptor rdf:resource="#DE_learning_systems"/>
+    <a:hasDescriptor rdf:resource="#DE_robots"/>
+    <a:publishedWithin rdf:resource="#CON_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988::_24-26_Aug._1988"/>
+</a:ConferenceProceedings>
+
+<a:ConferencePaper rdf:ID="CP_ART_3406304_Does_loose_AI-DBMS_coupling_stand_a_chance">
+    <rdfs:label rdf:datatype="&xsd;string">Does loose AI-DBMS coupling stand a chance?</rdfs:label>
+    <a:documentAbstract rdf:datatype="&xsd;string">The concept of loose coupling of artificial intelligence systems and database systems is defined. The issues that arise in determining the scope of loose integration are identified. A cache-based architecture being implemented in a knowledge management system project is described. The objective is to develop an interface that is useful for generalized database access from an expert system</a:documentAbstract>
+    <a:hasAccessionNo rdf:datatype="&xsd;string">3406304</a:hasAccessionNo>
+    <a:isOnPageNo rdf:datatype="&xsd;string">252-4</a:isOnPageNo>
+    <a:title rdf:datatype="&xsd;string">Does loose AI-DBMS coupling stand a chance?</a:title>
+    <a:hasDescriptor rdf:resource="#DE_database_management_systems"/>
+    <a:hasDescriptor rdf:resource="#DE_expert_systems"/>
+    <a:producedBy rdf:resource="#PER_Sheth,_A.P."/>
+    <a:publishedWithin rdf:resource="#CON_Proceedings_Fifth_International_Conference_on_Data_Engineering_(IEEE_Cat._No.89CH2695-5)::_6-10_Feb._1989"/>
+</a:ConferencePaper>
+
+<a:ConferencePaper rdf:ID="CP_ART_3678329_The_1992_Directory_standards">
+    <rdfs:label rdf:datatype="&xsd;string">The 1992 Directory standards</rdfs:label>
+    <a:documentAbstract rdf:datatype="&xsd;string">Describes the current state of play technically with regard to access control, replication, knowledge management, schema and the extended information model. Finally the likely repercussions on the 1988 systems and implementations will be guesstimated</a:documentAbstract>
+    <a:hasAccessionNo rdf:datatype="&xsd;string">3678329</a:hasAccessionNo>
+    <a:isOnPageNo rdf:datatype="&xsd;string">9/1-4</a:isOnPageNo>
+    <a:title rdf:datatype="&xsd;string">The 1992 Directory standards</a:title>
+    <a:hasDescriptor rdf:resource="#DE_standards"/>
+    <a:hasDescriptor rdf:resource="#DE_telephone_systems"/>
+    <a:producedBy rdf:resource="#PER_Chadwick,_D.W."/>
+    <a:publishedWithin rdf:resource="#CON_IEE_Colloquium_on_The_Global_Directory_(Digest_No.067)::_19_April_1990"/>
+</a:ConferencePaper>
+
+<a:Descriptor rdf:ID="DE_artificial_intelligence">
+    <rdfs:label rdf:datatype="&xsd;string">artificial intelligence</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">artificial intelligence</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_computer_architecture">
+    <rdfs:label rdf:datatype="&xsd;string">computer architecture</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">computer architecture</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_database_management_systems">
+    <rdfs:label rdf:datatype="&xsd;string">database management systems</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">database management systems</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CP_ART_3406304_Does_loose_AI-DBMS_coupling_stand_a_chance?"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_engineering">
+    <rdfs:label rdf:datatype="&xsd;string">engineering</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">engineering</a:descriptorTerm>
+    <a:articleRef rdf:resource="#JA_ART_3410083_When_knowledge_is_the_critical_resource,_knowledge_management_is_the_critical_task"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_expert_systems">
+    <rdfs:label rdf:datatype="&xsd;string">expert systems</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">expert systems</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CP_ART_3406304_Does_loose_AI-DBMS_coupling_stand_a_chance?"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_knowledge_engineering">
+    <rdfs:label rdf:datatype="&xsd;string">knowledge engineering</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">knowledge engineering</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_learning_systems">
+    <rdfs:label rdf:datatype="&xsd;string">learning systems</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">learning systems</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_management">
+    <rdfs:label rdf:datatype="&xsd;string">management</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">management</a:descriptorTerm>
+    <a:articleRef rdf:resource="#JA_ART_3410083_When_knowledge_is_the_critical_resource,_knowledge_management_is_the_critical_task"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_robots">
+    <rdfs:label rdf:datatype="&xsd;string">robots</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">robots</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CPROC_ART_3668430_Proceedings_IEEE_International_Symposium_on_Intelligent_Control_1988"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_standards">
+    <rdfs:label rdf:datatype="&xsd;string">standards</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">standards</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CP_ART_3678329_The_1992_Directory_standards"/>
+</a:Descriptor>
+
+<a:Descriptor rdf:ID="DE_telephone_systems">
+    <rdfs:label rdf:datatype="&xsd;string">telephone systems</rdfs:label>
+    <a:descriptorTerm rdf:datatype="&xsd;string">telephone systems</a:descriptorTerm>
+    <a:articleRef rdf:resource="#CP_ART_3678329_The_1992_Directory_standards"/>
+</a:Descriptor>
+
+<a:JournalArticle rdf:ID="JA_ART_3410083_When_knowledge_is_the_critical_resource">
+    <rdfs:label rdf:datatype="&xsd;string">When knowledge is the critical resource, knowledge management is the critical task</rdfs:label>
+    <a:documentAbstract rdf:datatype="&xsd;string">The author argues that the increasing centrality of technology and other forms of knowledge to competitiveness induces long-run changes in both operations managementl and engineering management. Those emergent trends in practice are paralleled by changes in academia, in both teaching and research. The author further argues that in several domains of management practice, the 'public good' nature of knowledge undermines the effectiveness of both market and planning models of organization, reinforcing the role of cooperation as a third mode of coordination. It is concluded that researching the essential issues posed by such a change requires a paradigm shift from management science and operations research formulations to more qualitative, less analytical, and more inductive approaches</a:documentAbstract>
+    <a:hasAccessionNo rdf:datatype="&xsd;string">3410083</a:hasAccessionNo>
+    <a:isOnPageNo rdf:datatype="&xsd;string">87-94</a:isOnPageNo>
+    <a:title rdf:datatype="&xsd;string">When knowledge is the critical resource, knowledge management is the critical task</a:title>
+    <a:hasDescriptor rdf:resource="#DE_engineering"/>
+    <a:hasDescriptor rdf:resource="#DE_management"/>
+    <a:producedBy rdf:resource="#PER_Adler,_P.S."/>
+    <a:publishedWithin rdf:resource="#MAGISS_IEEE_Transactions_on_Engineering_Management::_vol.36,_no.2"/>
+</a:JournalArticle>
+
+<a:MagazineIssue rdf:ID="MAGISS_IEEE_Transactions_on_Engineering_Management">
+    <rdfs:label rdf:datatype="&xsd;string">IEEE Transactions on Engineering Management:: vol.36, no.2</rdfs:label>
+    <a:datePublished rdf:datatype="&xsd;string">May 1989</a:datePublished>
+    <a:hasJournalArticle rdf:resource="#JA_ART_3410083_When_knowledge_is_the_critical_resource,_knowledge_management_is_the_critical_task"/>
+    <a:issueOf rdf:resource="#MAG_IEEE_Transactions_on_Engineering_Management"/>
+</a:MagazineIssue>
+
+<a:Magazine rdf:ID="MAG_IEEE_Transactions_on_Engineering_Management">
+    <rdfs:label rdf:datatype="&xsd;string">IEEE Transactions on Engineering Management</rdfs:label>
+    <a:ISSN rdf:datatype="&xsd;string">0018-9391</a:ISSN>
+    <a:hasMagIss rdf:resource="#MAGISS_IEEE_Transactions_on_Engineering_Management::_vol.36,_no.2"/>
+</a:Magazine>
+
+<a:Person rdf:ID="PER_Adler">
+    <rdfs:label rdf:datatype="&xsd;string">Adler, P.S.</rdfs:label>
+    <a:personName rdf:datatype="&xsd;string">Adler, P.S.</a:personName>
+    <a:hasAffiliation rdf:resource="#AFF_Dept._of_Ind._Eng._&amp;_Eng._Manage.,_Stanford_Univ.,_CA,_USA"/>
+    <a:isAuthorOf rdf:resource="#JA_ART_3410083_When_knowledge_is_the_critical_resource,_knowledge_management_is_the_critical_task"/>
+</a:Person>
+
+<a:Person rdf:ID="PER_Chadwick">
+    <rdfs:label rdf:datatype="&xsd;string">Chadwick, D.W.</rdfs:label>
+    <a:personName rdf:datatype="&xsd;string">Chadwick, D.W.</a:personName>
+    <a:hasAffiliation rdf:resource="#AFF_Salford_Univ.,_UK"/>
+    <a:isAuthorOf rdf:resource="#CP_ART_3678329_The_1992_Directory_standards"/>
+</a:Person>
+
+<a:Person rdf:ID="PER_Sheth">
+    <rdfs:label rdf:datatype="&xsd;string">Sheth, A.P.</rdfs:label>
+    <a:personName rdf:datatype="&xsd;string">Sheth, A.P.</a:personName>
+    <a:hasAffiliation rdf:resource="#AFF_Unisys_West_Coast_Res._Center,_Santa_Monica,_CA,_USA"/>
+    <a:isAuthorOf rdf:resource="#CP_ART_3406304_Does_loose_AI-DBMS_coupling_stand_a_chance?"/>
+</a:Person>
+
+
+<owl:Class rdf:about="&rdfs;Resource"/>
+
+</rdf:RDF>

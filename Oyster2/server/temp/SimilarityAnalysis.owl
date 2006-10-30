@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY b 'http://swrc.ontoware.org/ontology#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://w3c.org/similarityAnalysis"
+    xmlns:a="http://swrc.ontoware.org/ontology#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://swrc.ontoware.org/ontology"/>
+</owl:Ontology>
+
+<a:Person rdf:ID="Bilal">
+    <a:name rdf:datatype="&xsd;string">Bilal Siddiqui</a:name>
+</a:Person>
+
+<a:Book rdf:ID="Intelligent_Agent">
+    <a:title rdf:datatype="&xsd;string">Intelligent Agent -Similarity Analysis</a:title>
+    <a:year rdf:datatype="&xsd;string">2002</a:year>
+    <a:author rdf:resource="#Bilal"/>
+</a:Book>
+
+<a:PhDStudent rdf:ID="Rajam_Ramamurti">
+    <a:name rdf:datatype="&xsd;string">Rajam Ramamurti</a:name>
+</a:PhDStudent>
+
+<a:InProceedings rdf:ID="Similarity_Analysis">
+    <a:title rdf:datatype="&xsd;string">Similarity Function Analysis</a:title>
+    <a:year rdf:datatype="&xsd;string">2000</a:year>
+    <a:author rdf:resource="#Rajam_Ramamurti"/>
+</a:InProceedings>
+
+<owl:Class rdf:about="&b;Book"/>
+
+<owl:Class rdf:about="&b;InProceedings"/>
+
+<owl:Class rdf:about="&b;Person"/>
+
+<owl:Class rdf:about="&b;PhDStudent"/>
+
+<owl:DatatypeProperty rdf:about="&b;name"/>
+
+<owl:DatatypeProperty rdf:about="&b;title"/>
+
+<owl:DatatypeProperty rdf:about="&b;year"/>
+
+<owl:ObjectProperty rdf:about="&b;author"/>
+
+</rdf:RDF>

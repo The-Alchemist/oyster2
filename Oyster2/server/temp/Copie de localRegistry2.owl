@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY a 'http://localhost/basicRegistry#'>
+    <!ENTITY b 'http://omv.ontoware.org/2005/05/ontology#'>
+    <!ENTITY d 'http://daml.umbc.edu/ontologies/topic-ont#'>
+    <!ENTITY e 'http://semanticworld.com/'>
+    <!ENTITY f 'http://malta/'>
+    <!ENTITY g 'http://hardware.org/'>
+    <!ENTITY h 'http://swrc.ontoware.org/ontology#'>
+    <!ENTITY i 'http://semanticworks.com/'>
+    <!ENTITY j 'http://data.org/'>
+    <!ENTITY k 'http://swrc.ontoware.org/'>
+    <!ENTITY l 'http://protege.stanford.edu/'>
+    <!ENTITY m 'http://data.com/'>
+    <!ENTITY n 'http://semanticweb.com/'>
+    <!ENTITY o 'file:///C:/GuoRui/doc/'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY p 'http://w3c.org/'>
+    <!ENTITY q 'file:///C:/GuoRui/server/'>
+    <!ENTITY r 'http://daml.umbc.edu/ontologies/topic-ont#ACMTopic/'>
+    <!ENTITY s 'http://daml.umbc.edu/ontologies/'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/localRegistry"
+    xmlns:a="http://localhost/basicRegistry#"
+    xmlns:b="http://omv.ontoware.org/2005/05/ontology#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#">
+
+<owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="&xsd;string">An example of local expertise registry</rdfs:comment>
+    <rdfs:label rdf:datatype="&xsd;string">Local Expertise Registry</rdfs:label>
+    <owl:imports rdf:resource="&q;acm.rdf"/>
+    <owl:imports rdf:resource="&q;peersExpertiseRegistry.owl"/>
+    <owl:versionInfo rdf:datatype="&xsd;string">21</owl:versionInfo>
+</owl:Ontology>
+
+<owl:Class rdf:about="&a;Mapping">
+    <rdfs:subClassOf rdf:resource="&b;OntologyDocument"/>
+</owl:Class>
+
+<b:OntologyDocument rdf:about="&o;acm.rdf">
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/acm.rdf</b:ontologyURL>
+    <b:baseSubject rdf:resource="&d;ACMTopic"/>
+    <b:location rdf:resource="#laurent"/>
+    <b:location rdf:resource="#rui"/>
+</b:OntologyDocument>
+
+<a:Topic rdf:about="&d;Topic"/>
+
+<b:OntologyDocument rdf:about="&m;database-inc">
+    <b:docName rdf:datatype="&xsd;string">Database introduction ontology</b:docName>
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/database-inc.owl</b:ontologyURL>
+    <b:baseSubject rdf:resource="&r;Computing_Milieux"/>
+    <b:imports rdf:resource="&q;acm.rdf"/>
+    <b:location rdf:resource="#laurent"/>
+    <b:location rdf:resource="#muriel"/>
+</b:OntologyDocument>
+
+<b:OntologyDocument rdf:about="&j;JDBCServer?172.22.131.26"/>
+
+<b:OntologyDocument rdf:about="&j;dataStorage">
+    <b:docName rdf:datatype="&xsd;string">DataStorage ontology</b:docName>
+    <b:ontologyURL rdf:datatype="&xsd;string">file///C:/GuoRui/doc/dataStorage.owl</b:ontologyURL>
+    <b:baseSubject rdf:resource="&r;Data"/>
+    <b:imports rdf:resource="&q;acm.rdf"/>
+    <b:imports rdf:resource="&s;topic-ont"/>
+    <b:location rdf:resource="#laurent"/>
+    <b:location rdf:resource="#rui"/>
+</b:OntologyDocument>
+
+<b:OntologyDocument rdf:about="&j;dataStorage-inc">
+    <b:docName rdf:datatype="&xsd;string">data storage ontology</b:docName>
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/dataStorage-inc.owl</b:ontologyURL>
+    <b:baseSubject rdf:resource="&r;Computing_Milieux"/>
+    <b:location rdf:resource="#muriel"/>
+    <b:location rdf:resource="#rui"/>
+</b:OntologyDocument>
+
+<b:OntologyDocument rdf:about="&g;Hardware">
+    <b:docName rdf:datatype="&xsd;string">Hardward ontology</b:docName>
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/server/Hardware.owl</b:ontologyURL>
+    <b:baseSubject rdf:resource="&r;Hardware"/>
+    <b:location rdf:resource="#muriel"/>
+</b:OntologyDocument>
+
+<a:Peer rdf:ID="laurent">
+    <a:GUID rdf:datatype="&xsd;string">Guid1</a:GUID>
+    <a:IPAdress rdf:datatype="&xsd;string">localhost</a:IPAdress>
+    <a:localPeer rdf:datatype="&xsd;boolean">false</a:localPeer>
+    <a:peerType rdf:datatype="&xsd;string">R</a:peerType>
+    <a:contextOntology rdf:resource="&l;rdf"/>
+    <a:provideOntology rdf:resource="&q;acm.rdf"/>
+    <a:provideOntology rdf:resource="&m;database-inc"/>
+    <a:provideOntology rdf:resource="&j;dataStorage"/>
+    <a:provideOntology rdf:resource="&j;dataStorage-inc"/>
+    <a:provideOntology rdf:resource="&f;mimp"/>
+    <a:provideOntology rdf:resource="&h;swrc"/>
+</a:Peer>
+
+<a:Mapping rdf:ID="mapping1">
+    <b:ontologyURL rdf:datatype="&xsd;string">http://mapping.org/bt_swrc</b:ontologyURL>
+    <a:mappingProvider rdf:resource="#rui"/>
+    <a:mappingSource rdf:resource="&k;ontology"/>
+    <a:mappingTarget rdf:resource="&l;rdf"/>
+</a:Mapping>
+
+<a:Mapping rdf:ID="mapping2">
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/bt-swrc.owl</b:ontologyURL>
+    <a:mappingProvider rdf:resource="#rui"/>
+    <a:mappingSource rdf:resource="&l;rdf"/>
+    <a:mappingTarget rdf:resource="&k;ontology"/>
+</a:Mapping>
+
+<a:Mapping rdf:ID="mapping317">
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/dmoz-acm</b:ontologyURL>
+    <a:mappingProvider rdf:resource="#rui"/>
+    <a:mappingSource rdf:resource="&q;dmoz.owl"/>
+    <a:mappingTarget rdf:resource="&q;acm.rdf"/>
+</a:Mapping>
+
+<a:Peer rdf:ID="muriel">
+    <a:GUID rdf:datatype="&xsd;string">Guid3</a:GUID>
+    <a:IPAdress rdf:datatype="&xsd;string">localhost</a:IPAdress>
+    <a:localPeer rdf:datatype="&xsd;boolean">false</a:localPeer>
+    <a:peerType rdf:datatype="&xsd;string">R</a:peerType>
+    <a:contextOntology rdf:resource="&l;rdf"/>
+    <a:provideOntology rdf:resource="&m;database-inc"/>
+    <a:provideOntology rdf:resource="&g;Hardware"/>
+    <a:provideOntology rdf:resource="&f;mimp"/>
+    <a:provideOntology rdf:resource="&h;swrc"/>
+</a:Peer>
+
+<a:Peer rdf:ID="rui">
+    <a:GUID rdf:datatype="&xsd;string">EE457D5039AB738F8573F105D1841081DDC70DE4</a:GUID>
+    <a:IPAdress rdf:datatype="&xsd;string">localhost</a:IPAdress>
+    <a:localPeer rdf:datatype="&xsd;boolean">true</a:localPeer>
+    <a:peerType rdf:datatype="&xsd;string">S</a:peerType>
+    <a:contextOntology rdf:resource="&k;ontology"/>
+    <a:provideOntology rdf:resource="&q;acm.rdf"/>
+    <a:provideOntology rdf:resource="&j;dataStorage"/>
+    <a:provideOntology rdf:resource="&j;dataStorage-inc"/>
+    <a:provideOntology rdf:resource="&h;swrc"/>
+</a:Peer>
+
+<b:OntologyDocument rdf:about="&f;mimp">
+    <b:docName rdf:datatype="&xsd;string">coference description</b:docName>
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/doc/bt_source.owl</b:ontologyURL>
+    <b:baseSubject rdf:resource="&r;Computing_Milieux"/>
+    <b:imports rdf:resource="&k;ontology"/>
+    <b:location rdf:resource="#laurent"/>
+    <b:location rdf:resource="#muriel"/>
+</b:OntologyDocument>
+
+<b:OntologyDocument rdf:about="&l;rdf"/>
+
+<b:OntologyDocument rdf:about="&n;ontologyLanguages"/>
+
+<b:OntologyDocument rdf:about="&i;example"/>
+
+<b:OntologyDocument rdf:about="&e;tutorial"/>
+
+<b:OntologyDocument rdf:about="&k;ontology"/>
+
+<b:OntologyDocument rdf:about="&h;swrc">
+    <b:ontologyURL rdf:datatype="&xsd;string">file:///C:/GuoRui/server/swrc.owl</b:ontologyURL>
+    <b:location rdf:resource="#laurent"/>
+    <b:location rdf:resource="#muriel"/>
+    <b:location rdf:resource="#rui"/>
+</b:OntologyDocument>
+
+<b:OntologyDocument rdf:about="&p;semanticRetrieval"/>
+
+<b:OntologyDocument rdf:about="&p;similarityRetrieval"/>
+
+<swrl:Variable rdf:ID="X"/>
+<swrl:Variable rdf:ID="Z"/>
+<swrl:Variable rdf:ID="Y"/>
+<swrl:Imp>
+    <swrl:head rdf:parseType="Collection">
+        <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="&b;baseSubject"/>
+            <swrl:argument1 rdf:resource="#X"/>
+            <swrl:argument2 rdf:resource="#Z"/>
+        </swrl:IndividualPropertyAtom>
+    </swrl:head>
+    <swrl:body rdf:parseType="Collection">
+        <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="&b;baseSubject"/>
+            <swrl:argument1 rdf:resource="#X"/>
+            <swrl:argument2 rdf:resource="#Y"/>
+        </swrl:IndividualPropertyAtom>
+        <swrl:IndividualPropertyAtom>
+            <swrl:propertyPredicate rdf:resource="&d;SubTopic"/>
+            <swrl:argument1 rdf:resource="#Z"/>
+            <swrl:argument2 rdf:resource="#Y"/>
+        </swrl:IndividualPropertyAtom>
+    </swrl:body>
+</swrl:Imp>
+
+<owl:Class rdf:about="&a;Peer"/>
+
+<owl:Class rdf:about="&a;Topic"/>
+
+<owl:Class rdf:about="&b;OntologyDocument"/>
+
+<owl:DatatypeProperty rdf:about="&a;GUID"/>
+
+<owl:DatatypeProperty rdf:about="&a;IPAdress"/>
+
+<owl:DatatypeProperty rdf:about="&a;localPeer"/>
+
+<owl:DatatypeProperty rdf:about="&a;peerType"/>
+
+<owl:DatatypeProperty rdf:about="&b;docName"/>
+
+<owl:DatatypeProperty rdf:about="&b;ontologyURL"/>
+
+<owl:ObjectProperty rdf:about="&d;SubTopic"/>
+
+<owl:ObjectProperty rdf:about="&a;contextOntology"/>
+
+<owl:ObjectProperty rdf:about="&a;mappingProvider"/>
+
+<owl:ObjectProperty rdf:about="&a;mappingSource"/>
+
+<owl:ObjectProperty rdf:about="&a;mappingTarget"/>
+
+<owl:ObjectProperty rdf:about="&a;provideOntology"/>
+
+<owl:ObjectProperty rdf:about="&b;baseSubject"/>
+
+<owl:ObjectProperty rdf:about="&b;imports"/>
+
+<owl:ObjectProperty rdf:about="&b;location"/>
+
+</rdf:RDF>
