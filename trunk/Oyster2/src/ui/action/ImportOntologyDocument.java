@@ -377,7 +377,7 @@ public class ImportOntologyDocument extends Action implements IRunnableWithProgr
 				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndividual),OntologyChangeEvent.ChangeType.ADD));
 			localRegistry.applyChanges(changes);
 			localRegistry.persist();
-			//localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+			localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 			
 		}catch(Exception e){
 			errorDialog("add ontologyDoc to registry error",e.getMessage());

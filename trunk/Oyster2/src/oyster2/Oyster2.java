@@ -246,15 +246,15 @@ public class Oyster2 {
 			
 			if ((!localRegistryFile.exists())
 					|| (localRegistryFile.length() <= 0)) {
-				/* For the second file 
+				/* For the second file */ 
 				localRegistryFile.createNewFile();
 				resolver.registerReplacement(Constants.LocalRegistryURI,
 						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
-				*/
-				/* For the 1 file */ 
+				
+				/* For the 1 file  
 				resolver.registerReplacement(Constants.LocalRegistryURI,
 						"file:///"+serializeFileName(store.getString(Constants.LocalRegistry)));
-				
+				*/
 				localRegistryURI = Constants.LocalRegistryURI;				
 				connection.setOntologyResolver(resolver);
 				
@@ -274,16 +274,16 @@ public class Oyster2 {
 				this.mInformer.addRule(this.localRegistryOntology, subTopicRule);
 				
 			} else {
-				/* For the second file 
+				/* For the second file */ 
 				resolver.registerReplacement(Constants.LocalRegistryURI,
 						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
 				localRegistryURI = Constants.LocalRegistryURI;
-				*/
-				/* For the 1 file */ 
+				
+				/* For the 1 file  
 				localRegistryURI=resolver.registerOntology("file:///"
 						+ serializeFileName(store
 								.getString(Constants.LocalRegistry)));
-				
+				*/
 				connection.setOntologyResolver(resolver);
 				this.localRegistryOntology = connection.openOntology(
 						localRegistryURI, new HashMap<String, Object>());
@@ -622,15 +622,15 @@ public class Oyster2 {
 	public Ontology getLocalHostOntology() {
 		Ontology localHostOntology = null;
 		try {
-			/*For the second file 
+			/*For the second file */ 
 			localHostOntology = connection.openOntology("kaon2rmi://localhost?"
 					+ localRegistryOntology.getOntologyURI(),
 					new HashMap<String, Object>());
-			*/
-			/* For 1 file only */ 
+			
+			/* For 1 file only  
 			localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
 							new HashMap<String, Object>());
-			
+			*/
 		} catch (Exception e) {
 			System.err.println(e + " getLocalHostOntology()in Oyster2.");
 		}
