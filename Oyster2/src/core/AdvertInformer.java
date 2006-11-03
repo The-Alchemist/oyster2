@@ -41,6 +41,7 @@ public class AdvertInformer  {
     		remoteOntologyRegistry = mOyster2.getConnection().openOntology(remoteRMIURI,new HashMap<String,Object>());
     	}catch(Exception e){
     		System.out.println(e+":when openRemoteRegistry().The reason may be remote server doesn't be started yet.");
+    		remoteOntologyRegistry=null;
     	}
 	    return remoteOntologyRegistry;
     }
@@ -457,7 +458,7 @@ public class AdvertInformer  {
     		String olduid = util.Utilities.getString(newPeer.getDataPropertyValue(targetOntology,GUID)); //(String)
     		OWLClass Peer = KAON2Manager.factory().owlClass(pdURI+"#Peer");
     		if(!targetOntology.containsAxiom(KAON2Manager.factory().classMember(Peer,newPeer),true)){
-    			System.out.println("add: "+newPeer.getURI()+ "to: "+targetOntology.getPhysicalURI() );
+    			System.out.println("add: "+newPeer.getURI()+ " to: "+targetOntology.getPhysicalURI() );
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(Peer,newPeer),OntologyChangeEvent.ChangeType.ADD));
     		}
     		else 
@@ -862,7 +863,16 @@ public class AdvertInformer  {
   				  Individual peerIndiv =(Individual) remotePeerSet.get(peerGUID);
   				  if(!localGUIDs.contains(peerGUID)){
   					  System.out.println("local registry doesn't contain: "+peerGUID+". The peer that will be added is: "+peerIndiv);
-  					  addExpertisePeer(remoteOntologyRegistry,peerIndiv,localOntologyRegistry); 
+  					  
+  					  //I DONT WANT TO ADD A PEER OFFLINE
+  					  Ontology remoteRegistry = null;
+  					  String IP= "";
+  					  IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
+  					  remoteRegistry = openRemoteRegistry(IP);
+  					  if (remoteRegistry!=null)
+  						  addExpertisePeer(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
+  					  else
+  						  System.out.println("Peer was not reachable when trying to add it, so it was not added");
   				  }
   				  else
   					  updatePeerAttributes(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
@@ -923,7 +933,8 @@ public class AdvertInformer  {
 			  System.out.println("add local peer to remote.");
 			  if(peerIndiv!=null)
 				  addExpertisePeer(localOntology,peerIndiv,remoteOntology);
-			  else System.err.println("localPeer is null in localRegistry when informerIP process runs");
+			  else 
+				  System.err.println("localPeer is null in localRegistry when informerIP process runs");
 		  }
 	  
 	  }
