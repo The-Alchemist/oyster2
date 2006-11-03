@@ -1,6 +1,7 @@
 package ui;
 
 import org.eclipse.jface.preference.FieldEditor;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.preference.PreferencePage;
@@ -9,6 +10,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+
 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
@@ -30,6 +35,9 @@ public class ConditionPreferencePage extends PreferencePage{
 	private Text bootstrapPeerName;
 	private Text bootstrapPeerUID;
 	private Text bootstrapPeerIP;
+	private Text peerRouterIP;
+	private Boolean routerDisabled = false;
+	private Label fieldLabel13;
 	public ConditionPreferencePage(String name){
 		super(name);
 	}
@@ -91,16 +99,39 @@ public class ConditionPreferencePage extends PreferencePage{
 		bootstrapPeerName = new Text(panel,SWT.SINGLE | SWT.BORDER);
 		bootstrapPeerName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));
+		/*
 		Label fieldLabel11 = new Label(panel, SWT.NULL);
 		fieldLabel11.setText("bootstrapPeerUID: ");
 		bootstrapPeerUID = new Text(panel,SWT.SINGLE | SWT.BORDER);
 		bootstrapPeerUID.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));
+		*/
 		Label fieldLabel12 = new Label(panel, SWT.NULL);
 		fieldLabel12.setText("bootstrapPeerIP: ");
 		bootstrapPeerIP = new Text(panel,SWT.SINGLE | SWT.BORDER);
 		bootstrapPeerIP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.GRAB_HORIZONTAL));
+		
+		BooleanFieldEditor behindRouter = new BooleanFieldEditor("BehindRouter", "My peer is behind a router",
+				BooleanFieldEditor.SEPARATE_LABEL, panel);
+		behindRouter.setPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				routerDisabled = ((Boolean) event.getNewValue()).booleanValue();
+				fieldLabel13.setEnabled(routerDisabled);
+				peerRouterIP.setEnabled(routerDisabled);
+				fieldLabel13.setVisible(routerDisabled);
+				peerRouterIP.setVisible(routerDisabled);
+			}
+		});
+		fieldLabel13 = new Label(panel, SWT.NULL);
+		fieldLabel13.setText("peerRouterIP: ");
+		peerRouterIP = new Text(panel,SWT.SINGLE | SWT.BORDER);
+		peerRouterIP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL
+				| GridData.GRAB_HORIZONTAL));
+		peerRouterIP.setEnabled(false);
+		fieldLabel13.setEnabled(false);
+		peerRouterIP.setVisible(false);
+		fieldLabel13.setVisible(false);
 		
 		typeOntologyRoot.setText(Constants.DefaultTypeOntologyRoot);
 		topicOntologyRoot.setText(Constants.DefaultTopicOntologyRoot);
@@ -130,8 +161,9 @@ public class ConditionPreferencePage extends PreferencePage{
 		pref.setValue(Constants.LocalPeerName, localPeerName.getText());
 		pref.setValue(Constants.LocalPeerType, localPeerType.getText());
 		pref.setValue(Constants.BootStrapPeerName, bootstrapPeerName.getText());
-		pref.setValue(Constants.BootStrapPeerUID, bootstrapPeerUID.getText());
+		//pref.setValue(Constants.BootStrapPeerUID, bootstrapPeerUID.getText());
 		pref.setValue(Constants.BootStrapPeerIP, bootstrapPeerIP.getText());
+		pref.setValue(Constants.PeerRouterIP, peerRouterIP.getText());
 		return true;
 	}
 	

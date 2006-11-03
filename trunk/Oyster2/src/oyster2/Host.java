@@ -3,6 +3,8 @@ package oyster2;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.eclipse.jface.preference.PreferenceStore;
+
 /**
  * This class represents a host of the Oyster2 Network.
  *
@@ -35,6 +37,7 @@ public abstract class Host {
 	 * The PGrid facility.
 	 */
 	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private PreferenceStore store = mOyster2.getPreferenceStore();
 
 	/**
 	 * The listening port of the host.
@@ -134,7 +137,11 @@ public abstract class Host {
 	 * @return the Internet address.
 	 */
 	public String getAddress() {
-		return mNetAddr.getHostAddress();
+		if ((store.getString(Constants.PeerRouterIP) != null)
+				&& (store.getString(Constants.PeerRouterIP).length() > 0))
+			return store.getString(Constants.PeerRouterIP);
+		else
+			return mNetAddr.getHostAddress();
 	}
 
 	/**

@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.1 $".replace('$', ' ').trim() + " (" + "$Date: 2006-10-30 12:50:38 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.2 $".replace('$', ' ').trim() + " (" + "$Date: 2006-11-03 14:28:47 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -80,6 +80,7 @@ public class Constants {
 	public static final String BootStrapPeerName = "bootStrapPeerName";
 	public static final String BootStrapPeerUID = "bootStrapPeerUID";
 	public static final String BootStrapPeerIP = "bootStrapPeerIP";
+	public static final String PeerRouterIP = "peerRouterIP";
 	public static final String DefaultLocalRegistry = "e:/O2serverfiles/localRegistry.owl";
 	public static final String DefaultPDOntology = "e:/O2serverfiles/peersExpertiseRegistry.owl";
 	public static final String DefaultTypeOntology = "e:/O2serverfiles/OMV.owl";
@@ -96,6 +97,8 @@ public class Constants {
 	public static final String DefaultLocalPeerType = "S";
 	public static final String DefaultBootStrapPeerName = "localhost";
 	public static final String DefaultBootStrapPeerIP = "localhost";
+	
+	
 	
 	
 	

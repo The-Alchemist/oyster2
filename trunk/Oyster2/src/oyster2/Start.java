@@ -43,25 +43,34 @@ public class Start {
 	
 	
 	public static void configureProperties(){
-		Display display = new Display();
-		PreferenceManager pm = new PreferenceManager();
-		MainPreferencePage p = new MainPreferencePage("Main preferences");
-		ConditionPreferencePage cp = new ConditionPreferencePage("ConditionPreference");
+		Boolean first=true;
+		try{
+			store.load();
+			first=false;
+		} catch (Exception e) {
+			first=true;
+			System.out.println("First Time");
+		}
+		if (first){
+			Display display = new Display();
+			PreferenceManager pm = new PreferenceManager();
+			MainPreferencePage p = new MainPreferencePage("Main preferences");
+			ConditionPreferencePage cp = new ConditionPreferencePage("ConditionPreference");
 
-		pm.addToRoot(new PreferenceNode("mainOyster2Properties", p));
-		pm.addToRoot(new PreferenceNode("searchConditions",cp));
-		PreferenceDialog d = new PreferenceDialog(display.getActiveShell(), pm);
-		d.setPreferenceStore(store);
+			pm.addToRoot(new PreferenceNode("mainOyster2Properties", p));
+			pm.addToRoot(new PreferenceNode("searchConditions",cp));
+			PreferenceDialog d = new PreferenceDialog(display.getActiveShell(), pm);
+			d.setPreferenceStore(store);
 		
-		d.create();
-		d.open();
-		try {
-		      // Save the preferences
-		      store.save();
+			d.create();
+			d.open();
+			try {
+				// Save the preferences
+				store.save();
 		    } catch (IOException e) {
-		      e.printStackTrace();
+		    	e.printStackTrace();
 		    }
-
+		}
 		mOyster2.setPreferenceStore(store);
 	}
 }
