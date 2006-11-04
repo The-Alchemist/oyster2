@@ -71,169 +71,135 @@ public class LocalExpertiseRegistry {
 		 * @throws Exception
 		 */
 		public boolean searchExpertiseOntology(Oyster2Query topicQuery,boolean manualSelected){
-			
-			boolean positiveResult = false;
-			Collection importOntologySet = new LinkedList(); 
-			String queryStr = topicQuery.getQueryString();
-			if(!manualSelected){
-				System.out.println("manualSelected: "+ manualSelected);
-			try{
-				
-			//importOntologySet =	this.virtualOntology.getImportedOntologies();
-			Iterator it = importOntologySet.iterator();
-			while(it.hasNext()){
-				Ontology importedOntology = (Ontology)it.next(); 
-				//virtualOntology.removeFromImports(importedOntology);
-			}
-			//virtualOntology.persist();
-			localOntologyRegistry = mOyster2.getLocalHostOntology();
-			//virtualOntology.addToImports(localRegistry);
-			this.reasoner=localOntologyRegistry.createReasoner();
-			System.out.println("First query: "+queryStr);
-			Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
-			//Query query=reasoner.createQuerySPARQL(Namespaces.INSTANCE,"SELECT ?x  WHERE  { ?x rdf:type <http://omv.ontoware.org/2005/05/ontology#Ontology> }");
-			query.open();
-			
-	        while (!query.afterLast()) {
-	        	positiveResult = true;
-				String ontologyURI = query.tupleBuffer()[0].toString();
-				Individual ontologyIndiv =KAON2Manager.factory().individual(ontologyURI);
-				//Query myQuery = reasoner.createQuerySPARQL(Namespaces.INSTANCE,"SELECT ?x WHERE {?x <http://localhost/basicRegistry#provideOntology>"+ "<"+ontologyURI +">}");
-				Query myQuery = reasoner.createQuery(Namespaces.INSTANCE,"SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#ontologyLocation> ?x }");
-				System.out.println("ontologyURI: "+ontologyURI);
-				System.out.println("SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#ontologyLocation> ?x }");
-				myQuery.open();
-				while (!myQuery.afterLast()) {
-					String peerStr = myQuery.tupleBuffer()[0].toString();
-					System.out.println(peerStr+" provideOntology: "+ontologyIndiv);
-					Individual peerIndiv = KAON2Manager.factory().individual(peerStr);
-					//mInformer.addExpertisePeer(localRegistry,peerIndiv,virtualOntology);
-					localOntologyRegistry = mOyster2.getLocalHostOntology();
-					Individual targetIndiv = mInformer.getContextOntology(localOntologyRegistry,peerIndiv);
-					
-					String sourceURI = mOyster2.getTypeOntology().getOntologyURI();
-					//System.out.println("typeOntologySourceURI: "+sourceURI);
-					Individual sourceIndiv = KAON2Manager.factory().individual(sourceURI);
-					try{
-					if(targetIndiv != sourceIndiv){
-						System.out.println("importMapping...");
-						System.out.println(" source: "+sourceIndiv.toString()+" target: "+ targetIndiv.toString());
-						Individual mappingIndiv=null;
+		  boolean positiveResult = false;
+		  Collection importOntologySet = new LinkedList(); 
+		  String queryStr = topicQuery.getQueryString();
+		  if(!manualSelected){
+			System.out.println("manualSelected: "+ manualSelected);
+			try{	
+				localOntologyRegistry = mOyster2.getLocalHostOntology();
+				this.reasoner=localOntologyRegistry.createReasoner();
+				System.out.println("First query: "+queryStr);
+				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
+				query.open();
+				while (!query.afterLast()) {
+					positiveResult = true;
+					String ontologyURI = query.tupleBuffer()[0].toString();
+					Individual ontologyIndiv =KAON2Manager.factory().individual(ontologyURI);
+					//Query myQuery = reasoner.createQuerySPARQL(Namespaces.INSTANCE,"SELECT ?x WHERE {?x <http://localhost/basicRegistry#provideOntology>"+ "<"+ontologyURI +">}");
+					Query myQuery = reasoner.createQuery(Namespaces.INSTANCE,"SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#ontologyLocation> ?x }");
+					System.out.println("SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#ontologyLocation> ?x }");
+					myQuery.open();
+					while (!myQuery.afterLast()) {
+						String peerStr = myQuery.tupleBuffer()[0].toString();
+						System.out.println(peerStr+" provideOntology: "+ontologyIndiv);
+						Individual peerIndiv = KAON2Manager.factory().individual(peerStr);
+						localOntologyRegistry = mOyster2.getLocalHostOntology();
+						Individual targetIndiv = mInformer.getContextOntology(localOntologyRegistry,peerIndiv);
+						String sourceURI = mOyster2.getTypeOntology().getOntologyURI();
+						Individual sourceIndiv = KAON2Manager.factory().individual(sourceURI);
 						try{
-						mappingIndiv = mInformer.getRelevantMapping(localOntologyRegistry,sourceIndiv,targetIndiv);
+							if(targetIndiv != sourceIndiv){
+								System.out.println("importMapping... source: "+sourceIndiv.toString()+" target: "+ targetIndiv.toString());
+								Individual mappingIndiv=null;
+								mappingIndiv = mInformer.getRelevantMapping(localOntologyRegistry,sourceIndiv,targetIndiv);
+								System.out.println("relevant mapping is: "+ mappingIndiv.toString()+" source: "+sourceIndiv.toString()+" target: "+ targetIndiv.toString());
+								if(mappingIndiv!=null){
+									String IP = mInformer.getMappingIP(localOntologyRegistry,mappingIndiv);
+									System.out.println("the mapping located at IP: "+IP);
+									String mappingURI = mInformer.getMappingURI(localOntologyRegistry,mappingIndiv);
+									String logicalURI=resolver.registerOntology("kaon2rmi://"+IP+"?"+mappingURI);
+									connection.setOntologyResolver(resolver);
+									Ontology mappingOntology = connection.openOntology(logicalURI,new HashMap<String,Object>());
+									//if((mappingOntology!=null)&&(!this.virtualOntology.getImportedOntologies().contains(mappingOntology))){
+									//	virtualOntology.addToImports(mappingOntology);	
+									//}
+								}
+							}
 						}catch(Exception e){
-							System.err.println("bingo!");
+							System.err.println(e.toString());
 						}
-						System.out.println("relevant mapping is: "+ mappingIndiv.toString()+" source: "+sourceIndiv.toString()+" target: "+ targetIndiv.toString());
-						if(mappingIndiv!=null){
-						String IP = mInformer.getMappingIP(localOntologyRegistry,mappingIndiv);
-						System.out.println("the mapping located at IP: "+IP);
-						String mappingURI = mInformer.getMappingURI(localOntologyRegistry,mappingIndiv);
-						//System.out.println("mappingURI: "+mappingURI);
-						String logicalURI=resolver.registerOntology("kaon2rmi://"+IP+"?"+mappingURI);
-						connection.setOntologyResolver(resolver);
-						//System.out.println("logicalURI:"+logicalURI);
-						Ontology mappingOntology = connection.openOntology(logicalURI,new HashMap<String,Object>());
-			//		    if((mappingOntology!=null)&&(!this.virtualOntology.getImportedOntologies().contains(mappingOntology))){
-			//		    	virtualOntology.addToImports(mappingOntology);	
-			//		    }
+						String logicalURI= null;
+						try{
+							DataProperty IPAdress = KAON2Manager.factory().dataProperty(mOyster2.getPeerDescOntologyURI()+"#IPAdress");
+							String IP = util.Utilities.getString(peerIndiv.getDataPropertyValue(localOntologyRegistry,IPAdress)); //(String)
+							logicalURI=resolver.registerOntology("kaon2rmi://"+IP+"?"+ontologyURI);
+							connection.setOntologyResolver(resolver);
+							Ontology ontologyToImport = null;
+							ontologyToImport = connection.openOntology(logicalURI,new HashMap<String,Object>());
+						}catch(Exception e){
+							System.err.println(e.toString()+" when opening ontology");
 						}
-					    //System.out.println("mapping imported.");
+						//System.out.println("ontologyToImport: "+ontologyToImport.getOntologyURI());
+						//if(!this.virtualOntology.getImportedOntologies().contains(ontologyToImport))
+							//virtualOntology.addToImports(ontologyToImport);
+						myQuery.next();
 					}
-					}catch(Exception e){
-						System.err.println(e.toString());
-					}
-					String logicalURI= null;
-					try{
-					//DataProperty IPAdress = KAON2Manager.factory().dataProperty("http://localhost/basicRegistry#IPAdress");
-					DataProperty IPAdress = KAON2Manager.factory().dataProperty(mOyster2.getPeerDescOntologyURI()+"#IPAdress");
-					String IP = util.Utilities.getString(peerIndiv.getDataPropertyValue(localOntologyRegistry,IPAdress)); //(String)
-					logicalURI=resolver.registerOntology("kaon2rmi://"+IP+"?"+ontologyURI);
-					connection.setOntologyResolver(resolver);
-					}catch(Exception e){
-						System.err.println(e);
-					}
-					Ontology ontologyToImport = null;
-					//System.err.println("logicalURI: "+logicalURI);
-					try{
-					ontologyToImport = connection.openOntology(logicalURI,new HashMap<String,Object>());
-					}catch(Exception e){
-						System.err.println(e.toString()+" when opening ontology");
-					}
-					//System.out.println("ontologyToImport: "+ontologyToImport.getOntologyURI());
-			//		if(!this.virtualOntology.getImportedOntologies().contains(ontologyToImport))
-			//		virtualOntology.addToImports(ontologyToImport);
-					myQuery.next();
+					myQuery.close();
+					myQuery.dispose();
+					query.next();
 				}
-				myQuery.close();
-				myQuery.dispose();
-				query.next();
-			}
-	        
-			query.close();
-			query.dispose();
-	        try{
-			reasoner.dispose();
-			//if(virtualOntology==null)System.err.println("virtualOntology null");
-			//if(virtualFile ==null)System.err.println("virtualFile null");
-			//virtualOntology.persist();
-	        }catch(Exception e){
-	        	System.err.println(e.toString()+" I am Here below!");
-	        }
+				query.close();
+				query.dispose();
+				try{
+					reasoner.dispose();
+					//if(virtualOntology==null)System.err.println("virtualOntology null");
+					//if(virtualFile ==null)System.err.println("virtualFile null");
+					//virtualOntology.persist();
+				}catch(Exception e){
+					System.err.println(e.toString()+" I am Here below!");
+				}
 			}catch(Exception e){
 				System.err.println(e.toString()+":LocalExpertiseRegistry searchExpertiseRegistry  "+e.getLocalizedMessage());
 			}
 			//mOyster2.setVirtualOntology(virtualOntology);
-			}
-			else {
-				try{
-					Collection relevantOntologyList = new LinkedList();
-			//		Collection ontologyImportedCol = mOyster2.getVirtualOntology().getImportedOntologies();
-					//System.out.println("in virtualontology: "+ontologyImportedCol.size());
-			//		Iterator vi = ontologyImportedCol.iterator();
-			//		while(vi.hasNext()){
-			//			Ontology importedOntology = (Ontology)vi.next(); 
-		//				virtualOntology.removeFromImports(importedOntology);
-			//		}
-		//			virtualOntology.persist();
-					//System.out.println("in virtualontology: "+ontologyImportedCol.size());
-					localOntologyRegistry = mOyster2.getLocalHostOntology();
-		//			virtualOntology.addToImports(localRegistry);
-					this.reasoner=localOntologyRegistry.createReasoner();
-					Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
-					query.open();
-					//System.out.println("query opened!");
-					while (!query.afterLast()) {
-						String ontologyURI = query.tupleBuffer()[0].toString();
-						System.out.println("relevant ontologyURI: "+ ontologyURI);
-						relevantOntologyList.add(ontologyURI);
-						query.next();
-					}
-					query.close();
-					query.dispose();
-			//		Iterator it = ontologyImportedCol.iterator();
-			//		while(it.hasNext()){
-			//			Ontology importedOntology = (Ontology)it.next(); 
-			//			String importURI = importedOntology.getOntologyURI();
-						//System.out.println("importURI:"+importURI);
-						//if(!relevantOntologyList.contains(importURI)&&(!importURI.equals(localRegistry.getOntologyURI()))){
-						//	virtualOntology.removeFromImports(importedOntology);
-						//	System.out.println("remove: "+importURI);
-						//}
-			//			if(relevantOntologyList.contains(importURI))
-			//				virtualOntology.addToImports(importedOntology);
-			//		}
-			//		if(virtualOntology.getImportedOntologies().size()>1)
-						positiveResult = true;
-			//		virtualOntology.persist();
-			//		mOyster2.setVirtualOntology(virtualOntology);
-						
-				}catch(Exception e){
-					System.out.println(e+" when manual!");
+		  }
+		  else {
+			 try{
+				Collection relevantOntologyList = new LinkedList();
+				//Collection ontologyImportedCol = mOyster2.getVirtualOntology().getImportedOntologies();
+				//System.out.println("in virtualontology: "+ontologyImportedCol.size());
+				//Iterator vi = ontologyImportedCol.iterator();
+				//while(vi.hasNext()){
+				//	Ontology importedOntology = (Ontology)vi.next(); 
+				//	virtualOntology.removeFromImports(importedOntology);
+				//}
+				//virtualOntology.persist();
+				//System.out.println("in virtualontology: "+ontologyImportedCol.size());
+				localOntologyRegistry = mOyster2.getLocalHostOntology();
+				//virtualOntology.addToImports(localRegistry);
+				this.reasoner=localOntologyRegistry.createReasoner();
+				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
+				query.open();
+				while (!query.afterLast()) {
+					String ontologyURI = query.tupleBuffer()[0].toString();
+					System.out.println("relevant ontologyURI: "+ ontologyURI);
+					relevantOntologyList.add(ontologyURI);
+					query.next();
 				}
-				
-			}
-	        return positiveResult;
+				query.close();
+				query.dispose();
+				//Iterator it = ontologyImportedCol.iterator();
+				//while(it.hasNext()){
+					//Ontology importedOntology = (Ontology)it.next(); 
+					//String importURI = importedOntology.getOntologyURI();
+					//System.out.println("importURI:"+importURI);
+					//if(!relevantOntologyList.contains(importURI)&&(!importURI.equals(localRegistry.getOntologyURI()))){
+					//	virtualOntology.removeFromImports(importedOntology);
+					//	System.out.println("remove: "+importURI);
+					//}
+					//if(relevantOntologyList.contains(importURI))
+					//virtualOntology.addToImports(importedOntology);
+				//}
+				//if(virtualOntology.getImportedOntologies().size()>1)
+				positiveResult = true;
+				//virtualOntology.persist();
+				//mOyster2.setVirtualOntology(virtualOntology);		
+			 }catch(Exception e){
+				 System.out.println(e+" when manual!");
+			 }	
+		  }
+	      return positiveResult;
 		}
 		
 		
@@ -333,7 +299,6 @@ public class LocalExpertiseRegistry {
 			
 			Resource replyResource;
 			String queryStr =newQuery.getQueryString();//queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> "hola" }"
-			//String queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> \"hola\" }";
 			try{
 				Reasoner reasoner=virtualOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr); 
@@ -341,7 +306,7 @@ public class LocalExpertiseRegistry {
 				    
 				 while (!query.afterLast()) {
 					 Object[] reply = query.tupleBuffer();
-					 System.out.println("ontologyURI O LO QUE SEA: "+query.tupleBuffer()[0].toString());
+					 System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
 					 String docURI = query.tupleBuffer()[0].toString();
 					 Individual docIndiv =KAON2Manager.factory().individual(docURI);
 					 replyResource = new Resource(docIndiv.getURI(),docIndiv,resourceType);
@@ -350,9 +315,7 @@ public class LocalExpertiseRegistry {
 				 }
 				 query.close();
 				  //query.dispose();
-				//  System.out.println("replyQueryResult finished.");
 				 reasoner.dispose();
-	
 			}catch(Exception e){
 				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
 				return null;	
