@@ -30,7 +30,7 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 		String columnType = viewer.getColumnType(columnIndex);
 		if(element instanceof Entity){
 			Entity entry = (Entity)element;
-			if(columnType.equals("omv:OntologyDocument")){
+			if(columnType.equals("omv:Ontology")){
 			
 			}
 		}
