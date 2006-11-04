@@ -121,7 +121,7 @@ public class ImportMappingOntology extends Action implements IRunnableWithProgre
 	}
 	private void addImportMappingToRegistry(Ontology localregistry, List propertyList){
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
-		OWLClass OntologyDoc = KAON2Manager.factory().owlClass(Constants.OMVURI+"OntologyDocument");
+		OWLClass OntologyDoc = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
 		OWLClass Mapping = KAON2Manager.factory().owlClass(defURI+"#Mapping");
 		DataProperty ontologyURL = KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI);
     	ObjectProperty imports = KAON2Manager.factory().objectProperty(Constants.OMVURI + Constants.useImports);

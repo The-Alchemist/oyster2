@@ -647,7 +647,7 @@ public class AdvertInformer  {
     }
     
     public synchronized void addExpertiseOntology(Ontology remoteOntologyRegistry,Individual ontologyIndiv,Ontology targetOntology){
-    	OWLClass OntologyDoc=KAON2Manager.factory().owlClass(omv+"OntologyDocument");
+    	OWLClass OntologyDoc=KAON2Manager.factory().owlClass(omv+Constants.ontologyConcept);
     	List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
     	try{
     	if(!targetOntology.containsAxiom(KAON2Manager.factory().classMember(OntologyDoc,ontologyIndiv),true))
