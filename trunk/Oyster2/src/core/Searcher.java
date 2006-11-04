@@ -50,12 +50,12 @@ public class Searcher implements Runnable {
 	/**
 	 * The KaonP2P facility.
 	 */
-	private Oyster2 mKaonP2P = Oyster2.sharedInstance();
+	private Oyster2 mOyster2 = Oyster2.sharedInstance();
 	
 	/**
 	 * The local Expertise Registry.
 	 */
-	private LocalExpertiseRegistry localRegistry = mKaonP2P.getLocalExpertiseRegistry();
+	private LocalExpertiseRegistry localRegistry = mOyster2.getLocalExpertiseRegistry();
 	/**
 	 * The QueryReply Listener.
 	 */
@@ -63,7 +63,7 @@ public class Searcher implements Runnable {
 	/**
 	 * The Querylistener.
 	 */
-	private AdvertInformer mInformer = mKaonP2P.getLocalAdvertInformer();
+	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	/**
 	 * The query to process.
 	 */
@@ -118,14 +118,14 @@ public class Searcher implements Runnable {
 	 * @param queryReply the query hit.
 	 */
 	private void returnResult(QueryReply queryReply) {
-             mKaonP2P.getSearchManager().notifyReplyListener(queryReply);
+             mOyster2.getSearchManager().notifyReplyListener(queryReply);
 	}
 	/**
 	 * return the found ontology Set to QueryReplyListener in SearchManager.
 	 * @param ontologyDocSet
 	 */
 	private void returnResult(List ontologyDocSet){
-		mKaonP2P.getSearchManager().notifyReplyListener(ontologyDocSet);
+		mOyster2.getSearchManager().notifyReplyListener(ontologyDocSet);
 	}
 	/**
 	 * filter the query results within the query scope
@@ -135,7 +135,7 @@ public class Searcher implements Runnable {
 		Iterator it = ontologySet.iterator();
 		while(it.hasNext()){
 		if(scope == Oyster2Query.Local_Scope){
-			String hostPort = mKaonP2P.getLocalHost().getAddress();
+			String hostPort = mOyster2.getLocalHost().getAddress();
 			String uri = (String)it.next();
 			if(uri.substring(uri.indexOf("?")+1).contains(hostPort))
 				resultSet.add(uri);
@@ -156,25 +156,23 @@ public class Searcher implements Runnable {
 	 */
 	public void run(){
 		if(normalSearchFlag){
-		//Ontology virtualOntology;
-	    System.out.println("estamos aqui");
-		QueryReply queryReply =null;
-		if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){
-			//queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);  
-			queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
-			topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
-			positiveResult = localRegistry.searchExpertiseOntology(topicQuery,manualSelected);
-			if (!positiveResult ) {
-				System.out.println("Bad request for '" + topicQuery.getQueryString() + "'.");
-				queryReply = new QueryReply(topicQuery.getGUID(), QueryReply.TYPE_BAD_REQUEST);
-				mKaonP2P.getSearchManager().notifyReplyListener(queryReply);
-			}			
-		}
-		else if((typeQuery != null) && (typeQuery.getQueryString().length()>0))
-			queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
-		//else 
-		//queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);
-		// ** THIS WAS COMMENTED BEFORE typeQuery.setStatus(KaonP2PQuery.STATUS_FINISHED);
+			QueryReply queryReply =null;
+			if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){
+				//queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);  
+				queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
+				topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
+				positiveResult = localRegistry.searchExpertiseOntology(topicQuery,manualSelected);
+				if (!positiveResult ) {
+					System.out.println("Bad request for '" + topicQuery.getQueryString() + "'.");
+					queryReply = new QueryReply(topicQuery.getGUID(), QueryReply.TYPE_BAD_REQUEST);
+					mOyster2.getSearchManager().notifyReplyListener(queryReply);
+				}			
+			}
+			else if((typeQuery != null) && (typeQuery.getQueryString().length()>0))
+				queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
+			//else 
+			//	queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);
+			// ** THIS WAS COMMENTED BEFORE typeQuery.setStatus(KaonP2PQuery.STATUS_FINISHED);
 			returnResult(queryReply);
 		}
 		else{
@@ -182,7 +180,7 @@ public class Searcher implements Runnable {
 			List ontologyDocSet = new ArrayList();
 			while(it.hasNext()){
 				Individual peerIndiv = (Individual)it.next();
-				Collection ontologyCol= mInformer.getOntologyDoc(mKaonP2P.getLocalHostOntology(),peerIndiv);
+				Collection ontologyCol= mInformer.getOntologyDoc(mOyster2.getLocalHostOntology(),peerIndiv);
 				if(ontologyCol!=null)
 				ontologyDocSet.addAll(ontologyCol);	
 			}
