@@ -89,7 +89,7 @@ public class AdvertInformer  {
     	Collection peerSet = new LinkedList();
     	try{
     		 propertyMap = ontologyDoc.getObjectPropertyValues(regOntology);
-    		 location= KAON2Manager.factory().objectProperty(pdURI+"#resourceLocator");
+    		 location= KAON2Manager.factory().objectProperty(pdURI+"#ontologyLocation");
     		 peerSet =(Collection) propertyMap.get(location);
     	}catch(Exception e){
     		System.err.println(e.toString()+" getOntologyProvider in AdvertInformer.");
@@ -694,6 +694,7 @@ public class AdvertInformer  {
     		}
     	}
     	
+    	//THE REST OF ATTRIBUTES IS MISSING TODO
     	
     	/*if((newPeerIndiv != null)&&(oldPeerIndiv != newPeerIndiv))
     		changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(location,ontologyIndiv,newPeerIndiv),OntologyChangeEvent.ChangeType.ADD));*/
@@ -712,8 +713,14 @@ public class AdvertInformer  {
     			//targetOntology.applyChanges(changes); 
     		}
     	}
-    	if((oldSubjectIndiv==null))
-    		changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndiv,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
+    	if(subjectIndiv != null){
+    		if((oldSubjectIndiv==null))
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndiv,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
+    		else{
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndiv,oldSubjectIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndiv,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
+    		}
+    	}
     	
     	targetOntology.applyChanges(changes); 
     	
