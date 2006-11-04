@@ -865,14 +865,14 @@ public class AdvertInformer  {
   					  System.out.println("local registry doesn't contain: "+peerGUID+". The peer that will be added is: "+peerIndiv);
   					  
   					  //I DONT WANT TO ADD A PEER OFFLINE
-  					  Ontology remoteOntologyRegistrytoAdd = null;
-  					  String IP= "";
-  					  IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
-  					remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
-  					  if (remoteOntologyRegistrytoAdd!=null)
+  					  //Ontology remoteOntologyRegistrytoAdd = null;
+  					  //String IP= "";
+  					  //IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
+  					//remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
+  					  //if (remoteOntologyRegistrytoAdd!=null)
   						  addExpertisePeer(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
-  					  else
-  						  System.out.println("Peer was not reachable when trying to add it, so it was not added");
+  					  //else
+  						//  System.out.println("Peer was not reachable when trying to add it, so it was not added");
   				  }
   				  else
   					  updatePeerAttributes(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
