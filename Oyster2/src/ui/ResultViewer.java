@@ -42,7 +42,7 @@ public class ResultViewer extends Composite {
 	private TreeViewer wrapedViewer;
 	private ResultViewerContentProvider contentProvider;
 	private ResultViewerLabelProvider labelProvider;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 
 	private List columns = new LinkedList();
 	
@@ -75,6 +75,7 @@ public class ResultViewer extends Composite {
 		tree.setHeaderVisible(true);
 		
 	}
+	
 	public synchronized void createTreeContent(QueryReply queryReply){
 		Ontology ontology = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
@@ -109,6 +110,7 @@ public class ResultViewer extends Composite {
 		}
 		
 	}
+	
 	public String getColumnType(int index){
 		return ((TreeColumn)columns.get(index)).getText();
 	}
@@ -208,10 +210,12 @@ public class ResultViewer extends Composite {
 	private void onDispose(Event e) {
 		storComponentProperties();
 	}
+	
 	public void clear(){
 		wrapedViewer.refresh();
 		wrapedViewer.getTree().removeAll();
 	}
+	
 	/**
 	 * Storing this component properties.
 	 */

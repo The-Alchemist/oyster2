@@ -48,7 +48,7 @@ public class MainPreferencePage extends PreferencePage{
 	//private static final String DefaultVirtualOntology = Constants.DefaultVirtualOntology;
 	private static final String DefaultTypeOntology = Constants.DefaultTypeOntology;
 	private static final String DefaultTopicOntology = Constants.DefaultTopicOntology;
-	private Oyster2 mKaonP2P = Oyster2.sharedInstance();
+	private Oyster2Factory mKaonP2P = Oyster2Factory.sharedInstance();
 	
 	
 	public MainPreferencePage(String name){

@@ -141,7 +141,7 @@ public class MainWindow extends ApplicationWindow {
 	/*TODO private EntryFinder finder;*/
 
 	private Result result;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private List vocabulary;
 	private SearchManager searchManager = mOyster2.getSearchManager();
 	private SearchingScope searchingScope;
@@ -161,20 +161,16 @@ public class MainWindow extends ApplicationWindow {
 			String detail = (String)it.next();
 			searchDetails.add(detail);
 		}*/
-		/*searchDetails.add("swrc:title");
-		searchDetails.add("swrc:abstract");
-		searchDetails.add("swrc:keywords");
-		searchDetails.add("swrc:year");
-		searchDetails.add("swrc:author");
-		searchDetails.add("swrc:journal");
-		searchDetails.add("swrc:url");*/
 		
 		searchDetails = mOyster2.getSearchDetails();
+		ontologyDetails = mOyster2.getSearchDetails();
+		/*
 		ontologyDetails.add("omv:name");
 		ontologyDetails.add("omv:keywords");
 		ontologyDetails.add("omv:hasDomain");
 		ontologyDetails.add("omv:URI");
-		ontologyDetails.add("omv:hasCreator");		
+		ontologyDetails.add("omv:hasCreator");
+		*/		
 	}
 
 	public int open() {
@@ -239,7 +235,7 @@ public class MainWindow extends ApplicationWindow {
 			
 			/*---------------Bibligraphical search pane---------------*/
 			CTabItem searchPane = new CTabItem(tabFolder, SWT.NULL | SWT.FLAT);
-			searchPane.setText("Search");
+			searchPane.setText("Search registry");
 			Composite searchPropertiesPanel = createSearchPropertiesPanel(tabFolder);
 			searchPane.setControl(searchPropertiesPanel);
 			
@@ -275,8 +271,12 @@ public class MainWindow extends ApplicationWindow {
 	private Composite createSearchPropertiesPanel(Composite parent) {
 		Composite searchPropertiesPanel = new Composite(parent, SWT.NULL);
 		searchPropertiesPanel.setBackground(backgroundColor);
-		Composite manualSearchPanel = createManualSearchPanel(searchPropertiesPanel);
-		manualSearchPanel.setBackground(backgroundColor);
+		//Composite manualSearchPanel = createManualSearchPanel(searchPropertiesPanel);
+		//manualSearchPanel.setBackground(backgroundColor);
+		Composite peerSelectionPanel = createPeerSelectionPanel(searchPropertiesPanel,true);
+		peerSelectionPanel.setBackground(backgroundColor);
+		Composite keywordSearchPanel = createKeywordSearchPanel(searchPropertiesPanel);
+		keywordSearchPanel.setBackground(backgroundColor);
 		Composite queryDetailsPanel = createQueryDetailsPanel(searchPropertiesPanel);
 		queryDetailsPanel.setBackground(backgroundColor);
 		Composite searchPanel = createSearchButtonPanel(searchPropertiesPanel,false);
@@ -290,13 +290,22 @@ public class MainWindow extends ApplicationWindow {
 		data1.left = new FormAttachment(0, 0);
 		data1.right = new FormAttachment(100, 0);
 		data1.top = new FormAttachment(0, 0);
-		manualSearchPanel.setLayoutData(data1);
+		//manualSearchPanel.setLayoutData(data1);
+		peerSelectionPanel.setLayoutData(data1);
+		//Keyword based search
+		FormData data1a = new FormData();
+		data1a.left = new FormAttachment(0, 0);
+		data1a.right = new FormAttachment(100, 0);
+		data1a.top = new FormAttachment(peerSelectionPanel);
+		data1a.bottom = new FormAttachment(28, 0);
+		keywordSearchPanel.setLayoutData(data1a);
+		
 		//--queryDatailPanel is below the peerSelection Panel:publication,details,topic fields
 		FormData data2 = new FormData();
 		data2.left = new FormAttachment(0, 0);
 		data2.right = new FormAttachment(100, 0);
-		//data2.top = new FormAttachment(peerSelectionPanel);
-		data2.top = new FormAttachment(manualSearchPanel,0);
+		data2.top = new FormAttachment(keywordSearchPanel);
+		//data2.top = new FormAttachment(manualSearchPanel,0);
 		data2.bottom = new FormAttachment(90, 0);
 		queryDetailsPanel.setLayoutData(data2);
 
@@ -382,6 +391,28 @@ public class MainWindow extends ApplicationWindow {
 		return manualSearchPanel;
 	}
 	
+	private Composite createKeywordSearchPanel(Composite parent){
+		
+		Group searchPanel = new Group(parent, SWT.NULL);
+		searchPanel.setBackground(backgroundColor);
+		searchPanel
+				.setFont(decorateFont(parent.getFont(), SWT.BOLD));
+		searchPanel.setText("Search");
+		searchField = new Text(searchPanel, SWT.FULL_SELECTION | SWT.BORDER);
+		
+		FormLayout formLayout = new FormLayout();
+		formLayout.marginWidth = 3;
+		formLayout.marginHeight = 3;
+		searchPanel.setLayout(formLayout);
+		
+		FormData formData1 = new FormData();
+		formData1.left = new FormAttachment(0, 0);
+		formData1.right = new FormAttachment(100, 0);
+		formData1.top = new FormAttachment(13, 0);
+		searchField.setLayoutData(formData1);
+		return searchPanel;
+	}
+	
 	private Composite createSearchButtonPanel(Composite parent, Boolean ontologySearch){
 		
 		Group searchPanel = new Group(parent, SWT.NULL);
@@ -450,8 +481,8 @@ public class MainWindow extends ApplicationWindow {
 				Text field = (Text) fields.next();
 				field.setText("");
 		}
-				typeOntologyViewer
-						.setSelection(new StructuredSelection());
+				//typeOntologyViewer
+				//		.setSelection(new StructuredSelection());
 				dmozTopicsViewer.setSelection(new StructuredSelection());
 				detailViewer.clear();
 				resultViewer.clear();
@@ -502,29 +533,23 @@ public class MainWindow extends ApplicationWindow {
 		peerSelectionPanel.setFont(decorateFont(peerSelectionPanel.getFont(),
 				SWT.BOLD));	
 		if(!ontologySearch){
-			
 			System.out.println(" here in no ontology search of peerselctionpanel");
-			
 			final Button mapping = new Button(peerSelectionPanel,SWT.Selection);
 			mapping.setText("Enable Mapping");
 			mapping.setBackground(backgroundColor);
 			mapping.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					mappingUsed = !mappingUsed;
-					System.err.println("mappingUsed: "+mappingUsed);
-					
+					System.err.println("mappingUsed: "+mappingUsed);			
 				}
 			});
 			FormLayout layout = new FormLayout();
 			layout.marginWidth = 3;
 			layout.marginHeight = 3;
-
 			FormData FormData = new FormData();
 			FormData.top = new FormAttachment(0, 3);
 			mapping.setLayoutData(FormData);
-			
 		}
-			
 		if(ontologySearch){
 			System.out.println(" here in ontology search of peerselctionpanel");
 			final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
@@ -532,10 +557,12 @@ public class MainWindow extends ApplicationWindow {
 			final Button localPeer = new Button(peerSelectionPanel, SWT.RADIO);
 			final Button allPeers = new Button(peerSelectionPanel, SWT.RADIO);
 			peerSelectionPanel.setText("Registry Explorer");
-			vo.setText("Virtual Ontology Detail");
+			vo.setText("Local Peer");
 			vo.setBackground(backgroundColor);
 			localPeer.setText("Local Registry Detail");
 			localPeer.setBackground(backgroundColor);
+			allPeers.setText("Selected Peers");
+			allPeers.setBackground(backgroundColor);
 			//localPeer.setSelection(true);
 			searchingScope = SearchingScope.local();
 			vo.addSelectionListener(new SelectionAdapter() {
@@ -555,7 +582,7 @@ public class MainWindow extends ApplicationWindow {
 			localPeer.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if (localPeer.getSelection()) {
-						List ontologyInfo = new LinkedList();
+						List<Ontology> ontologyInfo = new LinkedList<Ontology>();
 						result = new Result(resultViewer,Resource.RegistryResource);
 						ontologyInfo.add(mOyster2.getLocalHostOntology());
 						result.entryReceived(ontologyInfo);
@@ -566,21 +593,15 @@ public class MainWindow extends ApplicationWindow {
 					}
 				}
 			});
-		
-			allPeers.setText("Peer Expertise");
-			allPeers.setBackground(backgroundColor);
 			allPeers.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if (allPeers.getSelection()) {
 					//allPeers.setEnabled(true);
-						
 					Set peerSet = dialog.getPeerSelection();
 					result = new Result(resultViewer,Resource.OntologyResource);
 					mOyster2.getSearchManager().addListener(result);
 					mOyster2.getSearchManager().startSearch(peerSet);
-			
 					searchingScope = SearchingScope.auto();
-					
 					}
 				}
 			});
@@ -612,7 +633,7 @@ public class MainWindow extends ApplicationWindow {
 				SWT.BOLD));
 		queryDetailsPanel.setText("Search Details");
 
-		Composite typePanel = createResourceTypePanel(queryDetailsPanel);
+		//Composite typePanel = createResourceTypePanel(queryDetailsPanel);
 		Composite searchForPanel = new Composite(queryDetailsPanel, SWT.NULL );
 		searchForPanel.setBackground(backgroundColor);
 		Composite topicsPanel = createTopicsPanel(queryDetailsPanel);
@@ -639,18 +660,22 @@ public class MainWindow extends ApplicationWindow {
 		formLayout.marginHeight = 3;
 		formLayout.marginWidth = 3;
 
+		//ORI1
+		
+		/*
 		FormData data1 = new FormData();
 		data1.left = new FormAttachment(0, 0);
 		data1.right = new FormAttachment(100, 0);
 		data1.top = new FormAttachment(0, 0);
 		data1.bottom = new FormAttachment(45, -20);
 		typePanel.setLayoutData(data1);
+		*/
 
 		FormData data2 = new FormData();
-		data2.top = new FormAttachment(typePanel);
+		data2.top = new FormAttachment(0, 0);
 		data2.left = new FormAttachment(0, 0);
 		data2.right = new FormAttachment(100, 0);
-		data2.bottom = new FormAttachment(70,0);
+		data2.bottom = new FormAttachment(50,0);
 		searchForPanel.setLayoutData(data2);
 
 		FormData data3 = new FormData();
@@ -753,9 +778,9 @@ public class MainWindow extends ApplicationWindow {
 		dmozTopicsViewer.setLabelProvider(new OntologyLabelProvider());
 		dmozTopicsViewer.setInput(resourceTopicOntology);
 		dmozTopicsViewer.expandToLevel(2);
-		dmozTopicsViewer.setSelection(new StructuredSelection());
+		//dmozTopicsViewer.setSelection(new StructuredSelection());
 		Tree tableTree = dmozTopicsViewer.getTree();
-		tableTree.setSelection(new TreeItem[] { tableTree.getTopItem() });
+		//tableTree.setSelection(new TreeItem[] { tableTree.getTopItem() });
 		return topicsPanel;
 	}
 	
@@ -987,14 +1012,14 @@ public class MainWindow extends ApplicationWindow {
 			String text = ((Text) searchFields.get(i)).getText().trim();
 			if (text != null && !text.equals("")) {
 				Condition condition = new Condition(
-						((String) searchDetails.get(i)), text, checkDataProperty(Namespaces.guessLocalName((String) searchDetails.get(i))));
-				
+						((String) searchDetails.get(i)), text, checkDataProperty(Namespaces.guessLocalName((String) searchDetails.get(i))));			
 				searchConditions.addFirst(condition);
 			}
 		}
 		//--With inferencing enabled
-		StructuredSelection selection = (StructuredSelection) typeOntologyViewer
-				.getSelection();
+		//StructuredSelection selection = (StructuredSelection) typeOntologyViewer
+		//		.getSelection();
+		StructuredSelection selection = new StructuredSelection();
 		Object obj = selection.getFirstElement();
 		if (obj != null) {
 			Entity typeEntry= (Entity) obj;
@@ -1010,9 +1035,7 @@ public class MainWindow extends ApplicationWindow {
 			//System.err.println("topicEntry:  "+topicEntry.getURI());
 			Condition condition = new Condition(Condition.TOPIC_CONDITION,topicEntry);
 			searchConditions.addFirst(condition);	
-		}
-
-		
+		}		
 		performDataSearch(searchConditions);
 	}
 
@@ -1041,13 +1064,10 @@ public class MainWindow extends ApplicationWindow {
 		return false;
 	}
 	
-	private void performDataSearch(LinkedList conditions) {
-		
-		System.out.println("We are in performDataSearch(LindedList conditions) ");
+	private void performDataSearch(LinkedList conditions) {	
 		searchButton.setEnabled(false);
 		progresMonitor = getStatusLineManager().getProgressMonitor();
-		progresMonitor.beginTask("Searching metadata entries ... ",
-				0);
+		progresMonitor.beginTask("Searching metadata entries ... ",	0);
 		QueryFormulator mFormulator = new QueryFormulator();
 		mFormulator.generateDataQuery(conditions);
 		Oyster2Query topicQuery = mFormulator.getTopicQuery();
@@ -1060,14 +1080,8 @@ public class MainWindow extends ApplicationWindow {
 			return;
 		}
 		result = new Result(resultViewer,Resource.DataResource);
-		System.out.println("topicQuey: Me "+topicQuery.getQueryString());
-		System.out.println("typeQuery: Me "+typeQuery.getQueryString());
 		searchManager.startSearch(topicQuery,typeQuery,manualSelected);
-		//System.out.println("perform manualSearch: "+manualSelected);
-		mOyster2.getSearchManager().addListener(result);
-		
-		
-		
+		searchManager.addListener(result);   //mOyster2.getSearchManager().addListener(result);
 	}
 	
 	private void performOntologySearch(){
@@ -1161,3 +1175,29 @@ public class MainWindow extends ApplicationWindow {
 		super.handleShellCloseEvent();
 	}
 }
+
+
+/* ORI1
+
+FormData data1 = new FormData();
+data1.left = new FormAttachment(0, 0);
+data1.right = new FormAttachment(100, 0);
+data1.top = new FormAttachment(0, 0);
+data1.bottom = new FormAttachment(45, -20);
+typePanel.setLayoutData(data1);
+
+FormData data2 = new FormData();
+data2.top = new FormAttachment(typePanel);
+data2.left = new FormAttachment(0, 0);
+data2.right = new FormAttachment(100, 0);
+data2.bottom = new FormAttachment(70,0);
+searchForPanel.setLayoutData(data2);
+
+FormData data3 = new FormData();
+data3.left = new FormAttachment(0, 0);
+data3.right = new FormAttachment(100, 0);
+data3.top = new FormAttachment(searchForPanel);
+data3.bottom = new FormAttachment(100, 0);
+topicsPanel.setLayoutData(data3);
+
+*/

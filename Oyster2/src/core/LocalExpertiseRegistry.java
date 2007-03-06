@@ -40,7 +40,7 @@ public class LocalExpertiseRegistry {
 		private boolean mShutdownFlag = false;
 		private File localRegistryFile;
 		private String localURI;
-		private Oyster2 mOyster2 = Oyster2.sharedInstance();
+		private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 		private Ontology localOntologyRegistry;
 		private KAON2Connection connection;
 		private DefaultOntologyResolver resolver;
@@ -288,19 +288,19 @@ public class LocalExpertiseRegistry {
 		*/
 		/** 
 		 * this methode query the virtual ontology and return the reply to UI viewer.
-		 * @param  virtualOntology
+		 * @param  mOntology
 		 * @param  newQuery
 		 * @return Query Reply directly to UI
 		 */
 		
-		public QueryReply returnQueryReply(Ontology virtualOntology,Oyster2Query newQuery,int resourceType){ 
+		public QueryReply returnQueryReply(Ontology mOntology,Oyster2Query newQuery,int resourceType){ 
 			Collection resourceSet= new ArrayList();
 			GUID queryUID = newQuery.getGUID();
 			
 			Resource replyResource;
 			String queryStr =newQuery.getQueryString();//queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> "hola" }"
 			try{
-				Reasoner reasoner=virtualOntology.createReasoner();
+				Reasoner reasoner=mOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr); 
 				query.open();
 				    
@@ -320,7 +320,7 @@ public class LocalExpertiseRegistry {
 				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
 				return null;	
 			}	
-			QueryReply queryReply = new QueryReply(queryUID,resourceSet,virtualOntology);
+			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
 			return queryReply;			
 		}
 		
@@ -373,6 +373,7 @@ public class LocalExpertiseRegistry {
 			mShutdownFlag = true;
 			save();
 		}
+		
 		public void save()throws Exception{
 		     
         		localOntologyRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
@@ -380,16 +381,16 @@ public class LocalExpertiseRegistry {
 		     
         }
 		
-		
 		public Ontology getLocalOntoRegister(){
 			return this.localOntologyRegistry;
 		}
+		
 		public String getLocalRegistryURI(){
 			return localURI= localOntologyRegistry.getOntologyURI();
 		}
+		
 		public void close()throws Exception{
 		connection.close();
 		}
-
 
 }

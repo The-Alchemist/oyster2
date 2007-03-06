@@ -1,0 +1,17 @@
+#Wed Feb 07 22:58:12 CET 2007
+searchCondition_5=omv\:keywords
+searchCondition_4=omv\:hasOntologyLanguage
+localPeerType=R
+searchCondition_3=omv\:naturalLanguage
+image=file\:///O2serverfiles/oyster.jpg
+searchCondition_2=omv\:isOfType
+typeOntologyRoot=\#Ontology
+searchCondition_1=omv\:name
+topicOntology=O2serverfiles/dmozT.rdf
+bootStrapPeerName=pepito
+peerDescriptionOntology=O2serverfiles/peersExpertiseRegistry.owl
+localPeerName=pepito
+localRegistry=O2serverfiles/localRegistry.owl
+bootStrapPeerIP=192.168.0.8
+topicOntologyRoot=Top
+typeOntology=O2serverfiles/OMV.owl

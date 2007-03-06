@@ -29,7 +29,7 @@ public class OntologyContentProvider implements ITreeContentProvider {
 	}
 	
 	public Object[] getChildren(Object element) {
-		Vector items = new Vector();
+		Vector<OWLEntity> items = new Vector<OWLEntity>();
 		Collection children = new ArrayList();
 		try{
 			if(isTypeOntology){

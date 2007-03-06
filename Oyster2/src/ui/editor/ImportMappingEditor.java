@@ -199,7 +199,7 @@ private Composite createLabelText(Composite parent) {
 		Iterator it = properties.iterator();
 		try{
 		while(it.hasNext()){
-			TableItem item = new TableItem(table, SWT.NONE);;
+			TableItem item = new TableItem(table, SWT.NONE);
 			OntologyProperty op = (OntologyProperty)it.next();
 			/*
 			if ((op.getPropertyName().equalsIgnoreCase(Constants.MappingSource)||(op.getPropertyName().equalsIgnoreCase(Constants.MappingProvider)))){

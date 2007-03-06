@@ -32,7 +32,7 @@ public class SaveEntryAction extends Action implements IRunnableWithProgress{
 	private List resourcesToRemove = new ArrayList();
 	private Thread currentThread;
 	private IProgressMonitor progressMonitor;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 
 	public SaveEntryAction(ApplicationWindow w) {
 		setToolTipText("Save selected bibliographical entries");

@@ -14,7 +14,6 @@ import ui.Result;
 import util.GUID;
 
 public class SearchManager {
-	
 	/**
 	 * The reference to the only instance of this class (Singleton
 	 * pattern). This differs from the C++ standard implementation by Gamma
@@ -33,6 +32,7 @@ public class SearchManager {
 	protected QueryReplyListener replyListener;
 	
 	protected Hashtable mSentQueries = new Hashtable();
+	
 	/**
 	 * Query reply listeners that listen to replies to queries with
 	 * a specific GUID.
@@ -49,7 +49,6 @@ public class SearchManager {
  	*/
 	/*public void notifyReplyListener(QueryReply queryReply){
 		invoked();
-		//System.out.println("notifyReplyListener...");
 		entriesCounter++;
 		
 		for (int i = 0; i < replyListeners.size(); i++) {
@@ -60,6 +59,7 @@ public class SearchManager {
 	public void notifyReplyListener(QueryReply queryReply){
 		((Result)replyListener).newReplyReceived(queryReply);
 	}
+	
 	/**
 	 * notify the queryReplyListener when a set of ontology found for certain peers.
 	 * @param ontologyDocList
@@ -76,10 +76,8 @@ public class SearchManager {
 	}
 	
 	public synchronized void invoked(){
-		notify();
-		
+		notify();	
 	}
-	
 	
 	/**
 	 * add a replyListener to the listener pool.
@@ -94,7 +92,7 @@ public class SearchManager {
 		}
 	}*/
 	public synchronized void addListener(QueryReplyListener listener) {
-		replyListener =listener;
+		replyListener=listener;
 	}
 
 	/**
@@ -104,9 +102,9 @@ public class SearchManager {
 	public void removeReplyListener(QueryReplyListener listener,GUID guid) {
 		if(mListeners.containsKey(guid)){
 			mListeners.remove(guid);
-		}
-		
+		}	
 	}
+	
 	/**
 	 * Clears all results for the provided query.
 	 *
@@ -115,6 +113,7 @@ public class SearchManager {
 	public void clearSearch(Oyster2Query query) {
 		mSentQueries.remove(query.getGUID());
 	}
+	
 	/**
 	 * stop the searching process,clears the listeners pool and queries pool.
 	 * 
@@ -124,6 +123,7 @@ public class SearchManager {
 		mSentQueries.clear();
 		//mKaonP2P.getMainWindow().operationFinished();
 	}
+	
 	/**
 	 * Starts a new search.
 	 *
@@ -135,10 +135,10 @@ public class SearchManager {
 		t.setDaemon(true);
 		t.start();
 	}
+	
 	public void startSearch(Set peerSet){
 		Thread t = new Thread(new Searcher(peerSet));
 		t.setDaemon(true);
-		t.start();
-		
+		t.start();	
 	}
 }

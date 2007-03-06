@@ -1,7 +1,7 @@
 package core;
 
 import java.util.*;
-import oyster2.Oyster2;
+import oyster2.Oyster2Factory;
 import oyster2.Exchange;
 
 import org.semanticweb.kaon2.api.*;
@@ -17,7 +17,7 @@ public class Exchanger implements Runnable{
 	/**
 	 * The KaonP2P facility.
 	 */
-	private Oyster2 mKaon = Oyster2.sharedInstance();
+	private Oyster2Factory mKaon = Oyster2Factory.sharedInstance();
 	
 	/**
 	 * The local Analyzer.

@@ -16,7 +16,7 @@ import util.Resource;
 
 public class OntologyLabelProvider implements ILabelProvider{
 	private TreeViewer viewer; 
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private int resourceType;
 	public OntologyLabelProvider(){
 		super();

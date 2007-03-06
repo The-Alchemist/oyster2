@@ -1,7 +1,7 @@
 package core;
 
 
-import oyster2.Oyster2;
+import oyster2.Oyster2Factory;
 import oyster2.Constants;
 import util.GUID;
 import java.util.*;
@@ -12,21 +12,21 @@ import org.semanticweb.kaon2.api.owl.elements.*;
 //import org.semanticweb.kaon2.api.rules.*; OLD VERSION
 import org.semanticweb.kaon2.api.logic.*;
 import org.semanticweb.kaon2.api.formatting.*;
-import util.Utilities;
+//import util.Utilities;
 
 
-public class AdvertInformer  {
+
+public class AdvertInformer{
 	private final static String omv = Constants.OMVURI;
 	private final static String  versionInfo = Constants.VERSIONINFO;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private String pdURI;
 	private String localURI;
     private File localRegistryFile;
-	private KAON2Connection remoteConnection=KAON2Manager.newConnection();
+	//private KAON2Connection remoteConnection=KAON2Manager.newConnection();
 	private DefaultOntologyResolver resolver=new DefaultOntologyResolver();
 	private Ontology remoteOntologyRegistry = null;
 	private Ontology localOntologyRegistry = null ;
-	
 	
 	public  synchronized Ontology openRemoteRegistry(String remoteHostPort){
     	try{
@@ -694,7 +694,8 @@ public class AdvertInformer  {
     		}
     	}
     	
-    	//THE REST OF ATTRIBUTES IS MISSING TODO
+    	//TODO THE REST OF ATTRIBUTES IS MISSING
+    	//TODO WHAT ATTRIBUTES SHOULD WE TRANSFER (only URI and DOMAIN?)
     	
     	/*if((newPeerIndiv != null)&&(oldPeerIndiv != newPeerIndiv))
     		changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(location,ontologyIndiv,newPeerIndiv),OntologyChangeEvent.ChangeType.ADD));*/
@@ -875,7 +876,7 @@ public class AdvertInformer  {
   					  //Ontology remoteOntologyRegistrytoAdd = null;
   					  //String IP= "";
   					  //IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
-  					//remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
+  					  //remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
   					  //if (remoteOntologyRegistrytoAdd!=null)
   						  addExpertisePeer(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
   					  //else
@@ -986,6 +987,7 @@ public class AdvertInformer  {
 		  versionNo++;
 		  version = Integer.toString(versionNo);
 		  regOntology.addOntologyProperty(versionInfo,version);
+		  System.out.println("Version Number updated to: "+version);
 	  }catch(Exception e){
 		  System.err.println(e+ " updateRegistryVersion() in AdvertInformer.");
 	  }
@@ -1009,6 +1011,6 @@ public class AdvertInformer  {
   
   public void closeConnection()throws Exception{
 	  //localConnection.close();
-	  remoteConnection.close();
+	  //remoteConnection.close();
   }
 }

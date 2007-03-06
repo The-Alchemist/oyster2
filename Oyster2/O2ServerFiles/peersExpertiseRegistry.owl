@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY b 'http://omv.ontoware.org/2005/05/ontology#'>
+    <!ENTITY owl 'http://www.w3.org/2002/07/owl#'>
+    <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema#'>
+]>
+
+<rdf:RDF
+    xml:base="http://localhost/basicRegistry"
+    xmlns:a="http://localhost/basicRegistry#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+<owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://omv.ontoware.org/2005/05/ontology"/>
+    <owl:versionInfo rdf:datatype="&xsd;string">0</owl:versionInfo>
+</owl:Ontology>
+
+<owl:DatatypeProperty rdf:ID="GUID">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&xsd;string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="IPAdress">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&xsd;string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="localPeer">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&xsd;boolean"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:ID="peerType">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&xsd;string"/>
+</owl:DatatypeProperty>
+
+<owl:ObjectProperty rdf:ID="contextOntology">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&b;Ontology"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="mappingProvider">
+    <rdfs:domain rdf:resource="#Mapping"/>
+    <rdfs:range rdf:resource="#Peer"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="mappingSource">
+    <rdfs:domain rdf:resource="#Mapping"/>
+    <rdfs:range rdf:resource="&b;Ontology"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="mappingTarget">
+    <rdfs:domain rdf:resource="#Mapping"/>
+    <rdfs:range rdf:resource="&b;Ontology"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="ontologyLocation">
+    <rdfs:domain rdf:resource="&b;Ontology"/>
+    <rdfs:range rdf:resource="#Peer"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="provideOntology">
+    <rdfs:domain rdf:resource="#Peer"/>
+    <rdfs:range rdf:resource="&b;Ontology"/>
+</owl:ObjectProperty>
+
+<a:Topic rdf:ID="topic1"/>
+
+<owl:Class rdf:ID="Mapping"/>
+
+<owl:Class rdf:ID="Peer"/>
+
+<owl:Class rdf:ID="Topic"/>
+
+<owl:Class rdf:about="&b;Ontology"/>
+
+<owl:Datatype rdf:about="&xsd;boolean"/>
+
+<owl:Datatype rdf:about="&xsd;string"/>
+
+</rdf:RDF>

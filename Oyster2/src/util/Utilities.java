@@ -12,16 +12,18 @@ import oyster2.*;
  *
  * @author Jeen Broekstra
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  **/
 public class Utilities {
 
-	static private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	static private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 //	KAON2 PROBLEM
     public static String getString(Object prop){
     	if (prop!=null)
     		if ((prop.toString().equalsIgnoreCase("\"true\"^^<xsd:boolean>")) ||
-    			(prop.toString().equalsIgnoreCase("\"false\"^^<xsd:boolean>")))
+    			(prop.toString().equalsIgnoreCase("\"false\"^^<xsd:boolean>")) ||
+    			(prop.toString().contains("<xsd:unsignedInt>"))
+    			)
     				return prop.toString();
     		else return prop.toString().substring(1, prop.toString().length()-1);
     	else return null;

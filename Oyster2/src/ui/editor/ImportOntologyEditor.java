@@ -53,7 +53,7 @@ public class ImportOntologyEditor extends Dialog{
 	private Table table;
 	private LinkedList propList = new LinkedList();
 	private EditableSelectionAdapter editableSelectionAdapterOrganization =	new EditableSelectionAdapter(1);
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private Ontology localRegistry = mOyster2.getLocalHostOntology();
 	private KAON2Connection connection = mOyster2.getConnection();
 	private DefaultOntologyResolver resolver = mOyster2.getResolver();
@@ -247,7 +247,7 @@ public class ImportOntologyEditor extends Dialog{
 		Iterator it = properties.iterator();
 		try{
 		while(it.hasNext()){
-			TableItem item = new TableItem(table, SWT.NONE);;
+			TableItem item = new TableItem(table, SWT.NONE);
 			OntologyProperty op = (OntologyProperty)it.next();
 			if ((op.getPropertyName().equalsIgnoreCase(Constants.hasDomain)) || (op.getPropertyName().equalsIgnoreCase(Constants.URI)) 
 					|| (op.getPropertyName().equalsIgnoreCase(Constants.name))){

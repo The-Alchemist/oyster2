@@ -8,7 +8,7 @@ public class Exchange {
 	/**
 	 * The KaonP2P facility.
 	 */
-	private Oyster2 mKaon = Oyster2.sharedInstance();
+	private Oyster2Factory mKaon = Oyster2Factory.sharedInstance();
 	private Oyster2Host localHost = mKaon.getLocalHost();
 	public Exchange(String remoteHost, int exchangeType){
 		this.remoteHost = remoteHost;

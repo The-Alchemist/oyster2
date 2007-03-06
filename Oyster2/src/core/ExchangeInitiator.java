@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import oyster2.Oyster2;
+import oyster2.Oyster2Factory;
 
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.*;
@@ -30,7 +30,7 @@ public class ExchangeInitiator implements Runnable{
 	/**
 	 * The Oyster2 facility.
 	 */
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	
 	/**
 	 * The local Analyzer.

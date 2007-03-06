@@ -36,7 +36,7 @@ public abstract class Host {
 	/**
 	 * The PGrid facility.
 	 */
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private PreferenceStore store = mOyster2.getPreferenceStore();
 
 	/**

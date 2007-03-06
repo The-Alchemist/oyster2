@@ -15,7 +15,7 @@ public  class EntryDetailSerializer {
 
 	protected static final String BIBTEX_ORDER_PROPERTY_PREFIX = "BIBTEX_PROPERTY_ORDER_";
 	private static final EntryDetailSerializer instance = new EntryDetailSerializer();
-	private Oyster2 mKaonP2P = Oyster2.sharedInstance();
+	private Oyster2Factory mKaonP2P = Oyster2Factory.sharedInstance();
 	public static final char QUOTE = '"';
 	public static final char QUOTE_PARENTHESIS_OPEN = '{';
 	public static final char QUOTE_PARENTHESIS_CLOSE = '}';
