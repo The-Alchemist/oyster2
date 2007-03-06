@@ -50,7 +50,7 @@ public class Searcher implements Runnable {
 	/**
 	 * The KaonP2P facility.
 	 */
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	
 	/**
 	 * The local Expertise Registry.
@@ -86,9 +86,6 @@ public class Searcher implements Runnable {
 		Constants.initChildLogger(LOGGER, formatter, LOG_FILE);*/
 	}
 
-	
-	
-
 	/**
 	 * Creates a new Searcher for a received search request.
 	 *
@@ -108,8 +105,7 @@ public class Searcher implements Runnable {
 	 */
 	public Searcher(Set peerSet){
 		this.peerSet = peerSet;
-		this.normalSearchFlag = false;
-		
+		this.normalSearchFlag = false;	
 	}
 	
 	/**
@@ -118,7 +114,7 @@ public class Searcher implements Runnable {
 	 * @param queryReply the query hit.
 	 */
 	private void returnResult(QueryReply queryReply) {
-             mOyster2.getSearchManager().notifyReplyListener(queryReply);
+       mOyster2.getSearchManager().notifyReplyListener(queryReply);
 	}
 	/**
 	 * return the found ontology Set to QueryReplyListener in SearchManager.

@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import oyster2.Constants;
-import oyster2.Oyster2;
+import oyster2.Oyster2Factory;
 import oyster2.OntologyProperty;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -43,7 +43,7 @@ import util.Utilities;
 public class ImportMappingOntology extends Action implements IRunnableWithProgress{
 	private String filterPath = "C:/GuoRui/kaonserver";
 	private String filename;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private String defURI = mOyster2.getPeerDescOntologyURI();
 	private Ontology localRegistry = mOyster2.getLocalHostOntology();
 	private KAON2Connection connection = mOyster2.getConnection();

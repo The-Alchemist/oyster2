@@ -19,7 +19,7 @@ import ui.ConditionPreferencePage;
 
 
 public class Start {
-	static Oyster2 mOyster2 = Oyster2.sharedInstance();
+	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private static PreferenceStore store = mOyster2.getPreferenceStore();
 	public static Process serverProcess = null;
 
@@ -32,6 +32,7 @@ public class Start {
 		//List :)
         configureProperties();
 		mOyster2.init(null);
+		mOyster2.run();
 		shutdown();
     }
 	

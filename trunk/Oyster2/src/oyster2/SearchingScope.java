@@ -14,7 +14,7 @@ import util.GUID;
 public class SearchingScope implements Serializable {
 	 
 	  static final long serialVersionUID = -14399419759829923L;
-	  private static Oyster2 mOyster2 = Oyster2.sharedInstance();
+	  private static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	  private Type type;
 	  private Set selectedPeerIds = new HashSet();
 
@@ -23,18 +23,18 @@ public class SearchingScope implements Serializable {
 	    scope.selectedPeerIds.add(mOyster2.getLocalHost().getGUID());
 	    return scope;
 	  }
+	  
 	  public static SearchingScope auto() {
 	    return new SearchingScope(Type.AUTO);
 	  }
 	  
-	  
 	  private SearchingScope(Type type) {
 	    this.type = type;
 	  }
+	  
 	  public Type getType() {
 	    return type;
 	  }
-	  
 	  
 	  public static class Type implements Serializable {
 
@@ -77,6 +77,6 @@ public class SearchingScope implements Serializable {
 	      throw new ObjectStreamException(SearchingScope.Type.class.getName()) {};
 	    }
 	  }
-	  
+
 	}
 

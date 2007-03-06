@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE owlx:Ontology>
+
+<owlx:Ontology owlx:name="http://kaon2.semanticweb.org/example1"
+    xml:base="http://kaon2.semanticweb.org/example1"
+    xmlns:owlx="http://www.w3.org/2003/05/owl-xml#">
+<owlx:Imports owlx:ontology="http://kaon2.semanticweb.org/example1-inc"/>
+
+<owlx:Class owlx:name="#dip-deliverable" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#person" owlx:complete="false">
+    <owlx:Annotation>
+        <owlx:Label>This class represents a person.</owlx:Label>
+    </owlx:Annotation>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal164" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal270" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal380" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal6" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal701" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal728" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal743" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal751" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal793" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal81" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#project-proposal817" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:Class owlx:name="#technical-report" owlx:complete="false">
+    <owlx:Class owlx:name="#document"/>
+</owlx:Class>
+
+<owlx:ObjectProperty owlx:name="#is-author">
+    <owlx:domain owlx:class="#person"/>
+    <owlx:range owlx:class="#document"/>
+</owlx:ObjectProperty>
+
+</owlx:Ontology>

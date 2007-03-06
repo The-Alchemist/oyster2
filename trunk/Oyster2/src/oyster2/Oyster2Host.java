@@ -67,7 +67,7 @@ public class Oyster2Host extends Host{
 	/**
 	 * The PGrid facility.
 	 */
-	private Oyster2 mKaonP2P= Oyster2.sharedInstance();
+	private Oyster2Factory mKaonP2P= Oyster2Factory.sharedInstance();
 
 	/**
 	 * Creates a new host.

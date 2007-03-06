@@ -23,7 +23,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
 	private Collection children = new ArrayList();
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	//private Ontology ontology = mInformer.getLocalRegistry();
 	private Ontology ontology = mOyster2.getLocalHostOntology();

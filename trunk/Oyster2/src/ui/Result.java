@@ -19,14 +19,15 @@ import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
 public class Result implements QueryReplyListener{
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private TreeViewer viewer;
 	private ResultViewer resultViewer;
-	private static String OMV = "http://omv.ontoware.org/2005/05/ontology#";
 	private List entries = new ArrayList();
-	//private Map resourceMap =new HashMap();
 	private ResultViewerContentProvider contentProvider;
 	String  columnContent[];
+	//private static String OMV = "http://omv.ontoware.org/2005/05/ontology#";
+	//private Map resourceMap =new HashMap();
+	
 	public Result(ResultViewer resultViewer,int resourceType){
 		this.resultViewer =resultViewer;
 		this.viewer = resultViewer.getWrapedViewer();
@@ -42,9 +43,11 @@ public class Result implements QueryReplyListener{
 		viewer.expandToLevel(2);
 		//viewer.setInput(resourceMap);
 	}
+	
 	public TreeViewer getViewer(){
 		return viewer;
 	}
+	
 	/**
 	 * invoked when a new query reply received.
 	 */
@@ -54,7 +57,7 @@ public class Result implements QueryReplyListener{
 		int type = reply.getType();
 		if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
 			Iterator it = reply.getResourceSet().iterator();
-			  while(it.hasNext()){
+			while(it.hasNext()){
 				final Resource  entry =(Resource) it.next();
 				//System.out.println("reply:"+entry.getEntity().getURI());
 				entries.add(entry.getEntity());
@@ -65,8 +68,6 @@ public class Result implements QueryReplyListener{
 					}
 				});
 			}
-			  entries.clear();
-			  mOyster2.getMainWindow().operationFinished();
 		}else if((type==QueryReply.TYPE_BAD_REQUEST)||(type==QueryReply.TYPE_INIT)||(reply.getResourceSet().size()<=0)){
 			final String msg= "<no relevant resource found>";
 			entries.add((String)msg);
@@ -75,9 +76,8 @@ public class Result implements QueryReplyListener{
 					viewer.add(entries, msg);
 				}
 			});	
-			mOyster2.getMainWindow().operationFinished();
 		}
-		//mKaonP2P.getMainWindow().operationFinished();
+		mOyster2.getMainWindow().operationFinished();
 		entries.clear();
 	}
 	
@@ -94,7 +94,6 @@ public class Result implements QueryReplyListener{
 						viewer.add(entries, docIndiv);
 					}
 				});
-			
 			}else if(entry instanceof Ontology){
 				System.out.println("entry instanceof Ontology");
 				final Ontology ontologyEntry = (Ontology)entry;
@@ -104,26 +103,22 @@ public class Result implements QueryReplyListener{
 					viewer.add(entries, ontologyEntry);
 				}
 				});
-				
-			}
-			
+			}			
 		}
 		}
 		entries.clear();
-		
 	}
+	
 	public void entryReceived(final Ontology virtualOntology){
-		
-			entries.add(virtualOntology);
-			viewer.getControl().getDisplay().syncExec(new Runnable(){
+		entries.add(virtualOntology);
+		viewer.getControl().getDisplay().syncExec(new Runnable(){
 			public void run(){
 				viewer.add(entries, virtualOntology);
 			}
 		});
-		
-		entries.clear();
-		
+		entries.clear();	
 	}
+	
 	/**
 	 * @return number of received entries.
 	 */
@@ -132,11 +127,10 @@ public class Result implements QueryReplyListener{
 	}
 	
 	/**
-	 * @return final list of all collected bibliographical entries.
+	 * @return final list of all collected entries.
 	 * Returned list contains objects of type <code>Entry<code>. 
 	 */
 	public final List getAllEntries(){
 		return entries;
 	}
-	
 }

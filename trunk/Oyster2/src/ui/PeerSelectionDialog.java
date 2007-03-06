@@ -37,7 +37,7 @@ public class PeerSelectionDialog implements IStructuredContentProvider, ILabelPr
 	private CheckboxTableViewer listViewer;
 	private DialogUI dialogUI;
 	private boolean showAllPeers;
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	private List peersInput = mInformer.getPeerList(mOyster2.getLocalHostOntology());
 

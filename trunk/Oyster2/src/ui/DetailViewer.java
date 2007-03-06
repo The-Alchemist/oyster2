@@ -39,7 +39,7 @@ public class DetailViewer extends Composite{
 	private Cursor handCursor = new Cursor(this.getShell().getDisplay(), SWT.CURSOR_HAND);
 	private ArrayList links = new ArrayList();
 	private ArrayList linkSelectionListeners = new ArrayList();
-	private Oyster2 mOyster2 = Oyster2.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	
 	/**
 	 * @param parent

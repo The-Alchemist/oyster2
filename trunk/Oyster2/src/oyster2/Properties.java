@@ -1,7 +1,7 @@
 package oyster2;
 
 /**
- * $Id: Properties.java,v 1.1 2006-10-30 12:50:38 rpa Exp $
+ * $Id: Properties.java,v 1.2 2007-03-06 01:28:30 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -139,7 +139,7 @@ public class Properties {
 	/**
 	 * The Oyster2 facility.
 	 */
-	private Oyster2 mOyster2 = null;
+	private Oyster2Factory mOyster2 = null;
 
 	/**
 	 * The properties.
@@ -188,7 +188,7 @@ public class Properties {
 	 * @param file the property file.
 	 */
 	synchronized private void _init(String file) {
-		mOyster2 = Oyster2.sharedInstance();
+		mOyster2 = Oyster2Factory.sharedInstance();
 		mFile = new File(file);
 		try {
 			if (!mFile.exists()) {

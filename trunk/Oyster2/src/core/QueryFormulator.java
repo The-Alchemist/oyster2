@@ -33,7 +33,7 @@ public class QueryFormulator {
 		this.queryUID = new GUID();
 	}
 	public void generateDataQuery(LinkedList conditions) {
-		if(conditions.size()<=0){badRequest= true;return;}
+		//if(conditions.size()<=0){badRequest= true;return;}
 		typeClause = "";
 		for (int i = 0; i < conditions.size(); i++) {
 			Condition condition =(Condition) conditions.get(i);
@@ -43,13 +43,13 @@ public class QueryFormulator {
 				addTypeCondition(condition);
 		    else if (condition.getPred() != null && condition.getPred().equals(Condition.TOPIC_CONDITION))
 		    	addTopicCondition(condition);
-			else addLiteralCondition(condition); 
+			else addLiteralCondition(condition);  //RESOURSE_TYPE IS RESOLVED LATER 
 			
 		}
 		if(badRequest)return;
 		//queryBuffer.append(addSWRCPrefix());
-		//if (subjectClause!=""){
-		if (subjectClause=="I DONT NEED THIS TOPIC QUERY ANYMORE I PUT IT AS PART OF TYPEQUERY"){
+		
+		if (subjectClause=="I DONT NEED THIS TOPIC QUERY ANYMORE I PUT IT AS PART OF TYPEQUERY"){  //if (subjectClause!=""){
 			queryBuffer.append("SELECT ?x");
 			queryBuffer.append(" WHERE "+subjectClause);
 			queryBuffer.append("}");
@@ -73,8 +73,6 @@ public class QueryFormulator {
 			queryBuffer.append(domainClause);
 		}
 		queryBuffer.append("}");
-		
-		System.out.println("data type query is: "+queryBuffer.toString());
 		generateTypeQuery(queryBuffer); 
 	}
 	
@@ -158,13 +156,13 @@ public class QueryFormulator {
 		return this.typeQuery;
 	}
 	private void generateTopicQuery(StringBuffer queryBuffer){
-		
 		Oyster2Query query = new Oyster2Query(queryUID,Oyster2Query.TOPIC_QUERY,queryBuffer.toString());
 		this.topicQuery = query;
 		int bufferLength = queryBuffer.length();
 		queryBuffer.delete(0,bufferLength);
 		System.out.println("topicQuery: "+topicQuery.getQueryString());
 	}
+	
 	private void generateTypeQuery(StringBuffer queryBuffer){
 		Oyster2Query query = new Oyster2Query(queryUID,Oyster2Query.TYPE_QUERY,queryBuffer.toString());
 		this.typeQuery = query;
