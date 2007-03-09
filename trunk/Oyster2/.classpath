@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.equinox.registry_3.2.0.v20060601.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/workbench.jar"/>
-	<classpathentry kind="lib" path="lib/kaon2.jar"/>
+	<classpathentry kind="lib" path="E:/Eclipse32WTPworkspace/Oyster2/lib/kaon2.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

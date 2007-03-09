@@ -230,17 +230,17 @@ public class Oyster2Factory {
 			//1//			
 			if ((store.getString(Constants.PDOntology) != null)
 					&& (store.getString(Constants.PDOntology).length() > 0))
-				peerDescOntologyURI = resolver.registerOntology("file:///"
+				peerDescOntologyURI = resolver.registerOntology("file:"
 						+ serializeFileName(store
 								.getString(Constants.PDOntology)));
 			if ((store.getString(Constants.TypeOntology) != null)
 					&& (store.getString(Constants.TypeOntology).length() > 0))
-				typeOntologyURI = resolver.registerOntology("file:///"
+				typeOntologyURI = resolver.registerOntology("file:"
 						+ serializeFileName(store
 								.getString(Constants.TypeOntology)));
 			if ((store.getString(Constants.TopicOntology) != null)
 					&& (store.getString(Constants.TopicOntology).length() > 0))
-				topicOntologyURI = resolver.registerOntology("file:///"
+				topicOntologyURI = resolver.registerOntology("file:"
 						+ serializeFileName(store
 								.getString(Constants.TopicOntology)));
 			this.localRegistryFile = new File(serializeFileName(store

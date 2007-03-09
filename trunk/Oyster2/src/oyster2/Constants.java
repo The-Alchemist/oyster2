@@ -13,7 +13,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.3 $".replace('$', ' ').trim() + " (" + "$Date: 2007-03-06 01:28:31 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.4 $".replace('$', ' ').trim() + " (" + "$Date: 2007-03-09 17:24:12 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -106,6 +106,8 @@ public class Constants {
 	public static final String ontologyLocation="ontologyLocation";
 	public static final String provideOntology="provideOntology";
 	
+	
+	public static final String timeStamp="timeStamp";
 	/*RDFS Parameters
 	 * 
 	 */
@@ -138,7 +140,8 @@ public class Constants {
 	public static final String DefaultPDOntology = "O2serverfiles/peersExpertiseRegistry.owl";
 	public static final String DefaultTypeOntology = "O2serverfiles/OMV.owl";
 	public static final String DefaultTopicOntology = "O2serverfiles/dmozT.rdf";
-	public static final String DefaultImage = "file:///O2serverfiles/oyster.jpg";
+	//public static final String DefaultImage = "file:///O2serverfiles/oyster.jpg";
+	public static final String DefaultImage = "file:O2serverfiles/oyster.jpg";
 	public static final String DefaultTypeOntologyRoot = "#Ontology";
 	public static final String DefaultTopicOntologyRoot = "Top";
 	public static final String DefaultSearchCondition_1 = "omv:name";
