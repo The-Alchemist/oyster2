@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.text.DateFormat;
+import java.util.Locale;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
@@ -210,7 +212,25 @@ public class Oyster2Connection {
 	
 	public Set<OMVOntology> search(Date fromDate)
 	{ 
-		return null;
+		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US);
+		//String fromFomat = format.format(fromDate);
+		Set<OMVOntology> OMVSetFiltered = new HashSet<OMVOntology>();
+		Set<OMVOntology> OMVSet = search();
+		Iterator it = OMVSet.iterator();
+		try{
+			while(it.hasNext()){
+				OMVOntology omv = (OMVOntology)it.next();
+				Date d = format.parse(omv.getTimeStamp());
+				if (d.after(fromDate)){
+					OMVSetFiltered.add(omv);
+				}
+			}
+		
+		}catch(Exception ignore){
+		//-- ignore
+		}
+		return OMVSetFiltered;
+
 	}
 	
 	/**
@@ -247,6 +267,10 @@ public class Oyster2Connection {
 			while(ontology.hasNext()){
 				Individual ontologyIndiv =(Individual) ontology.next();
 				processIndividual(ontologyIndiv, "ontology");
+				if (mainOntoReply==null) { //TEST IT
+					mainOntoReply = new OMVOntology();
+					mainOntoReply.setURI(ontologyIndiv.getURI());
+				}
 				if (mainOntoReply!=null){
 					OMVSet.add(mainOntoReply);
 					mainOntoReply=null;
@@ -340,7 +364,7 @@ public class Oyster2Connection {
 				else if (whichClass.equalsIgnoreCase("person")) createOMVPerson(property.getURI(),propertyValue);
 				else if (whichClass.equalsIgnoreCase("organisation")) createOMVOrganisation(property.getURI(),propertyValue);
 				
-				System.out.println("The property "+property.getURI()+" has value: "+propertyValue);
+				//System.out.println("The property "+property.getURI()+" has value: "+propertyValue);
 			}
 			keySet = objectPropertyMap.keySet();
 			Iterator okeys = keySet.iterator();
@@ -371,7 +395,7 @@ public class Oyster2Connection {
 					else if (whichClass.equalsIgnoreCase("person")) createOMVPerson(property.getURI(),propertyValue.getURI());
 					else if (whichClass.equalsIgnoreCase("organisation")) createOMVOrganisation(property.getURI(),propertyValue.getURI());
 					
-					System.out.println("The property "+property.getURI()+" has value: "+propertyValue);	
+					//System.out.println("The property "+property.getURI()+" has value: "+propertyValue);	
 				}	
 			}
 		}
@@ -547,6 +571,7 @@ public class Oyster2Connection {
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.numProperties)) {mainOntoReply.setNumProperties(new Integer(value.substring(1, value.indexOf("\"", 2))));return;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.numIndividuals)) {mainOntoReply.setNumIndividuals(new Integer(value.substring(1, value.indexOf("\"", 2))));return;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.numAxioms)) {mainOntoReply.setNumAxioms(new Integer(value.substring(1, value.indexOf("\"", 2))));return;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.timeStamp)) {mainOntoReply.setTimeStamp(value);return;}
 	  }catch(Exception e){
 			System.out.println(e.toString()+" Search Problem in createOMVOntology");
 	  }	
@@ -1361,7 +1386,7 @@ public class Oyster2Connection {
 						
 					if (whichClass.equalsIgnoreCase("peer")) createOMVPeer(property.getURI(),propertyValue);
 					
-					System.out.println("The property "+property.getURI()+" has value: "+propertyValue);
+					//System.out.println("The property "+property.getURI()+" has value: "+propertyValue);
 				}
 				keySet = objectPropertyMap.keySet();
 				Iterator okeys = keySet.iterator();
@@ -1377,7 +1402,7 @@ public class Oyster2Connection {
 							
 						if (whichClass.equalsIgnoreCase("peer")) createOMVPeer(property.getURI(),propertyValue.getURI());
 						
-						System.out.println("The property "+property.getURI()+" has value: "+propertyValue);	
+						//System.out.println("The property "+property.getURI()+" has value: "+propertyValue);	
 					}	
 				}
 			}

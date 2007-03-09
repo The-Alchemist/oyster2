@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
 import api.OMVOntology;
 import api.OMVOntologyDomain;
 import api.OMVPeer;
 import api.Oyster2Manager;
 import api.Oyster2Connection;
+
 
 
 public class Test {
@@ -31,7 +34,7 @@ public class Test {
 		conditions.addHasDomain(topic);
 		
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection();
-		oyster2Conn.importOntology("F:\\wine.rdf");
+		oyster2Conn.importOntology("E:\\wine.rdf");
 		
 		oyster2Conn.replace(conditions);
 		Set<OMVOntology> OMVSet = oyster2Conn.search();
@@ -49,13 +52,23 @@ public class Test {
 		try{
 			while(itKey.hasNext()){
 				expertise = oyster2Conn.getPeerExpertise((String)itKey.next(), (OMVPeer)it.next());
-				String OMVSerial = Oyster2Manager.serializeOMV(OMVSet);
+				String OMVSerial = Oyster2Manager.serializeOMV(expertise);
 				System.out.println("The Expertise: ");
 				System.out.println(OMVSerial);
 			}
 		}catch(Exception e){
 			System.out.println(e.toString()+" Search Problem in getpeerExpertise");
 		}
+		
+		GregorianCalendar first = new GregorianCalendar(2007, Calendar.APRIL, 1);    
+	    Date d = first.getTime();
+	    System.out.println("hora: "+d.toString());
+		
+	    Set<OMVOntology> OMVSet1 = oyster2Conn.search(d);
+		String OMVSetSerial1 = Oyster2Manager.serializeOMV(OMVSet1);
+		System.out.println("The search by date: ");
+		System.out.println(OMVSetSerial1);
+		
 		Oyster2Manager.closeConnection();
 		shutdown();
     }

@@ -44,6 +44,7 @@ public class OMVOntology {
 	private Integer numProperties;
 	private Integer numIndividuals;
 	private Integer numAxioms;
+	private String timeStamp;
 	
 	public OMVOntology()
 	    {
@@ -423,4 +424,15 @@ public class OMVOntology {
 	{
 		return this.numAxioms;
 	}
+	
+	public void setTimeStamp(String newTimeStamp)
+	{
+		this.timeStamp=newTimeStamp;
+	}
+	
+	public String getTimeStamp()
+	{
+		return this.timeStamp;
+	}
+	
 }

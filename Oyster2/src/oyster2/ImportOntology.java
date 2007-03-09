@@ -8,6 +8,9 @@ import java.util.*;
 //import ui.*;
 //import ui.editor.*;
 import util.*;
+import java.text.DateFormat;
+import java.util.Locale;
+
 //import oyster2.*;
 //import util.Utilities;
 
@@ -24,12 +27,13 @@ import util.*;
 //import org.eclipse.swt.widgets.FileDialog;
 //import org.eclipse.swt.widgets.Shell;
 
+//import org.semanticweb.kaon2.api.owl.axioms.*;
 import org.semanticweb.kaon2.api.*;
 //import org.semanticweb.kaon2.api.formatting.OntologyFormatting;
 import org.semanticweb.kaon2.api.owl.elements.*;
 //import org.semanticweb.kaon2.api.OntologyFileFormat; //OLD VERSION
 import org.semanticweb.kaon2.api.formatting.*; 
-import org.semanticweb.kaon2.api.owl.axioms.*;
+
 
 
 
@@ -326,6 +330,17 @@ public class ImportOntology {
 				}
 			}
 			else changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(ontologyConcept,ontologyIndividual),OntologyChangeEvent.ChangeType.ADD));
+			
+			//TIMESTAMP
+			DataProperty oProperty = KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.timeStamp);
+			Date now = new Date();
+			String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+			System.out.println("us format: "+sNow);
+			
+			String preValue = util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,oProperty)); //(String)
+			if(preValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(oProperty,ontologyIndividual,KAON2Manager.factory().constant(preValue)),OntologyChangeEvent.ChangeType.REMOVE));
+			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(oProperty,ontologyIndividual,KAON2Manager.factory().constant(sNow)),OntologyChangeEvent.ChangeType.ADD));		    
+			//END TIMESTAMP
 			
 			Ontology resourceTypeOntology = mOyster2.getTypeOntology();
 			Iterator it2 = propList.iterator();
