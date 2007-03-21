@@ -56,13 +56,13 @@ public class ExchangeInitiator implements Runnable{
 		try{
 			Collection peers = peerSet.values();
 			Iterator it = peers.iterator(); 
-			System.out.println("remote rendezvousPeers size: "+peers.size());
+			//System.out.println("remote rendezvousPeers size: "+peers.size());
 			while(it.hasNext()){
 				String IP = it.next().toString();
 				System.out.println("rendezvous peers IP: "+IP);
 				remoteRegistry = localInformer.openRemoteRegistry(IP);
 				if (remoteRegistry!=null){
-					System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
+					//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
 					localInformer.informerIP(remoteRegistry,localRegistry);
 					localInformer.updateRegistry(remoteRegistry,localRegistry);
 				}
@@ -79,7 +79,8 @@ public class ExchangeInitiator implements Runnable{
 		long lastTime = System.currentTimeMillis();
 		while(true){
 			exchange();
-
+			if (mShutdownFlag)
+				return;
 			this.sleep(120000);
 
 		}
@@ -95,10 +96,10 @@ public class ExchangeInitiator implements Runnable{
 				Individual peerIndiv = (Individual)it.next(); 
 				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry)){
 					IP = localInformer.getPeerIP(localRegistry,peerIndiv);
-					System.out.println("exchange with peer: "+IP);
+					//System.out.println("exchange with peer: "+IP);
 					remoteRegistry = localInformer.openRemoteRegistry(IP);
 					if (remoteRegistry!=null){
-						System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
+						//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
 						localInformer.updateRegistry(remoteRegistry,localRegistry);
 					}
 					else{
@@ -161,7 +162,7 @@ public class ExchangeInitiator implements Runnable{
 				return;
 			
 			randomExchange();
-			System.out.println("exchangeInitiator finished.");
+			//System.out.println("exchangeInitiator finished.");
 			expertiseExchange();
 			
 			

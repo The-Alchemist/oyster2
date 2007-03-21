@@ -1,8 +1,10 @@
 package api;
 
+//import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
-import java.io.*;
+import api.Oyster2Manager;
+
 
 /**
  * The class OMVOntology provides the object representation
@@ -50,10 +52,16 @@ public class OMVOntology {
 	    {
 	    }
 	 	
-	public static File getRDFOMV()
-	 	{
-		 return new File("OMVInstance.rdf"); 
-	 	}
+	/**
+	 * Generates an RDF File representing this OMVOntology object.
+	 * @param filename is the name of the file that will be
+	 * generated.
+	 */
+	public void generateOMV2RDFFile(String filename)
+	{
+		if (this.getURI()!=null && this.getName()!=null)
+			Oyster2Manager.OMV2RDF(this,filename);
+	}
 
 	public void setURI(String newURI)
 	{

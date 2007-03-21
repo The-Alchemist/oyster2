@@ -154,7 +154,7 @@ public class Oyster2Connection {
 		QueryReply qReply =null;
 		LinkedList conditions = new LinkedList();
 	
-		conditions = getConditions(o);
+		conditions = getConditions(o,"");
 		QueryFormulator mFormulator = new QueryFormulator();
 		mFormulator.generateDataQuery(conditions);
 		Oyster2Query typeQuery = mFormulator.getTypeQuery();
@@ -267,12 +267,13 @@ public class Oyster2Connection {
 			while(ontology.hasNext()){
 				Individual ontologyIndiv =(Individual) ontology.next();
 				processIndividual(ontologyIndiv, "ontology");
-				if (mainOntoReply==null) { //TEST IT
+				/*if (mainOntoReply==null) { //TEST IT
 					mainOntoReply = new OMVOntology();
 					mainOntoReply.setURI(ontologyIndiv.getURI());
-				}
+				}*/
 				if (mainOntoReply!=null){
-					OMVSet.add(mainOntoReply);
+					if (mainOntoReply.getName()!=null && mainOntoReply.getURI()!=null)
+						OMVSet.add(mainOntoReply);
 					mainOntoReply=null;
 				}
 			}
@@ -304,10 +305,11 @@ public class Oyster2Connection {
 			Iterator it = entrySet.iterator();
 			while(it.hasNext()){
 				final Resource  entry =(Resource) it.next();
-				final Individual oIndividual = (Individual)entry.getEntity();	
+				final Individual oIndividual = (Individual)entry.getEntity();
 				processIndividual(oIndividual, "ontology");
 				if (mainOntoReply!=null){
-					OMVSet.add(mainOntoReply);
+					if (mainOntoReply.getName()!=null && mainOntoReply.getURI()!=null)
+						OMVSet.add(mainOntoReply);
 					mainOntoReply=null;
 				}
 			}
@@ -416,34 +418,50 @@ public class Oyster2Connection {
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.modificationDate)) {mainOntoReply.setModificationDate(value);return;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.hasContributor)) {
 			Individual oIndividual =KAON2Manager.factory().individual(value);
+			processIndividual(oIndividual, "party");
 			processIndividual(oIndividual, "person");
 			if (personReply!=null){
+				if (partyReply!=null) {
+					copyParty2Person();
+				}
 				mainOntoReply.addHasContributor(personReply);
 				personReply = null;
 			}
 			else{
 				processIndividual(oIndividual, "organisation");
 				if (organisationReply!=null){
+					if (partyReply!=null) {
+						copyParty2Organisation();
+					}
 					mainOntoReply.addHasContributor(organisationReply);
 					organisationReply = null;
 				}
 			}
+			partyReply=null;
 			return;
 		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.hasCreator)) {
 			Individual oIndividual =KAON2Manager.factory().individual(value);
+			processIndividual(oIndividual, "party");
 			processIndividual(oIndividual, "person");
 			if (personReply!=null){
+				if (partyReply!=null) {
+					copyParty2Person();
+				}
 				mainOntoReply.addHasCreator(personReply);
 				personReply = null;
 			}
 			else{
 				processIndividual(oIndividual, "organisation");
 				if (organisationReply!=null){
+					if (partyReply!=null) {
+						copyParty2Organisation();
+					}
 					mainOntoReply.addHasCreator(organisationReply);
 					organisationReply = null;
 				}
 			}
+			partyReply=null;
 			return;
 		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.usedOntologyEngineeringTool)) {
@@ -785,10 +803,6 @@ public class Oyster2Connection {
 	}
 	
 	private void createOMVPerson(String URI, String value){
-		Individual oIndividual =KAON2Manager.factory().individual(value);
-		processIndividual(oIndividual, "party");
-		personReply=(OMVPerson) partyReply;
-		partyReply = null;
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.lastName)) personReply.setLastName(value);
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.firstName)) personReply.setFirstName(value);
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.eMail)) personReply.setEMail(value);
@@ -803,10 +817,6 @@ public class Oyster2Connection {
 	}
 	
 	private void createOMVOrganisation(String URI, String value){
-		Individual oIndividual =KAON2Manager.factory().individual(value);
-		processIndividual(oIndividual, "party");
-		organisationReply=(OMVOrganisation) partyReply;
-		partyReply = null;
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.name)) organisationReply.setName(value);
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.acronym)) organisationReply.setAcronym(value);
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.hasContactPerson)) {
@@ -982,64 +992,558 @@ public class Oyster2Connection {
 				System.out.println(e.toString()+" Search Problem in creteOMVOntologyReferences");
 		  }	
 	}
-
-	private LinkedList getConditions (OMVOntology o){
+	
+	private LinkedList<Condition> getPersonConditions (OMVPerson o, String which){
 		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
-		if (o.getURI()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), checkDataProperty(Constants.URI));
+		if (o.getFirstName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.firstName, o.getFirstName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.firstName, o.getFirstName(), which); 
 			searchConditions.addFirst(condition);
 		}
+		if (o.getLastName()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.lastName, o.getLastName(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.lastName, o.getLastName(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getEMail()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), checkDataProperty(Constants.eMail));
+			else condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getPhoneNumber()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), checkDataProperty(Constants.phoneNumber));
+			else condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getFaxNumber()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), checkDataProperty(Constants.faxNumber));
+			else condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getIsContactPerson().size()>0) {
+			Iterator it = o.getIsContactPerson().iterator();
+			while(it.hasNext()){
+				OMVOrganisation org = (OMVOrganisation)it.next();
+				LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.isContactPerson);
+				searchConditions.addAll(conditionTemp);
+			}
+		}
+		
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOrganisationConditions (OMVOrganisation o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
 		if (o.getName()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.name));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
 			searchConditions.addFirst(condition);
 		}
 		if (o.getAcronym()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.acronym));
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getHasContactPerson().size()>0) {
+			Iterator it = o.getHasContactPerson().iterator();
+			while(it.hasNext()){
+				OMVPerson per = (OMVPerson)it.next();
+				LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.hasContactPerson);
+				searchConditions.addAll(conditionTemp);
+			}
+		}
+		
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOETConditions (OMVOntologyEngineeringTool o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getDescription()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
 			searchConditions.addFirst(condition);
 		}
 		if (o.getDocumentation()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDevelopedBy().size()>0) {
+			Iterator it = o.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}	
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getKRPConditions (OMVKnowledgeRepresentationParadigm o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getSpecifiedBy().size()>0) {
+			Iterator it = o.getSpecifiedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.specifiedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.specifiedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}	
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOEMConditions (OMVOntologyEngineeringMethodology o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDevelopedBy().size()>0) {
+			Iterator it = o.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}	
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOTConditions (OMVOntologyType o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDefinedBy().size()>0) {
+			Iterator it = o.getDefinedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.definedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.definedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}	
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOLConditions (OMVOntologyLanguage o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDevelopedBy().size()>0) {
+			Iterator it = o.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}
+		if (o.getSupportsRepresentationParadigm().size()>0) {
+			Iterator it = o.getSupportsRepresentationParadigm().iterator();
+			while(it.hasNext()){
+				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				LinkedList<Condition> conditionTemp=getKRPConditions(krp,Constants.omvCondition+Constants.supportsRepresentationParadigm);
+				searchConditions.addAll(conditionTemp);
+			}
+		}
+		if (o.getHasSyntax().size()>0) {
+			Iterator it = o.getHasSyntax().iterator();
+			while(it.hasNext()){
+				OMVOntologySyntax osy = (OMVOntologySyntax)it.next();
+				LinkedList<Condition> conditionTemp=getOSConditions(osy,Constants.omvCondition+Constants.hasSyntax);
+				searchConditions.addAll(conditionTemp);
+			}
+		}
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOSConditions (OMVOntologySyntax o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDevelopedBy().size()>0) {
+			Iterator it = o.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.developedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}
+		
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getLMConditions (OMVLicenseModel o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getSpecifiedBy().size()>0) {
+			Iterator it = o.getSpecifiedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.specifiedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.specifiedBy);
+					searchConditions.addAll(conditionTemp);
+				}
+			}
+		}
+		
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getFLConditions (OMVFormalityLevel o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getOTAConditions (OMVOntologyTask o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
+			searchConditions.addFirst(condition);
+		}
+		return searchConditions;
+	}
+	
+	private LinkedList<Condition> getODConditions (OMVOntologyDomain o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getURI()!=null) {
+			Condition condition;	
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which);
+			searchConditions.addFirst(condition);
+		}
+		return searchConditions;
+	}
+
+	private LinkedList<Condition> getConditions (OMVOntology o, String which){
+		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		if (o.getURI()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), checkDataProperty(Constants.URI));
+			else condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), which); 
+			searchConditions.addFirst(condition);
+		}
+		if (o.getName()!=null) {
+			Condition condition;
+			if (which=="")condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.name));
+			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getAcronym()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), checkDataProperty(Constants.acronym));
+			else condition = new Condition(Constants.omvCondition+Constants.acronym, o.getAcronym(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDescription()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), checkDataProperty(Constants.description));
+			else condition = new Condition(Constants.omvCondition+Constants.description, o.getDescription(), which);
+			searchConditions.addFirst(condition);
+		}
+		if (o.getDocumentation()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), checkDataProperty(Constants.documentation));
+			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getKeywords()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), checkDataProperty(Constants.keywords));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), checkDataProperty(Constants.keywords));
+			else condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getStatus()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.status, o.getStatus(), checkDataProperty(Constants.status));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.status, o.getStatus(), checkDataProperty(Constants.status));
+			else condition = new Condition(Constants.omvCondition+Constants.status, o.getStatus(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getCreationDate()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.creationDate, o.getCreationDate(), checkDataProperty(Constants.creationDate));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.creationDate, o.getCreationDate(), checkDataProperty(Constants.creationDate));
+			else condition = new Condition(Constants.omvCondition+Constants.creationDate, o.getCreationDate(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getModificationDate()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.modificationDate, o.getModificationDate(), checkDataProperty(Constants.modificationDate));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.modificationDate, o.getModificationDate(), checkDataProperty(Constants.modificationDate));
+			else condition = new Condition(Constants.omvCondition+Constants.modificationDate, o.getModificationDate(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getHasContributor().size()>0) {
 			Iterator it = o.getHasContributor().iterator();
 			while(it.hasNext()){
-				if (it.next() instanceof OMVPerson){
-					OMVPerson per = (OMVPerson)it.next();
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.hasContributor);
+					searchConditions.addAll(conditionTemp);
 				}
 				else{
-					OMVOrganisation org = (OMVOrganisation)it.next();
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.hasContributor);
+					searchConditions.addAll(conditionTemp);
 				}
 			}
 		}
 		if (o.getHasCreator().size()>0) {
 			Iterator it = o.getHasCreator().iterator();
 			while(it.hasNext()){
-				if (it.next() instanceof OMVPerson){
-					OMVPerson per = (OMVPerson)it.next();
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					LinkedList<Condition> conditionTemp=getPersonConditions(per,Constants.omvCondition+Constants.hasCreator);
+					searchConditions.addAll(conditionTemp);
 				}
 				else{
-					OMVOrganisation org = (OMVOrganisation)it.next();
+					OMVOrganisation org = (OMVOrganisation)t;
+					LinkedList<Condition> conditionTemp=getOrganisationConditions(org,Constants.omvCondition+Constants.hasCreator);
+					searchConditions.addAll(conditionTemp);
 				}
 			}
 		}
@@ -1047,107 +1551,140 @@ public class Oyster2Connection {
 			Iterator it = o.getUsedOntologyEngineeringTool().iterator();
 			while(it.hasNext()){
 				OMVOntologyEngineeringTool oet = (OMVOntologyEngineeringTool)it.next();
+				LinkedList<Condition> conditionTemp=getOETConditions(oet,Constants.omvCondition+Constants.usedOntologyEngineeringTool);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getUsedOntologyEngineeringMethodology().size()>0) {
 			Iterator it = o.getUsedOntologyEngineeringMethodology().iterator();
 			while(it.hasNext()){
 				OMVOntologyEngineeringMethodology oem = (OMVOntologyEngineeringMethodology)it.next();
+				LinkedList<Condition> conditionTemp=getOEMConditions(oem,Constants.omvCondition+Constants.usedOntologyEngineeringMethodology);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getUsedKnowledgeRepresentationParadigm().size()>0) {
 			Iterator it = o.getUsedKnowledgeRepresentationParadigm().iterator();
 			while(it.hasNext()){
 				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				LinkedList<Condition> conditionTemp=getKRPConditions(krp,Constants.omvCondition+Constants.usedKnowledgeRepresentationParadigm);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getHasDomain().size()>0) {
 			Iterator it = o.getHasDomain().iterator();
 			while(it.hasNext()){
 				OMVOntologyDomain od = (OMVOntologyDomain)it.next();
-				Condition condition = new Condition(Condition.TOPIC_CONDITION, od.getURI(), checkDataProperty(Constants.hasDomain));
-				searchConditions.addFirst(condition);
+				LinkedList<Condition> conditionTemp=getODConditions(od,Constants.omvCondition+Constants.hasDomain);
+				searchConditions.addAll(conditionTemp);
+				//Condition condition = new Condition(Condition.TOPIC_CONDITION, od.getURI(), checkDataProperty(Constants.hasDomain));
+				//searchConditions.addFirst(condition);
 			}
 		}
 		if (o.getIsOfType()!=null) {
 			OMVOntologyType ot = o.getIsOfType();
+			LinkedList<Condition> conditionTemp=getOTConditions(ot,Constants.omvCondition+Constants.isOfType);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getNaturalLanguage()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), checkDataProperty(Constants.naturalLanguage));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), checkDataProperty(Constants.naturalLanguage));
+			else condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getDesignedForOntologyTask().size()>0) {
 			Iterator it = o.getDesignedForOntologyTask().iterator();
 			while(it.hasNext()){
 				OMVOntologyTask ota = (OMVOntologyTask)it.next();
+				LinkedList<Condition> conditionTemp=getOTAConditions(ota,Constants.omvCondition+Constants.designedForOntologyTask);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getHasOntologyLanguage()!=null) {
-			OMVOntologyLanguage ole = o.getHasOntologyLanguage();
+			OMVOntologyLanguage ola = o.getHasOntologyLanguage();
+			LinkedList<Condition> conditionTemp=getOLConditions(ola,Constants.omvCondition+Constants.hasOntologyLanguage);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getHasOntologySyntax()!=null) {
 			OMVOntologySyntax osy = o.getHasOntologySyntax();
+			LinkedList<Condition> conditionTemp=getOSConditions(osy,Constants.omvCondition+Constants.hasOntologySyntax);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getHasFormalityLevel()!=null) {
-			OMVFormalityLevel osy = o.getHasFormalityLevel();
-		}
-		if (o.getHasFormalityLevel()!=null) {
-			OMVFormalityLevel osy = o.getHasFormalityLevel();
+			OMVFormalityLevel fl = o.getHasFormalityLevel();
+			LinkedList<Condition> conditionTemp=getFLConditions(fl,Constants.omvCondition+Constants.hasFormalityLevel);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getResourceLocator()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.resourceLocator, o.getResourceLocator(), checkDataProperty(Constants.resourceLocator));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.resourceLocator, o.getResourceLocator(), checkDataProperty(Constants.resourceLocator));
+			else condition = new Condition(Constants.omvCondition+Constants.resourceLocator, o.getResourceLocator(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getVersion()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.version, o.getVersion(), checkDataProperty(Constants.version));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.version, o.getVersion(), checkDataProperty(Constants.version));
+			else condition = new Condition(Constants.omvCondition+Constants.version, o.getVersion(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getHasLicense()!=null) {
-			OMVLicenseModel osy = o.getHasLicense();
+			OMVLicenseModel lm = o.getHasLicense();
+			LinkedList<Condition> conditionTemp=getLMConditions(lm,Constants.omvCondition+Constants.hasLicense);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getUseImports().size()>0) {
 			Iterator it = o.getUseImports().iterator();
 			while(it.hasNext()){
 				OMVOntology otemp = (OMVOntology)it.next();
-				Condition condition = new Condition(Constants.omvCondition+Constants.useImports, otemp.getURI(), checkDataProperty(Constants.useImports));
-				searchConditions.addFirst(condition);
+				LinkedList<Condition> conditionTemp=getConditions(otemp,Constants.omvCondition+Constants.useImports);
+				searchConditions.addAll(conditionTemp);
+				//Condition condition = new Condition(Constants.omvCondition+Constants.useImports, otemp.getURI(), checkDataProperty(Constants.useImports));
+				//searchConditions.addFirst(condition);
 			}
 		}
 		if (o.getHasPriorVersion()!=null) {
 			OMVOntology otemp = o.getHasPriorVersion();
-			Condition condition = new Condition(Constants.omvCondition+Constants.hasPriorVersion, otemp.getURI(), checkDataProperty(Constants.hasPriorVersion));
-			searchConditions.addFirst(condition);
+			LinkedList<Condition> conditionTemp=getConditions(otemp,Constants.omvCondition+Constants.hasPriorVersion);
+			searchConditions.addAll(conditionTemp);
 		}
 		if (o.getIsBackwardCompatibleWith().size()>0) {
 			Iterator it = o.getIsBackwardCompatibleWith().iterator();
 			while(it.hasNext()){
 				OMVOntology otemp = (OMVOntology)it.next();
-				Condition condition = new Condition(Constants.omvCondition+Constants.isBackwardCompatibleWith, otemp.getURI(), checkDataProperty(Constants.isBackwardCompatibleWith));
-				searchConditions.addFirst(condition);
+				LinkedList<Condition> conditionTemp=getConditions(otemp,Constants.omvCondition+Constants.isBackwardCompatibleWith);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getIsIncompatibleWith().size()>0) {
 			Iterator it = o.getIsIncompatibleWith().iterator();
 			while(it.hasNext()){
 				OMVOntology otemp = (OMVOntology)it.next();
-				Condition condition = new Condition(Constants.omvCondition+Constants.isIncompatibleWith, otemp.getURI(), checkDataProperty(Constants.isIncompatibleWith));
-				searchConditions.addFirst(condition);
+				LinkedList<Condition> conditionTemp=getConditions(otemp,Constants.omvCondition+Constants.isIncompatibleWith);
+				searchConditions.addAll(conditionTemp);
 			}
 		}
 		if (o.getNumClasses()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.numClasses, o.getNumClasses().toString(), checkDataProperty(Constants.numClasses));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.numClasses, o.getNumClasses().toString(), checkDataProperty(Constants.numClasses));
+			else condition = new Condition(Constants.omvCondition+Constants.numClasses, o.getNumClasses().toString(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getNumProperties()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.numProperties, o.getNumProperties().toString(), checkDataProperty(Constants.numProperties));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.numProperties, o.getNumProperties().toString(), checkDataProperty(Constants.numProperties));
+			else condition = new Condition(Constants.omvCondition+Constants.numProperties, o.getNumProperties().toString(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getNumIndividuals()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.numIndividuals, o.getNumIndividuals().toString(), checkDataProperty(Constants.numIndividuals));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.numIndividuals, o.getNumIndividuals().toString(), checkDataProperty(Constants.numIndividuals));
+			else condition = new Condition(Constants.omvCondition+Constants.numIndividuals, o.getNumIndividuals().toString(), which);
 			searchConditions.addFirst(condition);
 		}
 		if (o.getNumAxioms()!=null) {
-			Condition condition = new Condition(Constants.omvCondition+Constants.numAxioms, o.getNumAxioms().toString(), checkDataProperty(Constants.numAxioms));
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.omvCondition+Constants.numAxioms, o.getNumAxioms().toString(), checkDataProperty(Constants.numAxioms));
+			else condition = new Condition(Constants.omvCondition+Constants.numAxioms, o.getNumAxioms().toString(), which);
 			searchConditions.addFirst(condition);
 		}
 		return searchConditions;
@@ -1164,6 +1701,7 @@ public class Oyster2Connection {
 			if(propertyName.equals(Constants.acronym)) return true;
 			if(propertyName.equals(Constants.description)) return true;
 			if(propertyName.equals(Constants.documentation)) return true;
+			if(propertyName.equals(Constants.URI)) return true;
 			
 			/* UNTIL HERE */
 			
@@ -1177,7 +1715,879 @@ public class Oyster2Connection {
 	    }
 		return false;
 	}
+	private LinkedList getPropertiesPerson(OMVPerson p){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (p.getFirstName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.firstName, p.getFirstName());
+			tProperties.addFirst(prop);
+		}
+		if (p.getLastName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.lastName, p.getLastName());
+			tProperties.addFirst(prop);
+		}
+		if (p.getEMail()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.eMail, p.getEMail());
+			tProperties.addFirst(prop);
+		}
+		if (p.getPhoneNumber()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.phoneNumber, p.getPhoneNumber());
+			tProperties.addFirst(prop);
+		}
+		if (p.getFaxNumber()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.faxNumber, p.getFaxNumber());
+			tProperties.addFirst(prop);
+		}
+		if (p.getIsContactPerson()!=null) {
+			String tURN;
+			Iterator it = p.getIsContactPerson().iterator();
+			while(it.hasNext()){
+				OMVOrganisation o = (OMVOrganisation)it.next();
+				if (o.getName()!=null){
+					tURN=o.getName();
+					tList.clear();
+					tList=getPropertiesOrganisation(o);
+					IOntology.addConceptToRegistry(tList,1);
+					OntologyProperty prop = new OntologyProperty(Constants.isContactPerson, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getIsLocatedAt()!=null) {
+			String tURN;
+			Iterator it = p.getIsLocatedAt().iterator();
+			while(it.hasNext()){
+				OMVLocation l = (OMVLocation)it.next();
+				if (l.getStreet()!=null){
+					tURN=l.getStreet();
+					tList.clear();
+					tList=getPropertiesLocation(l);
+					IOntology.addConceptToRegistry(tList,12);
+					OntologyProperty prop = new OntologyProperty(Constants.isLocatedAt, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getDevelopesOntologyEngineeringTool()!=null) {
+			String tURN;
+			Iterator it = p.getDevelopesOntologyEngineeringTool().iterator();
+			while(it.hasNext()){
+				OMVOntologyEngineeringTool oet = (OMVOntologyEngineeringTool)it.next();
+				if (oet.getName()!=null){
+					tURN=oet.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringTool(oet);
+					IOntology.addConceptToRegistry(tList,2);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringTool, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getDevelopesOntologyLanguage()!=null) {
+			String tURN;
+			Iterator it = p.getDevelopesOntologyLanguage().iterator();
+			while(it.hasNext()){
+				OMVOntologyLanguage ola = (OMVOntologyLanguage)it.next();
+				if (ola.getName()!=null){
+					tURN=ola.getName();
+					tList.clear();
+					tList=getPropertiesOntologyLanguage(ola);
+					IOntology.addConceptToRegistry(tList,8);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyLanguage, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getDevelopesOntologySyntax()!=null) {
+			String tURN;
+			Iterator it = p.getDevelopesOntologySyntax().iterator();
+			while(it.hasNext()){
+				OMVOntologySyntax osy = (OMVOntologySyntax)it.next();
+				if (osy.getName()!=null){
+					tURN=osy.getName();
+					tList.clear();
+					tList=getPropertiesOntologySyntax(osy);
+					IOntology.addConceptToRegistry(tList,9);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologySyntax, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getSpecifiesKnowledgeRepresentationParadigm()!=null) {
+			String tURN;
+			Iterator it = p.getSpecifiesKnowledgeRepresentationParadigm().iterator();
+			while(it.hasNext()){
+				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				if (krp.getName()!=null){
+					tURN=krp.getName();
+					tList.clear();
+					tList=getPropertiesKRParadigm(krp);
+					IOntology.addConceptToRegistry(tList,4);
+					OntologyProperty prop = new OntologyProperty(Constants.specifiesKnowledgeRepresentationParadigm, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getDefinesOntologyType()!=null) {
+			String tURN;
+			Iterator it = p.getDefinesOntologyType().iterator();
+			while(it.hasNext()){
+				OMVOntologyType ot = (OMVOntologyType)it.next();
+				if (ot.getName()!=null){
+					tURN=ot.getName();
+					tList.clear();
+					tList=getPropertiesOntologyType(ot);
+					IOntology.addConceptToRegistry(tList,6);
+					OntologyProperty prop = new OntologyProperty(Constants.definesOntologyType, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getDevelopesOntologyEngineeringMethodology()!=null) {
+			String tURN;
+			Iterator it = p.getDevelopesOntologyEngineeringMethodology().iterator();
+			while(it.hasNext()){
+				OMVOntologyEngineeringMethodology oem = (OMVOntologyEngineeringMethodology)it.next();
+				if (oem.getName()!=null){
+					tURN=oem.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringMethodology(oem);
+					IOntology.addConceptToRegistry(tList,3);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringMethodology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getSpecifiesLicense()!=null) {
+			String tURN;
+			Iterator it = p.getSpecifiesLicense().iterator();
+			while(it.hasNext()){
+				OMVLicenseModel lm = (OMVLicenseModel)it.next();
+				if (lm.getName()!=null){
+					tURN=lm.getName();
+					tList.clear();
+					tList=getPropertiesLicense(lm);
+					IOntology.addConceptToRegistry(tList,11);
+					OntologyProperty prop = new OntologyProperty(Constants.specifiesLicense, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getHasAffiliatedParty()!=null) {
+			String tURN;
+			Iterator it = p.getHasAffiliatedParty().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		if (p.getContributesToOntology()!=null) {
+			String tURN;
+			Iterator it = p.getContributesToOntology().iterator();
+			while(it.hasNext()){
+				OMVOntology otemp = (OMVOntology)it.next();
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (p.getCreatesOntology()!=null) {
+			String tURN;
+			Iterator it = p.getCreatesOntology().iterator();
+			while(it.hasNext()){
+				OMVOntology otemp = (OMVOntology)it.next();
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOrganisation(OMVOrganisation o){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (o.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, o.getName());
+			tProperties.addFirst(prop);
+		}
+		if (o.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, o.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (o.getHasContactPerson()!=null) {
+			String tURN;
+			Iterator it = o.getHasContactPerson().iterator();
+			while(it.hasNext()){
+				OMVPerson p = (OMVPerson)it.next();
+				if ((p.getFirstName()!=null) && (p.getLastName()!=null)){
+					tURN=p.getFirstName()+p.getLastName();
+					tList.clear();
+					tList=getPropertiesPerson(p);
+					IOntology.addConceptToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.hasContactPerson, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getIsLocatedAt()!=null) {
+			String tURN;
+			Iterator it = o.getIsLocatedAt().iterator();
+			while(it.hasNext()){
+				OMVLocation l = (OMVLocation)it.next();
+				if (l.getStreet()!=null){
+					tURN=l.getStreet();
+					tList.clear();
+					tList=getPropertiesLocation(l);
+					IOntology.addConceptToRegistry(tList,12);
+					OntologyProperty prop = new OntologyProperty(Constants.isLocatedAt, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getDevelopesOntologyEngineeringTool()!=null) {
+			String tURN;
+			Iterator it = o.getDevelopesOntologyEngineeringTool().iterator();
+			while(it.hasNext()){
+				OMVOntologyEngineeringTool oet = (OMVOntologyEngineeringTool)it.next();
+				if (oet.getName()!=null){
+					tURN=oet.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringTool(oet);
+					IOntology.addConceptToRegistry(tList,2);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringTool, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getDevelopesOntologyLanguage()!=null) {
+			String tURN;
+			Iterator it = o.getDevelopesOntologyLanguage().iterator();
+			while(it.hasNext()){
+				OMVOntologyLanguage ola = (OMVOntologyLanguage)it.next();
+				if (ola.getName()!=null){
+					tURN=ola.getName();
+					tList.clear();
+					tList=getPropertiesOntologyLanguage(ola);
+					IOntology.addConceptToRegistry(tList,8);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyLanguage, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getDevelopesOntologySyntax()!=null) {
+			String tURN;
+			Iterator it = o.getDevelopesOntologySyntax().iterator();
+			while(it.hasNext()){
+				OMVOntologySyntax osy = (OMVOntologySyntax)it.next();
+				if (osy.getName()!=null){
+					tURN=osy.getName();
+					tList.clear();
+					tList=getPropertiesOntologySyntax(osy);
+					IOntology.addConceptToRegistry(tList,9);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologySyntax, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getSpecifiesKnowledgeRepresentationParadigm()!=null) {
+			String tURN;
+			Iterator it = o.getSpecifiesKnowledgeRepresentationParadigm().iterator();
+			while(it.hasNext()){
+				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				if (krp.getName()!=null){
+					tURN=krp.getName();
+					tList.clear();
+					tList=getPropertiesKRParadigm(krp);
+					IOntology.addConceptToRegistry(tList,4);
+					OntologyProperty prop = new OntologyProperty(Constants.specifiesKnowledgeRepresentationParadigm, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getDefinesOntologyType()!=null) {
+			String tURN;
+			Iterator it = o.getDefinesOntologyType().iterator();
+			while(it.hasNext()){
+				OMVOntologyType ot = (OMVOntologyType)it.next();
+				if (ot.getName()!=null){
+					tURN=ot.getName();
+					tList.clear();
+					tList=getPropertiesOntologyType(ot);
+					IOntology.addConceptToRegistry(tList,6);
+					OntologyProperty prop = new OntologyProperty(Constants.definesOntologyType, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getDevelopesOntologyEngineeringMethodology()!=null) {
+			String tURN;
+			Iterator it = o.getDevelopesOntologyEngineeringMethodology().iterator();
+			while(it.hasNext()){
+				OMVOntologyEngineeringMethodology oem = (OMVOntologyEngineeringMethodology)it.next();
+				if (oem.getName()!=null){
+					tURN=oem.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringMethodology(oem);
+					IOntology.addConceptToRegistry(tList,3);
+					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringMethodology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getSpecifiesLicense()!=null) {
+			String tURN;
+			Iterator it = o.getSpecifiesLicense().iterator();
+			while(it.hasNext()){
+				OMVLicenseModel lm = (OMVLicenseModel)it.next();
+				if (lm.getName()!=null){
+					tURN=lm.getName();
+					tList.clear();
+					tList=getPropertiesLicense(lm);
+					IOntology.addConceptToRegistry(tList,11);
+					OntologyProperty prop = new OntologyProperty(Constants.specifiesLicense, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getHasAffiliatedParty()!=null) {
+			String tURN;
+			Iterator it = o.getHasAffiliatedParty().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		if (o.getContributesToOntology()!=null) {
+			String tURN;
+			Iterator it = o.getContributesToOntology().iterator();
+			while(it.hasNext()){
+				OMVOntology otemp = (OMVOntology)it.next();
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (o.getCreatesOntology()!=null) {
+			String tURN;
+			Iterator it = o.getCreatesOntology().iterator();
+			while(it.hasNext()){
+				OMVOntology otemp = (OMVOntology)it.next();
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyEngineeringTool(OMVOntologyEngineeringTool oet){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (oet.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, oet.getName());
+			tProperties.addFirst(prop);
+		}
+		if (oet.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, oet.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (oet.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, oet.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (oet.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, oet.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (oet.getDevelopedBy()!=null) {
+			String tURN;
+			Iterator it = oet.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyEngineeringMethodology(OMVOntologyEngineeringMethodology oem){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (oem.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, oem.getName());
+			tProperties.addFirst(prop);
+		}
+		if (oem.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, oem.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (oem.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, oem.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (oem.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, oem.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (oem.getDevelopedBy()!=null) {
+			String tURN;
+			Iterator it = oem.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesKRParadigm(OMVKnowledgeRepresentationParadigm krp){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (krp.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, krp.getName());
+			tProperties.addFirst(prop);
+		}
+		if (krp.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, krp.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (krp.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, krp.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (krp.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, krp.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (krp.getSpecifiedBy()!=null) {
+			String tURN;
+			Iterator it = krp.getSpecifiedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyDomain(OMVOntologyDomain od){
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (od.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, od.getName());
+			tProperties.addFirst(prop);
+		}
+		if (od.getURI()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.URI, od.getURI());
+			tProperties.addFirst(prop);
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyType(OMVOntologyType ot){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (ot.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, ot.getName());
+			tProperties.addFirst(prop);
+		}
+		if (ot.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, ot.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (ot.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, ot.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (ot.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, ot.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (ot.getDefinedBy()!=null) {
+			String tURN;
+			Iterator it = ot.getDefinedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyTask(OMVOntologyTask ota){
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (ota.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, ota.getName());
+			tProperties.addFirst(prop);
+		}
+		if (ota.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, ota.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (ota.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, ota.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (ota.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, ota.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologyLanguage(OMVOntologyLanguage ola){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (ola.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, ola.getName());
+			tProperties.addFirst(prop);
+		}
+		if (ola.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, ola.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (ola.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, ola.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (ola.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, ola.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (ola.getDevelopedBy()!=null) {
+			String tURN;
+			Iterator it = ola.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		if (ola.getSupportsRepresentationParadigm().size()>0) {
+			String tURN;
+			Iterator it = ola.getSupportsRepresentationParadigm().iterator();
+			while(it.hasNext()){
+				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				if (krp.getName()!=null){
+					tURN=krp.getName();
+					tList.clear();
+					tList=getPropertiesKRParadigm(krp);
+					IOntology.addConceptToRegistry(tList,4);
+					OntologyProperty prop = new OntologyProperty(Constants.supportsRepresentationParadigm, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		if (ola.getHasSyntax().size()>0) {
+			String tURN;
+			Iterator it = ola.getHasSyntax().iterator();
+			while(it.hasNext()){
+				OMVOntologySyntax osy = (OMVOntologySyntax)it.next();
+				if (osy.getName()!=null){
+					tURN=osy.getName();
+					tList.clear();
+					tList=getPropertiesOntologySyntax(osy);
+					IOntology.addConceptToRegistry(tList,9);
+					OntologyProperty prop = new OntologyProperty(Constants.hasSyntax, tURN);
+					tProperties.addFirst(prop);
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesOntologySyntax(OMVOntologySyntax osy){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (osy.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, osy.getName());
+			tProperties.addFirst(prop);
+		}
+		if (osy.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, osy.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (osy.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, osy.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (osy.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, osy.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (osy.getDevelopedBy()!=null) {
+			String tURN;
+			Iterator it = osy.getDevelopedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesFormalityLevel(OMVFormalityLevel fl){
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (fl.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, fl.getName());
+			tProperties.addFirst(prop);
+		}
+		if (fl.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, fl.getDescription());
+			tProperties.addFirst(prop);
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesLicense(OMVLicenseModel lm){
+		List tList = new LinkedList();
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (lm.getName()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.name, lm.getName());
+			tProperties.addFirst(prop);
+		}
+		if (lm.getAcronym()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.acronym, lm.getAcronym());
+			tProperties.addFirst(prop);
+		}
+		if (lm.getDescription()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.description, lm.getDescription());
+			tProperties.addFirst(prop);
+		}
+		if (lm.getDocumentation()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.documentation, lm.getDocumentation());
+			tProperties.addFirst(prop);
+		}
+		if (lm.getSpecifiedBy()!=null) {
+			String tURN;
+			Iterator it = lm.getSpecifiedBy().iterator();
+			while(it.hasNext()){
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+				else{
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
+						tProperties.addFirst(prop);
+					}
+				}
+			}
+		}
+		return tProperties;
+	}
+	private LinkedList getPropertiesLocation(OMVLocation l){
+		LinkedList<OntologyProperty> tProperties = new LinkedList<OntologyProperty>();
+		if (l.getState()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.state, l.getState());
+			tProperties.addFirst(prop);
+		}
+		if (l.getCountry()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.country, l.getCountry());
+			tProperties.addFirst(prop);
+		}
+		if (l.getCity()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.city, l.getCity());
+			tProperties.addFirst(prop);
+		}
+		if (l.getStreet()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.street, l.getStreet());
+			tProperties.addFirst(prop);
+		}
+		
+		return tProperties;
+	}
 	private LinkedList getProperties (OMVOntology o){
+		List tList = new LinkedList();
 		LinkedList<OntologyProperty> ontoProperties = new LinkedList<OntologyProperty>();
 		if (o.getURI()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.URI, o.getURI());
@@ -1216,78 +2626,195 @@ public class Oyster2Connection {
 			ontoProperties.addFirst(prop);
 		}
 		if (o.getHasContributor().size()>0) {
+			String tURN;
 			Iterator it = o.getHasContributor().iterator();
 			while(it.hasNext()){
-				if (it.next() instanceof OMVPerson){
-					OMVPerson per = (OMVPerson)it.next();
-					
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.hasContributor, tURN);
+						ontoProperties.addFirst(prop);
+					}
 				}
 				else{
-					OMVOrganisation org = (OMVOrganisation)it.next();
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.hasContributor, tURN);
+						ontoProperties.addFirst(prop);
+					}
 				}
 			}
 		}
 		if (o.getHasCreator().size()>0) {
+			String tURN;
 			Iterator it = o.getHasCreator().iterator();
 			while(it.hasNext()){
-				if (it.next() instanceof OMVPerson){
-					OMVPerson per = (OMVPerson)it.next();
+				Object t = it.next();
+				if (t instanceof OMVPerson){
+					OMVPerson per = (OMVPerson)t;
+					if ((per.getFirstName()!=null) && (per.getLastName()!=null)){
+						tURN=per.getFirstName()+per.getLastName();
+						tList.clear();
+						tList=getPropertiesPerson(per);
+						IOntology.addConceptToRegistry(tList,0);
+						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
+						ontoProperties.addFirst(prop);
+					}
 				}
 				else{
-					OMVOrganisation org = (OMVOrganisation)it.next();
+					OMVOrganisation org = (OMVOrganisation)t;
+					if (org.getName()!=null){
+						tURN=org.getName();
+						tList.clear();
+						tList=getPropertiesOrganisation(org);
+						IOntology.addConceptToRegistry(tList,1);
+						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
+						ontoProperties.addFirst(prop);
+					}
 				}
 			}
 		}
 		if (o.getUsedOntologyEngineeringTool().size()>0) {
+			String tURN;
 			Iterator it = o.getUsedOntologyEngineeringTool().iterator();
 			while(it.hasNext()){
 				OMVOntologyEngineeringTool oet = (OMVOntologyEngineeringTool)it.next();
+				if (oet.getName()!=null){
+					tURN=oet.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringTool(oet);
+					IOntology.addConceptToRegistry(tList,2);
+					OntologyProperty prop = new OntologyProperty(Constants.usedOntologyEngineeringTool, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getUsedOntologyEngineeringMethodology().size()>0) {
+			String tURN;
 			Iterator it = o.getUsedOntologyEngineeringMethodology().iterator();
 			while(it.hasNext()){
 				OMVOntologyEngineeringMethodology oem = (OMVOntologyEngineeringMethodology)it.next();
+				if (oem.getName()!=null){
+					tURN=oem.getName();
+					tList.clear();
+					tList=getPropertiesOntologyEngineeringMethodology(oem);
+					IOntology.addConceptToRegistry(tList,3);
+					OntologyProperty prop = new OntologyProperty(Constants.usedOntologyEngineeringMethodology, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getUsedKnowledgeRepresentationParadigm().size()>0) {
+			String tURN;
 			Iterator it = o.getUsedKnowledgeRepresentationParadigm().iterator();
 			while(it.hasNext()){
 				OMVKnowledgeRepresentationParadigm krp = (OMVKnowledgeRepresentationParadigm)it.next();
+				if (krp.getName()!=null){
+					tURN=krp.getName();
+					tList.clear();
+					tList=getPropertiesKRParadigm(krp);
+					IOntology.addConceptToRegistry(tList,4);
+					OntologyProperty prop = new OntologyProperty(Constants.usedKnowledgeRepresentationParadigm, tURN);
+					ontoProperties.addFirst(prop);
+				}
+
 			}
 		}
 		if (o.getHasDomain().size()>0) {
+			String tURN;
 			Iterator it = o.getHasDomain().iterator();
 			while(it.hasNext()){
 				OMVOntologyDomain od = (OMVOntologyDomain)it.next();
-				OntologyProperty prop = new OntologyProperty(Constants.hasDomain, od.getURI());
-				ontoProperties.addFirst(prop);
+				if (od.getURI()!=null){
+					tURN=od.getURI();
+					if(!tURN.contains("://")){
+						od.setURI(Constants.TopicsURI+tURN);  //Add namespace if not present
+						tURN=od.getURI();
+					}
+					tList.clear();
+					tList=getPropertiesOntologyDomain(od);
+					IOntology.addConceptToRegistry(tList,5);
+					OntologyProperty prop = new OntologyProperty(Constants.hasDomain, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getIsOfType()!=null) {
+			String tURN;
 			OMVOntologyType ot = o.getIsOfType();
+			if (ot.getName()!=null){
+				tURN=ot.getName();
+				tList.clear();
+				tList=getPropertiesOntologyType(ot);
+				IOntology.addConceptToRegistry(tList,6);
+				OntologyProperty prop = new OntologyProperty(Constants.isOfType, tURN);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getNaturalLanguage()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.naturalLanguage, o.getNaturalLanguage());
 			ontoProperties.addFirst(prop);
 		}
 		if (o.getDesignedForOntologyTask().size()>0) {
+			String tURN;
 			Iterator it = o.getDesignedForOntologyTask().iterator();
 			while(it.hasNext()){
 				OMVOntologyTask ota = (OMVOntologyTask)it.next();
+				if (ota.getName()!=null){
+					tURN=ota.getName();
+					tList.clear();
+					tList=getPropertiesOntologyTask(ota);
+					IOntology.addConceptToRegistry(tList,7);
+					OntologyProperty prop = new OntologyProperty(Constants.designedForOntologyTask, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getHasOntologyLanguage()!=null) {
+			String tURN;
 			OMVOntologyLanguage ole = o.getHasOntologyLanguage();
+			if (ole.getName()!=null){
+				tURN=ole.getName();
+				tList.clear();
+				tList=getPropertiesOntologyLanguage(ole);
+				IOntology.addConceptToRegistry(tList,8);
+				OntologyProperty prop = new OntologyProperty(Constants.hasOntologyLanguage, tURN);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getHasOntologySyntax()!=null) {
+			String tURN;
 			OMVOntologySyntax osy = o.getHasOntologySyntax();
+			if (osy.getName()!=null){
+				tURN=osy.getName();
+				tList.clear();
+				tList=getPropertiesOntologySyntax(osy);
+				IOntology.addConceptToRegistry(tList,9);
+				OntologyProperty prop = new OntologyProperty(Constants.hasOntologySyntax, tURN);
+				ontoProperties.addFirst(prop);
+			}
+			
 		}
 		if (o.getHasFormalityLevel()!=null) {
-			OMVFormalityLevel osy = o.getHasFormalityLevel();
-		}
-		if (o.getHasFormalityLevel()!=null) {
-			OMVFormalityLevel osy = o.getHasFormalityLevel();
+			String tURN;
+			OMVFormalityLevel fl = o.getHasFormalityLevel();
+			if (fl.getName()!=null){
+				tURN=fl.getName();
+				tList.clear();
+				tList=getPropertiesFormalityLevel(fl);
+				IOntology.addConceptToRegistry(tList,10);
+				OntologyProperty prop = new OntologyProperty(Constants.hasFormalityLevel, tURN);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getResourceLocator()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.resourceLocator, o.getResourceLocator());
@@ -1298,35 +2825,72 @@ public class Oyster2Connection {
 			ontoProperties.addFirst(prop);
 		}
 		if (o.getHasLicense()!=null) {
-			OMVLicenseModel osy = o.getHasLicense();
+			String tURN;
+			OMVLicenseModel lm = o.getHasLicense();
+			if (lm.getName()!=null){
+				tURN=lm.getName();
+				tList.clear();
+				tList=getPropertiesLicense(lm);
+				IOntology.addConceptToRegistry(tList,11);
+				OntologyProperty prop = new OntologyProperty(Constants.hasLicense, tURN);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getUseImports().size()>0) {
+			String tURN;
 			Iterator it = o.getUseImports().iterator();
 			while(it.hasNext()){
 				OMVOntology otemp = (OMVOntology)it.next();
-				OntologyProperty prop = new OntologyProperty(Constants.useImports, otemp.getURI());
-				ontoProperties.addFirst(prop);
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.useImports, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getHasPriorVersion()!=null) {
+			String tURN;
 			OMVOntology otemp = o.getHasPriorVersion();
-			OntologyProperty prop = new OntologyProperty(Constants.hasPriorVersion, otemp.getURI());
-			ontoProperties.addFirst(prop);
-		}
-		if (o.getIsBackwardCompatibleWith().size()>0) {
-			Iterator it = o.getIsBackwardCompatibleWith().iterator();
-			while(it.hasNext()){
-				OMVOntology otemp = (OMVOntology)it.next();
-				OntologyProperty prop = new OntologyProperty(Constants.isBackwardCompatibleWith, otemp.getURI());
+			if (otemp.getURI()!=null){
+				tURN=otemp.getURI();
+				tList.clear();
+				tList=getProperties(otemp);
+				IOntology.addImportOntologyToRegistry(tList,0);
+				OntologyProperty prop = new OntologyProperty(Constants.hasPriorVersion, tURN);
 				ontoProperties.addFirst(prop);
 			}
 		}
+		if (o.getIsBackwardCompatibleWith().size()>0) {
+			String tURN;
+			Iterator it = o.getIsBackwardCompatibleWith().iterator();
+			while(it.hasNext()){
+				OMVOntology otemp = (OMVOntology)it.next();
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.isBackwardCompatibleWith, tURN);
+					ontoProperties.addFirst(prop);
+				}
+			}
+		}
 		if (o.getIsIncompatibleWith().size()>0) {
+			String tURN;
 			Iterator it = o.getIsIncompatibleWith().iterator();
 			while(it.hasNext()){
 				OMVOntology otemp = (OMVOntology)it.next();
-				OntologyProperty prop = new OntologyProperty(Constants.isIncompatibleWith, otemp.getURI());
-				ontoProperties.addFirst(prop);
+				if (otemp.getURI()!=null){
+					tURN=otemp.getURI();
+					tList.clear();
+					tList=getProperties(otemp);
+					IOntology.addImportOntologyToRegistry(tList,0);
+					OntologyProperty prop = new OntologyProperty(Constants.isIncompatibleWith, tURN);
+					ontoProperties.addFirst(prop);
+				}
 			}
 		}
 		if (o.getNumClasses()!=null) {
@@ -1444,4 +3008,150 @@ public class Oyster2Connection {
 			return;
 		}
 	}
+	private void copyParty2Person(){
+		Iterator it = partyReply.getIsLocatedAt().iterator();
+		while(it.hasNext()){
+			OMVLocation t = (OMVLocation)it.next();
+			if (t!=null){
+				personReply.addIsLocatedAt(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologyEngineeringTool().iterator();
+		while(it.hasNext()){
+			OMVOntologyEngineeringTool t = (OMVOntologyEngineeringTool)it.next();
+			if (t!=null){
+				personReply.addDevelopesOntologyEngineeringTool(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologyLanguage().iterator();
+		while(it.hasNext()){
+			OMVOntologyLanguage t = (OMVOntologyLanguage)it.next();
+			if (t!=null){
+				personReply.addDevelopesOntologyLanguage(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologySyntax().iterator();
+		while(it.hasNext()){
+			OMVOntologySyntax t = (OMVOntologySyntax)it.next();
+			if (t!=null){
+				personReply.addDevelopesOntologySyntax(t);
+			}
+		}
+		it = partyReply.getSpecifiesKnowledgeRepresentationParadigm().iterator();
+		while(it.hasNext()){
+			OMVKnowledgeRepresentationParadigm t = (OMVKnowledgeRepresentationParadigm)it.next();
+			if (t!=null){
+				personReply.addSpecifiesKnowledgeRepresentationParadigm(t);
+			}
+		}
+		it = partyReply.getDefinesOntologyType().iterator();
+		while(it.hasNext()){
+			OMVOntologyType t = (OMVOntologyType)it.next();
+			if (t!=null){
+				personReply.addDefinesOntologyType(t);
+			}
+		}
+		it = partyReply.getSpecifiesLicense().iterator();
+		while(it.hasNext()){
+			OMVLicenseModel t = (OMVLicenseModel)it.next();
+			if (t!=null){
+				personReply.addSpecifiesLicense(t);
+			}
+		}
+		it = partyReply.getHasAffiliatedParty().iterator();
+		while(it.hasNext()){
+			OMVParty t = (OMVParty)it.next();
+			if (t!=null){
+				personReply.addHasAffiliatedParty(t);
+			}
+		}
+		it = partyReply.getContributesToOntology().iterator();
+		while(it.hasNext()){
+			OMVOntology t = (OMVOntology)it.next();
+			if (t!=null){
+				personReply.addContributesToOntology(t);
+			}
+		}
+		it = partyReply.getCreatesOntology().iterator();
+		while(it.hasNext()){
+			OMVOntology t = (OMVOntology)it.next();
+			if (t!=null){
+				personReply.addCreatesOntology(t);
+			}
+		}
+	}
+
+	private void copyParty2Organisation(){
+		Iterator it = partyReply.getIsLocatedAt().iterator();
+		while(it.hasNext()){
+			OMVLocation t = (OMVLocation)it.next();
+			if (t!=null){
+				organisationReply.addIsLocatedAt(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologyEngineeringTool().iterator();
+		while(it.hasNext()){
+			OMVOntologyEngineeringTool t = (OMVOntologyEngineeringTool)it.next();
+			if (t!=null){
+				organisationReply.addDevelopesOntologyEngineeringTool(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologyLanguage().iterator();
+		while(it.hasNext()){
+			OMVOntologyLanguage t = (OMVOntologyLanguage)it.next();
+			if (t!=null){
+				organisationReply.addDevelopesOntologyLanguage(t);
+			}
+		}
+		it = partyReply.getDevelopesOntologySyntax().iterator();
+		while(it.hasNext()){
+			OMVOntologySyntax t = (OMVOntologySyntax)it.next();
+			if (t!=null){
+				organisationReply.addDevelopesOntologySyntax(t);
+			}
+		}
+		it = partyReply.getSpecifiesKnowledgeRepresentationParadigm().iterator();
+		while(it.hasNext()){
+			OMVKnowledgeRepresentationParadigm t = (OMVKnowledgeRepresentationParadigm)it.next();
+			if (t!=null){
+				organisationReply.addSpecifiesKnowledgeRepresentationParadigm(t);
+			}
+		}
+		it = partyReply.getDefinesOntologyType().iterator();
+		while(it.hasNext()){
+			OMVOntologyType t = (OMVOntologyType)it.next();
+			if (t!=null){
+				organisationReply.addDefinesOntologyType(t);
+			}
+		}
+		it = partyReply.getSpecifiesLicense().iterator();
+		while(it.hasNext()){
+			OMVLicenseModel t = (OMVLicenseModel)it.next();
+			if (t!=null){
+				organisationReply.addSpecifiesLicense(t);
+			}
+		}
+		it = partyReply.getHasAffiliatedParty().iterator();
+		while(it.hasNext()){
+			OMVParty t = (OMVParty)it.next();
+			if (t!=null){
+				organisationReply.addHasAffiliatedParty(t);
+			}
+		}
+		it = partyReply.getContributesToOntology().iterator();
+		while(it.hasNext()){
+			OMVOntology t = (OMVOntology)it.next();
+			if (t!=null){
+				organisationReply.addContributesToOntology(t);
+			}
+		}
+		it = partyReply.getCreatesOntology().iterator();
+		while(it.hasNext()){
+			OMVOntology t = (OMVOntology)it.next();
+			if (t!=null){
+				organisationReply.addCreatesOntology(t);
+			}
+		}
+	}
+
 }

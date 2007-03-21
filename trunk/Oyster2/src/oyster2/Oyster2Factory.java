@@ -3,6 +3,7 @@ package oyster2;
 import core.*;
 import ui.*;
 import util.GUID;
+import api.Oyster2Manager;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -69,12 +70,12 @@ public class Oyster2Factory {
 	/**
 	 * The local exchange times.
 	 */
-	private int mExchangeVersion;
+	//private int mExchangeVersion;
 
 	/**
 	 * The resources.
 	 */
-	private ResourceBundle mResources = null;
+	//private ResourceBundle mResources = null;
 
 	/**
 	 * The local Peers Expertise Registry.
@@ -99,7 +100,7 @@ public class Oyster2Factory {
 	/**
 	 * the query Formulator;
 	 */
-	private QueryFormulator mFormulator;
+	//private QueryFormulator mFormulator;
 
 	/**
 	 * the context Ontology used in search, such as: swrc
@@ -189,7 +190,7 @@ public class Oyster2Factory {
 	 * the details of search conditions which should be specified in the
 	 * property file.
 	 */
-	private List searchDetails = new ArrayList();
+	private List<String> searchDetails = new ArrayList<String>();
 
 	private String imageLocation = "";
 
@@ -246,7 +247,7 @@ public class Oyster2Factory {
 			this.localRegistryFile = new File(serializeFileName(store
 					.getString(Constants.LocalRegistry)));
 			
-			System.out.println(serializeFileName(store.getString(Constants.LocalRegistry)));
+			//System.out.println(serializeFileName(store.getString(Constants.LocalRegistry)));
 			
 			if ((!localRegistryFile.exists())
 					|| (localRegistryFile.length() <= 0)) {
@@ -310,9 +311,11 @@ public class Oyster2Factory {
 			
 		} catch (KAON2Exception e) {
 			Start.serverProcess.destroy();
+			Oyster2Manager.serverProcess.destroy();
 			System.err.println(e + " in Oyster2 init()");
 		} catch (InterruptedException e) {
 			Start.serverProcess.destroy();
+			Oyster2Manager.serverProcess.destroy();
 			System.err.println(e + " in Oyster2 init()");
 
 		}
@@ -323,7 +326,7 @@ public class Oyster2Factory {
 		mInformer.init();
 		mLocalRegistry.init();
 		String uid = mInformer.getLocalUID();
-		System.out.println("local peer UID is :" + uid);
+		//System.out.println("local peer UID is :" + uid);
 		GUID localGUID = GUID.getGUID(uid);
 		try {
 			mLocalHost = new XMLOyster2Host(localGUID, InetAddress
@@ -354,7 +357,6 @@ public class Oyster2Factory {
 		mExchangeInitiatorThread = new Thread(mExchangeInitiator);
 		mExchangeInitiatorThread.setDaemon(true);
 		mExchangeInitiatorThread.start();
-		System.out.println(store.getString(Constants.SearchCondition_1));
 		searchDetails.add(store.getString(Constants.SearchCondition_1));
 		searchDetails.add(store.getString(Constants.SearchCondition_2));
 		searchDetails.add(store.getString(Constants.SearchCondition_3));
@@ -413,9 +415,14 @@ public class Oyster2Factory {
 
 	synchronized public void shutdown() {
 		try {
+			System.out.println("shutting down");
 			this.localRegistryOntology.persist();
+			this.mLocalRegistry.save();
+			this.mExchangeInitiator.shutdown();
+			this.mExchangeInitiatorThread.interrupt();
+			mExchangeInitiatorThread.join();
 			this.connection.close();
-			//this.mLocalRegistry.save();
+			
 		} catch (Exception e) {
 			System.err.println(e + " when oyster2 shutdown!");
 		}
@@ -675,6 +682,10 @@ public class Oyster2Factory {
 
 	public String getPeerDescOntologyURI() {
 		return this.peerDescOntologyURI;
+	}
+	
+	public String getTypeOntologyURI() {
+		return this.typeOntology.getOntologyURI();
 	}
 
 	public KAON2Connection getConnection() {

@@ -15,7 +15,8 @@ public class Condition {
 
 	private String pred;
 	private String value;
-	private Entity conditionEntry;
+	private String reference;
+	//private Entity conditionEntry;
 	private int type = LITERAL_TYPE;
 	
 	public Condition(String pred, String value, boolean asResource){
@@ -24,6 +25,13 @@ public class Condition {
 		type = asResource ? LITERAL_TYPE : RESOURCE_TYPE;
 	}
 
+	public Condition(String pred, String value, String reference){
+		this.pred = pred;
+		this.value = value;
+		this.reference = reference;
+		type = RESOURCE_TYPE;
+	}
+	
 	public Condition(String pred, String value){
 		this.pred = pred;
 		this.value = value;
@@ -65,6 +73,10 @@ public class Condition {
 	 */
 	public String getValue() {
 		return value;
+	}
+	
+	public String getReference() {
+		return reference;
 	}
 	
 }

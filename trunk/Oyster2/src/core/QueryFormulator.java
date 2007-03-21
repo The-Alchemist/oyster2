@@ -17,13 +17,13 @@ public class QueryFormulator {
 	//private static final String SWRCURI = Constants.SWRCURI; 
 	//private static final String PROTONTURI = Constants.PROTONTURI;
 	//private static final String PROTONSURI = Constants.PROTONSURI;
-	private int variableCounter = 0;
+	//private int variableCounter = 0;
 	private String typeClause = "";
 	private StringBuffer queryBuffer = new StringBuffer();
 	private String subjectClause = "";
 	private String domainClause = "";
-	private List variableList = new LinkedList();
-	private List literalCondition = new LinkedList();
+	//private List variableList = new LinkedList();
+	private List<Condition> literalCondition = new LinkedList<Condition>();
 	private Oyster2Query topicQuery = null;
 	private Oyster2Query typeQuery = null;
 	private GUID queryUID;
@@ -49,12 +49,14 @@ public class QueryFormulator {
 		if(badRequest)return;
 		//queryBuffer.append(addSWRCPrefix());
 		
+		/*
 		if (subjectClause=="I DONT NEED THIS TOPIC QUERY ANYMORE I PUT IT AS PART OF TYPEQUERY"){  //if (subjectClause!=""){
 			queryBuffer.append("SELECT ?x");
 			queryBuffer.append(" WHERE "+subjectClause);
 			queryBuffer.append("}");
 		}else queryBuffer.append("");
 		generateTopicQuery(queryBuffer);
+		*/
 		
 		queryBuffer.append("SELECT ?x WHERE ");
 		if (typeClause!="")	queryBuffer.append(typeClause);
@@ -131,8 +133,11 @@ public class QueryFormulator {
 				ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
 			}
 			else if (c.getConditionType()== Condition.RESOURCE_TYPE){
-				ret.append("<"+OMVURI+Namespaces.guessLocalName(pred) +"> <"+value+"> ");
-				//ret.append(" . FILTER regex(?v, " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
+				String ref = c.getReference();
+				ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+				ret.append(" . "+"?r"+Integer.toString(i) + " <"+OMVURI+Namespaces.guessLocalName(pred) +"> "+ "?v"+Integer.toString(i));
+				ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
+				//ret.append("<"+OMVURI+Namespaces.guessLocalName(pred) +"> <"+value+"> ");
 			}
 		}
 	}
@@ -198,11 +203,11 @@ public class QueryFormulator {
 	private void addLiteralCondition(Condition c){
 		literalCondition.add(c);	
 	}
-	private String addOMVPrefix(){
-		 return "PREFIX omv: "+OMVURI+" ";
-	}
-	private String addSWRCPrefix(){
-		return "PREFIX swrc: "; //+SWRCURI+" ";
-	}
+	//private String addOMVPrefix(){
+	//	 return "PREFIX omv: "+OMVURI+" ";
+	//}
+	//private String addSWRCPrefix(){
+	//	return "PREFIX swrc: "; //+SWRCURI+" ";
+	//}
 
 }
