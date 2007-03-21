@@ -1050,6 +1050,7 @@ public class MainWindow extends ApplicationWindow {
 			if(propertyName.equals(Constants.acronym)) return true;
 			if(propertyName.equals(Constants.description)) return true;
 			if(propertyName.equals(Constants.documentation)) return true;
+			if(propertyName.equals(Constants.URI)) return true;
 			
 			/* UNTIL HERE */
 			

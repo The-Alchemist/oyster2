@@ -1,8 +1,5 @@
 package oyster2;
 
-import api.OMVKnowledgeRepresentationParadigm;
-import api.OMVOntologyEngineeringMethodology;
-
 public class Constants {
 	/**
 	 * The minimal number of data items required in order to extend the path of a
@@ -13,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.4 $".replace('$', ' ').trim() + " (" + "$Date: 2007-03-09 17:24:12 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.5 $".replace('$', ' ').trim() + " (" + "$Date: 2007-03-21 14:55:44 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -39,6 +36,20 @@ public class Constants {
 	public static final String OMVIMPORT = OMVURI + IMPORT;
 	public static final String omvCondition = "omv:";
 	public static final String ontologyConcept = "Ontology";
+	public static final String personConcept = "Person";
+	public static final String organisationConcept = "Organisation";
+	public static final String partyConcept = "Party";
+	public static final String OntologyEngineeringToolConcept = "OntologyEngineeringTool";
+	public static final String OntologyEngineeringMethodologyConcept = "OntologyEngineeringMethodology";
+	public static final String KnowledgeRepresentationParadigmConcept = "KnowledgeRepresentationParadigm";
+	public static final String OntologyDomainConcept = "OntologyDomain";
+	public static final String OntologyTypeConcept="OntologyType";
+	public static final String OntologyTaskConcept="OntologyTask";
+	public static final String OntologyLanguageConcept="OntologyLanguage";
+	public static final String OntologySyntaxConcept="OntologySyntax";
+	public static final String FormalityLevelConcept="FormalityLevel";
+	public static final String LicenseModelConcept="LicenseModel";
+	public static final String LocationConcept="Location";
 	public static final String URI = "URI";
 	public static final String name ="name";
 	public static final String acronym="acronym";
