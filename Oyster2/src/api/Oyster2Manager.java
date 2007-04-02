@@ -37,6 +37,8 @@ public class Oyster2Manager{
 	public static Process serverProcess = null;
 	private static String kaon2File = System.getProperty("user.dir")+"\\kaon2.jar";
 	private static String prefFile = System.getProperty("user.dir")+"\\new store";
+	private static String serverRoot= System.getProperty("user.dir")+"\\server";
+	private static String startParameters= "";
 	private static String localURI="";
 	
 	public Oyster2Manager()
@@ -46,7 +48,8 @@ public class Oyster2Manager{
 
 	/**
 	 * Creates a new connection to Oyster2 registry. Initializes
-	 * the default properties file and the registry factory.
+	 * the registry factory and its preference store with
+	 * the default properties file.
 	 * Starts an instance of Kaon2 platform.
 	 * @return A connection object to the Oyster2 registry.
 	 */
@@ -58,18 +61,24 @@ public class Oyster2Manager{
     }
 	
 	/**
-	 * Creates a new connection to Oyster2 registry. Initializes
-	 * the registry factory and the properties file located at 
-	 * the path passed by the parameters. Starts an instance 
-	 * of Kaon2 platform.
+	 * Creates a new customized connection to Oyster2 registry. Initializes
+	 * the registry factory and its preference store with the properties 
+	 * file located at the path passed by the parameters. Starts an instance 
+	 * of Kaon2 platform with the given parameters.
 	 * @param preferencesFilename the path to the properties file.
 	 * @param kaon2Filename the path to the kaon2.jar file.
+	 * @param serverRootFolder the path to KAON2 server root folder.
+	 * (i.e. -ontologies parameter)
+	 * @param javaStartParameters the parameters to start the java jar.
+	 * (e.g. -ms256M -mx256M)
 	 * @return a connection object to the Oyster2 registry.
 	 */
-	public static Oyster2Connection newConnection(String preferencesFilename, String kaon2Filename)
+	public static Oyster2Connection newConnection(String preferencesFilename, String kaon2Filename, String serverRootFolder, String javaStartParameters)
     {
 		setPreferencesFile(preferencesFilename);
 		setKaon2File(kaon2Filename);
+		setServerRoot(serverRootFolder);
+		setStartParameters(javaStartParameters);
 		initialize();
 		return new Oyster2Connection();
     }
@@ -171,7 +180,7 @@ public class Oyster2Manager{
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 		try{					
 			DefaultOntologyResolver resolver = mOyster2.getResolver();
-			resolver.registerReplacement(localURI,"file:///"+serializeFileName(filename));
+			resolver.registerReplacement(localURI,"file:"+convert2URI(serializeFileName(filename)));
 			mOyster2.getConnection().setOntologyResolver(resolver);
 			Ontology ontology=mOyster2.getConnection().createOntology(mOyster2.getTypeOntologyURI()+"#",new HashMap<String,Object>());
 			
@@ -204,6 +213,11 @@ public class Oyster2Manager{
 	private static String serializeFileName(String filename){
 		String seperator = System.getProperty("file.separator");
 		filename = filename.replace(seperator.charAt(0),'/');
+		return  filename;
+	}
+	
+	private static String convert2URI(String filename){
+		filename = filename.replace(" ","%20");
 		return  filename;
 	}
 	
@@ -813,7 +827,7 @@ public class Oyster2Manager{
 	private static void initialize()
 	    {
 		try{
-			serverProcess = Runtime.getRuntime().exec("java -cp "+ kaon2File +" org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies server");
+			serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp \""+ kaon2File +"\" org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies \"" + serverRoot +"\"");
 			if(serverProcess!=null) System.out.println("server started...");
 			Thread.sleep(2000);
 			store.load();
@@ -833,13 +847,29 @@ public class Oyster2Manager{
 	}
 	
 	private static void setPreferencesFile(String fileName){
-		PreferenceStore customStore = new PreferenceStore(fileName);
+		String tFile;
+		if (fileName!="" && fileName!=null)
+			tFile = fileName;
+		else
+			tFile = prefFile;
+		PreferenceStore customStore = new PreferenceStore(tFile);
 		mOyster2.setPreferenceStore(customStore);
 		store = mOyster2.getPreferenceStore();
 	}
 	
 	private static void setKaon2File(String fileName){
-		kaon2File=fileName;
+		if (fileName!="" && fileName!="")
+			kaon2File=fileName;
+	}
+	
+	private static void setServerRoot(String sRoot){
+		if (sRoot!="" && sRoot!=null)
+			serverRoot=sRoot;
+	}
+	
+	private static void setStartParameters(String sParameters){
+		if (sParameters!="" && sParameters!=null)
+			startParameters=sParameters;
 	}
 }	
 

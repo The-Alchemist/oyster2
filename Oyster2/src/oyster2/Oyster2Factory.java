@@ -226,7 +226,7 @@ public class Oyster2Factory {
 		if (connection == null)  //new version of kaon2 (01/2007)
 			connection = KAON2Manager.newConnection();
 
-		imageLocation = serializeFileName(store.getString(Constants.Image));
+		imageLocation = "file:"+serializeFileName(store.getString(Constants.Image));
 		try {
 			//1//			
 			if ((store.getString(Constants.PDOntology) != null)
@@ -310,14 +310,15 @@ public class Oyster2Factory {
 			//3//
 			
 		} catch (KAON2Exception e) {
-			Start.serverProcess.destroy();
-			Oyster2Manager.serverProcess.destroy();
+			if (Start.serverProcess!=null) Start.serverProcess.destroy();
+			if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
 			System.err.println(e + " in Oyster2 init()");
+			System.exit(1);
 		} catch (InterruptedException e) {
-			Start.serverProcess.destroy();
-			Oyster2Manager.serverProcess.destroy();
+			if (Start.serverProcess!=null) Start.serverProcess.destroy();
+			if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
 			System.err.println(e + " in Oyster2 init()");
-
+			System.exit(1);
 		}
 		
 		
