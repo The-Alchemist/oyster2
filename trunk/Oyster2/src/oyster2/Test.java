@@ -21,7 +21,9 @@ public class Test {
 		topic.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Arts");
 		
 		//NEW CONNECTION
+		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection();
+		
 		
 		//HERE WE TEST IMPORT METHOD
 		oyster2Conn.importOntology("E:\\wine.rdf");

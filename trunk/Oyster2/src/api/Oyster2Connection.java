@@ -107,7 +107,11 @@ public class Oyster2Connection {
 	/**
 	 * Opens an ontology file, extracts the ontology metadata 
 	 * and import it into Oyster2 registry. If the ontology
-	 * does already exists, it is merged.
+	 * does already exists, it is merged. 
+	 * It is not allowed to use blank spaces in the path 
+	 * of an ontology, since this string (the path of the ontology) 
+	 * should be a normal url (java.net.URI). But you can 
+	 * use %20 instead of a blank space
 	 * @param URI is the path or URL of the ontology file.
 	 */
 	public void importOntology(String URI)
