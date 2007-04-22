@@ -4,11 +4,16 @@ import java.io.Serializable;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.widgets.TableColumn;
+//import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TreeColumn;
 
 
 public class ResultViewerColumnInfo implements ControlListener, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int width = 100;
 	private String columnName;
 	private String columnType;
@@ -53,7 +58,7 @@ public class ResultViewerColumnInfo implements ControlListener, Serializable {
 	 * @see org.eclipse.swt.events.ControlListener#controlResized(org.eclipse.swt.events.ControlEvent)
 	 */
 	public void controlResized(ControlEvent e) {
-		width = ((TableColumn)e.widget).getWidth();
+		width = ((TreeColumn)e.widget).getWidth();
 	}
 
 }

@@ -28,6 +28,10 @@ public class SearchingScope implements Serializable {
 	    return new SearchingScope(Type.AUTO);
 	  }
 	  
+	  public static SearchingScope manual() {
+		    return new SearchingScope(Type.MANUAL);
+	  }
+	  
 	  private SearchingScope(Type type) {
 	    this.type = type;
 	  }

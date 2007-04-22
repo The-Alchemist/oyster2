@@ -59,6 +59,7 @@ public class Test {
 		creator1.setEMail("hartmann@aifb-uka.de");
 		creator1.addCreatesOntology(cTemp);
 		newOnto.addHasCreator(creator1);
+		newOnto.setResourceLocator("http://www.w3.org/TR/owl-guide/wine.rdf");
 		oyster2Conn.replace(newOnto);
 		
 		//HERE WE TEST SIMPLE SEARCH

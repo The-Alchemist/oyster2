@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.5 $".replace('$', ' ').trim() + " (" + "$Date: 2007-03-21 14:55:44 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.6 $".replace('$', ' ').trim() + " (" + "$Date: 2007-04-22 13:59:52 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -35,6 +35,7 @@ public class Constants {
 	public static final String IMPORT ="imports";
 	public static final String OMVIMPORT = OMVURI + IMPORT;
 	public static final String omvCondition = "omv:";
+	public static final String pomvCondition = "pomv:";
 	public static final String ontologyConcept = "Ontology";
 	public static final String personConcept = "Person";
 	public static final String organisationConcept = "Organisation";
@@ -165,6 +166,10 @@ public class Constants {
 	public static final String DefaultBootStrapPeerName = "localhost";
 	public static final String DefaultBootStrapPeerIP = "localhost";
 	
+	public static final String NUMBER_OF_COLUMNS="NUMBER_OF_COLUMNS";
+	public static final String COLUMN_TYPE="COLUMN_TYPE";
+	public static final String COLUMN_NAME="COLUMN_NAME";
+	public static final String COLUMN_WIDTH="COLUMN_WIDTH";
 	
 	
 	

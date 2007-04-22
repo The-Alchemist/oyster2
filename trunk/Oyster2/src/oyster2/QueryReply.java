@@ -1,10 +1,10 @@
 package oyster2;
 
 import java.util.Collection;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.Vector;
 
-import org.semanticweb.kaon2.api.Entity;
+//import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.Ontology;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -52,7 +52,7 @@ public class QueryReply extends DefaultHandler {
     /**
      * The property attributes of one reply entity:such as year or author of a book instance.
      */
-    private Collection attributeSet = new LinkedList();
+    //private Collection attributeSet = new LinkedList();
 
 	/**
 	 * Creates an empty query reply.
@@ -126,6 +126,7 @@ public class QueryReply extends DefaultHandler {
 	 * @param index the index of the result in the result set.
 	 * @return the result.
 	 */
+	@SuppressWarnings("unchecked")
 	public String getResultOntology(int index) {
 		return (String)new Vector(mResultSet).get(index);
 	}

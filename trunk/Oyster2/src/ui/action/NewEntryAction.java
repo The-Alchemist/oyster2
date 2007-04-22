@@ -15,6 +15,7 @@ import org.semanticweb.kaon2.api.*;
 public class NewEntryAction extends SaveEntryAction{
 	private ApplicationWindow window;
 	private Result result;
+	private ResultRegistry resultRegistry;
 
 	public NewEntryAction(ApplicationWindow w) {
 		super(w);
@@ -27,8 +28,12 @@ public class NewEntryAction extends SaveEntryAction{
 		this.result = result;
 	}
 	
+	public void setResult(ResultRegistry result){
+		this.resultRegistry = result;
+	}
+	
 	public void run() {
-		if (result != null) {
+		if (result != null || resultRegistry!=null) {
 			CreateEntryDialog dialog = new CreateEntryDialog(window.getShell());
 			dialog.create();
 			dialog.setTitle("Create new ontology metadata entry");
@@ -53,9 +58,17 @@ public class NewEntryAction extends SaveEntryAction{
 			public void run() {
 				/*TODO entry.addPeer(SystemConfig.getPeerFactory().getLocalPeer());*/
 				//result.entryReceived(entry);
-				result.getViewer().refresh();
-				final StructuredSelection selection = new StructuredSelection(new Object[] { entry });
-				result.getViewer().setSelection(selection);		
+				
+				if (result != null){
+					result.getViewer().refresh();
+					final StructuredSelection selection = new StructuredSelection(new Object[] { entry });
+					result.getViewer().setSelection(selection);
+				}
+				else if (resultRegistry != null){
+					resultRegistry.getViewer().refresh();
+					final StructuredSelection selection = new StructuredSelection(new Object[] { entry });
+					resultRegistry.getViewer().setSelection(selection);
+				}
 			}
 		});
 	}

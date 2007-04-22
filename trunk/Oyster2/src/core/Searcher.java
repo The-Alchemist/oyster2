@@ -153,8 +153,7 @@ public class Searcher implements Runnable {
 	public void run(){
 		if(normalSearchFlag){
 			QueryReply queryReply =null;
-			if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){
-				//queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);  
+			if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){  
 				queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
 				topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
 				positiveResult = localRegistry.searchExpertiseOntology(topicQuery,manualSelected);
@@ -164,11 +163,11 @@ public class Searcher implements Runnable {
 					mOyster2.getSearchManager().notifyReplyListener(queryReply);
 				}			
 			}
-			else if((typeQuery != null) && (typeQuery.getQueryString().length()>0))
+			else if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){
+				typeQuery.setStatus(Oyster2Query.STATUS_RUNNING);
 				queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
-			//else 
-			//	queryReply = localRegistry.returnQueryReply(mKaonP2P.getLocalHostOntology(),topicQuery,Resource.OntologyResource);
-			// ** THIS WAS COMMENTED BEFORE typeQuery.setStatus(KaonP2PQuery.STATUS_FINISHED);
+				typeQuery.setStatus(Oyster2Query.STATUS_FINISHED);
+			}
 			returnResult(queryReply);
 		}
 		else{
