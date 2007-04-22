@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import org.eclipse.swt.widgets.Shell;
 
 import util.*;
 import oyster2.*;
@@ -32,13 +34,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
+
 public class DetailViewer extends Composite{
 	private StyledText wrapedTextComponent;
 	private Color linkColor = new Color(Display.getCurrent(), new RGB(0, 0, 200));
 	private Cursor defaultCursor = new Cursor(this.getShell().getDisplay(), SWT.CURSOR_IBEAM);
 	private Cursor handCursor = new Cursor(this.getShell().getDisplay(), SWT.CURSOR_HAND);
-	private ArrayList links = new ArrayList();
-	private ArrayList linkSelectionListeners = new ArrayList();
+	private ArrayList<LinkImpl> links = new ArrayList<LinkImpl>();
+	private ArrayList<LinkSelectionListener> linkSelectionListeners = new ArrayList<LinkSelectionListener>();
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	
 	/**
@@ -66,23 +69,23 @@ public class DetailViewer extends Composite{
 		
 		wrapedTextComponent.addMouseListener(new org.eclipse.swt.events.MouseAdapter(){
 			public void mouseDown(MouseEvent e) {
-				/*TODO BibTexLinkImpl link = getLink(new Point(e.x, e.y));
+				LinkImpl link = getLink(new Point(e.x, e.y));
 				if(link != null){
 					for(int i=0; i<linkSelectionListeners.size(); i++){
 						 ((LinkSelectionListener)linkSelectionListeners.get(i)).linkSelected(link);
 					}
-				}*/
+				}
 			}
 		});
 		
 		wrapedTextComponent.addMouseMoveListener(new MouseMoveListener(){
 			public void mouseMove(MouseEvent e){
-				/*BibTexLinkImpl link = getLink(new Point(e.x, e.y));
+				LinkImpl link = getLink(new Point(e.x, e.y));
 				if(link != null){
 					wrapedTextComponent.setCursor(handCursor);
 				}else {
 					wrapedTextComponent.setCursor(defaultCursor);
-				}*/
+				}
 			}
 		});
 	}
@@ -105,42 +108,43 @@ public class DetailViewer extends Composite{
 	 * @param entry
 	 */
 	public void append(Entity entry){
-		EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
+		//EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
 		Collection properties = getReplyPropertySet(mOyster2.getLocalHostOntology(),(Individual)entry);
-		if (properties.size()>0)
-			wrapedTextComponent.append(serializer.serialize(entry,mOyster2.getLocalHostOntology(),properties));
+		if (properties.size()>0){
+			try{
+				OWLClass typeClass =(OWLClass) (((Individual) entry).getDescriptionsMemberOf(mOyster2.getLocalHostOntology()).toArray())[0];
+				appendText(serializeType(typeClass).toString(),SWT.BOLD,null);
+				appendText(serializeKey(entry).toString(),SWT.NORMAL,null);
+				serializeProperties(properties);
+				appendText(serializeEndOfEntry().toString(),SWT.BOLD,null);
+				//wrapedTextComponent.append(serializer.serialize(entry,mOyster2.getLocalHostOntology(),properties));
+			}catch(KAON2Exception e){
+				System.out.println(e.toString()+" :append");
+			}	
+		}
 		else 
-			wrapedTextComponent.append("details not available");
-		/*
-		 * 
-		if(mKaonP2P.getVirtualOntology()!=null){
-			wrapedTextComponent.append(serializer.serialize(entry,mKaonP2P.getVirtualOntology(),getReplyPropertySet(mKaonP2P.getVirtualOntology(),(Individual)entry)));
-		}else
-			wrapedTextComponent.append(serializer.serialize(entry,mKaonP2P.getLocalHostOntology(),getReplyPropertySet(mKaonP2P.getLocalHostOntology(),(Individual)entry)));
-		*/	
+			appendText("details not available",SWT.BOLD,null);//wrapedTextComponent.append("details not available");
 		wrapedTextComponent.setTopIndex(0);
 	}
+	
 	public void append(Object entry){
 		EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
 		if(entry.toString().contains(Constants.IMPORT)){
 			int length = entry.toString().length();
 			int headLength = Constants.IMPORT.length()+1;//1 place for the tab.
 			Individual ontologyIndiv = KAON2Manager.factory().individual(entry.toString().substring(headLength,length));
-			//System.out.println(ontologyIndiv.getURI());
 			//wrapedTextComponent.append(serializer.serialize(ontologyIndiv,mKaonP2P.getVirtualOntology(),getReplyPropertySet(mKaonP2P.getVirtualOntology(),ontologyIndiv)));
 		}
 		else wrapedTextComponent.append(entry.toString());
-		
 		wrapedTextComponent.setTopIndex(0);
-		
 	}
+	
 	public void append(Ontology ontology){
-		//System.err.println("ontology entry selected!");
 		EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
-		
 		wrapedTextComponent.append(serializer.serialize(ontology));
 		wrapedTextComponent.setTopIndex(0);
 	}
+	
 	private Collection getReplyPropertySet(Ontology virtualOntology,Individual docIndiv){
 		Collection propertySet = new ArrayList();
 		Property replyProperty;
@@ -237,5 +241,166 @@ public class DetailViewer extends Composite{
 		wrapedTextComponent.setFocus();
 	}
 	
+	public StringBuffer serializeType(Entity type) {
+		StringBuffer result = new StringBuffer();
+		result.append("<?xml version="+EntryDetailSerializer.QUOTE+"1.0"+EntryDetailSerializer.QUOTE+" encoding="+EntryDetailSerializer.QUOTE+"utf-8"+EntryDetailSerializer.QUOTE+"?>\n");
+		result.append("<rdf:RDF xmlns:rdf="+EntryDetailSerializer.QUOTE+"http://www.w3.org/1999/02/22-rdf-syntax-ns#"+EntryDetailSerializer.QUOTE+"\n");
+		result.append("xmlns:omv="+EntryDetailSerializer.QUOTE+"http://omv.ontoware.org/2005/05/ontology#"+EntryDetailSerializer.QUOTE+">\n");
+		return result;
+	}
+	protected StringBuffer serializeKey(Entity entry) {
+		StringBuffer result = new StringBuffer();
+		result.append("\t<rdf:Description rdf:about=");
+		result.append(EntryDetailSerializer.QUOTE+entry.getURI()+EntryDetailSerializer.QUOTE+">\n");
+		result.append("\t\t<rdf:type rdf:resource="+EntryDetailSerializer.QUOTE+"http://www.w3.org/2000/01/rdf-schema#Resource"+EntryDetailSerializer.QUOTE+"/>\n");		
+		result.append("\t\t<rdf:type rdf:resource="+EntryDetailSerializer.QUOTE+"http://omv.ontoware.org/2005/05/ontology#Ontology"+EntryDetailSerializer.QUOTE+"/>\n");
+		return result;
+	}
 	
+	protected void serializeProperties(Collection propertySet) {
+		Iterator it = propertySet.iterator();
+		while(it.hasNext()){
+		  Property property = (Property)it.next();
+		  String pred = property.getPred();
+		  Object value = property.getValue();
+		  if (!serializeValue(pred).equals(Constants.timeStamp)){
+			appendText("\t\t<omv:"+ serializeValue(pred)+">",SWT.NORMAL,null);
+			Boolean whatIs = checkDataProperty(serializeValue(pred));
+			if (!whatIs){
+				if (serializeValue(pred).equals(Constants.useImports) ||
+					serializeValue(pred).equals(Constants.isBackwardCompatibleWith) ||
+					serializeValue(pred).equals(Constants.isIncompatibleWith) ||
+					serializeValue(pred).equals(Constants.hasPriorVersion)
+						)
+					appendAsLink(value.toString(),serializeValue(pred));
+				else if (serializeValue(pred).equals(Constants.hasContributor) ||
+						serializeValue(pred).equals(Constants.hasCreator)
+						){
+					String oriValue=serializeValue(value.toString());
+					String firstname="";
+					String lastname="";
+					int i;
+					for (i=1; i<oriValue.length(); i++)
+						if (Character.isUpperCase(oriValue.charAt(i)))
+							break;
+					firstname=oriValue.substring(0, i);
+					lastname=oriValue.substring(i,oriValue.length());
+					appendAsLink(firstname+" "+lastname,serializeValue(pred));
+				}
+				else
+					appendAsLink(serializeValue(value.toString()),serializeValue(pred));//appendText(serializeValue(value.toString()),SWT.BOLD,linkColor);
+			}
+			else if (serializeValue(pred).equals(Constants.resourceLocator) ||
+					serializeValue(pred).equals(Constants.documentation) 
+						)
+					appendAsLink(value.toString(),serializeValue(pred));
+			else appendText(value.toString(),SWT.NORMAL,null);
+			appendText("</omv:"+ serializeValue(pred)+">",SWT.NORMAL,null);
+			if(it.hasNext()) appendText("\n",SWT.NORMAL,null);
+		  }
+		}
+	}
+	
+	private void appendAsLink(String linkedValue, String linkType){
+		int begin = wrapedTextComponent.getCharCount();
+		int end = begin + linkedValue.length();
+		appendText(linkedValue, SWT.BOLD, linkColor); 
+		links.add(new LinkImpl(begin, end, linkedValue, linkType));
+	}
+	
+	public String serializeValue(String value) {	
+		String	ret = Namespaces.guessLocalName(value);
+		return ret;
+		
+	}
+	
+	public StringBuffer serializeEndOfEntry() {
+		StringBuffer result = new StringBuffer();
+		if (result.indexOf("\n") < 0) { // case with empty content
+			result.append(" ");
+		}
+		result.append("\n\t</rdf:Description>\n</rdf:RDF>\n");
+		return result;
+	}
+	
+	public Boolean checkDataProperty(String propertyName)  {
+		Ontology resourceTypeOntology = mOyster2.getTypeOntology();
+		try{
+	        Request<Entity> entityRequest=resourceTypeOntology.createEntityRequest();
+	        org.semanticweb.kaon2.api.Cursor<Entity> cursor=entityRequest.openCursor();
+	        while (cursor.hasNext()) {
+	            Entity entity=cursor.next();
+	            if (entity instanceof DataProperty)
+	            	if (propertyName.equalsIgnoreCase(Namespaces.guessLocalName(entity.getURI()))) return true;
+	        }
+	        if (propertyName.equalsIgnoreCase(Namespaces.guessLocalName(Constants.timeStamp))) return true;
+		}
+	    catch (KAON2Exception e) {
+	    	System.err.println(e + " in checkdataproperty()");
+	    }	
+	    return false;
+	}
+	/**
+	 * @param listener
+	 */
+	public void addLinkSelectionListener(LinkSelectionListener listener){
+		linkSelectionListeners.add(listener);
+	}
+	
+	/**
+	 * @param listener
+	 */
+	public void removeLinkSelectionListener(LinkSelectionListener listener){
+		linkSelectionListeners.remove(listener);
+	}
+	
+	private LinkImpl getLink(Point point){
+		try{
+			int offset = wrapedTextComponent.getOffsetAtLocation(point);
+			for(int i=0; i<links.size(); i++){
+				LinkImpl p = (LinkImpl)links.get(i);
+				if(p.contains(offset)){
+					return p;
+				}
+			}
+		}catch(IllegalArgumentException e){
+		}
+		return null;
+	}
+	
+	private class LinkImpl implements ViewerLink {
+		int beginIndex;
+		int endIndex;
+		private String linkedValue;
+		private String linkType;
+		
+		public LinkImpl(int begin, int end, String value, String linkType){
+			this.beginIndex = begin;
+			this.endIndex = end;
+			this.linkType = linkType;
+			this.linkedValue = value;
+		}
+		
+		public boolean contains(int index){
+			if(index >= beginIndex && index <= endIndex)
+				return true;
+			return false;
+		}
+		
+		/**
+		 * @see com.empolis.swap.bibster.ui.BibTexViewerLink#getLinkedResource()
+		 */
+		public String getLinkedValue() {
+			return this.linkedValue;
+		}
+
+		/**
+		 * @see com.empolis.swap.bibster.ui.BibTexViewerLink#getLinkType()
+		 */
+		public String getLinkType() {
+			return this.linkType;
+		}
+
+	}
+
 }

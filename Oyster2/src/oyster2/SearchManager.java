@@ -1,7 +1,6 @@
 package oyster2;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +10,7 @@ import oyster2.Oyster2Query;
 import core.*;
 
 import ui.Result;
+import ui.ResultRegistry;
 import util.GUID;
 
 public class SearchManager {
@@ -31,7 +31,8 @@ public class SearchManager {
 	protected QueryReplyListener peerDocListener;
 	protected QueryReplyListener replyListener;
 	
-	protected Hashtable mSentQueries = new Hashtable();
+	protected Hashtable<GUID, Oyster2Query> mSentQueries = new Hashtable<GUID, Oyster2Query>();
+	private boolean which;
 	
 	/**
 	 * Query reply listeners that listen to replies to queries with
@@ -57,7 +58,10 @@ public class SearchManager {
 		
 	}*/
 	public void notifyReplyListener(QueryReply queryReply){
-		((Result)replyListener).newReplyReceived(queryReply);
+		if (which)
+			((Result)replyListener).newReplyReceived(queryReply);
+		else
+			((ResultRegistry)replyListener).newReplyReceived(queryReply);
 	}
 	
 	/**
@@ -72,7 +76,10 @@ public class SearchManager {
 		}
 	}*/
 	public void notifyReplyListener(List ontologyDocList){
-		((Result)replyListener).entryReceived(ontologyDocList);
+		if (which)
+			((Result)replyListener).entryReceived(ontologyDocList);
+		else
+			((ResultRegistry)replyListener).entryReceived(ontologyDocList);
 	}
 	
 	public synchronized void invoked(){
@@ -130,7 +137,9 @@ public class SearchManager {
 	 * @param query the new query.
 	 */
 	public void startSearch(Oyster2Query topicQuery,Oyster2Query typeQuery,boolean manualSelected) {
-		mSentQueries.put(topicQuery.getGUID(), topicQuery);
+		//mSentQueries.put(topicQuery.getGUID(), topicQuery);
+		if (topicQuery!=null) which = false;
+		else which=true;
 		Thread t = new Thread(new Searcher(topicQuery,typeQuery,manualSelected));
 		t.setDaemon(true);
 		t.start();

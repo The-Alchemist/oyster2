@@ -1,12 +1,11 @@
 package util;
 
 import oyster2.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.*;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.swt.custom.StyledText;
 
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
@@ -26,10 +25,6 @@ public  class EntryDetailSerializer {
 		return instance;
 	}
 	
-	
-
-	
-
 	protected void serializeSeqNode(StringBuffer result, DataProperty property, String propertyValue, int seqIndex, boolean isNested, boolean isLastIndex) {
 		if (seqIndex > 1) {
 			result.append(" and ");
@@ -37,25 +32,20 @@ public  class EntryDetailSerializer {
 		result.append(propertyValue);
 	}
 
-
-
 	public String serialize(Entity entry,Ontology ontology,Collection propertySet) {
-		//this.ontology = ontology;
 		StringBuffer ret = new StringBuffer();
 		try{
-			/*ontology.removeFromImports(mKaonP2P.getLocalHostOntology());
-			ontology.addToImports(mKaonP2P.getLocalHostOntology());*/
-		OWLClass typeClass =(OWLClass) (((Individual) entry).getDescriptionsMemberOf(ontology).toArray())[0];
-		serializeType(ret, typeClass);
-		serializeKey(ret, entry);
-		serializeProperties( ret,propertySet);
-		serializeEndOfEntry(ret);
+			OWLClass typeClass =(OWLClass) (((Individual) entry).getDescriptionsMemberOf(ontology).toArray())[0];
+			serializeType(ret, typeClass);
+			serializeKey(ret, entry);
+			serializeProperties( ret,propertySet);
+			serializeEndOfEntry(ret);
 		}catch(KAON2Exception e){
 			System.out.println(e.toString()+":AbstractToString serialize()");
 		}
-		
 		return ret.toString();
 	}
+	
 	public String serialize(Ontology ontology){
 		StringBuffer ret = new StringBuffer();
 		Map propertyMap = new HashMap();
@@ -68,36 +58,31 @@ public  class EntryDetailSerializer {
 		serializeKey(ret,ontology);
 		serializeProperties(ret,propertyMap);
 		serializeEndOfEntry(ret);
-		System.out.println(ret.toString());
 		return ret.toString();
 		
 	}
-	protected void serializeType(StringBuffer result, Entity type) {
+	
+	public void serializeType(StringBuffer result, Entity type) {
 		result.append("@" + serializeValue(type.getURI()));
-		
-		/*
-		result.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-		result.append("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n");
-		result.append("xmlns:omv=\"http://omv.ontoware.org/2005/05/ontology#\">\n");
-		result.append("\t<rdf:Description rdf:about=");
-		*/
-		
+		//result.append("<?xml version="+QUOTE+"1.0"+QUOTE+" encoding="+QUOTE+"utf-8"+QUOTE+"?>\n");
+		//result.append("<rdf:RDF xmlns:rdf="+QUOTE+"http://www.w3.org/1999/02/22-rdf-syntax-ns#"+QUOTE+"\n");
+		//result.append("xmlns:omv="+QUOTE+"http://omv.ontoware.org/2005/05/ontology#"+QUOTE+">\n");	
 	}
-	protected void serializeType(StringBuffer result, Ontology ontology) {
+	
+	public void serializeType(StringBuffer result, Ontology ontology) {
 		result.append("@Ontology" );
 	}
+	
 	protected void serializeKey(StringBuffer result, Entity entry) {
 		result.append("{\t");
-		//result.append("{\n\t");
-		////result.append("uri="+entry.getURI());	
-		
-		/*
-		result.append("\""+entry.getURI()+"\">\n");
-		result.append("\t\t<rdf:type rdf:resource="+"http://omv.ontoware.org/2005/05/ontology#Ontology\"/>\n");
-		result.append("\t\t<rdf:type rdf:resource=\"http://www.w3.org/2000/01/rdf-schema#Resource\"/>\n");
-		*/
-		
+		result.append("{\n\t");
+		result.append("uri="+entry.getURI());
+		//result.append("\t<rdf:Description rdf:about=");
+		//result.append(QUOTE+entry.getURI()+QUOTE+">\n");
+		//result.append("\t\t<rdf:type rdf:resource="+QUOTE+"http://www.w3.org/2000/01/rdf-schema#Resource"+QUOTE+"/>\n");		
+		//result.append("\t\t<rdf:type rdf:resource="+QUOTE+"http://omv.ontoware.org/2005/05/ontology#Ontology"+QUOTE+"/>\n");
 	}
+	
 	protected void serializeKey(StringBuffer result, Ontology ontology) {
 		result.append("{\n\t");
 		result.append("uri="+ontology.getOntologyURI());	
@@ -110,13 +95,16 @@ public  class EntryDetailSerializer {
 			String pred = property.getPred();
 			Object value = property.getValue();
 			ret.append("\n\t" + serializeValue(pred) + "=" + QUOTE);
+			//ret.append("\t\t<omv:"+ serializeValue(pred)+">");
 			if((serializeValue(pred).equals("author"))||(serializeValue(pred).equals("publishedAt"))||(serializeValue(pred).equals("documentAuthor"))
 					)
 				ret.append(serializeValue(value.toString()) + QUOTE );
-			else ret.append(value.toString()+QUOTE);
-			if(it.hasNext())ret.append(",");
+			else ret.append(value.toString()+QUOTE); //ret.append(value.toString());
+			//ret.append("</omv:"+ serializeValue(pred)+">");
+			if(it.hasNext()) ret.append(","); //ret.append("\n");
 		}
 	}
+	
 	protected final void serializeProperties(StringBuffer ret,Map propertyMap) {
 		Collection keySet = propertyMap.keySet();
 		Iterator it = keySet.iterator();
@@ -140,11 +128,11 @@ public  class EntryDetailSerializer {
 		}
 	}
 	
-	protected void serializeEndOfEntry(StringBuffer result) {
+	public void serializeEndOfEntry(StringBuffer result) {
 		if (result.indexOf("\n") < 0) { // case with empty content
-			result.append(",");
+			result.append(","); //result.append(" ");
 		}
-		result.append("\n}\n");
+		result.append("\n}\n"); //result.append("\n\t</rdf:Description>\n</rdf:RDF>\n");
 	}
 	
 	public String serializeValue(String value) {	

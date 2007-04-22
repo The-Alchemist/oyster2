@@ -124,22 +124,35 @@ public class QueryFormulator {
 	}
 	
 	public void addFilter(StringBuffer ret,Condition c, int i){
-		String pred = c.getPred();
-		String value = c.getValue();
+	  String pred = c.getPred();
+	  String value = c.getValue();
 		//System.out.println("Type : " + c.getConditionType());
-		if(pred.contains("omv:")){
+	  if (pred!=null){
+		if(pred.startsWith("omv:")){
 			if (c.getConditionType()== Condition.LITERAL_TYPE){
 				ret.append("<"+OMVURI+Namespaces.guessLocalName(pred)+">"+" "+ "?v"+Integer.toString(i));
 				ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
 			}
 			else if (c.getConditionType()== Condition.RESOURCE_TYPE){
 				String ref = c.getReference();
-				ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
-				ret.append(" . "+"?r"+Integer.toString(i) + " <"+OMVURI+Namespaces.guessLocalName(pred) +"> "+ "?v"+Integer.toString(i));
-				ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
-				//ret.append("<"+OMVURI+Namespaces.guessLocalName(pred) +"> <"+value+"> ");
+				if (ref!=null){
+					ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					ret.append(" . "+"?r"+Integer.toString(i) + " <"+OMVURI+Namespaces.guessLocalName(pred) +"> "+ "?v"+Integer.toString(i));
+					ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
+				}
+				else ret.append("<"+OMVURI+Namespaces.guessLocalName(pred) +"> <"+value+"> ");//ret.append("<"+OMVURI+Namespaces.guessLocalName(pred) +"> \""+value+"\" ");
 			}
 		}
+		else if(pred.startsWith("pomv:")){
+			if (c.getConditionType()== Condition.RESOURCE_TYPE){
+				ret.append("<"+Constants.PDURI+Namespaces.guessLocalName(pred) +"> <"+Constants.LocalRegistryURI+"#"+value+"> ");
+			}
+		}
+	  }
+	  else{
+			ret.append("?wild"+" "+ "?v"+Integer.toString(i));
+			ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");		
+	  }
 	}
 	
 	/**

@@ -10,11 +10,20 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import org.semanticweb.kaon2.api.*;
+import org.semanticweb.kaon2.api.owl.elements.DataProperty;
+import org.semanticweb.kaon2.api.owl.elements.Individual;
+import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
+
+//import oyster2.Constants;
+//import oyster2.OntologyProperty;
+import oyster2.Oyster2Factory;
 
 
 
 public class ResultViewerLabelProvider implements ITableLabelProvider, IColorProvider{
 	private ResultViewer viewer;
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	private Ontology localRegistry = mOyster2.getLocalHostOntology();
 	private Color remoteResourceColor = new Color(Display.getCurrent(), new RGB(0, 0, 200));
 	private Color mergedResourceColor = new Color(Display.getCurrent(), new RGB(128, 0, 0));
 	
@@ -27,17 +36,59 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 	 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
 	 */
 	public String getColumnText(Object element, int columnIndex){
-		String columnType = viewer.getColumnType(columnIndex);
+		//String columnType = viewer.getColumnType(columnIndex);
 		if(element instanceof Entity){
 			Entity entry = (Entity)element;
-			if(columnType.equals("omv:Ontology")){
-			
-			}
+			//if(columnType.equals("omv:Ontology")){
+			//}
+			ResultViewerColumnInfo info = viewer.getColumnInfo(columnIndex);
+			return serializeProperty(entry, info.getColumnType());
 		}
-			
-		return null;
+		return "";
 		
 	}
+	
+	private String serializeProperty(Entity entry, String property) {
+		Individual oIndividual = KAON2Manager.factory().individual(entry.getURI());
+		try{
+			
+			Boolean whatIs = checkDataProperty(Namespaces.guessLocalName(property));
+			if (whatIs){
+				DataProperty ontologyDataProperty = KAON2Manager.factory().dataProperty(property);
+				String oldValue = util.Utilities.getString(oIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
+				
+				return oldValue;
+			}
+			else{
+				ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(property);
+				Individual oldSIndiv = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+				if (oldSIndiv!=null)
+					return Namespaces.guessLocalName(oldSIndiv.getURI());
+			}
+		}catch(Exception e){
+			System.out.println(e + " in serializeProperty!");
+		}
+		return "";
+	}
+	
+	public Boolean checkDataProperty(String propertyName)  {
+		Ontology resourceTypeOntology = mOyster2.getTypeOntology();
+		try{
+	        Request<Entity> entityRequest=resourceTypeOntology.createEntityRequest();
+	        Cursor<Entity> cursor=entityRequest.openCursor();
+	        while (cursor.hasNext()) {
+	            Entity entity=cursor.next();
+	            if (entity instanceof DataProperty)
+	            	if (propertyName.equalsIgnoreCase(Namespaces.guessLocalName(entity.getURI()))) return true;
+	        }
+		}
+	    catch (KAON2Exception e) {
+	    	System.err.println(e + " in checkdataproperty()");
+	    }	
+	    return false;
+	    //X
+	}
+	
 	public boolean isLabelProperty(Object element, String property) {
 		return true;
 		

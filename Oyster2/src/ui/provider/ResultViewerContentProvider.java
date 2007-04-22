@@ -1,20 +1,15 @@
 package ui.provider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Vector;
 import java.util.*;
 
 import oyster2.*;
 import core.*;
 import util.*;
-import util.Utilities;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
-import org.semanticweb.kaon2.api.owl.elements.Individual;
 
 
 
@@ -22,22 +17,22 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	/**
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
 	 */
-	private Collection children = new ArrayList();
+	private Collection<Object> children = new ArrayList<Object>();
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
-	//private Ontology ontology = mInformer.getLocalRegistry();
 	private Ontology ontology = mOyster2.getLocalHostOntology();
 	private int resourceType;
+	
 	public ResultViewerContentProvider(int resourceType){
 		this.resourceType = resourceType;
 	}
+	
 	public Object[] getChildren(Object parentElement) {
 		if(parentElement instanceof Entity){
-			children = new ArrayList();
-			//System.out.println("this is ontologyResource in ContentProvider!");
+			children = new ArrayList<Object>();
 			if(this.resourceType==Resource.OntologyResource){
 				try{
-					//System.out.println("this is ontologyResource in ContentProvider!");
+					System.out.println("this is ontologyResource in ContentProvider!");
 					Individual ontologyIndiv = (Individual)parentElement;
 					Collection propertySet = getReplyPropertySet(ontology,ontologyIndiv);
 					Iterator it = propertySet.iterator();
@@ -56,9 +51,9 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 				}
 			}
 			else if(this.resourceType==Resource.DataResource){
-				children = new ArrayList();
+				children = new ArrayList<Object>();
 				try{
-//					System.out.println("this is ontologyResource in ContentProvider!");
+					System.out.println("this is dataResource in ContentProvider!");
 					Individual dataIndiv = (Individual)parentElement;
 					//Collection propertySet = getReplyPropertySet(mKaonP2P.getVirtualOntology(),dataIndiv);
 					Collection propertySet = getReplyPropertySet(mOyster2.getTopicOntology(),dataIndiv);
@@ -76,11 +71,11 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 				}
 			}
 			else if(this.resourceType == Resource.RegistryResource){
-				children = new ArrayList();
+				children = new ArrayList<Object>();
 				try{
-					/*System.out.println("this is ontologyResource in ContentProvider!");
+					System.out.println("this is registryResource in ContentProvider!");
 					Individual dataIndiv = (Individual)parentElement;
-					Collection propertySet = getReplyPropertySet(mKaonP2P.getVirtualOntology(),dataIndiv);
+					Collection propertySet = getReplyPropertySet(mOyster2.getTopicOntology(),dataIndiv);
 					Iterator it = propertySet.iterator();
 					while(it.hasNext()){
 						Property propertyIndiv = (Property)it.next();
@@ -88,7 +83,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 						Object value = propertyIndiv.getValue();
 						if((Namespaces.guessLocalName(pred).equals("author")))
 						children.add((Entity)value);
-					}*/
+					}
 				return children.toArray();
 				}catch(Exception e){
 					System.err.println(e.toString()+"getChildren()in ResultViewerContentProvider,Resourcetype: DataResource");	
@@ -99,22 +94,24 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 			
 			
 		}else if(parentElement instanceof Ontology){
-			children = new ArrayList();
-			//System.out.println("this is ontology Type in ContentProvider!");
+			children = new ArrayList<Object>();
+			System.out.println("this is ontology Type in ContentProvider!");
 			Ontology ontologyParent = (Ontology)parentElement;
 			children = getOntologyElements(ontologyParent);
 			return children.toArray();
 		}
 		else if(parentElement instanceof String){
-			children = new ArrayList();
+			System.out.println("this is String Type in ContentProvider!");
+			children = new ArrayList<Object>();
 			children.add((String)parentElement);
 			return children.toArray();
 		}
 		
 		return new Object[0];
 	}
+	
 	private Collection getReplyPropertySet(Ontology virtualOntology,Individual docIndiv){
-		Collection propertySet = new ArrayList();
+		Collection<Property> propertySet = new ArrayList<Property>();
 		Property replyProperty;
 		try{
 		Map dataPropertyMap = docIndiv.getDataPropertyValues(virtualOntology);
@@ -150,9 +147,10 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 		}
 		return propertySet;
 	}
-	private Collection getOntologyElements(Ontology ontology){
-		//System.out.println("getOntology Element");
-		Collection elements = new ArrayList();
+	
+	@SuppressWarnings("unchecked")
+	private Collection<Object> getOntologyElements(Ontology ontology){
+		Collection<Object> elements = new ArrayList<Object>();
 		Collection importSet = new ArrayList();
 		if(!ontology.getOntologyURI().equals("http://localhost/virtualOntology")){
 		elements.addAll(mInformer.getOntologyDocument(ontology));
@@ -160,7 +158,6 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 		elements.addAll(mInformer.getPeerList(ontology));
 		}
 		else{//ontology is virtual ontology
-		
 		 importSet = ontology.getImportedOntologies();
 			if(importSet!=null){
 				for(Iterator it = importSet.iterator();it.hasNext();){
@@ -172,55 +169,8 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 				}
 			}
 		}
-		return elements;
-		
+		return elements;	
 	}
-	/*public Object[] getChildren(Object parentElement) {
-		if(parentElement instanceof Entity){
-			children = new ArrayList();
-			
-			if(this.resourceType==Resource.OntologyResource){
-				try{
-					//System.out.println("this is ontologyResource in ContentProvider!");
-					Individual ontologyIndiv = (Individual)parentElement;
-					Collection peerIndivSet = mInformer.getOntologyProvider(ontology,ontologyIndiv);
-					DataProperty IPAdress = KAON2Manager.factory().dataProperty(mInformer.getBaseRegistryURI()+"#IPAdress");
-					Iterator it = peerIndivSet.iterator();
-					while(it.hasNext()){
-						Individual peerIndiv = (Individual)it.next();
-						String ipAdr =(String) peerIndiv.getDataPropertyValue(ontology,IPAdress);
-						String peerObject = Namespaces.guessLocalName(peerIndiv.getURI())+": "+ipAdr;
-						children.add(peerObject);
-					}
-					return children.toArray();
-				}catch(Exception e){
-					System.err.println(e.toString()+"  getChildren()in ResultViewerContentProvider,Resourcetype: OntologyResource");	
-				}
-		}
-			else if(this.resourceType==Resource.DataResource){
-				children = new ArrayList();
-				try{
-					//System.out.println("this is dataResource in ContentProvider!");
-				Individual dataIndiv = (Individual)parentElement;
-				ObjectProperty author = KAON2Manager.factory().objectProperty(mKaonP2P.getContextOntology().getOntologyURI()+"#author");
-				DataProperty year = KAON2Manager.factory().dataProperty(mKaonP2P.getContextOntology().getOntologyURI()+"#year");
-				System.out.println(mKaonP2P.getContextOntology().getOntologyURI()+"#author");
-				String authorStr =dataIndiv.getObjectPropertyValue(mKaonP2P.getVirtualOntology(),author).getURI();
-				String yearStr =dataIndiv.getDataPropertyValue(mKaonP2P.getVirtualOntology(),year).toString();
-				children.add("author: "+authorStr);
-				children.add("year:   "+yearStr);
-				return children.toArray();
-				}catch(KAON2Exception e){
-					System.err.println(e.toString()+"getChildren()in ResultViewerContentProvider,Resourcetype: DataResource");	
-				}
-			}
-			else System.err.println("ResourceType error in ResultViewerContentProvider");
-			
-			
-		}
-		
-		return new Object[0];
-	}*/
 	
 	/**
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
@@ -233,18 +183,25 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
 	 */
 	public boolean hasChildren(Object element){
-		if(this.resourceType!=Resource.RegistryResource){
-			if(element instanceof String){
-				return false;
-			}
-			else return true;
-		}else{
+		if(this.resourceType==Resource.DataResource){
+			//System.out.println("is a dataResource");
+			return false;
+			
+		}else if(this.resourceType==Resource.RegistryResource){
+			//System.out.println("is a registryResource");
 			if((element instanceof Entity)|| (element instanceof String)){
 				return false;
 			}
 			else return true;
 			
+		}else if(this.resourceType==Resource.OntologyResource){
+			//System.out.println("is a ontologyResource");
+			if((element instanceof Entity)|| (element instanceof String)){
+				return false;
+			}
+			else return true;
 		}
+		return false;
 	}
 
 	/**
@@ -275,3 +232,49 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 }
 
 
+/*public Object[] getChildren(Object parentElement) {
+if(parentElement instanceof Entity){
+	children = new ArrayList();
+	
+	if(this.resourceType==Resource.OntologyResource){
+		try{
+			//System.out.println("this is ontologyResource in ContentProvider!");
+			Individual ontologyIndiv = (Individual)parentElement;
+			Collection peerIndivSet = mInformer.getOntologyProvider(ontology,ontologyIndiv);
+			DataProperty IPAdress = KAON2Manager.factory().dataProperty(mInformer.getBaseRegistryURI()+"#IPAdress");
+			Iterator it = peerIndivSet.iterator();
+			while(it.hasNext()){
+				Individual peerIndiv = (Individual)it.next();
+				String ipAdr =(String) peerIndiv.getDataPropertyValue(ontology,IPAdress);
+				String peerObject = Namespaces.guessLocalName(peerIndiv.getURI())+": "+ipAdr;
+				children.add(peerObject);
+			}
+			return children.toArray();
+		}catch(Exception e){
+			System.err.println(e.toString()+"  getChildren()in ResultViewerContentProvider,Resourcetype: OntologyResource");	
+		}
+}
+	else if(this.resourceType==Resource.DataResource){
+		children = new ArrayList();
+		try{
+			//System.out.println("this is dataResource in ContentProvider!");
+		Individual dataIndiv = (Individual)parentElement;
+		ObjectProperty author = KAON2Manager.factory().objectProperty(mKaonP2P.getContextOntology().getOntologyURI()+"#author");
+		DataProperty year = KAON2Manager.factory().dataProperty(mKaonP2P.getContextOntology().getOntologyURI()+"#year");
+		System.out.println(mKaonP2P.getContextOntology().getOntologyURI()+"#author");
+		String authorStr =dataIndiv.getObjectPropertyValue(mKaonP2P.getVirtualOntology(),author).getURI();
+		String yearStr =dataIndiv.getDataPropertyValue(mKaonP2P.getVirtualOntology(),year).toString();
+		children.add("author: "+authorStr);
+		children.add("year:   "+yearStr);
+		return children.toArray();
+		}catch(KAON2Exception e){
+			System.err.println(e.toString()+"getChildren()in ResultViewerContentProvider,Resourcetype: DataResource");	
+		}
+	}
+	else System.err.println("ResourceType error in ResultViewerContentProvider");
+	
+	
+}
+
+return new Object[0];
+}*/

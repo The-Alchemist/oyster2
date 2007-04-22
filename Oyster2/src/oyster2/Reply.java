@@ -53,7 +53,6 @@ public class Reply implements QueryReplyListener{
 				final Entity docIndiv = (Entity)entry;
 				entries.add(docIndiv);
 			}else if(entry instanceof Ontology){
-				System.out.println("entry instanceof Ontology");
 				final Ontology ontologyEntry = (Ontology)entry;
 				entries.add(ontologyEntry);
 			}			

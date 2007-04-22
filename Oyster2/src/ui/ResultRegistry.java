@@ -4,8 +4,7 @@ import java.util.*;
 
 import oyster2.*;
 import ui.provider.ResultViewerContentProvider;
-//import ui.provider.OntologyLabelProvider;
-import ui.provider.ResultViewerLabelProvider;
+import ui.provider.OntologyLabelProvider;
 //import ui.provider.ResultViewerLabelProvider;
 import util.*;
 
@@ -18,21 +17,21 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.semanticweb.kaon2.api.*;
 
 
-public class Result implements QueryReplyListener{
+public class ResultRegistry implements QueryReplyListener{
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private TreeViewer viewer;
 	private List<Object> entries = new ArrayList<Object>();
 	private ResultViewerContentProvider contentProvider;
 	String  columnContent[];
 	//private Map resourceMap =new HashMap();
-	public Result(ResultViewer resultViewer,int resourceType){
-		this.viewer = resultViewer.getWrapedViewer(); //this.viewer = resultViewer;
+	public ResultRegistry(ResultViewerRegistry resultViewer,int resourceType){
+		this.viewer = resultViewer.getWrapedViewer();
 		contentProvider = new ResultViewerContentProvider(resourceType);
 		this.viewer.setContentProvider(contentProvider);
 		if((resourceType==Resource.DataResource)||(resourceType==Resource.RegistryResource))
-			this.viewer.setLabelProvider(new ResultViewerLabelProvider(resultViewer));//new OntologyLabelProvider(resourceType));
+			this.viewer.setLabelProvider(new OntologyLabelProvider(resourceType));
 		else {//this.viewer.getLabelProvider().dispose();
-			this.viewer.setLabelProvider(new ResultViewerLabelProvider(resultViewer));//new OntologyLabelProvider());	
+			this.viewer.setLabelProvider(new OntologyLabelProvider());	
 		}
 		viewer.setInput(entries);
 		//viewer.expandToLevel(2);
@@ -68,7 +67,7 @@ public class Result implements QueryReplyListener{
 			});	
 		}
 		mOyster2.getMainWindow().operationFinished();
-		//entries.clear();
+		entries.clear();
 	}
 	
 	public void entryReceived(final List entryList){
@@ -95,7 +94,7 @@ public class Result implements QueryReplyListener{
 			}			
 		}
 		}
-		//entries.clear();
+		entries.clear();
 	}
 	
 	public void entryReceived(final Ontology virtualOntology){
@@ -105,7 +104,7 @@ public class Result implements QueryReplyListener{
 				viewer.add(entries, virtualOntology);
 			}
 		});
-		//entries.clear();	
+		entries.clear();	
 	}
 	
 	/**

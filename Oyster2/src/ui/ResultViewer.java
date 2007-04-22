@@ -1,25 +1,30 @@
 package ui;
 
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import util.Utilities;
+import java.util.Set;
+
+import util.*;
 import ui.provider.*;
+import ui.action.*;
 import oyster2.*;
+import util.Resource;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.JFacePreferences;
+//import org.eclipse.jface.preference.IPreferenceStore;
+//import org.eclipse.jface.preference.JFacePreferences;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableTree;
-import org.eclipse.swt.layout.GridData;
+//import org.eclipse.swt.custom.TableTree;
+//import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -27,11 +32,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Table;
+//import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.TableColumn;
+//import org.eclipse.swt.widgets.TableColumn;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
@@ -42,9 +47,11 @@ public class ResultViewer extends Composite {
 	private TreeViewer wrapedViewer;
 	private ResultViewerContentProvider contentProvider;
 	private ResultViewerLabelProvider labelProvider;
+	private ResultSorter sorter;
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 
-	private List columns = new LinkedList();
+	private List<ResultViewerColumnInfo> columns = new LinkedList<ResultViewerColumnInfo>();
+	private Map<String, SetColumnVisibleAction> contextMenuActions = new HashMap<String, SetColumnVisibleAction>();
 	
 	public ResultViewer(Composite parent, int style) throws Exception {
 		
@@ -53,7 +60,13 @@ public class ResultViewer extends Composite {
 		Tree tree = new Tree(this, style);
 		wrapedViewer = new TreeViewer(tree);
 		wrapedViewer.expandToLevel(2);
-		initColumns();
+		contentProvider = new ResultViewerContentProvider(Resource.DataResource);
+		wrapedViewer.setContentProvider(contentProvider);
+		labelProvider = new ResultViewerLabelProvider(this);
+		wrapedViewer.setLabelProvider(labelProvider);
+		sorter = new ResultSorter();
+		wrapedViewer.setSorter(sorter);
+		wrapedViewer.getTree().setHeaderVisible(true);	
 		Listener listener = new Listener() {
 			public void handleEvent(Event e) {
 				switch (e.type) {
@@ -62,7 +75,84 @@ public class ResultViewer extends Composite {
 			}
 		};
 		addListener(SWT.Dispose, listener);
-		//initContextMenu();
+		initContextMenu(); 
+		initColumns();
+	}
+	
+	
+	/**
+	 * Initialize context menu of this component.
+	 */
+	private void initContextMenu() throws Exception {
+		MenuManager menuManager = new MenuManager();
+		Menu menu = menuManager.createContextMenu(wrapedViewer.getTree());
+		wrapedViewer.getTree().setMenu(menu);
+		
+		//--RDF and RDFS columns
+		ResultViewerColumnInfo labelColumnInfo = new ResultViewerColumnInfo("rdfs:label", RDFS.LABEL);
+		SetColumnVisibleAction showLabelAction = new SetColumnVisibleAction(labelColumnInfo, this);
+		contextMenuActions.put(labelColumnInfo.getColumnType(), showLabelAction);
+		menuManager.add(showLabelAction);
+		//ResultViewerColumnInfo typeColumnInfo = new ResultViewerColumnInfo("rdf:type", RDF.TYPE);
+		//SetColumnVisibleAction showTypeAction = new SetColumnVisibleAction(typeColumnInfo, this);
+		//contextMenuActions.put(typeColumnInfo.getColumnType(), showTypeAction);
+		//menuManager.add(showTypeAction);
+		
+		//--Peer column
+		ResultViewerColumnInfo peerColumnInfo = new ResultViewerColumnInfo("oyster:peer", "oyster:peer");
+		SetColumnVisibleAction showPeerAction = new SetColumnVisibleAction(peerColumnInfo, this);
+		contextMenuActions.put(peerColumnInfo.getColumnType(), showPeerAction);
+		menuManager.add(showPeerAction);
+		menuManager.add(new Separator());
+		
+		
+		Ontology resourceTypeOntology = mOyster2.getTypeOntology();
+		OWLClass ontologyClass = KAON2Manager.factory().owlClass(Constants.OMV+Constants.DefaultTypeOntologyRoot);
+		try{
+			/*KAON2 BUG, DOES NOT SUPPORT OWL DL
+	         * SHOULD BE DELETED WHEN IT DOES
+	         */
+			
+			ResultViewerColumnInfo nameColumnInfo = new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Constants.name), Constants.OMVURI+Constants.name);
+			SetColumnVisibleAction showNameAction = new SetColumnVisibleAction(nameColumnInfo, this);
+			contextMenuActions.put(nameColumnInfo.getColumnType(), showNameAction);
+			menuManager.add(showNameAction);
+			ResultViewerColumnInfo acronymColumnInfo = new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Constants.acronym), Constants.OMVURI+Constants.acronym);
+			SetColumnVisibleAction showAcronymAction = new SetColumnVisibleAction(acronymColumnInfo, this);
+			contextMenuActions.put(acronymColumnInfo.getColumnType(), showAcronymAction);
+			menuManager.add(showAcronymAction);
+			ResultViewerColumnInfo descriptionColumnInfo = new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Constants.description), Constants.OMVURI+Constants.description);
+			SetColumnVisibleAction showDescriptionAction = new SetColumnVisibleAction(descriptionColumnInfo, this);
+			contextMenuActions.put(descriptionColumnInfo.getColumnType(), showDescriptionAction);
+			menuManager.add(showDescriptionAction);
+			ResultViewerColumnInfo documentationColumnInfo = new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Constants.documentation), Constants.OMVURI+Constants.documentation);
+			SetColumnVisibleAction showDocumentationAction = new SetColumnVisibleAction(documentationColumnInfo, this);
+			contextMenuActions.put(documentationColumnInfo.getColumnType(), showDocumentationAction);
+			menuManager.add(showDocumentationAction);
+			ResultViewerColumnInfo uriColumnInfo = new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Constants.URI), Constants.OMVURI+Constants.URI);
+			SetColumnVisibleAction showURIAction = new SetColumnVisibleAction(uriColumnInfo, this);
+			contextMenuActions.put(uriColumnInfo.getColumnType(), showURIAction);
+			menuManager.add(showURIAction);
+			
+			/* UNTIL HERE */
+			
+			Set<DataProperty> dataProperties=ontologyClass.getDataPropertiesFrom(resourceTypeOntology);
+			for (DataProperty dataProperty : dataProperties){
+				SetColumnVisibleAction action = new SetColumnVisibleAction(new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Namespaces.guessLocalName(dataProperty.getURI())), dataProperty.getURI()), this);
+				contextMenuActions.put(dataProperty.getURI(), action);
+				menuManager.add(action);
+			}
+	        Set<ObjectProperty> objectProperties=ontologyClass.getObjectPropertiesFrom(resourceTypeOntology);
+	        for (ObjectProperty objectProperty : objectProperties){
+	        	SetColumnVisibleAction action = new SetColumnVisibleAction(new ResultViewerColumnInfo(MainWindow.whichName(Constants.omvCondition+Namespaces.guessLocalName(objectProperty.getURI())), objectProperty.getURI()), this);
+				contextMenuActions.put(objectProperty.getURI(), action);
+				menuManager.add(action);
+	        }
+	        
+		}
+	    catch (KAON2Exception e) {
+	    	System.err.println(e + " in contextinit()");
+	    }
 		
 	}
 	
@@ -73,6 +163,16 @@ public class ResultViewer extends Composite {
 	private void initColumns() throws Exception {
 		Tree tree = wrapedViewer.getTree();
 		tree.setHeaderVisible(true);
+		
+		PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		//IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
+		int count = prefStore.getInt(Constants.NUMBER_OF_COLUMNS);
+		for(int i=0; i<count; i++){
+			String columnType = prefStore.getString(Constants.COLUMN_TYPE+i);
+			String columnName = prefStore.getString(Constants.COLUMN_NAME+i);
+			int columnWidth = prefStore.getInt(Constants.COLUMN_WIDTH+i);
+			addColumn(new ResultViewerColumnInfo(columnName, columnType, columnWidth));
+		}
 		
 	}
 	
@@ -103,7 +203,6 @@ public class ResultViewer extends Composite {
 			columnContent = new String[]{entryURI,baseSubject,locationStr,URLStr};
 			TreeItem item = new TreeItem(tree,SWT.NONE);
 			item.setText(columnContent);
-
 		}
 		}catch(KAON2Exception e){
 			System.out.println(e.toString()+"createTreeContent");
@@ -112,7 +211,8 @@ public class ResultViewer extends Composite {
 	}
 	
 	public String getColumnType(int index){
-		return ((TreeColumn)columns.get(index)).getText();
+		//return ((TreeColumn)columns.get(index)).getText();
+		return ((ResultViewerColumnInfo)columns.get(index)).getColumnType();
 	}
 	
 	/**
@@ -159,16 +259,30 @@ public class ResultViewer extends Composite {
 				for(int i=0; i<columns.length; i++){
 					if(columns[i].equals(e.widget)){
 						ResultViewerColumnInfo colInf = (ResultViewerColumnInfo)ResultViewer.this.columns.get(i);
+						int previousCol = sorter.getSortedColumnIndex();
+						if(previousCol == i){
+							sorter.setSortedColumn(-1, null);
+							columns[i].setText(colInf.getColumnName());
+						}else {
+							sorter.setSortedColumn(i, colInf.getColumnType());
+							columns[i].setText(colInf.getColumnName() + "  *");
+							if(previousCol >= 0){
+								ResultViewerColumnInfo previousColInf = (ResultViewerColumnInfo)ResultViewer.this.columns.get(previousCol);
+								columns[previousCol].setText(previousColInf.getColumnName());
+							}
+							wrapedViewer.refresh();
+						}
 						break;
 					}
 				}
+				
 			}
 		});
 		treeColumn.addControlListener(columnInfo);
 		columns.add(columnInfo);
-		/*TODO SetColumnVisibleAction action = (SetColumnVisibleAction)contextMenuActions.get(columnInfo.getColumnType());
+		SetColumnVisibleAction action = (SetColumnVisibleAction)contextMenuActions.get(columnInfo.getColumnType());
 		if(action != null)
-			action.setChecked(true);*/
+			action.setChecked(true);
 		if (tree.isVisible()) {
 			wrapedViewer.refresh();
 		}
@@ -217,16 +331,61 @@ public class ResultViewer extends Composite {
 	}
 	
 	/**
+	 * Removes the column and its info.
+	 * 
+	 * @param index - zero-relative index of column.
+	 */
+	public void removeColumn(int columnIndex) throws IndexOutOfBoundsException {
+		ResultViewerColumnInfo columnInfo = null;
+		SetColumnVisibleAction action = null;
+		//--Remove column info
+		if(columnIndex <= columns.size())
+			columnInfo = (ResultViewerColumnInfo)columns.remove(columnIndex);
+		//--Set context menu action unchecked
+		if(columnInfo != null){
+			action = (SetColumnVisibleAction)contextMenuActions.get(columnInfo.getColumnType());
+			if(action != null){
+				action.setChecked(false);
+			}
+		}
+		//--Disable sorting when sorted column was removed
+		if(sorter != null && sorter.isSorterProperty(null, columnInfo.getColumnType()))
+			sorter.setSortedColumn(-1, null);
+		//--Change columns of underlying table
+		//Table table = wrapedViewer.getTree().getTable();
+		
+		Tree table = wrapedViewer.getTree();
+		if(table.getColumnCount() > 0){
+			//--Dispose last column
+			TreeColumn tableColumn = table.getColumn(table.getColumnCount()-1);
+			tableColumn.dispose();
+			//--Set columns' info and change sorting
+			for(int i=0; i<columns.size(); i++){
+				ResultViewerColumnInfo colInf = (ResultViewerColumnInfo)columns.get(i);
+				if(sorter.isSorterProperty(null, colInf.getColumnType())){
+					sorter.setSortedColumn(i, colInf.getColumnType());
+					table.getColumn(i).setText(colInf.getColumnName() + "  *");
+				}else{
+					table.getColumn(i).setText(colInf.getColumnName());
+				}
+				table.getColumn(i).setWidth(colInf.getWidth());
+			}
+		}
+		wrapedViewer.refresh();
+	}
+	
+	/**
 	 * Storing this component properties.
 	 */
 	private void storComponentProperties(){
-		/*IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
-		prefStore.setValue(NUMBER_OF_COLUMNS, columns.size());
+		//IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
+		PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		prefStore.setValue(Constants.NUMBER_OF_COLUMNS, columns.size());
 		for(int i=0; i<columns.size(); i++){
 			ResultViewerColumnInfo colInf = getColumnInfo(i);
-			prefStore.setValue(COLUMN_NAME + i, colInf.getColumnName());
-			prefStore.setValue(COLUMN_TYPE + i, colInf.getColumnType());
-			prefStore.setValue(COLUMN_WIDTH + i, colInf.getWidth());
-		}*/
+			prefStore.setValue(Constants.COLUMN_NAME + i, colInf.getColumnName());
+			prefStore.setValue(Constants.COLUMN_TYPE + i, colInf.getColumnType());
+			prefStore.setValue(Constants.COLUMN_WIDTH + i, colInf.getWidth());
+		}
 	}
 }

@@ -14,6 +14,7 @@ public class EditEntryAction extends Action {
  
 	private StructuredViewer viewer;
 	private Result result;
+	private ResultRegistry resultRegistry;
 
 	public EditEntryAction() {
 		setToolTipText("Edit selected bibliographical entry");
@@ -27,6 +28,13 @@ public class EditEntryAction extends Action {
 		}
 	}
 
+	public void setResult(ResultRegistry result) {
+		if(result !=null){
+			this.viewer = result.getViewer();
+			this.resultRegistry = result;
+		}
+	}
+	
 	public void run() {
 		System.out.println("edit Action starts...");
 		if(viewer==null){System.out.println("viewer is null in edit Action");}
