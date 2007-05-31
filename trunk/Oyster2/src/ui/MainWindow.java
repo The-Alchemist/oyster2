@@ -5,7 +5,7 @@ import ui.action.*;
 import java.util.List;
 import java.util.*;
 import java.net.*;
-import javax.swing.event.DocumentEvent.EventType;
+//import javax.swing.event.DocumentEvent.EventType;
 
 
 
@@ -18,7 +18,7 @@ import oyster2.*;
 //import kaonP2P.KaonP2PQuery;
 import core.*;
 import ui.provider.*;
-import ui.action.*;
+//import ui.action.*;
 import util.*;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,33 +29,33 @@ import org.eclipse.jface.action.IContributionManagerOverrides;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.JFacePreferences;
+//import org.eclipse.jface.preference.IPreferenceStore;
+//import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableTreeViewer;
+//import org.eclipse.jface.viewers.TableTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+//import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
+//import org.eclipse.swt.events.DisposeEvent;
+//import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.FocusEvent;
+//import org.eclipse.swt.events.ControlListener;
+//import org.eclipse.swt.events.ControlEvent;
+//import org.eclipse.swt.events.MouseListener;
+//import org.eclipse.swt.events.MouseMoveListener;
+//import org.eclipse.swt.events.MouseEvent;
+//import org.eclipse.swt.events.FocusListener;
+//import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -80,7 +80,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.MenuItem;
+//import org.eclipse.swt.widgets.MenuItem;
 
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
@@ -95,24 +95,23 @@ public class MainWindow extends ApplicationWindow {
 	private int locationY = 0;
 	private int windowWidth = 800;
 	private int windowHeight = 600;
-	private int westPanelSize = 35;
-	private int eastPanelSize = 100;
-	private int northPanelSize = 100;
-	private int southPanelSize = 40;
+	//private int westPanelSize = 35;
+	//private int eastPanelSize = 100;
+	//private int northPanelSize = 100;
+	//private int southPanelSize = 40;
 
 	//--Controls
 	private ResultViewer resultViewer;
 	private ResultViewerRegistry resultViewerRegistry;
 	private DetailViewer detailViewer;
-	private TreeViewer typeOntologyViewer;
+	//private TreeViewer typeOntologyViewer;
 	private TreeViewer dmozTopicsViewer;
 	private TreeViewer ontologyTopicsViewer;
 	private Text searchField;
-	private Text topicField;
-	private TreeViewer hitlist;
+	//private Text topicField;
+	//private TreeViewer hitlist;
 	private SashForm horizontalSashForm;
 	private SashForm verticalSashForm;
-	private SashForm verticalSashFormRegistry;
 	private Button searchButton;
 
 	//--Actions
@@ -124,10 +123,10 @@ public class MainWindow extends ApplicationWindow {
 	private SaveEntryAction saveEntryAction = new SaveEntryAction(this);
 	private RemoveEntryAction removeEntryAction = new RemoveEntryAction(this);
 	private OpenPreferencesAction openPreferencesAction = new OpenPreferencesAction(this);
-	private OpenRegistryAction openRegistryAction = new OpenRegistryAction();
-	private OpenOntologyAction openOntologyAction = new OpenOntologyAction();
+	//private OpenRegistryAction openRegistryAction = new OpenRegistryAction();
+	//private OpenOntologyAction openOntologyAction = new OpenOntologyAction();
 	private RemoveAllEntriesAction removeAllEntriesAction = new RemoveAllEntriesAction(this);
-	private AboutKaonP2PAction aboutBibsterAction = new AboutKaonP2PAction(this);
+	private AboutOyster2Action aboutBibsterAction = new AboutOyster2Action(this);
 
 	//--That variables should be described for swrc
 	private List searchDetails = new ArrayList();
@@ -145,12 +144,13 @@ public class MainWindow extends ApplicationWindow {
 	private Result result;
 	private ResultRegistry resultRegistry;
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
-	private List vocabulary;
+	//private List vocabulary;
 	private SearchManager searchManager = mOyster2.getSearchManager();
 	private SearchingScope searchingScope;
 	private IProgressMonitor progresMonitor;
 	private boolean mappingUsed = true;
-	private boolean manualSelected = false;
+	//private boolean manualSelected = false;
+	private String keywordSearch = "";
 
 	
 	public MainWindow(Shell shell) {
@@ -307,6 +307,7 @@ public class MainWindow extends ApplicationWindow {
 			 
 			
 			Composite detailsPanel = createDetailsPanel(verticalSashForm);
+			detailsPanel.setBackground(backgroundColor);
 			
 			/* ORI
 			Composite resultPanel = createResultPanel(verticalSashForm);
@@ -412,6 +413,7 @@ public class MainWindow extends ApplicationWindow {
 	
 	/*-----------------------Registry Monitor end-------------------------*/
 	
+	/*
 	private Composite createManualSearchPanel(Composite parent){
 		Composite manualSearchPanel = new Composite(parent,SWT.NULL);
 		final Button manualSearch = new Button(manualSearchPanel, SWT.RADIO);
@@ -442,6 +444,7 @@ public class MainWindow extends ApplicationWindow {
 		
 		return manualSearchPanel;
 	}
+	*/
 	
 	private Composite createKeywordSearchPanel(Composite parent){
 		
@@ -616,10 +619,11 @@ public class MainWindow extends ApplicationWindow {
 			allPeers.setBackground(backgroundColor);
 			//localPeer.setSelection(true);
 			searchingScope = SearchingScope.local();
+			System.out.println(searchingScope);
 			vo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					if (vo.getSelection()) {
-						List ontologyInfo = new LinkedList();
+						//List ontologyInfo = new LinkedList();
 						resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.RegistryResource);
 						//ontologyInfo.add(mKaonP2P.getVirtualOntology());
 						//result.entryReceived(mKaonP2P.getVirtualOntology());
@@ -685,7 +689,7 @@ public class MainWindow extends ApplicationWindow {
 				SWT.BOLD));	
 		
 		
-		final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
+		//final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
 		final Button localPeer = new Button(peerSelectionPanel, SWT.RADIO);
 		final Button automaticPeer = new Button(peerSelectionPanel, SWT.RADIO);
 		final Button selectedPeers = new Button(peerSelectionPanel, SWT.RADIO);
@@ -703,7 +707,7 @@ public class MainWindow extends ApplicationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if (localPeer.getSelection()) {
 					searchingScope = SearchingScope.local();
-					List ontologyInfo = new LinkedList();
+					//List ontologyInfo = new LinkedList();
 					result = new Result(resultViewer,Resource.RegistryResource);
 				}
 			}
@@ -712,7 +716,7 @@ public class MainWindow extends ApplicationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if (automaticPeer.getSelection()) {
 					searchingScope = SearchingScope.auto();
-					List<Ontology> ontologyInfo = new LinkedList<Ontology>();
+					//List<Ontology> ontologyInfo = new LinkedList<Ontology>();
 					result = new Result(resultViewer,Resource.RegistryResource);
 					//ontologyInfo.add(mOyster2.getLocalHostOntology());
 					//result.entryReceived(ontologyInfo);
@@ -727,7 +731,7 @@ public class MainWindow extends ApplicationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if (selectedPeers.getSelection()) {
 					searchingScope = SearchingScope.manual();
-					Set peerSet = dialog.getPeerSelection();
+					//Set peerSet = dialog.getPeerSelection();
 					result = new Result(resultViewer,Resource.OntologyResource);
 					//mOyster2.getSearchManager().addListener(result);
 					//mOyster2.getSearchManager().startSearch(peerSet);
@@ -876,7 +880,7 @@ public class MainWindow extends ApplicationWindow {
 	}
 	
 	/*------------------------OntologySearchPanel ends---------------------*/
-	
+	/*
 	private Composite createResourceTypePanel(Composite parent) {
 		Ontology resourceTypeOntology = mOyster2.getTypeOntology();
 		Composite typePanel = new Composite(parent, SWT.NULL);
@@ -897,7 +901,8 @@ public class MainWindow extends ApplicationWindow {
 		tableTree.setSelection(new TreeItem[] { tableTree.getTopItem() });
 		return typePanel;
 	}
-
+	*/
+	
 	private Composite createTopicsPanel(Composite parent) {
 		Ontology resourceTopicOntology = mOyster2.getTopicOntology();
 		Composite topicsPanel = new Composite(parent, SWT.NULL);
@@ -911,7 +916,7 @@ public class MainWindow extends ApplicationWindow {
 		dmozTopicsViewer.setInput(resourceTopicOntology);
 		dmozTopicsViewer.expandToLevel(2);
 		//dmozTopicsViewer.setSelection(new StructuredSelection());
-		Tree tableTree = dmozTopicsViewer.getTree();
+		//Tree tableTree = dmozTopicsViewer.getTree();
 		//tableTree.setSelection(new TreeItem[] { tableTree.getTopItem() });
 		return topicsPanel;
 	}
@@ -1152,11 +1157,11 @@ public class MainWindow extends ApplicationWindow {
 						errorDialog("Error", "Can't open browser");
 					}
 				}
-				else if(link.getLinkType().equals(Constants.ontologyLocation)
+				else if(link.getLinkType().equals(Constants.ontologyOMVLocation)
 				){
 					LinkedList<Condition> searchConditions = new LinkedList<Condition>();
 					Condition condition=null;
-					condition = new Condition(Constants.pomvCondition+Constants.ontologyLocation, link.getLinkedValue(), false);
+					condition = new Condition(Constants.pomvCondition+Constants.ontologyOMVLocation, link.getLinkedValue(), false);
 					searchConditions.addFirst(condition);
 					performDataSearch(searchConditions);
 				}
@@ -1252,6 +1257,7 @@ public class MainWindow extends ApplicationWindow {
 	private void performDataSearch() {
 		detailViewer.clear();
 		LinkedList<Condition> searchConditions = new LinkedList<Condition>();
+		
 		for (int i = 0; i < searchFields.size(); i++) {
 			String text = searchFields.get(i).getText().trim();
 			if (text != null && !text.equals("")) {
@@ -1281,12 +1287,14 @@ public class MainWindow extends ApplicationWindow {
 			searchConditions.addFirst(condition);	
 		}
 		
+		//WILDCARD SEARCH
 		String wildCard = searchField.getText().trim();
 		if (wildCard != null && !wildCard.equals("")) {
-			Condition condition = new Condition(
-					null, wildCard, true );			
-			searchConditions.addFirst(condition);
+			keywordSearch=wildCard;
+			//Condition condition = new Condition(null, wildCard, true );			
+			//searchConditions.addFirst(condition);
 		}
+		else keywordSearch="";
 		
 		performDataSearch(searchConditions);
 	}
@@ -1324,9 +1332,15 @@ public class MainWindow extends ApplicationWindow {
 		QueryFormulator mFormulator = new QueryFormulator();
 		mFormulator.generateDataQuery(conditions);
 		Oyster2Query typeQuery = mFormulator.getTypeQuery();
-		//Z	
+		//Z
 		result = new Result(resultViewer,Resource.DataResource);
-		searchManager.startSearch(null,typeQuery,false);
+		if (keywordSearch.length()>0){
+			Oyster2Query query = new Oyster2Query(new GUID(),Oyster2Query.TOPIC_QUERY,keywordSearch);
+			if (conditions.size()>0) searchManager.startSearch(query,typeQuery,true);
+			else searchManager.startSearch(query,null,true);
+		}
+		else	
+			searchManager.startSearch(null,typeQuery,false);
 		searchManager.addListener(result);   //mOyster2.getSearchManager().addListener(result);
 	}
 	
@@ -1505,16 +1519,16 @@ public class MainWindow extends ApplicationWindow {
 		if (which.equals(Constants.omvCondition+Constants.isIncompatibleWith)) {
 			return "Incompatible";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numClasses)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfClasses)) {
 			return "Classes";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numProperties)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfProperties)) {
 			return "Properties";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numIndividuals)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfIndividuals)) {
 			return "Individuals";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numAxioms)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfAxioms)) {
 			return "Axioms";
 		}
 		if (which.equals(RDFS.LABEL)) {
@@ -1625,16 +1639,16 @@ public class MainWindow extends ApplicationWindow {
 					"compatible with it. It can be used to explicitly state that ontology " +
 					"cannot upgrade to use the new version without checking whether changes are required.";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numClasses)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfClasses)) {
 			return "Number of classes in the ontology";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numProperties)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfProperties)) {
 			return "Number of properties in the ontology";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numIndividuals)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfIndividuals)) {
 			return "Number of individuals in the ontology";
 		}
-		if (which.equals(Constants.omvCondition+Constants.numAxioms)) {
+		if (which.equals(Constants.omvCondition+Constants.numberOfAxioms)) {
 			return "Number of axioms in the ontology";
 		}
 		return "";

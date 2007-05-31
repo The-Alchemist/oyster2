@@ -3,7 +3,6 @@ package core;
 import java.util.*;
 import oyster2.Oyster2Factory;
 import oyster2.Exchange;
-
 import org.semanticweb.kaon2.api.*;
 
 

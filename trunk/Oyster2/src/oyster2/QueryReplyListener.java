@@ -1,5 +1,9 @@
 package oyster2;
 
+import java.util.List;
+
+import org.semanticweb.kaon2.api.Ontology;
+
 
 /**
  * The listener interface for receiving notification about new Query Replys.
@@ -14,5 +18,9 @@ public interface QueryReplyListener {
 	 * @param queryReply the Query Reply.
 	 */
 	public void newReplyReceived(QueryReply queryReply);
+	
+	public void entryReceived(final List entryList);
+	
+	public void entryReceived(final Ontology virtualOntology);
 
 }

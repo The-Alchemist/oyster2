@@ -1,4 +1,5 @@
 package util;
+
 import org.semanticweb.kaon2.api.*;
 
 public class Property {

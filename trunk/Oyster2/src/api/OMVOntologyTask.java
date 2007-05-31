@@ -18,6 +18,14 @@ public class OMVOntologyTask {
 	    {
 	    }
 	
+	public void append(OMVOntologyTask element)
+    {
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (this.getAcronym()==null && element.getAcronym()!=null) {this.setAcronym(element.getAcronym());return;}
+		if (this.getDescription()==null && element.getDescription()!=null) {this.setDescription(element.getDescription());return;}
+		if (this.getDocumentation()==null && element.getDocumentation()!=null) {this.setDocumentation(element.getDocumentation());return;}
+    }
+	
 	public void setName(String newName)
 	{
 		this.name=newName;

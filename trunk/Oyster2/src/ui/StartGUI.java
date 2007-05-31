@@ -1,38 +1,50 @@
-package oyster2;
+package ui;
 
-import java.util.HashMap;
 import java.io.*;
-
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.widgets.Display;
-import org.semanticweb.kaon2.api.*;
+//import org.semanticweb.kaon2.api.KAON2Exception;
+//import org.semanticweb.kaon2.api.*;
 //import org.semanticweb.kaon2.server.context.*;
-import org.semanticweb.kaon2.server.rmi.*;
-
+//import org.semanticweb.kaon2.server.rmi.*;
 import ui.MainPreferencePage;
 import ui.ConditionPreferencePage;
+import ui.MainWindow;
+import oyster2.Oyster2Factory;
 
-//import org.semanticweb.kaon2.util.*;
-
-
-public class Start {
+public class StartGUI {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private static PreferenceStore store = mOyster2.getPreferenceStore();
 	public static Process serverProcess = null;
+	
+	/**
+	 * The main windows of Oyster2 GUI.
+	 */
+	private static MainWindow mainWindow;
+
+	protected static boolean appClosed = false;
+	/**
+	 * If the window should be shown.
+	 */
+	protected static boolean appWindowToBeShown = true;
+
+	private static boolean isSystemTrayActive;
 
 	
 	public static void main(String[] args)throws Exception{
 		
 		serverProcess = Runtime.getRuntime().exec("java -cp kaon2.jar org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ args[0]); 
 		if(serverProcess!=null) System.out.println("server started...");
-		Thread.currentThread().sleep(2000);
+		Thread.sleep(2000);	//Thread.currentThread().sleep(2000);
 		//List :)
         configureProperties();
-		mOyster2.init(null);
-		mOyster2.run();
+        mOyster2.init(null);
+        if (mOyster2.retInit==0)
+        	run();
 		shutdown();
     }
 	
@@ -41,7 +53,6 @@ public class Start {
 		serverProcess.destroy();	
 		System.exit(0);
 	}
-	
 	
 	public static void configureProperties(){
 		Boolean first=true;
@@ -74,7 +85,59 @@ public class Start {
 		}
 		mOyster2.setPreferenceStore(store);
 	}
+	
+	public static void run() {
+		//openWindowAndBlock();
+		while (!appClosed) {
+			if (appWindowToBeShown) {
+				openWindowAndBlock();
+				closeWindow();
+				appWindowToBeShown = false;
+				// bsc: did not work 
+				//ThreadPool.setThreadsPriority(Thread.MIN_PRIORITY);
+				if (!isSystemTrayActive) {
+					appClosed = true;
+				} else {
+					boolean result = MessageDialog.openQuestion(null, "Oyster", "Would you like to leave Oyster running in the background?");
+					if (!result) {
+						appClosed = true;
+					}
+				}
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private static void closeWindow() {
+		if (mainWindow != null) {
+			mainWindow.close();
+		}
+		mainWindow = null;
+	}
+
+	private static void openWindowAndBlock() {
+		createWindow();
+		mainWindow.setBlockOnOpen(true);
+		mainWindow.open();
+	}
+
+	private static void createWindow() {
+		if (mainWindow == null) {
+			mainWindow = new MainWindow(null);
+		}
+	}
+	
+	/**
+	 * return mainWindow instance of Oyster2
+	 */
+	public static MainWindow getMainWindow() {
+		return StartGUI.mainWindow;
+	}
 }
+
 
 /*
 		//To obtain a list of ontologies registered at the server, use the following API.

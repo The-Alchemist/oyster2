@@ -94,7 +94,7 @@ public class ResultViewerRegistry extends Composite {
 			//System.out.println("reply:"+entryURI);
 			//entries.add(entryURI);
 			ObjectProperty subject = KAON2Manager.factory().objectProperty(OMV+Constants.hasDomain);
-			ObjectProperty location = KAON2Manager.factory().objectProperty(mOyster2.getPeerDescOntologyURI()+"#ontologyLocation");
+			ObjectProperty location = KAON2Manager.factory().objectProperty(mOyster2.getPeerDescOntologyURI()+"#"+Constants.ontologyOMVLocation);
 			DataProperty URL = KAON2Manager.factory().dataProperty(OMV+ Constants.URI);
 			String baseSubject = docIndiv.getObjectPropertyValue(ontology,subject).getURI();
 			if(docIndiv.getObjectPropertyValue(ontology,location)!=null)

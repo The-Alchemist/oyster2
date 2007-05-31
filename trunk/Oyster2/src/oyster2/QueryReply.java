@@ -1,14 +1,12 @@
 package oyster2;
 
 import java.util.Collection;
-//import java.util.LinkedList;
 import java.util.Vector;
-
-//import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.Ontology;
 import org.xml.sax.helpers.DefaultHandler;
-
 import util.GUID;
+//import java.util.LinkedList;
+//import org.semanticweb.kaon2.api.Entity;
 
 
 public class QueryReply extends DefaultHandler {

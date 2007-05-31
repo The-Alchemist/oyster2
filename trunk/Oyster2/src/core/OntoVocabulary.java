@@ -2,17 +2,14 @@ package core;
 
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.io.*;
 import java.util.*;
 import org.semanticweb.kaon2.api.*;                 // This package contains the basic classes of the API
 import org.semanticweb.kaon2.api.owl.elements.*;    // This package contains classes used to represent elements of OWL ontologies
 import oyster2.*;
-import core.*;
 
 
 public class OntoVocabulary {

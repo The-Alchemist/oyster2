@@ -23,6 +23,16 @@ public class OMVPerson extends OMVParty{
 	    {
 	    }
 	
+	public void append(OMVPerson element)
+    {
+		if (this.getLastName()==null && element.getLastName()!=null) {this.setLastName(element.getLastName());return;}
+		if (this.getFirstName()==null && element.getFirstName()!=null) {this.setFirstName(element.getFirstName());return;}
+		if (this.getEMail()==null && element.getEMail()!=null) {this.setEMail(element.getEMail());return;}
+		if (this.getPhoneNumber()==null && element.getPhoneNumber()!=null) {this.setPhoneNumber(element.getPhoneNumber());return;}
+		if (this.getFaxNumber()==null && element.getFaxNumber()!=null) {this.setFaxNumber(element.getFaxNumber());return;}
+		if (element.getIsContactPerson().size()>0) {this.isContactPerson.addAll(element.getIsContactPerson());return;}
+    }
+	
 	public void setLastName(String newLastName)
 	{
 		this.lastName=newLastName;

@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.6 $".replace('$', ' ').trim() + " (" + "$Date: 2007-04-22 13:59:52 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.7 $".replace('$', ' ').trim() + " (" + "$Date: 2007-05-31 01:19:53 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -28,15 +28,33 @@ public class Constants {
 	public static final String DMOZURI = "http://dmoz.org/";
 	public static final String TopicsURI = "http://daml.umbc.edu/ontologies/topic-ont#Top/";
 	public static final String OMVURI = "http://omv.ontoware.org/2005/05/ontology#";
-	public static final String PDURI = "http://localhost/basicRegistry#";
+	//public static final String PDURI = "http://localhost/basicRegistry#";
+	public static final String POMVURI = "http://omv.ontoware.org/2007/05/pomv#";
+	public static final String MOMVURI = "http://omv.ontoware.org/2007/05/mappingomv#";
 	public static final String OMV= "http://omv.ontoware.org/2005/05/ontology";
 	public static final String LocalRegistryURI = "http://localhost/localRegistry";
 	public static final String VERSIONINFO ="http://www.w3.org/2002/07/owl#versionInfo";
 	public static final String IMPORT ="imports";
 	public static final String OMVIMPORT = OMVURI + IMPORT;
 	public static final String omvCondition = "omv:";
+	public static final String momvCondition = "momv:";
 	public static final String pomvCondition = "pomv:";
 	public static final String ontologyConcept = "Ontology";
+	public static final String mappingConcept = "Mapping";
+	public static final String propertyConcept = "Property";
+	public static final String algorithmConcept = "Algorithm";
+	public static final String manualMethodConcept = "ManualMethod";
+	public static final String filterConcept = "Filter";
+	public static final String parallelConcept = "Parallel";
+	public static final String sequenceConcept = "Sequence";
+	public static final String argumentConcept = "Argument";
+	public static final String certificateConcept = "Certificate";
+	public static final String proofConcept = "Proof";
+	public static final String parameterConcept = "Parameter";
+	public static final String mappingMethodConcept = "MappingMethod";
+	public static final String evidenceConcept = "Evidence";
+	public static final String basicMethodConcept = "BasicMethod";
+	public static final String compoundMethodConcept = "CompoundMethod";
 	public static final String personConcept = "Person";
 	public static final String organisationConcept = "Organisation";
 	public static final String partyConcept = "Party";
@@ -57,10 +75,11 @@ public class Constants {
 	public static final String description="description";
 	public static final String documentation="documentation";
 	public static final String hasDomain = "hasDomain";
-	public static final String numAxioms = "numAxioms";
-	public static final String numClasses = "numClasses";
-	public static final String numIndividuals = "numIndividuals";
-	public static final String numProperties = "numProperties";
+	public static final String richnessOfContent = "richnessOfContent";
+	public static final String numberOfAxioms = "numberOfAxioms";
+	public static final String numberOfClasses = "numberOfClasses";
+	public static final String numberOfIndividuals = "numberOfIndividuals";
+	public static final String numberOfProperties = "numberOfProperties";
 	public static final String useImports = "useImports";
 	public static final String version = "version";
 	public static final String hasPriorVersion = "hasPriorVersion";
@@ -115,10 +134,30 @@ public class Constants {
 	public static final String localPeer="localPeer";
 	public static final String peerType="peerType";
 	public static final String contextOntology="contextOntology";
-	public static final String ontologyLocation="ontologyLocation";
+	public static final String ontologyOMVLocation="ontologyOMVLocation";
 	public static final String provideOntology="provideOntology";
-	
-	
+	public static final String isSubDomainOf="isSubDomainOf";
+	public static final String acquaintedWith="acquaintedWith";
+	public static final String hasExpertise="hasExpertise";
+	public static final String provideMapping="provideMapping";
+	public static final String mappingOMVLocation="mappingOMVLocation";
+	public static final String hasProperty = "hasProperty";
+	public static final String usedMethod = "usedMethod";
+	public static final String hasEvidence = "hasEvidence";
+	public static final String hasSourceOntology = "hasSourceOntology";
+	public static final String hasTargetOntology = "hasTargetOntology";
+	public static final String level = "level";
+	public static final String processingTime="processingTime";
+	public static final String purpose="purpose";
+	public static final String type="type";
+	public static final String ID = "ID";
+	public static final String source = "source";
+	public static final String value = "value";
+	public static final String variety = "variety";
+	public static final String filtersMethod = "filtersMethod";
+	public static final String aggregatesMethod = "aggregatesMethod";
+	public static final String composesMethod = "composesMethod";
+	public static final String hasParameter = "hasParameter";
 	public static final String timeStamp="timeStamp";
 	/*RDFS Parameters
 	 * 
@@ -132,6 +171,7 @@ public class Constants {
 	
 	public static final String LocalRegistry ="localRegistry";
 	public static final String PDOntology = "peerDescriptionOntology";
+	public static final String MDOntology = "mappingDescriptionOntology";
 	public static final String TypeOntology = "typeOntology";
 	public static final String TopicOntology = "topicOntology";
 	public static final String Image = "image"; 
@@ -149,12 +189,15 @@ public class Constants {
 	public static final String BootStrapPeerIP = "bootStrapPeerIP";
 	public static final String PeerRouterIP = "peerRouterIP";
 	public static final String DefaultLocalRegistry = "O2serverfiles/localRegistry.owl";
-	public static final String DefaultPDOntology = "O2serverfiles/peersExpertiseRegistry.owl";
+	//public static final String DefaultPDOntology = "O2serverfiles/peersExpertiseRegistry.owl";
+	public static final String DefaultPDOntology = "O2serverfiles/pOMV.owl";
+	public static final String DefaultMDOntology = "O2serverfiles/mappingOMV.owl";
 	public static final String DefaultTypeOntology = "O2serverfiles/OMV.owl";
 	public static final String DefaultTopicOntology = "O2serverfiles/dmozT.rdf";
 	//public static final String DefaultImage = "file:///O2serverfiles/oyster.jpg";
 	public static final String DefaultImage = "file:O2serverfiles/oyster.jpg";
 	public static final String DefaultTypeOntologyRoot = "#Ontology";
+	public static final String DefaultMappingOntologyRoot = "#Mapping";
 	public static final String DefaultTopicOntologyRoot = "Top";
 	public static final String DefaultSearchCondition_1 = "omv:name";
 	public static final String DefaultSearchCondition_2 = "omv:isOfType";

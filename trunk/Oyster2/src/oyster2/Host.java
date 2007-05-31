@@ -2,7 +2,6 @@ package oyster2;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import org.eclipse.jface.preference.PreferenceStore;
 
 /**
@@ -16,7 +15,7 @@ public abstract class Host {
 	/**
 	 * The seperator between Internet address and port.
 	 */
-	private static final String COLON = ":";
+	//private static final String COLON = ":";
 
 	/**
 	 * The string of the whole internet address ({GUID}ip:port).

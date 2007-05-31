@@ -3,9 +3,7 @@ package core;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
 import oyster2.Oyster2Factory;
-
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
@@ -82,7 +80,6 @@ public class ExchangeInitiator implements Runnable{
 			if (mShutdownFlag)
 				return;
 			this.sleep(120000);
-
 		}
 	}
 	public void exchange(){
@@ -122,7 +119,7 @@ public class ExchangeInitiator implements Runnable{
 	 */
 	private boolean sleep(long time) {
 		try {
-			Thread.currentThread().sleep(time);
+			Thread.sleep(time);
 			return true;
 		} catch (InterruptedException e) {
 			return false;
@@ -157,7 +154,6 @@ public class ExchangeInitiator implements Runnable{
 	 * Starts the Exchanger.
 	 */
 	public void run(){
-		
 			if (mShutdownFlag)
 				return;
 			

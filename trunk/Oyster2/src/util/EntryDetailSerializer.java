@@ -1,23 +1,22 @@
 package util;
 
-import oyster2.*;
+
 import java.util.*;
-
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.JFacePreferences;
-import org.eclipse.swt.custom.StyledText;
-
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
+//import org.eclipse.jface.preference.IPreferenceStore;
+//import org.eclipse.jface.preference.JFacePreferences;
+//import org.eclipse.swt.custom.StyledText;
+//import oyster2.*;
 
 public  class EntryDetailSerializer {
 
 	protected static final String BIBTEX_ORDER_PROPERTY_PREFIX = "BIBTEX_PROPERTY_ORDER_";
 	private static final EntryDetailSerializer instance = new EntryDetailSerializer();
-	private Oyster2Factory mKaonP2P = Oyster2Factory.sharedInstance();
 	public static final char QUOTE = '"';
 	public static final char QUOTE_PARENTHESIS_OPEN = '{';
 	public static final char QUOTE_PARENTHESIS_CLOSE = '}';
+	//private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	//private Ontology ontology;
 	private EntryDetailSerializer(){ 
 	}

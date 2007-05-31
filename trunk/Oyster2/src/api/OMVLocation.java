@@ -17,6 +17,14 @@ public class OMVLocation {
 	    {
 	    }
 
+	public void append(OMVLocation element)
+    {
+		if (this.getState()==null && element.getState()!=null) {this.setState(element.getState());return;}
+		if (this.getCountry()==null && element.getCountry()!=null) {this.setCountry(element.getCountry());return;}
+		if (this.getCity()==null && element.getCity()!=null) {this.setCity(element.getCity());return;}
+		if (this.getStreet()==null && element.getStreet()!=null) {this.setStreet(element.getStreet());return;}
+    }
+	
 	public void setState(String newState)
 	{
 		this.state=newState;

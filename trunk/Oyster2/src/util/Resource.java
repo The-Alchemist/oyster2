@@ -5,7 +5,8 @@ import java.util.*;
 import org.semanticweb.kaon2.api.*;
 
 public class Resource implements Entity,Serializable {
-    public static final int OntologyResource = 0;
+	private static final long serialVersionUID = 1L;
+	public static final int OntologyResource = 0;
     public static final int DataResource = 1;
     public static final int RegistryResource = 2;
 	private String uri;

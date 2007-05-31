@@ -1,22 +1,16 @@
 package oyster2;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.*;
-import java.util.Hashtable;
-
-import oyster2.*;
-import ui.provider.ResultViewerContentProvider;
-import ui.provider.OntologyLabelProvider;
 import util.*;
-
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.SWT;
-
 import org.semanticweb.kaon2.api.*;
-import org.semanticweb.kaon2.api.owl.elements.*;
+//import java.util.Hashtable;
+//import ui.provider.ResultViewerContentProvider;
+//import ui.provider.OntologyLabelProvider;
+//import org.eclipse.jface.viewers.TreeViewer;
+//import org.eclipse.swt.widgets.TreeItem;
+//import org.eclipse.swt.widgets.Tree;
+//import org.eclipse.swt.SWT;
+//import org.semanticweb.kaon2.api.owl.elements.*;
 
 public class Reply implements QueryReplyListener{
 	private List entries = new ArrayList();
@@ -28,7 +22,7 @@ public class Reply implements QueryReplyListener{
 	 * invoked when a new query reply received.
 	 */
 	public void newReplyReceived(QueryReply reply) {
-		Collection docSet =new LinkedList();
+		//Collection docSet =new LinkedList();
 		int type = reply.getType();
 		if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
 			Iterator it = reply.getResourceSet().iterator();
@@ -42,6 +36,10 @@ public class Reply implements QueryReplyListener{
 			entries.add((String)msg);
 		}
 		entries.clear();
+	}
+	
+	public void entryReceived(final Ontology virtualOntology){
+		
 	}
 	
 	public void entryReceived(final List entryList){

@@ -15,6 +15,12 @@ public class OMVFormalityLevel {
 	    {
 	    }
 	
+	public void append(OMVFormalityLevel element)
+    {
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (this.getDescription()==null && element.getDescription()!=null) {this.setDescription(element.getDescription());return;}
+    }
+	
 	public void setName(String newName)
 	{
 		this.name=newName;

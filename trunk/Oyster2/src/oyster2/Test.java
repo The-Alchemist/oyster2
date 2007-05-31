@@ -13,10 +13,12 @@ import api.*;
 
 
 
+
+
 public class Test {
 	
 	public static void main(String[] args)throws Exception{
-		
+        
 		OMVOntologyDomain topic = new OMVOntologyDomain();
 		topic.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Arts");
 		
@@ -33,6 +35,7 @@ public class Test {
 		newOnto1.setName("testUseImport");
 		newOnto1.setURI("http://localhost/testuseimport#");
 		newOnto1.addHasDomain(topic);
+		newOnto1.setNumberOfAxioms(50);
 		oyster2Conn.replace(newOnto1);
 		
 		//IMPORTING ONTOLOGY
@@ -59,7 +62,8 @@ public class Test {
 		creator1.setEMail("hartmann@aifb-uka.de");
 		creator1.addCreatesOntology(cTemp);
 		newOnto.addHasCreator(creator1);
-		newOnto.setResourceLocator("http://www.w3.org/TR/owl-guide/wine.rdf");
+		newOnto.addResourceLocator("http://www.w3.org/TR/owl-guide/wine.rdf");
+		newOnto.addResourceLocator("http://www.w3.org/testing/wine.rdf");
 		oyster2Conn.replace(newOnto);
 		
 		//HERE WE TEST SIMPLE SEARCH
@@ -84,6 +88,15 @@ public class Test {
 		String OMVSetSerial2 = Oyster2Manager.serializeOMV(OMVSet2);
 		System.out.println("Search with conditions: ");
 		System.out.println(OMVSetSerial2);
+		
+		//HERE WE WILL TEST SEARCH BY CONDITIONS2
+		OMVOntology conditionsx = new OMVOntology();
+		conditionsx.setResourceLocator("wine");
+		
+		Set<OMVOntology> OMVSetx = oyster2Conn.search(conditionsx);
+		String OMVSetSerialx = Oyster2Manager.serializeOMV(OMVSetx);
+		System.out.println("Search with conditionsx: ");
+		System.out.println(OMVSetSerialx);
 		
 		//HERE WE TEST GETPEERS METHOD
 		Map<String,OMVPeer> OMVPeerSet = oyster2Conn.getPeers();
@@ -121,6 +134,50 @@ public class Test {
 		
 		newOnto.generateOMV2RDFFile("miTest.rdf");
 		newOnto1.generateOMV2RDFFile("C:\\miTestImported.rdf");
+		System.out.println();
+		//TEST MAPPING
+		OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter mMethod=new OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter();
+		mMethod.setID("superFilter");
+		
+		OMVMapping nMapping = new OMVMapping();
+		nMapping.setURI("http://mydomain.com/map1.rdf");
+		nMapping.setCreationDate("20/3/2007");
+		nMapping.setLevel("draft");
+		nMapping.setProcessingTime(5.33);
+		nMapping.addHasCreator(creator);
+		nMapping.setHasSourceOntology(newOnto);
+		nMapping.setHasTargetOntology(newOnto1);
+		nMapping.setUsedMethod(mMethod);
+		oyster2Conn.replace(nMapping);
+		
+		OMVOntology oSource=new OMVOntology();
+		oSource.setURI("http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#");
+		OMVMapping nMapping1 = new OMVMapping();
+		nMapping1.setURI("http://mydomain.com/map2.rdf");
+		nMapping1.setCreationDate("25/11/2006");
+		nMapping1.setLevel("final");
+		nMapping1.setProcessingTime(2.95);
+		nMapping1.addHasCreator(creator1);
+		nMapping1.setHasSourceOntology(oSource);
+		nMapping1.setHasTargetOntology(newOnto);
+		nMapping1.setUsedMethod(mMethod);
+		oyster2Conn.replace(nMapping1);
+
+		
+		//HERE WE TEST SIMPLE MAPPING SEARCH
+		Set<OMVMapping> OMVSetM = oyster2Conn.SearchMappings();
+		String OMVSetSerialM = Oyster2Manager.serializeOMVMapping(OMVSetM);
+		System.out.println("Search Mappings: ");
+		System.out.println(OMVSetSerialM);
+		
+		//HERE WE TEST SEARCH MAPPING WITH CONDITIONS
+		
+		OMVMapping mSource=new OMVMapping();
+		mSource.setHasSourceOntology(oSource);
+		Set<OMVMapping> OMVSetM1 = oyster2Conn.searchMappings(mSource);
+		String OMVSetSerialM1 = Oyster2Manager.serializeOMVMapping(OMVSetM1);
+		System.out.println("Search Mappings with condition (source=http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#):");
+		System.out.println(OMVSetSerialM1);
 		
 		//CLOSE CONNECTION
 		Oyster2Manager.closeConnection();
