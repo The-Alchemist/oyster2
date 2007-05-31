@@ -1,27 +1,27 @@
 package core;
 
 import util.*;
-
 import java.io.*;
 import java.util.*;
-
 import org.semanticweb.kaon2.api.DefaultOntologyResolver;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Connection;
-//import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
-//import org.semanticweb.kaon2.api.OntologyFileFormat; OLD VERSION
 import org.semanticweb.kaon2.api.formatting.*;
+import org.semanticweb.kaon2.api.owl.axioms.DataPropertyMember;
 import org.semanticweb.kaon2.api.owl.elements.DataProperty;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
+import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 import org.semanticweb.kaon2.api.reasoner.*;
-
-//import util.Utilities;
 import oyster2.*;
 import util.GUID;
+//import org.semanticweb.kaon2.api.KAON2Exception;
+//import org.semanticweb.kaon2.api.OntologyFileFormat; OLD VERSION
+
+
 /**
  * This class presents the local expertise registry, the query is posed against 
  * this local expertise registry. this class contains methodes which return back 
@@ -84,7 +84,7 @@ public class LocalExpertiseRegistry {
 					positiveResult = true;
 					String ontologyURI = query.tupleBuffer()[0].toString();
 					Individual ontologyIndiv =KAON2Manager.factory().individual(ontologyURI);
-					Query myQuery = reasoner.createQuery(Namespaces.INSTANCE,"SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#ontologyLocation> ?x }");  //The same as //Query myQuery = reasoner.createQuerySPARQL(Namespaces.INSTANCE,"SELECT ?x WHERE {?x <http://localhost/basicRegistry#provideOntology>"+ "<"+ontologyURI +">}");
+					Query myQuery = reasoner.createQuery(Namespaces.INSTANCE,"SELECT ?x WHERE {<"+ontologyURI +"> <"+mOyster2.getPeerDescOntologyURI()+"#"+Constants.ontologyOMVLocation+"> ?x }");  //The same as //Query myQuery = reasoner.createQuerySPARQL(Namespaces.INSTANCE,"SELECT ?x WHERE {?x <http://localhost/basicRegistry#provideOntology>"+ "<"+ontologyURI +">}");
 					myQuery.open();
 					while (!myQuery.afterLast()) {
 						String peerStr = myQuery.tupleBuffer()[0].toString();
@@ -125,13 +125,13 @@ public class LocalExpertiseRegistry {
 				while (!query.afterLast()) {
 					System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
 					String docURI = query.tupleBuffer()[0].toString();
-					Individual docIndiv =KAON2Manager.factory().individual(docURI);
+					Individual indiv =KAON2Manager.factory().individual(docURI);
 					//Filter
 					try{
-						String tName = docIndiv.getDataPropertyValue(mOyster2.getLocalHostOntology(), KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name)).toString();
-						String tURI = docIndiv.getDataPropertyValue(mOyster2.getLocalHostOntology(), KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI)).toString();
+						String tName = indiv.getDataPropertyValue(mOyster2.getLocalHostOntology(), KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name)).toString();
+						String tURI = indiv.getDataPropertyValue(mOyster2.getLocalHostOntology(), KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI)).toString();
 						if (tName!=null && tURI!=null){			
-							replyResource = new Resource(docIndiv.getURI(),docIndiv,resourceType);
+							replyResource = new Resource(indiv.getURI(),indiv,resourceType);
 							resourceSet.add(replyResource);
 						}
 					}catch(Exception e){
@@ -148,6 +148,96 @@ public class LocalExpertiseRegistry {
 			}	
 			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
 			return queryReply;			
+		}
+		
+		public QueryReply returnQueryReplyGeneral(Ontology mOntology, Oyster2Query newQuery,int resourceType){ 
+			Collection<Resource> resourceSet= new ArrayList<Resource>();
+			GUID queryUID = newQuery.getGUID();
+			
+			Resource replyResource;
+			String queryStr =newQuery.getQueryString();//queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> "hola" }"
+			try{
+				Reasoner reasoner=mOntology.createReasoner();
+				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr); 
+				query.open();
+				while (!query.afterLast()) {
+					System.out.println("URI: "+query.tupleBuffer()[0].toString());
+					String docURI = query.tupleBuffer()[0].toString();
+					Individual indiv =KAON2Manager.factory().individual(docURI);
+					//Filter
+					replyResource = new Resource(indiv.getURI(),indiv,resourceType);
+					resourceSet.add(replyResource);
+					query.next();
+				}
+				query.close();
+				query.dispose();
+				reasoner.dispose();
+			}catch(Exception e){
+				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
+				return null;	
+			}	
+			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
+			return queryReply;			
+		}
+		public QueryReply returnQueryReply(Ontology mOntology, Oyster2Query topicQuery, Oyster2Query typeQuery, int resourceType){
+			QueryReply queryReply =null;
+			QueryReply queryReply1 =null;
+			QueryReply queryReply2 =null;
+			Collection<Resource> resourceSet= new ArrayList<Resource>();
+			Collection<Resource> rSet= new ArrayList<Resource>();
+			try{
+				if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){
+					OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
+					for(DataPropertyMember dp : mOntology.createAxiomRequest (DataPropertyMember.class).getAll()){
+						String value = dp.getTargetValue().getValue().toString();
+						//System.out.println(dp.toString());
+						if(mOntology.containsAxiom(KAON2Manager.factory().classMember(oConcept,dp.getSourceIndividual()),true) && (!dp.getDataProperty().equals(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.timeStamp)))){
+							if(value.toLowerCase().contains(topicQuery.getQueryString().toLowerCase())){
+								Individual docIndiv=dp.getSourceIndividual();
+								try{
+									String tName = docIndiv.getDataPropertyValue(mOntology, KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name)).toString();
+									String tURI = docIndiv.getDataPropertyValue(mOntology, KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI)).toString();
+									if (tName!=null && tURI!=null){			
+										//System.out.println("yes , "+docIndiv);
+										Resource replyResource = new Resource(docIndiv.getURI(),docIndiv,Resource.DataResource);
+										Iterator it = resourceSet.iterator();
+										boolean in=false;
+										while(it.hasNext()){
+											final Resource entry =(Resource) it.next();
+											if (entry.getEntity().equals(replyResource.getEntity())) in=true;
+										}
+										if (!in)resourceSet.add(replyResource);
+									}
+								}catch(Exception e){	
+								}
+							}
+						}
+					}
+					queryReply1 = new QueryReply(topicQuery.getGUID(),resourceSet,mOntology);
+				}
+				if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){
+					queryReply2 = returnQueryReply(mOntology,typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
+				}
+				//Filter intersection
+				if (queryReply1!=null && queryReply2!=null){
+					Iterator it1 = queryReply1.getResourceSet().iterator();
+					while(it1.hasNext()){
+						final Resource  entry =(Resource) it1.next();
+						Iterator it2 = queryReply2.getResourceSet().iterator();
+						while(it2.hasNext()){
+							final Resource en =(Resource) it2.next();
+							if (en.getEntity().equals(entry.getEntity())) rSet.add(en);
+						}
+					}
+					queryReply = new QueryReply(topicQuery.getGUID(),rSet,mOntology);
+				}
+				else if (queryReply1!=null) queryReply=queryReply1;
+				else if (queryReply2!=null) queryReply=queryReply2;
+			}catch (Exception e) {
+				System.out.println("localExpertiseRegistry Keyword search problem: "+e);
+				return null;
+			}
+			return queryReply;
 		}
 		
 		

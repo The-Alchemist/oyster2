@@ -1,19 +1,16 @@
 package core;
 
-
 import java.util.*;
-
 import org.semanticweb.kaon2.api.Namespaces;
-
 import util.GUID;
-
 import oyster2.*;
-
 
 public class QueryFormulator {
 	
 	//private static final String baseSubject = "<http://omv.ontoware.org/2005/05/ontology#hasDomain>";
 	private static final String OMVURI =  Constants.OMVURI;
+	private static final String MOMVURI =  Constants.MOMVURI;
+	private static final String POMVURI =  Constants.POMVURI;
 	//private static final String SWRCURI = Constants.SWRCURI; 
 	//private static final String PROTONTURI = Constants.PROTONTURI;
 	//private static final String PROTONSURI = Constants.PROTONSURI;
@@ -126,7 +123,7 @@ public class QueryFormulator {
 	public void addFilter(StringBuffer ret,Condition c, int i){
 	  String pred = c.getPred();
 	  String value = c.getValue();
-		//System.out.println("Type : " + c.getConditionType());
+	  //System.out.println("Type : " + c.getConditionType()+ " pred : "+c.getPred()+" value : "+c.getValue());
 	  if (pred!=null){
 		if(pred.startsWith("omv:")){
 			if (c.getConditionType()== Condition.LITERAL_TYPE){
@@ -136,7 +133,9 @@ public class QueryFormulator {
 			else if (c.getConditionType()== Condition.RESOURCE_TYPE){
 				String ref = c.getReference();
 				if (ref!=null){
-					ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					if(ref.startsWith("omv:")) ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					else if(ref.startsWith("momv:")) ret.append("<"+MOMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					else if(ref.startsWith("pomv:")) ret.append("<"+POMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
 					ret.append(" . "+"?r"+Integer.toString(i) + " <"+OMVURI+Namespaces.guessLocalName(pred) +"> "+ "?v"+Integer.toString(i));
 					ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
 				}
@@ -145,12 +144,29 @@ public class QueryFormulator {
 		}
 		else if(pred.startsWith("pomv:")){
 			if (c.getConditionType()== Condition.RESOURCE_TYPE){
-				ret.append("<"+Constants.PDURI+Namespaces.guessLocalName(pred) +"> <"+Constants.LocalRegistryURI+"#"+value+"> ");
+				ret.append("<"+Constants.POMVURI+Namespaces.guessLocalName(pred) +"> <"+Constants.LocalRegistryURI+"#"+value+"> ");
+			}
+		}
+		else if(pred.startsWith("momv:")){
+			if (c.getConditionType()== Condition.LITERAL_TYPE){
+				ret.append("<"+MOMVURI+Namespaces.guessLocalName(pred)+">"+" "+ "?v"+Integer.toString(i));
+				ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
+			}
+			else if (c.getConditionType()== Condition.RESOURCE_TYPE){
+				String ref = c.getReference();
+				if (ref!=null){
+					if(ref.startsWith("omv:")) ret.append("<"+OMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					else if(ref.startsWith("momv:")) ret.append("<"+MOMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					else if(ref.startsWith("pomv:")) ret.append("<"+POMVURI+Namespaces.guessLocalName(ref) +"> "+"?r"+Integer.toString(i));
+					ret.append(" . "+"?r"+Integer.toString(i) + " <"+MOMVURI+Namespaces.guessLocalName(pred) +"> "+ "?v"+Integer.toString(i));
+					ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");
+				}
+				else ret.append("<"+MOMVURI+Namespaces.guessLocalName(pred) +"> <"+value+"> ");//ret.append("<"+MOMVURI+Namespaces.guessLocalName(pred) +"> \""+value+"\" ");
 			}
 		}
 	  }
-	  else{
-			ret.append("?wild"+" "+ "?v"+Integer.toString(i));
+	  else{ //WILDCARD DOES NOT WORK KAON2 LIMITATION :(
+			ret.append("?any"+" "+ "?v"+Integer.toString(i));
 			ret.append(" . FILTER regex(?v"+Integer.toString(i)+", " + '"' + value + '"' + "," + '"' + "i" + '"' + ") ");		
 	  }
 	}
@@ -196,7 +212,6 @@ public class QueryFormulator {
 			//return;
 		}
 		typeClause = " { ?x rdf:type <"+c.getValue()+"> ";
-		
 	}
 	private void addTopicCondition(Condition c){
 		if((c.getValue()==null)||(c.getValue().length()<=0)||(c.getPred()==null)){

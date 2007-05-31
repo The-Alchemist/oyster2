@@ -1,6 +1,9 @@
 package api;
 
 //import java.util.HashMap;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Set;
 import java.util.HashSet;
 import api.Oyster2Manager;
@@ -42,16 +45,60 @@ public class OMVOntology {
 	private OMVOntology hasPriorVersion;
 	private Set <OMVOntology> isBackwardCompatibleWith = new HashSet <OMVOntology>();
 	private Set <OMVOntology> isIncompatibleWith = new HashSet <OMVOntology>();
-	private Integer numClasses;
-	private Integer numProperties;
-	private Integer numIndividuals;
-	private Integer numAxioms;
+	private Integer numberOfClasses;
+	private Integer numberOfProperties;
+	private Integer numberOfIndividuals;
+	private Integer numberOfAxioms;
+	private String richnessOfContent;
 	private String timeStamp;
 	
 	public OMVOntology()
 	    {
 	    }
-	 	
+	
+	public void append(OMVOntology element)
+    {
+		if (this.getURI()==null && element.getURI()!=null) {this.setURI(element.getURI());return;}
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (this.getAcronym()==null && element.getAcronym()!=null) {this.setAcronym(element.getAcronym());return;}
+		if (this.getDescription()==null && element.getDescription()!=null) {this.setDescription(element.getDescription());return;}
+		if (this.getDocumentation()==null && element.getDocumentation()!=null) {this.setDocumentation(element.getDocumentation());return;}
+		if (this.getKeywords()==null && element.getKeywords()!=null) {this.setKeywords(element.getKeywords());return;}
+		if (this.getStatus()==null && element.getStatus()!=null) {this.setStatus(element.getStatus());return;}
+		if (this.getCreationDate()==null && element.getCreationDate()!=null) {this.setCreationDate(element.getCreationDate());return;}
+		if (this.getModificationDate()==null && element.getModificationDate()!=null) {this.setModificationDate(element.getModificationDate());return;}
+		if (element.getHasContributor().size()>0) {this.hasContributor.addAll(element.getHasContributor());return;}
+		if (element.getHasCreator().size()>0) {this.hasCreator.addAll(element.getHasCreator());return;}
+		if (element.getUsedKnowledgeRepresentationParadigm().size()>0) {this.usedKnowledgeRepresentationParadigm.addAll(element.getUsedKnowledgeRepresentationParadigm());return;}
+		if (element.getUsedOntologyEngineeringMethodology().size()>0) {this.usedOntologyEngineeringMethodology.addAll(element.getUsedOntologyEngineeringMethodology());return;}
+		if (element.getUsedOntologyEngineeringTool().size()>0) {this.usedOntologyEngineeringTool.addAll(element.getUsedOntologyEngineeringTool());return;}
+		if (element.getHasDomain().size()>0) {this.hasDomain.addAll(element.getHasDomain());return;}
+		if (this.getIsOfType()==null && element.getIsOfType()!=null) {this.setIsOfType(element.getIsOfType());return;}
+		if (this.getNaturalLanguage()==null && element.getNaturalLanguage()!=null) {this.setNaturalLanguage(element.getNaturalLanguage());return;}
+		if (element.getDesignedForOntologyTask().size()>0) {this.designedForOntologyTask.addAll(element.getDesignedForOntologyTask());return;}
+		if (this.getHasOntologyLanguage()==null && element.getHasOntologyLanguage()!=null) {this.setHasOntologyLanguage(element.getHasOntologyLanguage());return;}
+		if (this.getHasOntologySyntax()==null && element.getHasOntologySyntax()!=null) {this.setHasOntologySyntax(element.getHasOntologySyntax());return;}
+		if (this.getHasFormalityLevel()==null && element.getHasFormalityLevel()!=null) {this.setHasFormalityLevel(element.getHasFormalityLevel());return;}
+		if (this.getResourceLocator()==null && element.getResourceLocator()!=null) {this.setResourceLocator(element.getResourceLocator());return;}
+		if (this.getVersion()==null && element.getVersion()!=null) {this.setVersion(element.getVersion());return;}
+		if (this.getHasLicense()==null && element.getHasLicense()!=null) {this.setHasLicense(element.getHasLicense());return;}
+		if (element.getUseImports().size()>0) {this.useImports.addAll(element.getUseImports());return;}
+		if (this.getHasPriorVersion()==null && element.getHasPriorVersion()!=null) {this.setHasPriorVersion(element.getHasPriorVersion());return;}
+		if (element.getIsBackwardCompatibleWith().size()>0) {this.isBackwardCompatibleWith.addAll(element.getIsBackwardCompatibleWith());return;}
+		if (element.getIsIncompatibleWith().size()>0) {this.isIncompatibleWith.addAll(element.getIsIncompatibleWith());return;}
+		if (this.getNumberOfClasses()==null && element.getNumberOfClasses()!=null) {this.setNumberOfClasses(element.getNumberOfClasses());return;}
+		if (this.getNumberOfProperties()==null && element.getNumberOfProperties()!=null) {this.setNumberOfProperties(element.getNumberOfProperties());return;}
+		if (this.getNumberOfAxioms()==null && element.getNumberOfAxioms()!=null) {this.setNumberOfAxioms(element.getNumberOfAxioms());return;}
+		if (this.getNumberOfIndividuals()==null && element.getNumberOfIndividuals()!=null) {this.setNumberOfIndividuals(element.getNumberOfIndividuals());return;}
+		if (this.getRichnessOfContent()==null && element.getRichnessOfContent()!=null) {this.setRichnessOfContent(element.getRichnessOfContent());return;}
+		if (this.getTimeStamp()==null && element.getTimeStamp()!=null){
+			Date now = new Date();
+			String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+			this.setTimeStamp(sNow);
+			return;
+		}
+    }
+	
 	/**
 	 * Generates an RDF File representing this OMVOntology object.
 	 * @param filename is the name of the file that will be
@@ -308,6 +355,25 @@ public class OMVOntology {
 		return this.hasFormalityLevel;
 	}
 	
+	public void addResourceLocator(String newResourceLocator)
+	{
+		if (this.resourceLocator!=null && this.resourceLocator!="")
+			this.resourceLocator=this.resourceLocator+";"+newResourceLocator;
+		else
+			this.resourceLocator=newResourceLocator;
+	}
+	
+	public void removeResourceLocator(String oldResourceLocator)
+	{
+		if (this.resourceLocator!=null && this.resourceLocator!=""){
+			int space=this.resourceLocator.indexOf(oldResourceLocator);
+			if (space>=0) {
+				String t1=this.resourceLocator.substring(0, space);
+				t1=t1+this.resourceLocator.substring(space+oldResourceLocator.length()+1,this.resourceLocator.length());
+			}
+		}
+	}
+
 	public void setResourceLocator(String newResourceLocator)
 	{
 		this.resourceLocator=newResourceLocator;
@@ -393,44 +459,44 @@ public class OMVOntology {
 		return this.isIncompatibleWith;
 	}
 	
-	public void setNumClasses(Integer newNumClasses)
+	public void setNumberOfClasses(Integer newNumClasses)
 	{
-		this.numClasses=newNumClasses;
+		this.numberOfClasses=newNumClasses;
 	}
 	
-	public Integer getNumClasses()
+	public Integer getNumberOfClasses()
 	{
-		return this.numClasses;
+		return this.numberOfClasses;
 	}
 	
-	public void setNumProperties(Integer newNumProperties)
+	public void setNumberOfProperties(Integer newNumProperties)
 	{
-		this.numProperties=newNumProperties;
+		this.numberOfProperties=newNumProperties;
 	}
 	
-	public Integer getNumProperties()
+	public Integer getNumberOfProperties()
 	{
-		return this.numProperties;
+		return this.numberOfProperties;
 	}
 	
-	public void setNumIndividuals(Integer newNumIndividuals)
+	public void setNumberOfIndividuals(Integer newNumIndividuals)
 	{
-		this.numIndividuals=newNumIndividuals;
+		this.numberOfIndividuals=newNumIndividuals;
 	}
 	
-	public Integer getNumIndividuals()
+	public Integer getNumberOfIndividuals()
 	{
-		return this.numIndividuals;
+		return this.numberOfIndividuals;
 	}
 	
-	public void setNumAxioms(Integer newNumAxioms)
+	public void setNumberOfAxioms(Integer newNumAxioms)
 	{
-		this.numAxioms=newNumAxioms;
+		this.numberOfAxioms=newNumAxioms;
 	}
 	
-	public Integer getNumAxioms()
+	public Integer getNumberOfAxioms()
 	{
-		return this.numAxioms;
+		return this.numberOfAxioms;
 	}
 	
 	public void setTimeStamp(String newTimeStamp)
@@ -443,4 +509,13 @@ public class OMVOntology {
 		return this.timeStamp;
 	}
 	
+	public void setRichnessOfContent(String newRichness)
+	{
+		this.richnessOfContent=newRichness;
+	}
+	
+	public String getRichnessOfContent()
+	{
+		return this.richnessOfContent;
+	}
 }

@@ -3,7 +3,6 @@ package oyster2;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
-
 import oyster2.Constants;
 import oyster2.Host;
 import util.GUID;
@@ -52,7 +51,7 @@ public class Oyster2Host extends Host{
 	/**
 	 * The list of already created Hosts.
 	 */
-	protected static Hashtable mHosts = new Hashtable();
+	protected static Hashtable<util.GUID,XMLOyster2Host> mHosts = new Hashtable<util.GUID,XMLOyster2Host>();
 
 	/**
 	 * The path of the host.
@@ -63,11 +62,6 @@ public class Oyster2Host extends Host{
 	 * The last time the path of the host was set.
 	 */
 	protected long mPathTimestamp = 0;
-
-	/**
-	 * The PGrid facility.
-	 */
-	private Oyster2Factory mKaonP2P= Oyster2Factory.sharedInstance();
 
 	/**
 	 * Creates a new host.
@@ -283,7 +277,7 @@ public class Oyster2Host extends Host{
 	 *
 	 * @return the GUID of this host.
 	 */
-	public static GUID getGUID() {
+	public GUID getGUID() {
 		return mGUID;
 	}
 

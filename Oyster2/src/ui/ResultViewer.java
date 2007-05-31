@@ -99,7 +99,7 @@ public class ResultViewer extends Composite {
 		//menuManager.add(showTypeAction);
 		
 		//--Peer column
-		ResultViewerColumnInfo peerColumnInfo = new ResultViewerColumnInfo("oyster:peer", "oyster:peer");
+		ResultViewerColumnInfo peerColumnInfo = new ResultViewerColumnInfo("oyster:peer", Constants.POMVURI+Constants.ontologyOMVLocation);
 		SetColumnVisibleAction showPeerAction = new SetColumnVisibleAction(peerColumnInfo, this);
 		contextMenuActions.put(peerColumnInfo.getColumnType(), showPeerAction);
 		menuManager.add(showPeerAction);
@@ -194,7 +194,7 @@ public class ResultViewer extends Composite {
 			//System.out.println("reply:"+entryURI);
 			//entries.add(entryURI);
 			ObjectProperty subject = KAON2Manager.factory().objectProperty(OMV+Constants.hasDomain);
-			ObjectProperty location = KAON2Manager.factory().objectProperty(mOyster2.getPeerDescOntologyURI()+"#ontologyLocation");
+			ObjectProperty location = KAON2Manager.factory().objectProperty(mOyster2.getPeerDescOntologyURI()+"#"+Constants.ontologyOMVLocation);
 			DataProperty URL = KAON2Manager.factory().dataProperty(OMV+ Constants.URI);
 			String baseSubject = docIndiv.getObjectPropertyValue(ontology,subject).getURI();
 			if(docIndiv.getObjectPropertyValue(ontology,location)!=null)
@@ -380,6 +380,12 @@ public class ResultViewer extends Composite {
 	private void storComponentProperties(){
 		//IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
 		PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		int count = prefStore.getInt(Constants.NUMBER_OF_COLUMNS);
+		for(int i=0; i<count; i++){
+			prefStore.setToDefault(Constants.COLUMN_TYPE+i);
+			prefStore.setToDefault(Constants.COLUMN_NAME+i);
+			prefStore.setToDefault(Constants.COLUMN_WIDTH+i);
+		}
 		prefStore.setValue(Constants.NUMBER_OF_COLUMNS, columns.size());
 		for(int i=0; i<columns.size(); i++){
 			ResultViewerColumnInfo colInf = getColumnInfo(i);
@@ -387,5 +393,12 @@ public class ResultViewer extends Composite {
 			prefStore.setValue(Constants.COLUMN_TYPE + i, colInf.getColumnType());
 			prefStore.setValue(Constants.COLUMN_WIDTH + i, colInf.getWidth());
 		}
+		try{
+			prefStore.save();
+		}
+		catch(Exception IO){
+			System.out.println("couldnt save properties");
+		}
+		
 	}
 }

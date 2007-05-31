@@ -290,8 +290,15 @@ public class DetailViewer extends Composite{
 				else
 					appendAsLink(serializeValue(value.toString()),serializeValue(pred));//appendText(serializeValue(value.toString()),SWT.BOLD,linkColor);
 			}
-			else if (serializeValue(pred).equals(Constants.resourceLocator) ||
-					serializeValue(pred).equals(Constants.documentation) 
+			else if (serializeValue(pred).equals(Constants.resourceLocator) 
+						){
+					String[] result = value.toString().split(";");
+					for (int x=0; x<result.length; x++){
+						appendAsLink(result[x],serializeValue(pred));
+						if (x<result.length-1)appendText("  ",SWT.NORMAL,null);
+					}
+			}
+			else if (serializeValue(pred).equals(Constants.documentation) 
 						)
 					appendAsLink(value.toString(),serializeValue(pred));
 			else appendText(value.toString(),SWT.NORMAL,null);

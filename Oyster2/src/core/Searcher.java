@@ -1,19 +1,13 @@
 package core;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
 import java.util.*;
-import java.util.NoSuchElementException;
-import java.util.Vector;
 import java.util.logging.Logger;
-
 import oyster2.*;
 import util.Resource;
-import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
+//import org.semanticweb.kaon2.api.*;
+//import org.semanticweb.kaon2.api.owl.axioms.DataPropertyMember;
+
 
 public class Searcher implements Runnable {
 
@@ -153,20 +147,27 @@ public class Searcher implements Runnable {
 	public void run(){
 		if(normalSearchFlag){
 			QueryReply queryReply =null;
-			if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){  
-				queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
-				topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
-				positiveResult = localRegistry.searchExpertiseOntology(topicQuery,manualSelected);
-				if (!positiveResult ) {
-					System.out.println("Bad request for '" + topicQuery.getQueryString() + "'.");
-					queryReply = new QueryReply(topicQuery.getGUID(), QueryReply.TYPE_BAD_REQUEST);
-					mOyster2.getSearchManager().notifyReplyListener(queryReply);
-				}			
+			if (!manualSelected){
+				if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){  
+					queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
+					topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
+					positiveResult = localRegistry.searchExpertiseOntology(topicQuery,manualSelected);
+					if (!positiveResult ) {
+						System.out.println("Bad request for '" + topicQuery.getQueryString() + "'.");
+						queryReply = new QueryReply(topicQuery.getGUID(), QueryReply.TYPE_BAD_REQUEST);
+						mOyster2.getSearchManager().notifyReplyListener(queryReply);
+					}			
+				}
+				else if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){
+					typeQuery.setStatus(Oyster2Query.STATUS_RUNNING);
+					queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
+					typeQuery.setStatus(Oyster2Query.STATUS_FINISHED);
+				}
 			}
-			else if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){
-				typeQuery.setStatus(Oyster2Query.STATUS_RUNNING);
-				queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
-				typeQuery.setStatus(Oyster2Query.STATUS_FINISHED);
+			else{
+				topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);
+				queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),topicQuery,typeQuery,Resource.DataResource); 
+				topicQuery.setStatus(Oyster2Query.STATUS_FINISHED);
 			}
 			returnResult(queryReply);
 		}

@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.File;
-
-//import oyster2.OntologyProperty;
 import oyster2.Constants;
 import oyster2.Oyster2Factory;
 import org.eclipse.jface.preference.PreferenceStore;
@@ -124,10 +122,11 @@ public class Oyster2Manager{
 			if (omv.getHasPriorVersion()!=null) serial = serial + getData(omv.getHasPriorVersion().getURI(),"hasPriorVersion");
 			serial = serial + getDataSetString(omv.getIsBackwardCompatibleWith(),"isBackwardCompatibleWith",0)+
 			getDataSetString(omv.getIsIncompatibleWith(),"isIncompatibleWith",0);
-			if (omv.getNumClasses()!=null) serial = serial + getData(omv.getNumClasses().toString(),"numClasses");
-			if (omv.getNumProperties()!=null) serial = serial + getData(omv.getNumProperties().toString(),"numProperties");
-			if (omv.getNumIndividuals()!=null) serial = serial + getData(omv.getNumIndividuals().toString(),"numIndividuals");
-			if (omv.getNumAxioms()!=null) serial = serial + getData(omv.getNumAxioms().toString(),"numAxioms");
+			if (omv.getNumberOfClasses()!=null) serial = serial + getData(omv.getNumberOfClasses().toString(),"numberOfClasses");
+			if (omv.getNumberOfProperties()!=null) serial = serial + getData(omv.getNumberOfProperties().toString(),"numberOfProperties");
+			if (omv.getNumberOfIndividuals()!=null) serial = serial + getData(omv.getNumberOfIndividuals().toString(),"numberOfIndividuals");
+			if (omv.getNumberOfAxioms()!=null) serial = serial + getData(omv.getNumberOfAxioms().toString(),"numberOfAxioms")+
+			getData(omv.getRichnessOfContent(),"richnessOfContent");
 			serial = serial + "}\n\n";
 		}
 		}catch(Exception ignore){
@@ -159,6 +158,40 @@ public class Oyster2Manager{
 			getData(omvPeer.getPeerType(),"peerType");
 			if (omvPeer.getContextOntology()!=null) serial = serial + getData(omvPeer.getContextOntology().getURI(),"contextOntology");
 			serial=serial+getDataSetString(omvPeer.getProvideOntology(),"provideOntology",0);
+			serial=serial+getDataSetString(omvPeer.getProvideMapping(),"provideMapping",7);
+			serial=serial+getDataSetString(omvPeer.getHasExpertise(),"hasExpertise",5);
+			serial = serial + "}\n\n";
+		}
+		}catch(Exception ignore){
+			//-- ignore
+		}
+		return serial;
+	}
+	
+	/**
+	 * Return the string representation of a set of OMVMapping objects.
+	 * @param OMVSet the set of OMVMapping objects.
+	 * @return the string representation of the set of OMVMapping objects.
+	 */
+	public static String serializeOMVMapping(Set<OMVMapping> OMVSet){
+		String serial="";
+		
+		Iterator it = OMVSet.iterator();
+		try{
+		while(it.hasNext()){
+			OMVMapping omv = (OMVMapping)it.next();
+			serial=serial+"OMVMapping {\n"+
+			getData(omv.getURI(),"URI")+
+			getData(omv.getCreationDate(),"CreationDate")+
+			getData(omv.getLevel(),"level")+
+			getData(omv.getPurpose(),"purpose")+
+			getData(omv.getType(),"type");
+			if (omv.getProcessingTime()!=null) serial = serial + getData(omv.getProcessingTime().toString(),"processingTime");
+			if (omv.getHasSourceOntology()!=null) serial = serial + getData(omv.getHasSourceOntology().getURI(),"hasSourceOntology");
+			if (omv.getHasTargetOntology()!=null) serial = serial + getData(omv.getHasTargetOntology().getURI(),"hasTargetOntology");
+			if (omv.getHasTargetOntology()!=null) serial = serial + getData(omv.getUsedMethod().getID(),"usedMethod");
+			serial=serial+getDataSetString(omv.getHasCreator(),"hasCreator",1);
+			serial=serial+getDataSetString(omv.getHasProperty(),"hasProperty",8);
 			serial = serial + "}\n\n";
 		}
 		}catch(Exception ignore){
@@ -224,7 +257,16 @@ public class Oyster2Manager{
 	private static String getData(String which, String name){
 		String local="";
 		if (which!=null)
-			local = "\t"+name+": "+which+"\n";
+			if (name!="resourceLocator")
+				local = "\t"+name+": "+which+"\n";
+			else{
+				String[] result = which.split(";");
+				local = "\t"+name+": ";
+			    for (int x=0; x<result.length; x++)
+			         local=local+result[x]+" ";
+			    local = local+"\n";
+			}
+				
 		return local;
 	}
 	
@@ -325,10 +367,11 @@ public class Oyster2Manager{
 			List<OntologyChangeEvent> tChanges = getDataSetEvent(Constants.isIncompatibleWith,omvT.getIsIncompatibleWith(),oIndividual,0); 
 			if (tChanges!=null) changes.addAll(tChanges);
 		}
-		if (omvT.getNumClasses()!=null) changes.add(getEvent(Constants.numClasses,omvT.getNumClasses().toString(),oIndividual));
-		if (omvT.getNumProperties()!=null) changes.add(getEvent(Constants.numProperties,omvT.getNumProperties().toString(),oIndividual));
-		if (omvT.getNumIndividuals()!=null) changes.add(getEvent(Constants.numIndividuals,omvT.getNumIndividuals().toString(),oIndividual));
-		if (omvT.getNumAxioms()!=null) changes.add(getEvent(Constants.numAxioms,omvT.getNumAxioms().toString(),oIndividual));
+		if (omvT.getNumberOfClasses()!=null) changes.add(getEvent(Constants.numberOfClasses,omvT.getNumberOfClasses().toString(),oIndividual));
+		if (omvT.getNumberOfProperties()!=null) changes.add(getEvent(Constants.numberOfProperties,omvT.getNumberOfProperties().toString(),oIndividual));
+		if (omvT.getNumberOfIndividuals()!=null) changes.add(getEvent(Constants.numberOfIndividuals,omvT.getNumberOfIndividuals().toString(),oIndividual));
+		if (omvT.getNumberOfAxioms()!=null) changes.add(getEvent(Constants.numberOfAxioms,omvT.getNumberOfAxioms().toString(),oIndividual));
+		if (omvT.getRichnessOfContent()!=null) changes.add(getEvent(Constants.richnessOfContent,omvT.getRichnessOfContent(),oIndividual));
 		
 		if (ontologyObjectProperty!=null && ontologyIndividual!=null) changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oIndividual),OntologyChangeEvent.ChangeType.ADD));
 		return changes;
@@ -510,6 +553,10 @@ public class Oyster2Manager{
 		changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 		if (omvT.getName()!=null) changes.add(getEvent(Constants.name,omvT.getName(),objectPropertyIndividual));
 		if (omvT.getURI()!=null) changes.add(getEvent(Constants.URI,omvT.getURI(),objectPropertyIndividual));
+		if (omvT.getIsSubDomainOf().size()>0) {
+			List<OntologyChangeEvent> tChanges = getDataSetEvent(Constants.isSubDomainOf,omvT.getIsSubDomainOf(),objectPropertyIndividual,5); 
+			if (tChanges!=null) changes.addAll(tChanges);
+		}
 		
 		changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 		return changes;
@@ -776,6 +823,8 @@ public class Oyster2Manager{
 		OMVKnowledgeRepresentationParadigm omv4;
 		OMVOntologyDomain omv5;
 		OMVOntologyTask omv6;
+		OMVMapping omv7;
+		OMVMappingProperty omv8;
 		
 		Iterator it = which.iterator();
 		try{
@@ -815,6 +864,14 @@ public class Oyster2Manager{
 					omv6=(OMVOntologyTask)it.next();
 					temp=temp+omv6.getName()+" ";
 				}
+				else if (tClass==7) {
+					omv7=(OMVMapping)it.next();
+					temp=temp+omv7.getURI()+" ";
+				}
+				else if (tClass==8) {
+					omv8=(OMVMappingProperty)it.next();
+					temp=temp+omv8.getID()+" ";
+				}
 			}
 		}catch(Exception ignore){
 			System.out.println("here in getdatasetstring");
@@ -832,6 +889,7 @@ public class Oyster2Manager{
 			Thread.sleep(2000);
 			store.load();
 			mOyster2.init(null);
+			if (mOyster2.retInit!=0) closeConnection();
 	    } catch (Exception e) {
 	    	System.out.println("Oyster2Manager.newConnection error "+e);
 		}

@@ -2,11 +2,8 @@ package oyster2;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-
 
 public class XMLOyster2Host extends Oyster2Host implements XMLizable {
 

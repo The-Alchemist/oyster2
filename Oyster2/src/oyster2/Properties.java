@@ -1,7 +1,7 @@
 package oyster2;
 
 /**
- * $Id: Properties.java,v 1.2 2007-03-06 01:28:30 rpa Exp $
+ * $Id: Properties.java,v 1.3 2007-05-31 01:19:52 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -31,8 +31,8 @@ import util.Tokenizer;
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.zip.Deflater;
+//import java.util.logging.Level;
+//import java.util.zip.Deflater;
 
 /**
  * This class represents the application properties.
@@ -109,7 +109,7 @@ public class Properties {
 																						BasicSchemaOntologyFile3,"C:/GuoRui/server2/protont.owl",
 																						BasicSchemaOntologyFile4,"C:/GuoRui/kaonserver/omv.owl",
 																						LocalRegistryFile, "C:/GuoRui/server/localRegistry.owl",
-																						PeerRegistryFile, "C:/GuoRui/server/server/peersExpertiseRegistry.owl",
+																						PeerRegistryFile, "C:/GuoRui/server/server/pOMV.owl",
 																						VirtualOntologyFile, "C:/GuoRui/server/virtualOntology.owl",
 																						TypeOntologyFile, "C:/GuoRui/server/swrc.owl",
 																						TopicOntologyFile, "C:/GuoRui/server/acm.rdf",
@@ -139,12 +139,12 @@ public class Properties {
 	/**
 	 * The Oyster2 facility.
 	 */
-	private Oyster2Factory mOyster2 = null;
+	//private Oyster2Factory mOyster2 = null;
 
 	/**
 	 * The properties.
 	 */
-	private Hashtable mProperties = new Hashtable();
+	private Hashtable<String, String> mProperties = new Hashtable<String,String>();
 
 	/**
 	 * Constructs the application properties.
@@ -188,7 +188,7 @@ public class Properties {
 	 * @param file the property file.
 	 */
 	synchronized private void _init(String file) {
-		mOyster2 = Oyster2Factory.sharedInstance();
+		//mOyster2 = Oyster2Factory.sharedInstance();
 		mFile = new File(file);
 		try {
 			if (!mFile.exists()) {

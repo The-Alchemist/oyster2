@@ -28,6 +28,21 @@ public class OMVParty {
 	    {
 	    }
 	
+	public void append(OMVParty element)
+    {
+		if (element.getIsLocatedAt().size()>0) {this.isLocatedAt.addAll(element.getIsLocatedAt());return;}
+		if (element.getDevelopesOntologyEngineeringTool().size()>0) {this.developesOntologyEngineeringTool.addAll(element.getDevelopesOntologyEngineeringTool());return;}
+		if (element.getDevelopesOntologyLanguage().size()>0) {this.developesOntologyLanguage.addAll(element.getDevelopesOntologyLanguage());return;}
+		if (element.getDevelopesOntologySyntax().size()>0) {this.developesOntologySyntax.addAll(element.getDevelopesOntologySyntax());return;}
+		if (element.getSpecifiesKnowledgeRepresentationParadigm().size()>0) {this.specifiesKnowledgeRepresentationParadigm.addAll(element.getSpecifiesKnowledgeRepresentationParadigm());return;}
+		if (element.getDefinesOntologyType().size()>0) {this.definesOntologyType.addAll(element.getDefinesOntologyType());return;}
+		if (element.getDevelopesOntologyEngineeringMethodology().size()>0) {this.developesOntologyEngineeringMethodology.addAll(element.getDevelopesOntologyEngineeringMethodology());return;}
+		if (element.getSpecifiesLicense().size()>0) {this.specifiesLicense.addAll(element.getSpecifiesLicense());return;}
+		if (element.getHasAffiliatedParty().size()>0) {this.hasAffiliatedParty.addAll(element.getHasAffiliatedParty());return;}
+		if (element.getCreatesOntology().size()>0) {this.createsOntology.addAll(element.getCreatesOntology());return;}
+		if (element.getContributesToOntology().size()>0) {this.contributesToOntology.addAll(element.getContributesToOntology());return;}
+    }
+	
 	public void addIsLocatedAt(OMVLocation newIsLocatedAt)
 	{
 		this.isLocatedAt.add(newIsLocatedAt);

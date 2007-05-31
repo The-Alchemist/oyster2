@@ -1,11 +1,15 @@
 package oyster2;
 
 import java.io.Serializable;
-
 import org.xml.sax.helpers.DefaultHandler;
 
 
 public class Oyster2Query extends DefaultHandler implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The finished status (query has been processed).
@@ -119,6 +123,24 @@ public class Oyster2Query extends DefaultHandler implements Serializable {
 		return (mQueryString != null ? mQueryString : "");
 	}
 
+	/**
+	 * Returns the type.
+	 *
+	 * @return the type.
+	 */
+	public int getType() {
+		return mType;
+	}
+ 
+	/**
+	 * Sets the type.
+	 *
+	 * @param type of type.
+	 */
+	public void setType(int type) {
+		mType = type;
+	}
+	
 	/**
 	 * Returns the status.
 	 *

@@ -6,13 +6,13 @@ import org.eclipse.jface.window.ApplicationWindow;
 
 
 
-public class AboutKaonP2PAction extends Action {
+public class AboutOyster2Action extends Action {
 	
 	//private static final Logger LOG = Logger.getLogger(AboutBibsterAction.class);
 	
 	private ApplicationWindow window;
 
-	public AboutKaonP2PAction(ApplicationWindow window) {
+	public AboutOyster2Action(ApplicationWindow window) {
 		try {
 			this.window = window;
 			setText("About...");

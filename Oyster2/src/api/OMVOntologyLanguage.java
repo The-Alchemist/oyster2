@@ -24,6 +24,17 @@ public class OMVOntologyLanguage {
 	    {
 	    }
 	
+	public void append(OMVOntologyLanguage element)
+    {
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (this.getAcronym()==null && element.getAcronym()!=null) {this.setAcronym(element.getAcronym());return;}
+		if (this.getDescription()==null && element.getDescription()!=null) {this.setDescription(element.getDescription());return;}
+		if (this.getDocumentation()==null && element.getDocumentation()!=null) {this.setDocumentation(element.getDocumentation());return;}
+		if (element.getDevelopedBy().size()>0) {this.developedBy.addAll(element.getDevelopedBy());return;}
+		if (element.getSupportsRepresentationParadigm().size()>0) {this.supportsRepresentationParadigm.addAll(element.getSupportsRepresentationParadigm());return;}
+		if (element.getHasSyntax().size()>0) {this.hasSyntax.addAll(element.getHasSyntax());return;}
+    }
+	
 	public void setName(String newName)
 	{
 		this.name=newName;

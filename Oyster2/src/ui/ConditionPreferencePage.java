@@ -1,25 +1,21 @@
 package ui;
 
-import org.eclipse.jface.preference.FieldEditor;
+//import org.eclipse.jface.preference.FieldEditor;
+//import org.eclipse.jface.preference.JFacePreferences;
+//import org.eclipse.swt.*;
+//import org.eclipse.swt.layout.FillLayout;
+//import org.eclipse.swt.widgets.Display;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.swt.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-
-
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-
 import oyster2.*;
 
 public class ConditionPreferencePage extends PreferencePage{
@@ -33,7 +29,7 @@ public class ConditionPreferencePage extends PreferencePage{
 	private Text localPeerName;
 	private Text localPeerType;
 	private Text bootstrapPeerName;
-	private Text bootstrapPeerUID;
+	//private Text bootstrapPeerUID;
 	private Text bootstrapPeerIP;
 	private Text peerRouterIP;
 	private Boolean routerDisabled = false;
@@ -133,6 +129,11 @@ public class ConditionPreferencePage extends PreferencePage{
 		peerRouterIP.setVisible(false);
 		fieldLabel13.setVisible(false);
 		
+		/*localPeerName.setText(Constants.DefaultLocalPeerName);
+		localPeerType.setText(Constants.DefaultLocalPeerType);
+		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
+		bootstrapPeerIP.setText(Constants.DefaultBootStrapPeerIP);*/
+	
 		typeOntologyRoot.setText(Constants.DefaultTypeOntologyRoot);
 		topicOntologyRoot.setText(Constants.DefaultTopicOntologyRoot);
 		searchCondition_1.setText(Constants.DefaultSearchCondition_1);
@@ -140,10 +141,6 @@ public class ConditionPreferencePage extends PreferencePage{
 		searchCondition_3.setText(Constants.DefaultSearchCondition_3);
 		searchCondition_4.setText(Constants.DefaultSearchCondition_4);
 		searchCondition_5.setText(Constants.DefaultSearchCondition_5);
-		/*localPeerName.setText(Constants.DefaultLocalPeerName);
-		localPeerType.setText(Constants.DefaultLocalPeerType);
-		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
-		bootstrapPeerIP.setText(Constants.DefaultBootStrapPeerIP);*/
 		return panel;
 	}
 	/** 
@@ -151,6 +148,7 @@ public class ConditionPreferencePage extends PreferencePage{
 	 */
 	public boolean performOk() {
 		IPreferenceStore pref = this.getPreferenceStore();
+		//pref.setValue(Constants.BootStrapPeerUID, bootstrapPeerUID.getText());
 		pref.setValue(Constants.TypeOntologyRoot, typeOntologyRoot.getText());
 		pref.setValue(Constants.TopicOntologyRoot, topicOntologyRoot.getText());
 		pref.setValue(Constants.SearchCondition_1, searchCondition_1.getText());
@@ -161,7 +159,6 @@ public class ConditionPreferencePage extends PreferencePage{
 		pref.setValue(Constants.LocalPeerName, localPeerName.getText());
 		pref.setValue(Constants.LocalPeerType, localPeerType.getText());
 		pref.setValue(Constants.BootStrapPeerName, bootstrapPeerName.getText());
-		//pref.setValue(Constants.BootStrapPeerUID, bootstrapPeerUID.getText());
 		pref.setValue(Constants.BootStrapPeerIP, bootstrapPeerIP.getText());
 		pref.setValue(Constants.PeerRouterIP, peerRouterIP.getText());
 		return true;
@@ -171,6 +168,10 @@ public class ConditionPreferencePage extends PreferencePage{
 	 * It is overrided method. 
 	 */
 	protected void performDefaults() {
+		/*localPeerName.setText(Constants.DefaultLocalPeerName);
+		localPeerType.setText(Constants.DefaultLocalPeerType);
+		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
+		bootstrapPeerIP.setText(Constants.BootStrapPeerIP);*/
 		typeOntologyRoot.setText(Constants.DefaultTypeOntologyRoot);
 		topicOntologyRoot.setText(Constants.DefaultTopicOntologyRoot);
 		searchCondition_1.setText(Constants.DefaultSearchCondition_1);
@@ -178,10 +179,6 @@ public class ConditionPreferencePage extends PreferencePage{
 		searchCondition_3.setText(Constants.DefaultSearchCondition_3);
 		searchCondition_4.setText(Constants.DefaultSearchCondition_4);
 		searchCondition_5.setText(Constants.DefaultSearchCondition_5);
-		/*localPeerName.setText(Constants.DefaultLocalPeerName);
-		localPeerType.setText(Constants.DefaultLocalPeerType);
-		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
-		bootstrapPeerIP.setText(Constants.BootStrapPeerIP);*/
 		super.performDefaults();
 	}
 

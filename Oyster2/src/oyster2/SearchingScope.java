@@ -2,21 +2,16 @@ package oyster2;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-
-import oyster2.*;
 import util.GUID;
-
 
 public class SearchingScope implements Serializable {
 	 
 	  static final long serialVersionUID = -14399419759829923L;
 	  private static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	  private Type type;
-	  private Set selectedPeerIds = new HashSet();
+	  private Set<GUID> selectedPeerIds = new HashSet<GUID>();
 
 	  public static SearchingScope local() {
 	    SearchingScope scope = new SearchingScope(Type.LOCAL);
@@ -78,7 +73,12 @@ public class SearchingScope implements Serializable {
 	      } else if (name.equals(AUTO.getName())) {
 	        return AUTO;
 	      }
-	      throw new ObjectStreamException(SearchingScope.Type.class.getName()) {};
+	      throw new ObjectStreamException(SearchingScope.Type.class.getName()) {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;};
 	    }
 	  }
 

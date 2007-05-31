@@ -40,7 +40,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 						Property propertyIndiv = (Property)it.next();
 						String pred = propertyIndiv.getPred();
 						Object value = propertyIndiv.getValue();
-						if(Namespaces.guessLocalName(pred).equals("ontologyLocation"))
+						if(Namespaces.guessLocalName(pred).equals(Constants.ontologyOMVLocation))
 							children.add((Entity)value);
 						else if(Namespaces.guessLocalName(pred).equals("IPAdress"))
 							children.add((String)value);

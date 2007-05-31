@@ -1,5 +1,8 @@
 package api;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * The class OMVOntologyDomain provides the object representation
  * of the OntologyDomain class of OMV ontology.
@@ -10,10 +13,18 @@ public class OMVOntologyDomain {
 	
 	private String URI;
 	private String name;
+	private Set <OMVOntologyDomain> isSubDomainOf = new HashSet <OMVOntologyDomain>();
 	
 	public OMVOntologyDomain()
 	    {
 	    }
+	
+	public void append(OMVOntologyDomain element)
+    {
+		if (this.getURI()==null && element.getURI()!=null) {this.setURI(element.getURI());return;}
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (element.getIsSubDomainOf().size()>0) {this.isSubDomainOf.addAll(element.getIsSubDomainOf());return;}
+    }
 	
 	public void setURI(String newURI)
 	{
@@ -34,4 +45,21 @@ public class OMVOntologyDomain {
 	{
 		return this.name;
 	}
+	
+	public void addIsSubDomainOf (OMVOntologyDomain newDomain)
+	{
+		this.isSubDomainOf.add(newDomain);
+	}
+	
+	public void removeIsSubDomainOf (OMVOntologyDomain oldDomain)
+	{
+		this.isSubDomainOf.remove(oldDomain);
+	}
+	
+	public Set <OMVOntologyDomain> getIsSubDomainOf()
+	{
+		return this.isSubDomainOf;
+	}
+
+	
 }

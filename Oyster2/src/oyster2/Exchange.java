@@ -5,11 +5,9 @@ public class Exchange {
 	private int exchangeType;
 	public final  int initorExchange = 0;
 	public final  int updateExchange = 1;
-	/**
-	 * The KaonP2P facility.
-	 */
-	private Oyster2Factory mKaon = Oyster2Factory.sharedInstance();
-	private Oyster2Host localHost = mKaon.getLocalHost();
+	
+	//private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	//private Oyster2Host localHost = mOyster2.getLocalHost();
 	public Exchange(String remoteHost, int exchangeType){
 		this.remoteHost = remoteHost;
 		this.exchangeType = exchangeType;

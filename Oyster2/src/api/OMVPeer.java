@@ -17,13 +17,34 @@ public class OMVPeer {
 	private Boolean localPeer;
 	private String peerType;
 	private OMVOntology contextOntology;
-	private OMVPeer ontologyLocation;
+	private OMVPeer ontologyOMVLocation;
 	private Set <OMVOntology> provideOntology = new HashSet <OMVOntology>();
+	private Set <OMVPeer> acquaintedWith = new HashSet <OMVPeer>();
+	private Set <OMVOntologyDomain> hasExpertise = new HashSet <OMVOntologyDomain>();
+	private Set <OMVMapping> provideMapping = new HashSet <OMVMapping>();
+	private OMVPeer mappingOMVLocation;
+	
+	
 	
 	public OMVPeer()
 	    {
 	    }
-		
+	
+	public void append(OMVPeer element)
+    {
+		if (this.getGUID()==null && element.getGUID()!=null) {this.setGUID(element.getGUID());return;}
+		if (this.getIPAdress()==null && element.getIPAdress()!=null) {this.setIPAdress(element.getIPAdress());return;}
+		if (this.getLocalPeer()==null && element.getLocalPeer()!=null) {this.setLocalPeer(element.getLocalPeer());return;}
+		if (this.getPeerType()==null && element.getPeerType()!=null) {this.setPeerType(element.getPeerType());return;}
+		if (this.getContextOntology()==null && element.getContextOntology()!=null) {this.setContextOntology(element.getContextOntology());return;}
+		if (this.getOntologyOMVLocation()==null && element.getOntologyOMVLocation()!=null) {this.setOntologyOMVLocation(element.getOntologyOMVLocation());return;}
+		if (element.getProvideOntology().size()>0) {this.provideOntology.addAll(element.getProvideOntology());return;}
+		if (element.getAcquaintedWith().size()>0) {this.acquaintedWith.addAll(element.getAcquaintedWith());return;}
+		if (element.getHasExpertise().size()>0) {this.hasExpertise.addAll(element.getHasExpertise());return;}
+		if (element.getProvideMapping().size()>0) {this.provideMapping.addAll(element.getProvideMapping());return;}
+		if (this.getMappingOMVLocation()==null && element.getMappingOMVLocation()!=null) {this.setMappingOMVLocation(element.getMappingOMVLocation());return;}
+    }
+	
 	public void setGUID(String newGUID)
 	{
 		this.GUID=newGUID;
@@ -74,14 +95,14 @@ public class OMVPeer {
 		return this.contextOntology;
 	}
 
-	public void setOntologyLocation(OMVPeer newOntologyLocation)
+	public void setOntologyOMVLocation(OMVPeer newOntologyLocation)
 	{
-		this.ontologyLocation=newOntologyLocation;
+		this.ontologyOMVLocation=newOntologyLocation;
 	}
 	
-	public OMVPeer getOntologyLocation()
+	public OMVPeer getOntologyOMVLocation()
 	{
-		return this.ontologyLocation;
+		return this.ontologyOMVLocation;
 	}
 		 	
 	public void addProvideOntology(OMVOntology newProvideOntology)
@@ -99,4 +120,58 @@ public class OMVPeer {
 		return this.provideOntology;
 	}
 
+	public void addAcquaintedWith(OMVPeer newAcquaintedWith)
+	{
+		this.acquaintedWith.add(newAcquaintedWith);
+	}
+	
+	public void removeAcquaintedWith(OMVPeer oldAcquaintedWith)
+	{
+		this.acquaintedWith.remove(oldAcquaintedWith);
+	}
+	
+	public Set <OMVPeer> getAcquaintedWith()
+	{
+		return this.acquaintedWith;
+	}
+	
+	public void addHasExpertise(OMVOntologyDomain newHasExpertise)
+	{
+		this.hasExpertise.add(newHasExpertise);
+	}
+	
+	public void removeHasExpertise(OMVPeer oldHasExpertise)
+	{
+		this.hasExpertise.remove(oldHasExpertise);
+	}
+	
+	public Set <OMVOntologyDomain> getHasExpertise()
+	{
+		return this.hasExpertise;
+	}
+	
+	public void addProvideMapping(OMVMapping newProvideMapping)
+	{
+		this.provideMapping.add(newProvideMapping);
+	}
+	
+	public void removeProvideMapping(OMVPeer oldProvideMapping)
+	{
+		this.provideMapping.remove(oldProvideMapping);
+	}
+	
+	public Set <OMVMapping> getProvideMapping()
+	{
+		return this.provideMapping;
+	}
+	
+	public void setMappingOMVLocation(OMVPeer newMappingLocation)
+	{
+		this.mappingOMVLocation=newMappingLocation;
+	}
+	
+	public OMVPeer getMappingOMVLocation()
+	{
+		return this.mappingOMVLocation;
+	}
 }

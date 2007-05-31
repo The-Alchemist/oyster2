@@ -1,7 +1,7 @@
 package util;
 
 /**
- * $Id: GUID.java,v 1.1 2006-10-30 12:50:38 rpa Exp $
+ * $Id: GUID.java,v 1.2 2007-05-31 01:19:54 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -35,6 +35,11 @@ import java.util.Hashtable;
  * @version 1.0.0
  */
 public class GUID implements Comparable, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The default length of a GUID.

@@ -1,14 +1,12 @@
 package ui;
 
 import java.util.*;
-
 import oyster2.*;
 import ui.provider.ResultViewerContentProvider;
 import ui.provider.OntologyLabelProvider;
-//import ui.provider.ResultViewerLabelProvider;
 import util.*;
-
 import org.eclipse.jface.viewers.TreeViewer;
+//import ui.provider.ResultViewerLabelProvider;
 //import org.eclipse.jface.viewers.TableTreeViewer;
 //import org.eclipse.swt.widgets.TreeItem;
 //import org.eclipse.swt.widgets.Tree;
@@ -18,7 +16,7 @@ import org.semanticweb.kaon2.api.*;
 
 
 public class ResultRegistry implements QueryReplyListener{
-	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	//private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private TreeViewer viewer;
 	private List<Object> entries = new ArrayList<Object>();
 	private ResultViewerContentProvider contentProvider;
@@ -66,7 +64,7 @@ public class ResultRegistry implements QueryReplyListener{
 				}
 			});	
 		}
-		mOyster2.getMainWindow().operationFinished();
+		StartGUI.getMainWindow().operationFinished();   //mOyster2.getMainWindow().operationFinished();
 		entries.clear();
 	}
 	

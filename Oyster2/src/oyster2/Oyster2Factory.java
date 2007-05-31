@@ -1,21 +1,17 @@
 package oyster2;
 
 import core.*;
-import ui.*;
 import util.GUID;
-import api.Oyster2Manager;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.io.*;
-
 import org.eclipse.jface.preference.PreferenceStore;
-import org.eclipse.jface.dialogs.MessageDialog;
-
+//import org.eclipse.jface.dialogs.MessageDialog;
+//import ui.MainWindow;
+//import org.semanticweb.kaon2.api.rules.*;  //OLD VERSION
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.logic.*;
-//import org.semanticweb.kaon2.api.rules.*;  //OLD VERSION
 import oyster2.Properties;
 import oyster2.Constants;
 
@@ -140,20 +136,6 @@ public class Oyster2Factory {
 	 * The initiator thread for Exchanges.
 	 */
 	private Thread mExchangeInitiatorThread = null;
-
-	/**
-	 * The main windows of KaonP2P System.
-	 */
-	private MainWindow mainWindow;
-
-	protected boolean appClosed = false;
-
-	/**
-	 * If the window should be shown.
-	 */
-	protected boolean appWindowToBeShown = true;
-
-	private boolean isSystemTrayActive;
 	
 	/**
 	 * the virtual ontology.
@@ -175,6 +157,18 @@ public class Oyster2Factory {
 	 */
 	private String peerDescOntologyURI;
 
+	/**
+	 * the mapping Description Ontology.
+	 */
+	private Ontology mappingDescOntology;
+
+	/**
+	 * the uri of mapping Description Ontology.
+	 */
+	private String mappingDescOntologyURI;
+
+
+	
 	/**
 	 * the KAON2 connection used to connect to the servers.
 	 */
@@ -208,6 +202,8 @@ public class Oyster2Factory {
 		return SHARED_INSTANCE;
 	}
 	
+	public int retInit = 0;
+	
 	/**
 	 * Initializes the oyster2 facility with the given properties.
 	 * 
@@ -234,6 +230,11 @@ public class Oyster2Factory {
 				peerDescOntologyURI = resolver.registerOntology("file:"
 						+ serializeFileName(store
 								.getString(Constants.PDOntology)));
+			if ((store.getString(Constants.MDOntology) != null)
+					&& (store.getString(Constants.MDOntology).length() > 0))
+				mappingDescOntologyURI = resolver.registerOntology("file:"
+						+ serializeFileName(store
+								.getString(Constants.MDOntology)));
 			if ((store.getString(Constants.TypeOntology) != null)
 					&& (store.getString(Constants.TypeOntology).length() > 0))
 				typeOntologyURI = resolver.registerOntology("file:"
@@ -272,9 +273,12 @@ public class Oyster2Factory {
 						localRegistryURI, new HashMap<String, Object>());
 				this.peerDescOntology = connection.openOntology(
 						peerDescOntologyURI, new HashMap<String, Object>());
+				this.mappingDescOntology = connection.openOntology(
+						mappingDescOntologyURI, new HashMap<String, Object>());
 				this.topicOntology = connection.openOntology(topicOntologyURI,
 						new HashMap<String, Object>());
 				this.localRegistryOntology.addToImports(peerDescOntology);
+				this.localRegistryOntology.addToImports(mappingDescOntology);
 				this.localRegistryOntology.addToImports(topicOntology);
 				this.localRegistryOntology.addOntologyProperty(
 						Constants.VERSIONINFO, Integer.toString(1));
@@ -302,6 +306,10 @@ public class Oyster2Factory {
 			//2//
 			
 			connection.setOntologyResolver(resolver);
+			this.peerDescOntology = connection.openOntology(
+					peerDescOntologyURI, new HashMap<String, Object>());
+			this.mappingDescOntology = connection.openOntology(
+					mappingDescOntologyURI, new HashMap<String, Object>());
 			this.typeOntology = connection.openOntology(typeOntologyURI,
 					new HashMap<String, Object>());
 			this.topicOntology = connection.openOntology(topicOntologyURI,
@@ -310,15 +318,19 @@ public class Oyster2Factory {
 			//3//
 			
 		} catch (KAON2Exception e) {
-			if (Start.serverProcess!=null) Start.serverProcess.destroy();
-			if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
-			System.err.println(e + " in Oyster2 init()");
-			System.exit(1);
+			System.err.println(e + " in Oyster2 init1()");
+			retInit=1;
+			return;
+			//if (StartGUI.serverProcess!=null) StartGUI.serverProcess.destroy();
+			//if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
+			//System.exit(1);
 		} catch (InterruptedException e) {
-			if (Start.serverProcess!=null) Start.serverProcess.destroy();
-			if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
-			System.err.println(e + " in Oyster2 init()");
-			System.exit(1);
+			System.err.println(e + " in Oyster2 init2()");
+			retInit=1;
+			return;
+			//if (StartGUI.serverProcess!=null) StartGUI.serverProcess.destroy();
+			//if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
+			//System.exit(1);
 		}
 		
 		
@@ -363,53 +375,8 @@ public class Oyster2Factory {
 		searchDetails.add(store.getString(Constants.SearchCondition_3));
 		searchDetails.add(store.getString(Constants.SearchCondition_4));
 		searchDetails.add(store.getString(Constants.SearchCondition_5));
-		//run();
 	}
-
-	public void run() {
-		//openWindowAndBlock();
-		while (!appClosed) {
-			if (appWindowToBeShown) {
-				openWindowAndBlock();
-				closeWindow();
-				appWindowToBeShown = false;
-				// bsc: did not work 
-//				ThreadPool.setThreadsPriority(Thread.MIN_PRIORITY);
-				if (!isSystemTrayActive) {
-					appClosed = true;
-				} else {
-					boolean result = MessageDialog.openQuestion(null, "Oyster", "Would you like to leave Oyster running in the background?");
-					if (!result) {
-						appClosed = true;
-					}
-				}
-			}
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
-
-	private void closeWindow() {
-		if (mainWindow != null) {
-			mainWindow.close();
-		}
-		mainWindow = null;
-	}
-
-	private void openWindowAndBlock() {
-		createWindow();
-		mainWindow.setBlockOnOpen(true);
-		mainWindow.open();
-	}
-
-	private void createWindow() {
-		if (mainWindow == null) {
-			mainWindow = new MainWindow(null);
-		}
-	}
-
+	
 	/*
 	 * Shutdowns the oyster2 facility.
 	 */
@@ -417,13 +384,35 @@ public class Oyster2Factory {
 	synchronized public void shutdown() {
 		try {
 			System.out.println("shutting down");
-			this.localRegistryOntology.persist();
-			this.mLocalRegistry.save();
-			this.mExchangeInitiator.shutdown();
-			this.mExchangeInitiatorThread.interrupt();
-			mExchangeInitiatorThread.join();
-			this.connection.close();
-			
+			if (this.localRegistryOntology!=null) this.localRegistryOntology.persist();
+			if (this.mLocalRegistry!=null) this.mLocalRegistry.save();
+			if (this.mExchangeInitiator!=null) {
+				this.mExchangeInitiator.shutdown();
+				this.mExchangeInitiator=null;
+			}
+			if (this.mExchangeInitiatorThread!=null) {
+				this.mExchangeInitiatorThread.interrupt();
+				this.mExchangeInitiatorThread.join();
+				this.mExchangeInitiatorThread=null;
+			}
+			if (this.connection!=null) {
+				this.connection.close();
+				this.connection=null;
+			}
+			int numThreads = Thread.activeCount();
+	        Thread[] threads = new Thread[numThreads*2];
+	        numThreads = Thread.enumerate(threads);
+	        // Enumerate each thread
+	        for (int i=0; i<numThreads; i++) {
+	            Thread thread = threads[i];
+	            if (thread!=Thread.currentThread()){ 
+	            	ThreadGroup root = thread.getThreadGroup().getParent();
+	            	if (root==Thread.currentThread().getThreadGroup()){
+	            		thread.interrupt();
+	            		thread.join();
+	            	}
+	            }
+	        }
 		} catch (Exception e) {
 			System.err.println(e + " when oyster2 shutdown!");
 		}
@@ -519,22 +508,14 @@ public class Oyster2Factory {
 	 * Returns the peer description ontology
 	 */
 	public Ontology getPeerOntology() {
-		
-		Ontology peerDescOntology = null;
-		try {
-			/*For the second file */ 
-			peerDescOntology = connection.openOntology(
-					peerDescOntologyURI, new HashMap<String, Object>());
-			
-			/* For 1 file only  
-			localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
-							new HashMap<String, Object>());
-			*/
-		} catch (Exception e) {
-			System.err.println(e + " getPeerOntology()in Oyster2.");
-		}
-		
 		return peerDescOntology;
+	}
+	
+	/**
+	 * Returns the mapping description ontology
+	 */
+	public Ontology getMappingOntology() {
+		return mappingDescOntology;
 	}
 	
 	/**
@@ -542,13 +523,6 @@ public class Oyster2Factory {
 	 */
 	public SearchManager getSearchManager() {
 		return mSearchManager;
-	}
-
-	/**
-	 * return mainWindow instance of KaonP2P.
-	 */
-	public MainWindow getMainWindow() {
-		return this.mainWindow;
 	}
 
 	/**
@@ -659,21 +633,24 @@ public class Oyster2Factory {
 	}
 
 	public Ontology getLocalHostOntology() {
+		return localRegistryOntology;
+		/*
 		Ontology localHostOntology = null;
 		try {
-			/*For the second file */ 
+			//For the second file
 			localHostOntology = connection.openOntology("kaon2rmi://localhost?"
 					+ localRegistryOntology.getOntologyURI(),
 					new HashMap<String, Object>());
 			
-			/* For 1 file only  
-			localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
-							new HashMap<String, Object>());
-			*/
+			// For 1 file only  
+			//localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
+			//				new HashMap<String, Object>());
+		
 		} catch (Exception e) {
 			System.err.println(e + " getLocalHostOntology()in Oyster2.");
 		}
 		return localHostOntology;
+		*/
 	}
 
 	public File getLocalRegistryFile() {
@@ -683,6 +660,10 @@ public class Oyster2Factory {
 
 	public String getPeerDescOntologyURI() {
 		return this.peerDescOntologyURI;
+	}
+	
+	public String getMappingDescOntologyURI() {
+		return this.mappingDescOntologyURI;
 	}
 	
 	public String getTypeOntologyURI() {
@@ -790,3 +771,74 @@ public File getVirtualOntologyFile() {
 		return this.virtualOntologyFile;
 }
  */
+
+
+/*GUI INFO TAKEN INTO STARTGUI*/
+
+/*
+ * The main windows of Oyster2 GUI.
+ */
+//private MainWindow mainWindow;
+
+//protected boolean appClosed = false;
+
+/*
+ * If the window should be shown.
+ */
+//protected boolean appWindowToBeShown = true;
+
+//private boolean isSystemTrayActive;
+
+
+/*
+public void run() {
+	//openWindowAndBlock();
+	while (!appClosed) {
+		if (appWindowToBeShown) {
+			openWindowAndBlock();
+			closeWindow();
+			appWindowToBeShown = false;
+			// bsc: did not work 
+			//ThreadPool.setThreadsPriority(Thread.MIN_PRIORITY);
+			if (!isSystemTrayActive) {
+				appClosed = true;
+			} else {
+				boolean result = MessageDialog.openQuestion(null, "Oyster", "Would you like to leave Oyster running in the background?");
+				if (!result) {
+					appClosed = true;
+				}
+			}
+		}
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+		}
+	}
+}
+
+private void closeWindow() {
+	if (mainWindow != null) {
+		mainWindow.close();
+	}
+	mainWindow = null;
+}
+
+private void openWindowAndBlock() {
+	createWindow();
+	mainWindow.setBlockOnOpen(true);
+	mainWindow.open();
+}
+
+private void createWindow() {
+	if (mainWindow == null) {
+		mainWindow = new MainWindow(null);
+	}
+}
+*/
+
+/*
+ * return mainWindow instance of Oyster2
+ */
+//public MainWindow getMainWindow() {
+//	return this.mainWindow;
+//}

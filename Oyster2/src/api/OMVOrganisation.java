@@ -20,6 +20,13 @@ public class OMVOrganisation extends OMVParty{
 	    {
 	    }
 	
+	public void append(OMVOrganisation element)
+    {
+		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (this.getAcronym()==null && element.getAcronym()!=null) {this.setAcronym(element.getAcronym());return;}
+		if (element.getHasContactPerson().size()>0) {this.hasContactPerson.addAll(element.getHasContactPerson());return;}
+    }
+	
 	public void setName(String newName)
 	{
 		this.name=newName;
