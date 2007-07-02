@@ -14,7 +14,7 @@ public class Searcher implements Runnable {
 	/**
 	 * The time to wait for Query Hit messages.
 	 */
-	private static final int REPLY_TIMEOUT = 60000; // 1 min.
+	//private static final int REPLY_TIMEOUT = 60000; // 1 min.
 
 	/**
 	 * The PGrid.Searcher logger.
@@ -29,17 +29,17 @@ public class Searcher implements Runnable {
 	/**
 	 * The list of all already contacted peers.
 	 */
-	private Vector mAlreadyAsked = new Vector();
+	//private Vector mAlreadyAsked = new Vector();
 
 	/**
 	 * The list of all already seen Querys.
 	 */
-	private static Hashtable mAlreadySeen = new Hashtable();
+	//private static Hashtable mAlreadySeen = new Hashtable();
 
 	/**
 	 * The requesting host.
 	 */
-	private Oyster2Host mHost = null;
+	//private Oyster2Host mHost = null;
 
 	/**
 	 * The KaonP2P facility.
@@ -71,7 +71,7 @@ public class Searcher implements Runnable {
 	/**
 	 * The amount of started remote searches.
 	 */
-	private int mRemoteSearches = 0;
+	//private int mRemoteSearches = 0;
 
 	static {
 		/*LogFormatter formatter = new LogFormatter();

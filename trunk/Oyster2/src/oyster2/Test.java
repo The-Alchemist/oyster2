@@ -10,6 +10,9 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 //import java.io.File;
 import api.*;
+import api.omv.core.*;
+import api.omv.extensions.mapping.*;
+import api.omv.extensions.peer.*;
 
 
 
@@ -23,12 +26,14 @@ public class Test {
 		topic.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Arts");
 		
 		//NEW CONNECTION
+		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
+		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
-		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection();
+		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.95\\new store", "F:\\My Documents\\Oyster2APIv0.95\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.95\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		
 		
 		//HERE WE TEST IMPORT METHOD
-		oyster2Conn.importOntology("E:\\wine.rdf");
+		oyster2Conn.importOntology("F:\\wine.rdf");
 		
 		//IMPORTED ONTOLOGY
 		OMVOntology newOnto1 = new OMVOntology();
@@ -178,6 +183,45 @@ public class Test {
 		String OMVSetSerialM1 = Oyster2Manager.serializeOMVMapping(OMVSetM1);
 		System.out.println("Search Mappings with condition (source=http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#):");
 		System.out.println(OMVSetSerialM1);
+		
+		//HERE WE TEST SEARCH WITH KEYWORDS
+		
+		Set<OMVOntology> OMVSet3 = oyster2Conn.search("source");
+		String OMVSetSerial3 = Oyster2Manager.serializeOMV(OMVSet3);
+		System.out.println("Search with keyword: ");
+		System.out.println(OMVSetSerial3);
+		
+		//HERE WE TEST SUBMIT ADHOC QUERIES
+		Set<OMVOntology> OMVRet = new HashSet<OMVOntology>();
+		Set<Object> OMVSet4 = oyster2Conn.submitAdHocQuery("SELECT ?x WHERE  { ?x rdf:type <http://omv.ontoware.org/2005/05/ontology#Ontology> . ?x <http://omv.ontoware.org/2005/05/ontology#resourceLocator> ?v0 . FILTER regex(?v0, \"wine\",\"i\") }");
+		Iterator it4 = OMVSet4.iterator();
+		try{
+			while(it4.hasNext()){
+				OMVOntology omv = (OMVOntology)it4.next();
+				OMVRet.add(omv);
+			}
+		}catch(Exception ignore){
+			//	-- ignore
+		}
+		String OMVSetSerial4 = Oyster2Manager.serializeOMV(OMVRet);
+		System.out.println("Submit adhoc query: ");
+		System.out.println(OMVSetSerial4);
+		
+		//HERE WE TEST SUBMIT ADHOC QUERIES
+		Set<OMVMapping> OMVRet1 = new HashSet<OMVMapping>();
+		Set<Object> OMVSet5 = oyster2Conn.submitAdHocQuery("SELECT ?x WHERE  { ?x rdf:type <http://omv.ontoware.org/2007/05/mappingomv#Mapping> . ?x <http://omv.ontoware.org/2007/05/mappingomv#hasSourceOntology> ?r0 . ?r0 <http://omv.ontoware.org/2005/05/ontology#URI> ?v0 . FILTER regex(?v0, \"http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#\",\"i\") }");
+		Iterator it5 = OMVSet5.iterator();
+		try{
+			while(it5.hasNext()){
+				OMVMapping omv = (OMVMapping)it5.next();
+				OMVRet1.add(omv);
+			}
+		}catch(Exception ignore){
+			//	-- ignore
+		}
+		String OMVSetSerial5 = Oyster2Manager.serializeOMVMapping(OMVRet1);
+		System.out.println("Submit adhoc query(mapping): ");
+		System.out.println(OMVSetSerial5);
 		
 		//CLOSE CONNECTION
 		Oyster2Manager.closeConnection();

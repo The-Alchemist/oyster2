@@ -34,7 +34,11 @@ import oyster2.ImportOntology;
 import oyster2.Oyster2Factory;
 import oyster2.Oyster2Query;
 import oyster2.QueryReply;
+import util.GUID;
 import util.Resource;
+import api.omv.core.*;
+import api.omv.extensions.mapping.*;
+import api.omv.extensions.peer.*;
 
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
@@ -252,6 +256,74 @@ public class Oyster2Connection {
 		return OMVSetFiltered;
 
 	}
+	
+	
+	/**
+	 * Search Oyster2 registry to retrieve all available ontology
+	 * metadata entries that contains the input keyword in any part 
+	 * of any of their data properties. Implements a keword match search.
+	 * @param keyword is the keyword to search in the ontology properties.
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries that matched the keyword.
+	 */
+	
+	public Set<OMVOntology> search(String keyword)
+	{ 
+		
+		QueryReply qReply =null;
+		Oyster2Query query = new Oyster2Query(new GUID(),Oyster2Query.TOPIC_QUERY,keyword);
+		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),query,null,Resource.DataResource);
+		Set<OMVOntology> OMVSet = processReply(qReply);
+		return OMVSet;
+	}
+
+
+	/**
+	 * Send a SPARQL query to Oyster2 registry and returns the 
+	 * metadata entries that are part of the result.
+	 * @param sparqlQuery is the SPARQL query as a string.
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries that matched the query.
+	 */
+	
+	public Set<Object> submitAdHocQuery (String sparqlQuery)
+	{ 
+		Set<Object> OMVRet = new HashSet<Object>();
+		QueryReply qReply =null;
+		Oyster2Query query = new Oyster2Query(Oyster2Query.TYPE_QUERY,sparqlQuery.toString());
+		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+		Set<OMVOntology> OMVSet = processReply(qReply);
+		if (OMVSet.size()>0){
+			Iterator it = OMVSet.iterator();
+			try{
+				while(it.hasNext()){
+					Object omv = (Object)it.next();
+					OMVRet.add(omv);
+				}
+				
+			}catch(Exception ignore){
+				//	-- ignore
+			}
+		}
+		else{
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<OMVMapping> OMVSet1 = processMappings(qReply);
+			if (OMVSet1.size()>0){
+				Iterator it = OMVSet1.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}
+		return OMVRet;
+	}
+
 	
 	/**
 	 * Retrieves the peers discovered in Oyster2 registry.
