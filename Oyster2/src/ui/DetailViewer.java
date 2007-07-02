@@ -2,18 +2,18 @@ package ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.Map;
-import org.eclipse.swt.widgets.Shell;
+//import org.eclipse.swt.widgets.Shell;
 
 import util.*;
 import oyster2.*;
-import util.Utilities;
+//import util.Utilities;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.JFacePreferences;
+//import org.eclipse.jface.preference.IPreferenceStore;
+//import org.eclipse.jface.preference.JFacePreferences;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -128,11 +128,11 @@ public class DetailViewer extends Composite{
 	}
 	
 	public void append(Object entry){
-		EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
+		//EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
 		if(entry.toString().contains(Constants.IMPORT)){
-			int length = entry.toString().length();
-			int headLength = Constants.IMPORT.length()+1;//1 place for the tab.
-			Individual ontologyIndiv = KAON2Manager.factory().individual(entry.toString().substring(headLength,length));
+			//int length = entry.toString().length();
+			//int headLength = Constants.IMPORT.length()+1;//1 place for the tab.
+			//Individual ontologyIndiv = KAON2Manager.factory().individual(entry.toString().substring(headLength,length));
 			//wrapedTextComponent.append(serializer.serialize(ontologyIndiv,mKaonP2P.getVirtualOntology(),getReplyPropertySet(mKaonP2P.getVirtualOntology(),ontologyIndiv)));
 		}
 		else wrapedTextComponent.append(entry.toString());
@@ -146,7 +146,7 @@ public class DetailViewer extends Composite{
 	}
 	
 	private Collection getReplyPropertySet(Ontology virtualOntology,Individual docIndiv){
-		Collection propertySet = new ArrayList();
+		Collection<Property> propertySet = new ArrayList<Property>();
 		Property replyProperty;
 		try{
 			if(docIndiv ==null)System.out.println("docIndiv is null");
@@ -187,8 +187,9 @@ public class DetailViewer extends Composite{
 		return propertySet;
 	}
 	
-	private HashSet appendOrderedProperties(Entity entry){
-		HashSet hashSet = new HashSet();
+	
+	//private HashSet appendOrderedProperties(Entity entry){
+	//	HashSet hashSet = new HashSet();
 		/*TODO 
 		IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
 		for(int i=0; ; i++){
@@ -200,15 +201,15 @@ public class DetailViewer extends Composite{
 				hashSet.add(p);
 			}
 		}*/
-		return hashSet;
-	}
+	//	return hashSet;
+	//}
 	
 	/**
 	 * @param entry
 	 */
 	public void setEntry(Entity entry){
 		wrapedTextComponent.setText("");
-		links = new ArrayList();
+		links = new ArrayList<LinkImpl>();
 		append(entry);
 		wrapedTextComponent.setTopIndex(0);
 	}
@@ -218,7 +219,7 @@ public class DetailViewer extends Composite{
 	 */
 	public void clear(){
 		wrapedTextComponent.setText("");
-		links = new ArrayList();
+		links = new ArrayList<LinkImpl>();
 	}
 	
 	

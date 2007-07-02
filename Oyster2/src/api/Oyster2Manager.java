@@ -23,6 +23,12 @@ import org.semanticweb.kaon2.api.owl.elements.Individual;
 import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 
+import util.EntryDetailSerializer;
+import api.omv.core.*;
+import api.omv.extensions.mapping.*;
+import api.omv.extensions.peer.*;
+
+
 /**
  * The class Oyster2Manager provides the initial connection to Oyster2
  * registry, and the means to display results
@@ -33,11 +39,12 @@ public class Oyster2Manager{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private static PreferenceStore store = mOyster2.getPreferenceStore();
 	public static Process serverProcess = null;
-	private static String kaon2File = System.getProperty("user.dir")+"\\kaon2.jar";
-	private static String prefFile = System.getProperty("user.dir")+"\\new store";
-	private static String serverRoot= System.getProperty("user.dir")+"\\server";
+	private static String kaon2File = System.getProperty("user.dir")+System.getProperty("file.separator")+"kaon2.jar";
+	private static String prefFile = System.getProperty("user.dir")+System.getProperty("file.separator")+"new store";
+	private static String serverRoot= System.getProperty("user.dir")+System.getProperty("file.separator")+"server";
 	private static String startParameters= "";
 	private static String localURI="";
+	private static boolean startKAON2=true;
 	
 	public Oyster2Manager()
 	    {
@@ -48,12 +55,31 @@ public class Oyster2Manager{
 	 * Creates a new connection to Oyster2 registry. Initializes
 	 * the registry factory and its preference store with
 	 * the default properties file.
-	 * Starts an instance of Kaon2 platform.
+	 * It should be specified if Oyster2 starts an instance of KAON2 platform or not.
+	 * @param startKAON2Server specifies if Oyster2 should start KAON2 server or not.
 	 * @return A connection object to the Oyster2 registry.
 	 */
-	public static Oyster2Connection newConnection()
+	public static Oyster2Connection newConnection(boolean startKAON2Server)
     {
+		startKAON2 = startKAON2Server; 
 		setPreferencesFile(prefFile);
+		initialize();
+		return new Oyster2Connection();
+    }
+	
+	/**
+	 * Creates a new semi customized connection to Oyster2 registry. Initializes
+	 * the registry factory and its preference store with the properties 
+	 * file located at the path passed by the parameters.
+	 * It should be specified if Oyster2 starts an instance of KAON2 platform or not.
+	 * @param startKAON2Server specifies if Oyster2 should start KAON2 server or not.
+	 * @param preferencesFilename the path to the properties file.
+	 * @return A connection object to the Oyster2 registry.
+	 */
+	public static Oyster2Connection newConnection(boolean startKAON2Server, String preferencesFilename)
+    {
+		startKAON2 = startKAON2Server; 
+		setPreferencesFile(preferencesFilename);
 		initialize();
 		return new Oyster2Connection();
     }
@@ -62,7 +88,7 @@ public class Oyster2Manager{
 	 * Creates a new customized connection to Oyster2 registry. Initializes
 	 * the registry factory and its preference store with the properties 
 	 * file located at the path passed by the parameters. Starts an instance 
-	 * of Kaon2 platform with the given parameters.
+	 * of KAON2 platform with the given parameters.
 	 * @param preferencesFilename the path to the properties file.
 	 * @param kaon2Filename the path to the kaon2.jar file.
 	 * @param serverRootFolder the path to KAON2 server root folder.
@@ -73,6 +99,7 @@ public class Oyster2Manager{
 	 */
 	public static Oyster2Connection newConnection(String preferencesFilename, String kaon2Filename, String serverRootFolder, String javaStartParameters)
     {
+		startKAON2 = true;
 		setPreferencesFile(preferencesFilename);
 		setKaon2File(kaon2Filename);
 		setServerRoot(serverRootFolder);
@@ -80,6 +107,17 @@ public class Oyster2Manager{
 		initialize();
 		return new Oyster2Connection();
     }
+	
+	
+	/**
+	 * Closes the connection to Oyster2 registry. Destroys Kaon2 instance.
+	 */
+	public static void closeConnection(){
+		mOyster2.shutdown();
+		if (startKAON2) serverProcess.destroy();	
+		//System.exit(0);
+	}
+	
 	
 	/**
 	 * Return the string representation of a set of OMVOntology objects.
@@ -881,28 +919,22 @@ public class Oyster2Manager{
 		return local;
 	}
 	
-	private static void initialize()
-	    {
+	private static void initialize(){
 		try{
-			serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp \""+ kaon2File +"\" org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies \"" + serverRoot +"\"");
-			if(serverProcess!=null) System.out.println("server started...");
-			Thread.sleep(2000);
+			if (startKAON2){
+				serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp "+ EntryDetailSerializer.QUOTE + kaon2File + EntryDetailSerializer.QUOTE + " org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ EntryDetailSerializer.QUOTE + serverRoot +EntryDetailSerializer.QUOTE);
+				if(serverProcess!=null) System.out.println("server started...");
+				else {System.out.println("could not start KAON2 server..."); closeConnection();}
+				Thread.sleep(2000);
+			}
 			store.load();
 			mOyster2.init(null);
 			if (mOyster2.retInit!=0) closeConnection();
 	    } catch (Exception e) {
 	    	System.out.println("Oyster2Manager.newConnection error "+e);
 		}
-	    }
-	
-	/**
-	 * Closes the connection to Oyster2 registry. Destroys Kaon2 instance.
-	 */
-	public static void closeConnection(){
-		mOyster2.shutdown();
-		serverProcess.destroy();	
-		//System.exit(0);
 	}
+	
 	
 	private static void setPreferencesFile(String fileName){
 		String tFile;

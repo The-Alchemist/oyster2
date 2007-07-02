@@ -1,1 +1,4 @@
 api
+api.omv.core
+api.omv.extensions.mapping
+api.omv.extensions.peer

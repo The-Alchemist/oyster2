@@ -1,11 +1,4 @@
-#Thu May 31 01:48:13 CEST 2007
-#The paths can be absolute (e.g. 
-#e\:/this is a test/oyster.jpg), however
-#it is not allowed to use blank spaces in the path 
-#of an ontology (e.g. topicOntology, typeOntology, 
-#peerDescriptionOntology), since this string 
-#(the path of the ontology) should be a normal url 
-#(java.net.URI). But you can use %20 instead of a blank space 
+#Mon Jul 02 15:54:01 CEST 2007
 topicOntologyRoot=Top
 mappingDescriptionOntology=O2serverfiles/mappingOMV.owl
 topicOntology=O2serverfiles/dmozT.rdf
@@ -24,8 +17,8 @@ searchCondition_1=omv\:name
 COLUMN_WIDTH2=100
 COLUMN_WIDTH1=163
 COLUMN_WIDTH0=100
-typeOntologyRoot=\#Ontology
 bootStrapPeerName=oysterUPM
+typeOntologyRoot=\#Ontology
 COLUMN_TYPE2=http\://omv.ontoware.org/2007/05/pomv\#ontologyLocation
 COLUMN_TYPE1=http\://omv.ontoware.org/2005/05/ontology\#description
 COLUMN_TYPE0=http\://omv.ontoware.org/2005/05/ontology\#name
