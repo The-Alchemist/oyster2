@@ -20,6 +20,7 @@
 <dmoz:Topic rdf:ID="Top">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ACM CS Topic</rdfs:label>
     <dmoz:SubTopic rdf:resource="#Top/Shopping"/>
+    <dmoz:SubTopic rdf:resource="#Top/Reference"/>
     <dmoz:SubTopic rdf:resource="#Top/Computers"/>
     <dmoz:SubTopic rdf:resource="#Top/News"/>
     <dmoz:SubTopic rdf:resource="#Top/World"/>
@@ -37,6 +38,12 @@
 <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shopping</rdfs:label>
 <dmoz:SubTopic rdf:resource="#Top/Shopping/Auctions"/>
 </dmoz:Topic>
+
+<dmoz:Topic rdf:ID="Top/Reference">         
+<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reference</rdfs:label>
+<dmoz:SubTopic rdf:resource="#Top/Reference/Knowledge_Management"/>
+</dmoz:Topic>
+
 
 <dmoz:Topic rdf:ID="Top/Computers">         
 <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Computers</rdfs:label>	
@@ -82,6 +89,16 @@
 <dmoz:Topic rdf:ID="Top/Shopping/Auctions">         
 <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Auctions</rdfs:label>
 </dmoz:Topic>
+
+<dmoz:Topic rdf:ID="Top/Reference/Knowledge_Management">         
+<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Knowledge Management</rdfs:label>
+<dmoz:SubTopic rdf:resource="#Top/Reference/Knowledge_Management/Knowledge_Representation"/>
+</dmoz:Topic>
+
+<dmoz:Topic rdf:ID="Top/Reference/Knowledge_Management/Knowledge_Representation">         
+<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Knowledge Representation</rdfs:label>
+</dmoz:Topic>
+
 
 <owl:Class rdf:ID="Topic"/>
 

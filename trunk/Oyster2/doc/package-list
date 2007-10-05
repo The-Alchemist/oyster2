@@ -1,4 +1,4 @@
-api
-api.omv.core
-api.omv.extensions.mapping
-api.omv.extensions.peer
+org.neon_toolkit.omv.api.core
+org.neon_toolkit.omv.api.extensions.mapping
+org.neon_toolkit.omv.api.extensions.peer
+org.neon_toolkit.registry.api
