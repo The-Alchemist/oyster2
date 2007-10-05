@@ -308,9 +308,9 @@ public class Test {
 
 		//ADD Other objects
 		OMVPerson t1= new OMVPerson();
-		t1.setFirstName("Inge");
+		t1.setFirstName("John");
 		t1.setLastName("becker");
-		t1.setEMail("saber@superrrrrrica.com");
+		t1.setEMail("jbecker@superhost.com");
 		oyster2Conn.replace(t1);
 		
 		//HERE WE TEST SIMPLE SEARCH
