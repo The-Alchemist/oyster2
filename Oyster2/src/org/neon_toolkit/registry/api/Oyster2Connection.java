@@ -62,7 +62,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
  * @author Raul Palma
- * @version 0.97, October 2007
+ * @version 0.98, October 2007
  */
 public class Oyster2Connection {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -95,7 +95,7 @@ public class Oyster2Connection {
 		}
 		else {
 			OMVOntology nO = new OMVOntology();
-			nO.setName("temporaryTrick");
+			nO.addName("temporaryTrick");
 			nO.setURI("http://localhost/temporaryTrick#");
 			if (o instanceof OMVPerson) nO.addHasCreator((OMVPerson)o);
 			else if (o instanceof OMVOrganisation) nO.addHasCreator((OMVOrganisation)o);
@@ -133,7 +133,7 @@ public class Oyster2Connection {
 		}
 		else {
 			OMVOntology nO = new OMVOntology();
-			nO.setName("temporaryTrick");
+			nO.addName("temporaryTrick");
 			nO.setURI("http://localhost/temporaryTrick#");
 			if (o instanceof OMVPerson) nO.addHasCreator((OMVPerson)o);
 			else if (o instanceof OMVOrganisation) nO.addHasCreator((OMVOrganisation)o);
@@ -233,7 +233,8 @@ public class Oyster2Connection {
 		pList=IOntology.extractMetadata(URI);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))
+		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop1))// && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,0);
 	}
 
@@ -463,7 +464,8 @@ public class Oyster2Connection {
 		pList=getProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))
+		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,1);
 	}
 	
@@ -495,7 +497,8 @@ public class Oyster2Connection {
 		pList=getProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))
+		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,2);
 	}
 	
@@ -526,8 +529,9 @@ public class Oyster2Connection {
 		pList.clear();
 		pList=getProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
-		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))
+		//OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
+		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,4);
 	}
 	
@@ -701,25 +705,30 @@ public class Oyster2Connection {
 			while(keys.hasNext()){
 				String keyStr = keys.next().toString();
 				DataProperty property = KAON2Manager.factory().dataProperty(keyStr);
-				String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(ontoIndiv.getDataPropertyValue(ontologySearch,property));
-					
-				if (whichClass.equalsIgnoreCase("ontology")) mainOntoReply.append(createOMVOntology(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("party")) partyReply.append(createOMVParty(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("ontoEngTool")) ontoEngToolReply.append(createOMVOntologyEngineeringTool(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("ontoEngMet")) ontoEngMetReply.append(createOMVOntologyEngineeringMethodology(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("krParadigm")) krParadigmReply.append(createOMVKnowledgeRepresentationParadigm(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("oDomain")) oDomainReply.append(createOMVOntologyDomain(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("oType")) oTypeReply.append(createOMVOntologyType(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("oTask")) oTaskReply.append(createOMVOntologyTask(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("oLanguage")) oLanguageReply.append(createOMVOntologyLanguage(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("oSyntax")) oSyntaxReply.append(createOMVOntologySyntax(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("fLevel")) fLevelReply.append(createOMVFormalityLevel(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("lModel")) lModelReply.append(createOMVLicenseModel(property.getURI(),propertyValue));				
-				else if (whichClass.equalsIgnoreCase("location")) locationReply.append(createOMVLocation(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("person")) personReply.append(createOMVPerson(property.getURI(),propertyValue));
-				else if (whichClass.equalsIgnoreCase("organisation")) organisationReply.append(createOMVOrganisation(property.getURI(),propertyValue));
-				//else if (whichClass.equalsIgnoreCase("oReferences")) oReferencesReply.append(createOMVOntologyReferences(property.getURI(),propertyValue));
-				//else if (whichClass.equalsIgnoreCase("oDomainSub")) oDomainReplySub.append(createOMVOntologyDomainSub(property.getURI(),propertyValue));
+				/*15*/
+				Collection propertyCol= new LinkedList();
+				propertyCol = (Collection)dataPropertyMap.get(property);
+				if(propertyCol==null)System.err.println("datapropertyCol is null");
+				Iterator itInt = propertyCol.iterator();
+				while(itInt.hasNext()){
+					Object propertyObject =(Object) itInt.next();
+					String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(propertyObject);
+					if (whichClass.equalsIgnoreCase("ontology")) mainOntoReply.append(createOMVOntology(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("party")) partyReply.append(createOMVParty(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("ontoEngTool")) ontoEngToolReply.append(createOMVOntologyEngineeringTool(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("ontoEngMet")) ontoEngMetReply.append(createOMVOntologyEngineeringMethodology(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("krParadigm")) krParadigmReply.append(createOMVKnowledgeRepresentationParadigm(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("oDomain")) oDomainReply.append(createOMVOntologyDomain(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("oType")) oTypeReply.append(createOMVOntologyType(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("oTask")) oTaskReply.append(createOMVOntologyTask(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("oLanguage")) oLanguageReply.append(createOMVOntologyLanguage(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("oSyntax")) oSyntaxReply.append(createOMVOntologySyntax(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("fLevel")) fLevelReply.append(createOMVFormalityLevel(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("lModel")) lModelReply.append(createOMVLicenseModel(property.getURI(),propertyValue));				
+					else if (whichClass.equalsIgnoreCase("location")) locationReply.append(createOMVLocation(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("person")) personReply.append(createOMVPerson(property.getURI(),propertyValue));
+					else if (whichClass.equalsIgnoreCase("organisation")) organisationReply.append(createOMVOrganisation(property.getURI(),propertyValue));
+				}
 				
 				//System.out.println("The property "+property.getURI()+" has value: "+propertyValue);
 			}
@@ -730,7 +739,7 @@ public class Oyster2Connection {
 				ObjectProperty property = KAON2Manager.factory().objectProperty(keyStr);
 				Collection propertyCol= new LinkedList();
 				propertyCol = (Collection)objectPropertyMap.get(property);
-				if(propertyCol==null)System.err.println("propertyCol is null");
+				if(propertyCol==null)System.err.println("objectpropertyCol is null");
 				Iterator itInt = propertyCol.iterator();
 				while(itInt.hasNext()){
 					Entity propertyValue =(Entity) itInt.next();
@@ -781,7 +790,27 @@ public class Oyster2Connection {
 	  else return null;
 	 }
 	 else{
-		if (whichClass.equalsIgnoreCase("ontology")) {mainOntoReply = new OMVOntology();mainOntoReply.setURI(ontoIndiv.getURI());return mainOntoReply;}
+		if (whichClass.equalsIgnoreCase("ontology")) {
+			mainOntoReply = new OMVOntology();
+			//mainOntoReply.setURI(ontoIndiv.getURI());
+			
+			//Manage composite OMV identification//
+			String localURI=ontoIndiv.getURI();
+			Pattern p = Pattern.compile("[? ;]+");
+			String[] result =  p.split(localURI);
+			for (int i=0; i<result.length; i++){
+	            if(result[i].indexOf("version=")!=-1){
+	            	mainOntoReply.setVersion(result[i].substring(8, result[i].length()-1));
+	            }
+	            else if(result[i].indexOf("location=")!=-1){
+	            	mainOntoReply.setResourceLocator(result[i].substring(9, result[i].length()));
+	            }
+	            else{
+	            	mainOntoReply.setURI(result[i]);
+	            }
+			}
+			return mainOntoReply;
+		}
 		else if (whichClass.equalsIgnoreCase("party")) {return null;}
 		else if (whichClass.equalsIgnoreCase("ontoEngTool")) {ontoEngToolReply = new OMVOntologyEngineeringTool();ontoEngToolReply.setName(Namespaces.guessLocalName(ontoIndiv.getURI()));return ontoEngToolReply;}
 		else if (whichClass.equalsIgnoreCase("ontoEngMet")) {ontoEngMetReply = new OMVOntologyEngineeringMethodology();ontoEngMetReply.setName(Namespaces.guessLocalName(ontoIndiv.getURI()));return ontoEngMetReply;}
@@ -816,11 +845,17 @@ public class Oyster2Connection {
 	  OMVOntology mainOntoReply=new OMVOntology();
 	  try{
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.URI)) {mainOntoReply.setURI(value);return mainOntoReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.name)) {mainOntoReply.setName(value);return mainOntoReply;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.name)) { 		//if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.name)) {mainOntoReply.setName(value);return mainOntoReply;}
+			mainOntoReply.addName(value);
+			return mainOntoReply;
+		}		
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.acronym)) {mainOntoReply.setAcronym(value);return mainOntoReply;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.description)) {mainOntoReply.setDescription(value);return mainOntoReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.documentation)) {mainOntoReply.setDocumentation(value);return mainOntoReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keywords)) {mainOntoReply.setKeywords(value);return mainOntoReply;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.documentation)) {mainOntoReply.setDocumentation(value);return mainOntoReply;}		
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keywords)) { 		//if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keywords)) {mainOntoReply.setKeywords(value);return mainOntoReply;}
+			mainOntoReply.addKeywords(value);
+			return mainOntoReply;
+		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.status)) {mainOntoReply.setStatus(value);return mainOntoReply;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.creationDate)) {mainOntoReply.setCreationDate(value);return mainOntoReply;}        //DateFormat df = DateFormat.getDateInstance();	
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.modificationDate)) {mainOntoReply.setModificationDate(value);return mainOntoReply;}
@@ -915,7 +950,10 @@ public class Oyster2Connection {
 			oTypeReply = null;
 			return mainOntoReply;
 		}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.naturalLanguage)) {mainOntoReply.setNaturalLanguage(value);return mainOntoReply;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.naturalLanguage)) { 		//if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.naturalLanguage)) {mainOntoReply.setNaturalLanguage(value);return mainOntoReply;}
+			mainOntoReply.addNaturalLanguage(value);
+			return mainOntoReply;
+		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.designedForOntologyTask)) {
 			Individual oIndividual =KAON2Manager.factory().individual(value);
 			OMVOntologyTask oTaskReply=(OMVOntologyTask)processIndividual(oIndividual, "oTask");
@@ -944,9 +982,11 @@ public class Oyster2Connection {
 			fLevelReply = null;
 			return mainOntoReply;
 		}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.resourceLocator)) {
-			mainOntoReply.addResourceLocator(value);return mainOntoReply;
-		}
+		//if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.resourceLocator)) {
+		//	mainOntoReply.addResourceLocator(value);return mainOntoReply;
+		//}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.resourceLocator)) {mainOntoReply.setResourceLocator(value);return mainOntoReply;}
+		
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.version)) {mainOntoReply.setVersion(value);return mainOntoReply;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.hasLicense)) {
 			Individual oIndividual =KAON2Manager.factory().individual(value);
@@ -1005,8 +1045,14 @@ public class Oyster2Connection {
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.numberOfAxioms)) {mainOntoReply.setNumberOfAxioms(new Integer(value.substring(1, value.indexOf("\"", 2))));return mainOntoReply;}
 		
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.notes)) {mainOntoReply.setNotes(value);return mainOntoReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keyClasses)) {mainOntoReply.setKeyClasses(value);return mainOntoReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.knownUsage)) {mainOntoReply.setKnownUsage(value);return mainOntoReply;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keyClasses)){ //if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.keyClasses)) {mainOntoReply.setKeyClasses(value);return mainOntoReply;}
+			mainOntoReply.addKeyClasses(value);
+			return mainOntoReply;
+		}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.knownUsage)) { //if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.knownUsage)) {mainOntoReply.setKnownUsage(value);return mainOntoReply;}
+			mainOntoReply.addKnownUsage(value);
+			return mainOntoReply;
+		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.expressiveness)) {mainOntoReply.setExpressiveness(value);return mainOntoReply;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.isConsistentAccordingToReasoner)) 
 		{
@@ -1474,9 +1520,18 @@ public class Oyster2Connection {
 		OMVPerson personReply=new OMVPerson();
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.lastName)) {personReply.setLastName(value); return personReply;}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.firstName)) {personReply.setFirstName(value); return personReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.eMail)) {personReply.setEMail(value);return personReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.phoneNumber)) {personReply.setPhoneNumber(value);return personReply;}
-		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.faxNumber)) {personReply.setFaxNumber(value);return personReply;}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.eMail)) { //if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.eMail)) {personReply.setEMail(value);return personReply;}
+			personReply.addEmail(value);
+			return personReply;
+		}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.phoneNumber)) { //if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.phoneNumber)) {personReply.setPhoneNumber(value);return personReply;}
+			personReply.addPhoneNumber(value);
+			return personReply;
+		}
+		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.faxNumber)) { //if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.faxNumber)) {personReply.setFaxNumber(value);return personReply;}
+			personReply.addFaxNumber(value);
+			return personReply;
+		}
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.isContactPerson)) {
 			Individual oIndividual1 =KAON2Manager.factory().individual(value);
 			OMVOrganisation organisationReply=(OMVOrganisation)processIndividual(oIndividual1, "organisation");
@@ -1515,23 +1570,35 @@ public class Oyster2Connection {
 			else condition = new Condition(Constants.omvCondition+Constants.lastName, o.getLastName(), which);
 			searchConditions.addFirst(condition);
 		}
-		if (o.getEMail()!=null) {
-			Condition condition;
-			if (which=="")condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), checkDataProperty(Constants.eMail));
-			else condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), which);
-			searchConditions.addFirst(condition);
+		if (o.getEmail().size()>0) {
+			Iterator it = o.getEmail().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.eMail, nl, checkDataProperty(Constants.eMail));
+				else condition = new Condition(Constants.omvCondition+Constants.eMail, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
-		if (o.getPhoneNumber()!=null) {
-			Condition condition;
-			if (which=="")condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), checkDataProperty(Constants.phoneNumber));
-			else condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), which);
-			searchConditions.addFirst(condition);
+		if (o.getPhoneNumber().size()>0) {
+			Iterator it = o.getPhoneNumber().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.phoneNumber, nl, checkDataProperty(Constants.phoneNumber));
+				else condition = new Condition(Constants.omvCondition+Constants.phoneNumber, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
-		if (o.getFaxNumber()!=null) {
-			Condition condition;
-			if (which=="")condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), checkDataProperty(Constants.faxNumber));
-			else condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), which);
-			searchConditions.addFirst(condition);
+		if (o.getFaxNumber().size()>0) {
+			Iterator it = o.getFaxNumber().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.faxNumber, nl, checkDataProperty(Constants.faxNumber));
+				else condition = new Condition(Constants.omvCondition+Constants.faxNumber, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
 		if (o.getIsContactPerson().size()>0) {
 			Iterator it = o.getIsContactPerson().iterator();
@@ -1985,11 +2052,15 @@ public class Oyster2Connection {
 			else condition = new Condition(Constants.omvCondition+Constants.URI, o.getURI(), which); 
 			searchConditions.addFirst(condition);
 		}
-		if (o.getName()!=null) {
-			Condition condition;
-			if (which=="")condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.name));
-			else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which);
-			searchConditions.addFirst(condition);
+		if (o.getName().size()>0) {
+			Iterator it = o.getName().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.name, nl, checkDataProperty(Constants.name));
+				else condition = new Condition(Constants.omvCondition+Constants.name, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
 		if (o.getAcronym()!=null) {
 			Condition condition;
@@ -2009,11 +2080,15 @@ public class Oyster2Connection {
 			else condition = new Condition(Constants.omvCondition+Constants.documentation, o.getDocumentation(), which);
 			searchConditions.addFirst(condition);
 		}
-		if (o.getKeywords()!=null) {
-			Condition condition;
-			if (which=="") condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), checkDataProperty(Constants.keywords));
-			else condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), which);
-			searchConditions.addFirst(condition);
+		if (o.getKeywords().size()>0) {
+			Iterator it = o.getKeywords().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.keywords, nl, checkDataProperty(Constants.keywords));
+				else condition = new Condition(Constants.omvCondition+Constants.keywords, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
 		if (o.getStatus()!=null) {
 			Condition condition;
@@ -2104,11 +2179,15 @@ public class Oyster2Connection {
 			LinkedList<Condition> conditionTemp=getOTConditions(ot,Constants.omvCondition+Constants.isOfType);
 			searchConditions.addAll(conditionTemp);
 		}
-		if (o.getNaturalLanguage()!=null) {
-			Condition condition;
-			if (which=="") condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), checkDataProperty(Constants.naturalLanguage));
-			else condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), which);
-			searchConditions.addFirst(condition);
+		if (o.getNaturalLanguage().size()>0) {
+			Iterator it = o.getNaturalLanguage().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, nl, checkDataProperty(Constants.naturalLanguage));
+				else condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
 		if (o.getDesignedForOntologyTask().size()>0) {
 			Iterator it = o.getDesignedForOntologyTask().iterator();
@@ -2211,17 +2290,25 @@ public class Oyster2Connection {
 			else condition = new Condition(Constants.omvCondition+Constants.notes, o.getNotes(), which);
 			searchConditions.addFirst(condition);
 		}
-		if (o.getKeyClasses()!=null) {
-			Condition condition;
-			if (which=="") condition = new Condition(Constants.omvCondition+Constants.keyClasses, o.getKeyClasses(), checkDataProperty(Constants.keyClasses));
-			else condition = new Condition(Constants.omvCondition+Constants.keyClasses, o.getKeyClasses(), which);
-			searchConditions.addFirst(condition);
+		if (o.getKeyClasses().size()>0) {
+			Iterator it = o.getKeyClasses().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.keyClasses, nl, checkDataProperty(Constants.keyClasses));
+				else condition = new Condition(Constants.omvCondition+Constants.keyClasses, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
-		if (o.getKnownUsage()!=null) {
-			Condition condition;
-			if (which=="") condition = new Condition(Constants.omvCondition+Constants.knownUsage, o.getKnownUsage(), checkDataProperty(Constants.knownUsage));
-			else condition = new Condition(Constants.omvCondition+Constants.knownUsage, o.getKnownUsage(), which);
-			searchConditions.addFirst(condition);
+		if (o.getKnownUsage().size()>0) {
+			Iterator it = o.getKnownUsage().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				Condition condition;
+				if (which=="") condition = new Condition(Constants.omvCondition+Constants.knownUsage, nl, checkDataProperty(Constants.knownUsage));
+				else condition = new Condition(Constants.omvCondition+Constants.knownUsage, nl, which);
+				searchConditions.addFirst(condition);
+			}
 		}
 		if (o.getExpressiveness()!=null) {
 			Condition condition;
@@ -2310,17 +2397,30 @@ public class Oyster2Connection {
 			OntologyProperty prop = new OntologyProperty(Constants.lastName, p.getLastName());
 			tProperties.addFirst(prop);
 		}
-		if (p.getEMail()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.eMail, p.getEMail());
-			tProperties.addFirst(prop);
+		
+		if (p.getEmail().size()>0) {
+			Iterator it = p.getEmail().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.eMail, nl);
+				tProperties.addFirst(prop);
+			}
 		}
-		if (p.getPhoneNumber()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.phoneNumber, p.getPhoneNumber());
-			tProperties.addFirst(prop);
+		if (p.getPhoneNumber().size()>0) {
+			Iterator it = p.getPhoneNumber().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.phoneNumber, nl);
+				tProperties.addFirst(prop);
+			}
 		}
-		if (p.getFaxNumber()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.faxNumber, p.getFaxNumber());
-			tProperties.addFirst(prop);
+		if (p.getFaxNumber().size()>0) {
+			Iterator it = p.getFaxNumber().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.faxNumber, nl);
+				tProperties.addFirst(prop);
+			}
 		}
 		if (p.getIsContactPerson()!=null) {
 			String tURN;
@@ -2495,7 +2595,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -2510,7 +2615,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -2703,7 +2813,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -2718,7 +2833,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -3210,9 +3330,13 @@ public class Oyster2Connection {
 			OntologyProperty prop = new OntologyProperty(Constants.URI, o.getURI());
 			ontoProperties.addFirst(prop);
 		}
-		if (o.getName()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.name, o.getName());
-			ontoProperties.addFirst(prop);
+		if (o.getName().size()>0) {
+			Iterator it = o.getName().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.name, nl);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getAcronym()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.acronym, o.getAcronym());
@@ -3226,9 +3350,13 @@ public class Oyster2Connection {
 			OntologyProperty prop = new OntologyProperty(Constants.documentation, o.getDocumentation());
 			ontoProperties.addFirst(prop);
 		}
-		if (o.getKeywords()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.keywords, o.getKeywords());
-			ontoProperties.addFirst(prop);
+		if (o.getKeywords().size()>0) {
+			Iterator it = o.getKeywords().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.keywords, nl);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getStatus()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.status, o.getStatus());
@@ -3377,9 +3505,13 @@ public class Oyster2Connection {
 				ontoProperties.addFirst(prop);
 			}
 		}
-		if (o.getNaturalLanguage()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.naturalLanguage, o.getNaturalLanguage());
-			ontoProperties.addFirst(prop);
+		if (o.getNaturalLanguage().size()>0) {
+			Iterator it = o.getNaturalLanguage().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.naturalLanguage, nl);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getDesignedForOntologyTask().size()>0) {
 			String tURN;
@@ -3462,7 +3594,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.useImports, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -3475,7 +3612,12 @@ public class Oyster2Connection {
 				tURN=otemp.getURI();
 				tList.clear();
 				tList=getProperties(otemp);
-				IOntology.addImportOntologyToRegistry(tList,0);
+				if (otemp.getResourceLocator()!=null){
+					IOntology.addImportOntologyToRegistry(tList,0);
+				}
+				else{
+					IOntology.addImportOntologyToRegistry(tList,3);
+				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasPriorVersion, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -3489,7 +3631,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.isBackwardCompatibleWith, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -3504,7 +3651,12 @@ public class Oyster2Connection {
 					tURN=otemp.getURI();
 					tList.clear();
 					tList=getProperties(otemp);
-					IOntology.addImportOntologyToRegistry(tList,0);
+					if (otemp.getResourceLocator()!=null){
+						IOntology.addImportOntologyToRegistry(tList,0);
+					}
+					else{
+						IOntology.addImportOntologyToRegistry(tList,3);
+					}
 					OntologyProperty prop = new OntologyProperty(Constants.isIncompatibleWith, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -3531,13 +3683,22 @@ public class Oyster2Connection {
 			OntologyProperty prop = new OntologyProperty(Constants.notes, o.getNotes());
 			ontoProperties.addFirst(prop);
 		}
-		if (o.getKeyClasses()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.keyClasses, o.getKeyClasses());
-			ontoProperties.addFirst(prop);
+		
+		if (o.getKeyClasses().size()>0) {
+			Iterator it = o.getKeyClasses().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.keyClasses, nl);
+				ontoProperties.addFirst(prop);
+			}
 		}
-		if (o.getKnownUsage()!=null) {
-			OntologyProperty prop = new OntologyProperty(Constants.knownUsage, o.getKnownUsage());
-			ontoProperties.addFirst(prop);
+		if (o.getKnownUsage().size()>0) {
+			Iterator it = o.getKnownUsage().iterator();
+			while(it.hasNext()){
+				String nl = (String)it.next();
+				OntologyProperty prop = new OntologyProperty(Constants.knownUsage, nl);
+				ontoProperties.addFirst(prop);
+			}
 		}
 		if (o.getExpressiveness()!=null) {
 			OntologyProperty prop = new OntologyProperty(Constants.expressiveness, o.getExpressiveness());
@@ -5041,7 +5202,12 @@ public class Oyster2Connection {
 				tURN=otemp.getURI();
 				tList.clear();
 				tList=getProperties(otemp);
-				IOntology.addImportOntologyToRegistry(tList,0);
+				if (otemp.getResourceLocator()!=null){
+					IOntology.addImportOntologyToRegistry(tList,0);
+				}
+				else{
+					IOntology.addImportOntologyToRegistry(tList,3);
+				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasSourceOntology, tURN);
 				tProperties.addFirst(prop);
 			}
@@ -5053,7 +5219,12 @@ public class Oyster2Connection {
 				tURN=otemp.getURI();
 				tList.clear();
 				tList=getProperties(otemp);
-				IOntology.addImportOntologyToRegistry(tList,0);
+				if (otemp.getResourceLocator()!=null){
+					IOntology.addImportOntologyToRegistry(tList,0);
+				}
+				else{
+					IOntology.addImportOntologyToRegistry(tList,3);
+				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasTargetOntology, tURN);
 				tProperties.addFirst(prop);
 			}
@@ -5800,4 +5971,131 @@ try{
   }	
   return oReferencesReply;
 }
+*/
+
+/*
+if (o.getNaturalLanguage()!=null) {
+	Condition condition;
+	if (which=="") condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), checkDataProperty(Constants.naturalLanguage));
+	else condition = new Condition(Constants.omvCondition+Constants.naturalLanguage, o.getNaturalLanguage(), which);
+	searchConditions.addFirst(condition);
+}
+*/
+
+/*
+if (o.getNaturalLanguage()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.naturalLanguage, o.getNaturalLanguage());
+	ontoProperties.addFirst(prop);
+}
+*/
+
+/*
+if (o.getName()!=null) {
+	Condition condition;
+	if (which=="")condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), checkDataProperty(Constants.name));
+	else condition = new Condition(Constants.omvCondition+Constants.name, o.getName(), which);
+	searchConditions.addFirst(condition);
+}
+*/
+/*
+if (o.getKeywords()!=null) {
+	Condition condition;
+	if (which=="") condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), checkDataProperty(Constants.keywords));
+	else condition = new Condition(Constants.omvCondition+Constants.keywords, o.getKeywords(), which);
+	searchConditions.addFirst(condition);
+}
+*/
+
+/*
+if (o.getKeyClasses()!=null) {
+	Condition condition;
+	if (which=="") condition = new Condition(Constants.omvCondition+Constants.keyClasses, o.getKeyClasses(), checkDataProperty(Constants.keyClasses));
+	else condition = new Condition(Constants.omvCondition+Constants.keyClasses, o.getKeyClasses(), which);
+	searchConditions.addFirst(condition);
+}
+if (o.getKnownUsage()!=null) {
+	Condition condition;
+	if (which=="") condition = new Condition(Constants.omvCondition+Constants.knownUsage, o.getKnownUsage(), checkDataProperty(Constants.knownUsage));
+	else condition = new Condition(Constants.omvCondition+Constants.knownUsage, o.getKnownUsage(), which);
+	searchConditions.addFirst(condition);
+}
+*/
+
+/*
+if (o.getName()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.name, o.getName());
+	ontoProperties.addFirst(prop);
+}
+*/
+/*
+if (o.getKeywords()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.keywords, o.getKeywords());
+	ontoProperties.addFirst(prop);
+}
+*/
+/*
+if (o.getKeyClasses()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.keyClasses, o.getKeyClasses());
+	ontoProperties.addFirst(prop);
+}
+if (o.getKnownUsage()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.knownUsage, o.getKnownUsage());
+	ontoProperties.addFirst(prop);
+}
+*/
+
+/*
+if (o.getEMail()!=null) {
+	Condition condition;
+	if (which=="")condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), checkDataProperty(Constants.eMail));
+	else condition = new Condition(Constants.omvCondition+Constants.eMail, o.getEMail(), which);
+	searchConditions.addFirst(condition);
+}
+if (o.getPhoneNumber()!=null) {
+	Condition condition;
+	if (which=="")condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), checkDataProperty(Constants.phoneNumber));
+	else condition = new Condition(Constants.omvCondition+Constants.phoneNumber, o.getPhoneNumber(), which);
+	searchConditions.addFirst(condition);
+}
+if (o.getFaxNumber()!=null) {
+	Condition condition;
+	if (which=="")condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), checkDataProperty(Constants.faxNumber));
+	else condition = new Condition(Constants.omvCondition+Constants.faxNumber, o.getFaxNumber(), which);
+	searchConditions.addFirst(condition);
+}
+*/
+/*
+if (p.getEMail()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.eMail, p.getEMail());
+	tProperties.addFirst(prop);
+}
+if (p.getPhoneNumber()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.phoneNumber, p.getPhoneNumber());
+	tProperties.addFirst(prop);
+}
+if (p.getFaxNumber()!=null) {
+	OntologyProperty prop = new OntologyProperty(Constants.faxNumber, p.getFaxNumber());
+	tProperties.addFirst(prop);
+}
+*/
+/*15*/
+/*
+String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(ontoIndiv.getDataPropertyValue(ontologySearch,property));	
+if (whichClass.equalsIgnoreCase("ontology")) mainOntoReply.append(createOMVOntology(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("party")) partyReply.append(createOMVParty(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("ontoEngTool")) ontoEngToolReply.append(createOMVOntologyEngineeringTool(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("ontoEngMet")) ontoEngMetReply.append(createOMVOntologyEngineeringMethodology(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("krParadigm")) krParadigmReply.append(createOMVKnowledgeRepresentationParadigm(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("oDomain")) oDomainReply.append(createOMVOntologyDomain(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("oType")) oTypeReply.append(createOMVOntologyType(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("oTask")) oTaskReply.append(createOMVOntologyTask(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("oLanguage")) oLanguageReply.append(createOMVOntologyLanguage(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("oSyntax")) oSyntaxReply.append(createOMVOntologySyntax(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("fLevel")) fLevelReply.append(createOMVFormalityLevel(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("lModel")) lModelReply.append(createOMVLicenseModel(property.getURI(),propertyValue));				
+else if (whichClass.equalsIgnoreCase("location")) locationReply.append(createOMVLocation(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("person")) personReply.append(createOMVPerson(property.getURI(),propertyValue));
+else if (whichClass.equalsIgnoreCase("organisation")) organisationReply.append(createOMVOrganisation(property.getURI(),propertyValue));
+//else if (whichClass.equalsIgnoreCase("oReferences")) oReferencesReply.append(createOMVOntologyReferences(property.getURI(),propertyValue));
+//else if (whichClass.equalsIgnoreCase("oDomainSub")) oDomainReplySub.append(createOMVOntologyDomainSub(property.getURI(),propertyValue));
 */

@@ -46,15 +46,17 @@ public class Test {
 		
 		//IMPORTED ONTOLOGY
 		OMVOntology newOnto1 = new OMVOntology();
-		newOnto1.setName("testUseImport");
+		newOnto1.addName("testUseImport");
 		newOnto1.setURI("http://localhost/testuseimport#");
+		newOnto1.setResourceLocator("http://localhost/testuseimport/thefile.owl");
 		newOnto1.addHasDomain(topic);
 		newOnto1.setNumberOfAxioms(50);
 		oyster2Conn.replace(newOnto1);
 		
 		//IMPORTING ONTOLOGY
 		OMVOntology newOnto = new OMVOntology();
-		newOnto.setName("testing");
+		newOnto.addName("testing");
+		newOnto.addName("Probare");
 		newOnto.setVersion("1.0");
 		newOnto.setURI("http://localhost/temp#");
 		//newOnto.setNumClasses(20);
@@ -67,17 +69,21 @@ public class Test {
 		OMVPerson creator= new OMVPerson();
 		creator.setFirstName("Raul");
 		creator.setLastName("Palma");
-		creator.setEMail("rpalma@fi.upm.es");
+		creator.addEmail("rpalma@fi.upm.es");
+		creator.addEmail("rpalma@delicias.dia.fi.upm.es");
 		creator.addCreatesOntology(cTemp);
 		newOnto.addHasCreator(creator);
 		OMVPerson creator1= new OMVPerson();
 		creator1.setFirstName("Jens");
 		creator1.setLastName("Hartmann");
-		creator1.setEMail("hartmann@aifb-uka.de");
+		creator1.addEmail("hartmann@aifb-uka.de");
 		creator1.addCreatesOntology(cTemp);
 		newOnto.addHasCreator(creator1);
-		newOnto.addResourceLocator("http://www.w3.org/TR/owl-guide/wine.rdf");
-		newOnto.addResourceLocator("http://www.w3.org/testing/wine.rdf");
+		newOnto.setResourceLocator("http://www.w3.org/testing/wine.rdf");
+		newOnto.addNaturalLanguage("English");
+		newOnto.addNaturalLanguage("Italian");
+		//newOnto.addResourceLocator("http://www.w3.org/TR/owl-guide/wine.rdf");
+		//newOnto.addResourceLocator("http://www.w3.org/testing/wine.rdf");
 		newOnto.setNotes("Notes for testing");
 		newOnto.setIsConsistentAccordingToReasoner(false);
 		newOnto.setContainsTBox(true);
@@ -88,15 +94,19 @@ public class Test {
 		
 		//FULL ONTOLOGY
 		OMVOntology newOnto0 = new OMVOntology();
-		newOnto0.setName("OWL Ontology Definition Metamodel");
+		newOnto0.addName("OWL Ontology Definition Metamodel");
+		newOnto0.addName("OWL OntoDefModel");
 		newOnto0.setURI("http://owlodm.ontoware.org/OWL1.0");
 		newOnto0.addHasDomain(kritem);
 		newOnto0.setNumberOfClasses(35);
 		newOnto0.setNumberOfProperties(22);
+		OMVOntology cTempx = new OMVOntology();
+		cTempx.setURI("http://owlodm.ontoware.org/OWL1.0");
 		OMVPerson creator0= new OMVPerson();
 		creator0.setFirstName("Peter");
 		creator0.setLastName("Haase");
-		creator0.setEMail("pha@aifb-uka.de");
+		creator0.addEmail("pha@aifb-uka.de");
+		creator0.addCreatesOntology(cTempx);
 		newOnto0.addHasCreator(creator0);
 		newOnto0.setAcronym("OWLODM");
 		newOnto0.setVersion("1.0");
@@ -119,7 +129,7 @@ public class Test {
 		//conditions.addUseImports(imp);
 		conditions.addHasDomain(topic);
 		OMVOntology cTemp1 = new OMVOntology();
-		cTemp1.setName("test");
+		cTemp1.addName("test");
 		//conditions.addUseImports(cTemp1);
 		
 		Set<OMVOntology> OMVSet2 = new HashSet<OMVOntology>();
@@ -148,6 +158,9 @@ public class Test {
 		//conditionsx.setNumberOfProperties(5);
 		conditionsx.setNotes("notes");
 		conditionsx.addEndorsedBy(creator);
+		conditionsx.addNaturalLanguage("english");
+		conditionsx.addNaturalLanguage("italian");
+		conditionsx.addName("proba");
 		
 		Set<OMVOntology> OMVSetx = new HashSet<OMVOntology>(); 
 		Set<Object> OMVOb2 = oyster2Conn.search(conditionsx);
@@ -167,6 +180,34 @@ public class Test {
 		String OMVSetSerialx = Oyster2Manager.serializeOMVOntologies(OMVSetx);
 		System.out.println("Search with conditionsx: ");
 		System.out.println(OMVSetSerialx);
+		
+//		HERE WE WILL TEST SEARCH BY CONDITIONS3
+		OMVOntology conditionsx3 = new OMVOntology();
+		OMVOntology imp3 = new OMVOntology();
+		imp3.setURI("http://localhost/testuseimport#");
+		conditionsx3.addUseImports(imp3);
+		
+		
+		Set<OMVOntology> OMVSetx3 = new HashSet<OMVOntology>(); 
+		Set<Object> OMVObx3 = oyster2Conn.search(conditionsx3);
+		if (OMVObx3.size()>0){
+			Iterator it = OMVObx3.iterator();
+			try{
+				while(it.hasNext()){
+					OMVOntology omv = (OMVOntology)it.next();
+					OMVSetx3.add(omv);
+				}
+				
+			}catch(Exception ignore){
+				//	-- ignore
+			}
+		}
+		
+		String OMVSetSerialx3 = Oyster2Manager.serializeOMVOntologies(OMVSetx3);
+		System.out.println("Search with conditionsx by useimports: ");
+		System.out.println(OMVSetSerialx3);
+		
+		
 		
 		//HERE WE TEST GETPEERS METHOD
 		Map<String,OMVPeer> OMVPeerSet = oyster2Conn.getPeers();
@@ -266,7 +307,7 @@ public class Test {
 		
 		//HERE WE TEST SEARCH WITH KEYWORDS
 		
-		Set<OMVOntology> OMVSet3 = oyster2Conn.getOntologies("source");
+		Set<OMVOntology> OMVSet3 = oyster2Conn.getOntologies("italian");
 		String OMVSetSerial3 = Oyster2Manager.serializeOMVOntologies(OMVSet3);
 		System.out.println("Search with keyword: ");
 		System.out.println(OMVSetSerial3);
@@ -310,7 +351,9 @@ public class Test {
 		OMVPerson t1= new OMVPerson();
 		t1.setFirstName("John");
 		t1.setLastName("becker");
-		t1.setEMail("jbecker@superhost.com");
+		t1.addEmail("jbecker@superhost.com");
+		t1.addEmail("jbeckersuper@thehost.com");
+		t1.addEmail("jbhost@temphost.com");
 		oyster2Conn.replace(t1);
 		
 		//HERE WE TEST SIMPLE SEARCH

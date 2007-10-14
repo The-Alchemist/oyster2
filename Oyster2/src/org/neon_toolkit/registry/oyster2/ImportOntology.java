@@ -13,20 +13,6 @@ import org.neon_toolkit.registry.util.RDFS;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 import org.semanticweb.kaon2.api.formatting.*; 
-//import java.io.ByteArrayInputStream;
-//import java.lang.reflect.InvocationTargetException;
-//import org.eclipse.core.runtime.IProgressMonitor;
-//import org.eclipse.jface.action.Action;
-//import org.eclipse.jface.dialogs.IDialogConstants;
-//import org.eclipse.jface.dialogs.MessageDialog;
-//import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-//import org.eclipse.jface.operation.IRunnableWithProgress;
-//import org.eclipse.jface.window.ApplicationWindow;
-//import org.eclipse.swt.SWT;
-//import org.eclipse.swt.widgets.Display;
-//import org.eclipse.swt.widgets.Event;
-//import org.eclipse.swt.widgets.FileDialog;
-//import org.eclipse.swt.widgets.Shell;
 //import org.semanticweb.kaon2.api.owl.axioms.*;
 //import org.semanticweb.kaon2.api.formatting.OntologyFormatting;
 //import org.semanticweb.kaon2.api.OntologyFileFormat; //OLD VERSION
@@ -71,6 +57,8 @@ public class ImportOntology {
 	        
 	        // I DONT LIKE THIS
 			prop = new OntologyProperty(Constants.name, Namespaces.guessLocalName(serializeFileName(filename)));
+			if (!isPropertyIn(prop))propertyList.add(prop);
+			prop = new OntologyProperty(Constants.resourceLocator, serializeFileName(filename));
 			if (!isPropertyIn(prop))propertyList.add(prop);
 			//1
 			//prop = new OntologyProperty(Constants.hasDomain,"");
@@ -139,6 +127,10 @@ public class ImportOntology {
         			){
         			propertyList.addFirst(prop);
         		}
+        		else if (org.neon_toolkit.registry.util.Utilities.multiple(predicate)){
+        			//multiple datatypes values that can occur within the import process
+        			propertyList.addFirst(prop);
+        		}		
         	}
         	if ((predicate.equalsIgnoreCase(Constants.useImports)) ||
     				(predicate.equalsIgnoreCase(Constants.isBackwardCompatibleWith)) ||	
@@ -300,7 +292,25 @@ public class ImportOntology {
 		filename = filename.replace(seperator.charAt(0),'/');
 		return  filename;
 	}
-		
+	
+	
+	/**
+	 * Adds/modify/remove a metadata entry (different than ontology) 
+	 * in the registry.
+	 * @param how is the adding mode. It works as follows:
+	 * 0=Merge: The properties specified are added for multiple values
+	 * properties (if the value do not exists already) and replaced 
+	 * for single value properties.
+	 * 1=Pure Register: If the metadata entry exists already 
+	 * in the registry the method returns.
+	 * 2=Replace: Same as remove and add object i.e. all existing 
+	 * properties are removed and the new set of properties are added
+	 * without deleting the object
+	 * 4=Remove: Remove the metadata entry 
+	 * @param properties is the set of properties (OMV properties)  
+	 * that has the ontology metadata entry we want to register.
+	 * @param which specifies the type of object we want to add
+	 */
 	public void addConceptToRegistry(int how,List properties, int which){
 		List propList = new LinkedList();
 		propList.clear();
@@ -420,16 +430,25 @@ public class ImportOntology {
 						while(keys.hasNext()){
 							String keyStr = keys.next().toString();
 							DataProperty property = KAON2Manager.factory().dataProperty(keyStr);
-							String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(localRegistry,property));
-							int dType;
-							if (which>12) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getMappingOntology(),Constants.MOMVURI);
-							else dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getTypeOntology(),Constants.OMVURI);
-							if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){						
-								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE));
-							}
-							else {	
-								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
-							}
+							/*7*/
+							//TODO: manage multiple values for datatypes different to string in other objects.
+							Collection propertyCol= new LinkedList();
+							propertyCol = (Collection)dataPropertyMap.get(property);
+							if(propertyCol==null)System.err.println("datapropertyCol is null");
+							Iterator itInt = propertyCol.iterator();
+							while(itInt.hasNext()){
+								Object propertyObject =(Object) itInt.next();
+								String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(propertyObject);
+								int dType;
+								if (which>12) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getMappingOntology(),Constants.MOMVURI);
+								else dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getTypeOntology(),Constants.OMVURI);
+								if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){						
+									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE)); //Deal with multiple string values
+								}
+								else {	
+									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+								}
+							}						
 						}
 						keySet = objectPropertyMap.keySet();
 						Iterator okeys = keySet.iterator();
@@ -438,7 +457,7 @@ public class ImportOntology {
 							ObjectProperty property = KAON2Manager.factory().objectProperty(keyStr);
 							Collection propertyCol= new LinkedList();
 							propertyCol = (Collection)objectPropertyMap.get(property);
-							if(propertyCol==null)System.err.println("propertyCol is null");
+							if(propertyCol==null)System.err.println("objectpropertyCol is null");
 							Iterator itInt = propertyCol.iterator();
 							while(itInt.hasNext()){
 								Individual propertyValue =(Individual) itInt.next();
@@ -489,9 +508,16 @@ public class ImportOntology {
 					if (which>12) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceMappingOntology,Constants.MOMVURI);
 					else dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceTypeOntology,Constants.OMVURI);
 					String oldValue = org.neon_toolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
-					if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){						
-						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
-						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+					if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){
+						if (org.neon_toolkit.registry.util.Utilities.multipleO(prop.getPropertyName())){ //Manage multiple string values for data properties
+							if(!localRegistry.containsAxiom(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),true)){
+								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+							}
+						}
+						else{	
+							if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
+							changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+						}						
 					}
 					else if (dType==org.neon_toolkit.registry.util.Utilities.INTEGER_TYPE){	
 						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
@@ -528,11 +554,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(sIndiv))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					Individual oldSIndiv = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
-					*/	
+					/*8*/	
 				}
 				else if (prop.getPropertyName().equals(Constants.createsOntology) || prop.getPropertyName().equals(Constants.contributesToOntology)) { 
 					String pOValue = prop.getPropertyValue();
@@ -550,12 +572,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values 
-					Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*9*/
 				}
 				else if (prop.getPropertyName().equals(Constants.hasCreator)){
 					String party = prop.getPropertyValue();
@@ -576,11 +593,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(sIndiv))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					Individual oldSIndiv = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*10*/
 				}
 				else if (prop.getPropertyName().equals(Constants.hasSourceOntology) || prop.getPropertyName().equals(Constants.hasTargetOntology)) { 
 					String pOValue = prop.getPropertyValue();
@@ -598,12 +611,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values
-					Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*11*/
 				}
 				else if (which<=12){ 
 					String pOValue = prop.getPropertyValue();
@@ -621,12 +629,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values
-					Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*12*/
 				}
 				else {//mappings 
 					String pOValue = prop.getPropertyValue();
@@ -644,12 +647,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values
-					Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*13*/
 				}
 			}
 			if (which==13){
@@ -667,31 +665,78 @@ public class ImportOntology {
 		}
 	}
 	
+	/**
+	 * Adds/modify/remove an ontology metadata entry in the registry.
+	 * @param properties is the set of properties (OMV properties)  
+	 * that has the ontology metadata entry we want to register.
+	 * @param what is the adding mode. It works as follows:
+	 * 0=Merge: The properties specified are added for multiple values
+	 * properties (if the value do not exists already) and replaced 
+	 * for single value properties.
+	 * 1=Pure Register: If the ontology metadata entry exists already 
+	 * in the registry the method returns.
+	 * 2=Replace: Same as remove and add object i.e. all existing 
+	 * properties are removed and the new set of properties are added
+	 * without deleting the object
+	 * 3=Special Register: Same as 0 i.e. merge, but do not add the 
+	 * objectProperties ontologyLocation and provideOntology to the 
+	 * omv:Ontology and omv-p:Peer concepts. This allows us to add 
+	 * referenced ontologies by e.g. useImports, hasPriorVersion, etc.
+	 * for which we do not have any additional information like when
+	 * importing and extracting metadata from an ontology.
+	 * 4=Remove: Remove the ontology metadata entry
+	 * 
+	 */
 	public void addImportOntologyToRegistry(List properties, int what){
 		List propList = new LinkedList();
 		propList.clear();
 		propList=properties;
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 		OWLClass ontologyConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
-		
-		
-    	//DataProperty ontologyURI = KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI);
-    	//DataProperty ontologyName = KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name);
-    	//ObjectProperty useImports = KAON2Manager.factory().objectProperty(Constants.OMVURI + Constants.useImports);
     	ObjectProperty hasDomain = KAON2Manager.factory().objectProperty(Constants.OMVURI + Constants.hasDomain);
 		ObjectProperty ontologyLocation = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.ontologyOMVLocation);
     	ObjectProperty provideOntology = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.provideOntology);
     	
-		Individual ontologyIndividual = null; 
+    	//Manage composite OMV identification. Before it was the same as Ontology URI
+		Individual ontologyIndividual = null;
+		String uri = ""; 
+		Boolean hasVersion = false;
 		Iterator it1 = propList.iterator();
 		while(it1.hasNext()){
 			OntologyProperty prop = (OntologyProperty)it1.next();
 			if(prop.getPropertyName().equals(Constants.URI)){
-				String uri = prop.getPropertyValue();
-				ontologyIndividual = KAON2Manager.factory().individual(uri);
+				//uri = prop.getPropertyValue();
+				String uri1 = prop.getPropertyValue();  //For using composite OMV identification
+				uri=uri+uri1;
 				break;
 			}
 		}
+		
+		Iterator it1a = propList.iterator();
+		while(it1a.hasNext()){
+			OntologyProperty prop = (OntologyProperty)it1a.next();
+			if(prop.getPropertyName().equals(Constants.version)){
+				String uri2 = prop.getPropertyValue();
+				uri=uri+"?version="+uri2+";";
+				hasVersion = true;
+				break;
+			}
+		}
+		Iterator it1b = propList.iterator();
+		while(it1b.hasNext()){
+			OntologyProperty prop = (OntologyProperty)it1b.next();
+			if(prop.getPropertyName().equals(Constants.resourceLocator)){
+				String uri3 = prop.getPropertyValue();
+				if (!hasVersion) uri=uri+"?"; 
+				uri=uri+"location="+uri3;
+				break;
+			}
+		}
+		
+		uri=uri.replace(" ", "_");
+		
+		/*6*/
+		ontologyIndividual = KAON2Manager.factory().individual(uri);
 		try{	
 			if(localRegistry.containsEntity(ontologyIndividual,true)){
 				if (what==0)
@@ -709,19 +754,30 @@ public class ImportOntology {
 						while(keys.hasNext()){
 							String keyStr = keys.next().toString();
 							DataProperty property = KAON2Manager.factory().dataProperty(keyStr);
-							String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,property));
-							Boolean isI = org.neon_toolkit.registry.util.Utilities.isInt(Namespaces.guessLocalName(property.getURI()));
-							if (!isI){
-								Boolean isB = org.neon_toolkit.registry.util.Utilities.isBool(Namespaces.guessLocalName(property.getURI()));
-								if (!isB){
-									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE));
+							//Handle multiple values for data properties. (before /*1*/) 
+							//For now only multiple string values are supported.
+							//TODO: Support multiple values for datatypes different from string						
+							Collection propertyCol= new LinkedList();
+							propertyCol = (Collection)dataPropertyMap.get(property);
+							if(propertyCol==null)System.err.println("datapropertyCol is null");
+							Iterator itInt = propertyCol.iterator();
+							while(itInt.hasNext()){
+								Object propertyObject =(Object) itInt.next();
+								String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(propertyObject);
+								Boolean isI = org.neon_toolkit.registry.util.Utilities.isInt(Namespaces.guessLocalName(property.getURI()));
+								if (!isI){
+									Boolean isB = org.neon_toolkit.registry.util.Utilities.isBool(Namespaces.guessLocalName(property.getURI()));
+									if (!isB){
+										changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE)); //multiple string as we use propertyValue
+									}
+									else{
+										changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE)); //assuming one value (for boolean is ok)
+									}
 								}
-								else{
-									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
-								}
+								else
+									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE)); //assuming one value (here not necessarly good)
 							}
-							else
-								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+							
 						}
 						keySet = objectPropertyMap.keySet();
 						Iterator okeys = keySet.iterator();
@@ -730,7 +786,7 @@ public class ImportOntology {
 							ObjectProperty property = KAON2Manager.factory().objectProperty(keyStr);
 							Collection propertyCol= new LinkedList();
 							propertyCol = (Collection)objectPropertyMap.get(property);
-							if(propertyCol==null)System.err.println("propertyCol is null");
+							if(propertyCol==null)System.err.println("objectpropertyCol is null");
 							Iterator itInt = propertyCol.iterator();
 							while(itInt.hasNext()){
 								Individual propertyValue =(Individual) itInt.next();
@@ -781,9 +837,16 @@ public class ImportOntology {
 					if (!isI){
 						Boolean isB = org.neon_toolkit.registry.util.Utilities.isBool(prop.getPropertyName());
 						if (!isB){
-							String oldValue = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
-							if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
-							changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+							if (org.neon_toolkit.registry.util.Utilities.multiple(prop.getPropertyName())){ //Manage multiple string values for data properties
+								if(!localRegistry.containsAxiom(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(pValue)),true)){
+									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+								}
+							}
+							else{
+								String oldValue = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
+								if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
+								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,ontologyIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+							}
 						}
 						else{
 							String oldValue = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
@@ -816,11 +879,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(hasDomain);
 					if (checkValues==null || !checkValues.contains(subjectIndiv))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndividual,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					Individual oldSubjectIndiv = ontologyIndividual.getObjectPropertyValue(localRegistry,hasDomain);
-					if(oldSubjectIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndividual,oldSubjectIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndividual,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*2*/
 					// ADD HASEXPERTISE TO THE PEER
 					if (what!=3){
 						ObjectProperty hasExpertise = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.hasExpertise);
@@ -848,11 +907,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(sIndiv))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));					
-					/*
-					Individual oldSIndiv = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
-					*/	
+					/*3*/	
 				}
 				else if (prop.getPropertyName().equals(Constants.useImports) || prop.getPropertyName().equals(Constants.hasPriorVersion) ||
 						prop.getPropertyName().equals(Constants.isBackwardCompatibleWith) || prop.getPropertyName().equals(Constants.isIncompatibleWith)){ 
@@ -871,12 +926,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values  
-					Individual oldObjectPropertyIndividual = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*4*/
 				}
 				else{ 
 					String pOValue = prop.getPropertyValue();
@@ -894,12 +944,7 @@ public class ImportOntology {
 					Set<Individual>checkValues=check.get(ontologyObjectProperty);
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					/*
-					//TODO How to handle multiple values
-					Individual oldObjectPropertyIndividual = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
-					if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
-					*/
+					/*5*/
 				}
 			}	
 			if (what!=3){
@@ -1012,4 +1057,123 @@ if (!isI)
 	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE));
 else
 	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+*/
+
+
+/*1*/
+/*
+String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndividual.getDataPropertyValue(localRegistry,property));
+Boolean isI = org.neon_toolkit.registry.util.Utilities.isInt(Namespaces.guessLocalName(property.getURI()));
+if (!isI){
+	Boolean isB = org.neon_toolkit.registry.util.Utilities.isBool(Namespaces.guessLocalName(property.getURI()));
+	if (!isB){
+		changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE));
+	}
+	else{
+		changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+	}
+}
+else
+	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,ontologyIndividual,KAON2Manager.factory().constant(ontologyIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+*/
+
+/*2*/
+/*
+Individual oldSubjectIndiv = ontologyIndividual.getObjectPropertyValue(localRegistry,hasDomain);
+if(oldSubjectIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndividual,oldSubjectIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasDomain,ontologyIndividual,subjectIndiv),OntologyChangeEvent.ChangeType.ADD));
+*/
+
+/*3*/
+/*
+Individual oldSIndiv = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
+*/
+
+/*4*/
+/*  
+Individual oldObjectPropertyIndividual = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+*/
+
+/*5*/
+/*
+Individual oldObjectPropertyIndividual = ontologyIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,ontologyIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+*/
+
+/*6*/
+/*
+Iterator it1a = propList.iterator();
+while(it1a.hasNext()){
+	OntologyProperty prop = (OntologyProperty)it1a.next();
+	if(prop.getPropertyName().equals(Constants.version)){
+		String uri2 = prop.getPropertyValue();
+		uri=uri+"version=<"+uri2+">;";
+		break;
+	}
+}
+Iterator it1b = propList.iterator();
+while(it1b.hasNext()){
+	OntologyProperty prop = (OntologyProperty)it1b.next();
+	if(prop.getPropertyName().equals(Constants.resourceLocator)){
+		String uri3 = prop.getPropertyValue();
+		uri=uri+"location=<"+uri3+">;";
+		break;
+	}
+}
+*/
+
+/*7*/
+/*
+String	propertyValue = org.neon_toolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(localRegistry,property));
+int dType;
+if (which>12) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getMappingOntology(),Constants.MOMVURI);
+else dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getTypeOntology(),Constants.OMVURI);
+if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){						
+	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE));
+}
+else {	
+	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(localRegistry,property).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+}
+*/
+
+/*8*/
+/*
+Individual oldSIndiv = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
+*/
+/*9*/
+/* 
+Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+*/
+/*10*/
+/*
+Individual oldSIndiv = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldSIndiv != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldSIndiv),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,sIndiv),OntologyChangeEvent.ChangeType.ADD));
+*/
+/*11*/
+/*
+Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+*/
+/*12*/
+/*
+Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+*/
+/*13*/
+/*
+Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(localRegistry,ontologyObjectProperty);
+if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
+changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 */
