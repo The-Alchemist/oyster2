@@ -48,7 +48,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class Oyster2Manager provides the initial connection to Oyster2
  * registry, and the means to display results
  * @author Raul Palma
- * @version 0.97, October 2007
+ * @version 0.98, October 2007
  */
 public class Oyster2Manager{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -185,11 +185,11 @@ public class Oyster2Manager{
 			OMVOntology omv = (OMVOntology)it.next();
 			serial=serial+"OMVOntology {\n"+
 			getData(omv.getURI(),"URI")+
-			getData(omv.getName(),"name")+
+			getDataSetString(omv.getName(),"name",100)+ //getData(omv.getName(),"name")+
 			getData(omv.getAcronym(),"acronym")+
 			getData(omv.getDescription(),"description")+
 			getData(omv.getDocumentation(),"documentation")+
-			getData(omv.getKeywords(),"keywords")+
+			getDataSetString(omv.getKeywords(),"keywords",100)+//getData(omv.getKeywords(),"keywords")+
 			getData(omv.getStatus(),"status")+
 			getData(omv.getCreationDate(),"creationDate")+
 			getData(omv.getModificationDate(),"modificationDate")+
@@ -200,7 +200,7 @@ public class Oyster2Manager{
 			getDataSetString(omv.getUsedKnowledgeRepresentationParadigm(),"usedKnowledgeRepresentationParadigm",4)+
 			getDataSetString(omv.getHasDomain(),"hasDomain",5);
 			if (omv.getIsOfType()!=null) serial = serial + getData(omv.getIsOfType().getName(),"isOfType");
-			serial=serial+getData(omv.getNaturalLanguage(),"naturalLanguage")+
+			serial=serial+getDataSetString(omv.getNaturalLanguage(),"naturalLanguage",100)+ 			//serial=serial+getData(omv.getNaturalLanguage(),"naturalLanguage")+
 			getDataSetString(omv.getDesignedForOntologyTask(),"designedForOntologyTask",6);
 			if (omv.getHasOntologyLanguage()!=null) serial = serial + getData(omv.getHasOntologyLanguage().getName(),"ontologyLanguage");
 			if (omv.getHasOntologySyntax()!=null) serial = serial + getData(omv.getHasOntologySyntax().getName(),"ontologySyntax");
@@ -217,8 +217,8 @@ public class Oyster2Manager{
 			if (omv.getNumberOfIndividuals()!=null) serial = serial + getData(omv.getNumberOfIndividuals().toString(),"numberOfIndividuals");
 			if (omv.getNumberOfAxioms()!=null) serial = serial + getData(omv.getNumberOfAxioms().toString(),"numberOfAxioms");
 			serial=serial+getData(omv.getNotes(),"notes")+
-			getData(omv.getKeyClasses(),"keyClasses")+
-			getData(omv.getKnownUsage(),"knownUsage")+
+			getDataSetString(omv.getKeyClasses(),"keyClasses",100)+//getData(omv.getKeyClasses(),"keyClasses")+
+			getDataSetString(omv.getKnownUsage(),"knownUsage",100)+//getData(omv.getKnownUsage(),"knownUsage")+
 			getData(omv.getExpressiveness(),"expressiveness");
 			if (omv.getIsConsistentAccordingToReasoner()!=null) serial = serial + getData(omv.getIsConsistentAccordingToReasoner().toString(),"isConsistentAccordingToReasoner");
 			if (omv.getContainsTBox()!=null) serial = serial + getData(omv.getContainsTBox().toString(),"containsTBox");
@@ -390,17 +390,37 @@ public class Oyster2Manager{
 	private static List<OntologyChangeEvent> Ontology2RDF(OWLClass tempConcept, OMVOntology omvT, ObjectProperty ontologyObjectProperty, Individual ontologyIndividual){
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 		String tURI;
-		if (omvT.getURI()!=null) tURI=omvT.getURI();
+		if ((omvT.getURI()!=null)){ 
+			tURI=omvT.getURI();
+			if ((omvT.getVersion()!=null) && (omvT.getResourceLocator()!=null)) {
+				tURI=tURI+"?version="+omvT.getVersion()+";";
+				tURI=tURI+"location="+omvT.getResourceLocator();
+			}
+			else if (omvT.getResourceLocator()!=null) tURI=tURI+"?location="+omvT.getResourceLocator();
+			tURI=tURI.replace(" ", "_");
+		}
 		else return null;
 		Individual oIndividual = KAON2Manager.factory().individual(tURI);
 		
 		changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(tempConcept,oIndividual),OntologyChangeEvent.ChangeType.ADD));			
 		if (omvT.getURI()!=null) changes.add(getEvent(Constants.URI,omvT.getURI(),oIndividual));
-		if (omvT.getName()!=null) changes.add(getEvent(Constants.name,omvT.getName(),oIndividual));
+		if (omvT.getName().size()>0) { //if (omvT.getName()!=null) changes.add(getEvent(Constants.name,omvT.getName(),oIndividual));
+			Iterator it = omvT.getName().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.name,nl,oIndividual));
+			}
+		}
 		if (omvT.getAcronym()!=null) changes.add(getEvent(Constants.acronym,omvT.getAcronym(),oIndividual));
 		if (omvT.getDescription()!=null) changes.add(getEvent(Constants.description,omvT.getDescription(),oIndividual));
-		if (omvT.getDocumentation()!=null) changes.add(getEvent(Constants.documentation,omvT.getDocumentation(),oIndividual));
-		if (omvT.getKeywords()!=null) changes.add(getEvent(Constants.keywords,omvT.getKeywords(),oIndividual));
+		if (omvT.getDocumentation()!=null) changes.add(getEvent(Constants.documentation,omvT.getDocumentation(),oIndividual));		
+		if (omvT.getKeywords().size()>0) { //if (omvT.getKeywords()!=null) changes.add(getEvent(Constants.keywords,omvT.getKeywords(),oIndividual));
+			Iterator it = omvT.getKeywords().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.keywords,nl,oIndividual));
+			}
+		}
 		if (omvT.getStatus()!=null) changes.add(getEvent(Constants.status,omvT.getStatus(),oIndividual));
 		if (omvT.getCreationDate()!=null) changes.add(getEvent(Constants.creationDate,omvT.getCreationDate(),oIndividual));
 		if (omvT.getModificationDate()!=null) changes.add(getEvent(Constants.modificationDate,omvT.getModificationDate(),oIndividual));
@@ -432,7 +452,13 @@ public class Oyster2Manager{
 			List<OntologyChangeEvent> tChanges = OT2RDF(KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.OntologyTypeConcept),omvT.getIsOfType(),KAON2Manager.factory().objectProperty(Constants.OMVURI + Constants.isOfType), oIndividual); 
 			if (tChanges!=null) changes.addAll(tChanges);		
 		}
-		if (omvT.getNaturalLanguage()!=null) changes.add(getEvent(Constants.naturalLanguage,omvT.getNaturalLanguage(),oIndividual)); 
+		if (omvT.getNaturalLanguage().size()>0) { //if (omvT.getNaturalLanguage()!=null) changes.add(getEvent(Constants.naturalLanguage,omvT.getNaturalLanguage(),oIndividual));
+			Iterator it = omvT.getNaturalLanguage().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.naturalLanguage,nl,oIndividual));
+			}
+		}
 		if (omvT.getDesignedForOntologyTask().size()>0) {
 			List<OntologyChangeEvent> tChanges = getDataSetEvent(Constants.designedForOntologyTask,omvT.getDesignedForOntologyTask(),oIndividual,6); 
 			if (tChanges!=null) changes.addAll(tChanges);
@@ -476,8 +502,20 @@ public class Oyster2Manager{
 		if (omvT.getNumberOfIndividuals()!=null) changes.add(getEvent(Constants.numberOfIndividuals,omvT.getNumberOfIndividuals().toString(),oIndividual));
 		if (omvT.getNumberOfAxioms()!=null) changes.add(getEvent(Constants.numberOfAxioms,omvT.getNumberOfAxioms().toString(),oIndividual));
 		if (omvT.getNotes()!=null) changes.add(getEvent(Constants.notes,omvT.getNotes(),oIndividual));
-		if (omvT.getKeyClasses()!=null) changes.add(getEvent(Constants.keyClasses,omvT.getKeyClasses(),oIndividual));
-		if (omvT.getKnownUsage()!=null) changes.add(getEvent(Constants.knownUsage,omvT.getKnownUsage(),oIndividual));
+		if (omvT.getKeyClasses().size()>0) { //if (omvT.getKeyClasses()!=null) changes.add(getEvent(Constants.keyClasses,omvT.getKeyClasses(),oIndividual));
+			Iterator it = omvT.getKeyClasses().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.keyClasses,nl,oIndividual));
+			}
+		}
+		if (omvT.getKnownUsage().size()>0) { //if (omvT.getKnownUsage()!=null) changes.add(getEvent(Constants.knownUsage,omvT.getKnownUsage(),oIndividual));
+			Iterator it = omvT.getKnownUsage().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.knownUsage,nl,oIndividual));
+			}
+		}
 		if (omvT.getExpressiveness()!=null) changes.add(getEvent(Constants.expressiveness,omvT.getExpressiveness(),oIndividual));
 		if (omvT.getIsConsistentAccordingToReasoner()!=null) changes.add(getEvent(Constants.isConsistentAccordingToReasoner,omvT.getIsConsistentAccordingToReasoner().toString(),oIndividual));
 		if (omvT.getContainsTBox()!=null) changes.add(getEvent(Constants.containsTBox,omvT.getContainsTBox().toString(),oIndividual));
@@ -545,7 +583,7 @@ public class Oyster2Manager{
 		}
 		return changes;
 	}
-	
+		
 	private static List<OntologyChangeEvent> person2RDF(OWLClass tempConcept, OMVPerson omvT, ObjectProperty ontologyObjectProperty, Individual ontologyIndividual){
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 		String tURI;
@@ -556,9 +594,27 @@ public class Oyster2Manager{
 		changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 		if (omvT.getFirstName()!=null) changes.add(getEvent(Constants.firstName,omvT.getFirstName(),objectPropertyIndividual));
 		if (omvT.getLastName()!=null) changes.add(getEvent(Constants.lastName,omvT.getLastName(),objectPropertyIndividual));
-		if (omvT.getEMail()!=null) changes.add(getEvent(Constants.eMail,omvT.getEMail(),objectPropertyIndividual));
-		if (omvT.getPhoneNumber()!=null) changes.add(getEvent(Constants.phoneNumber,omvT.getPhoneNumber(),objectPropertyIndividual));
-		if (omvT.getFaxNumber()!=null) changes.add(getEvent(Constants.faxNumber,omvT.getFaxNumber(),objectPropertyIndividual));
+		if (omvT.getEmail().size()>0) { //if (omvT.getEMail()!=null) changes.add(getEvent(Constants.eMail,omvT.getEMail(),objectPropertyIndividual));
+			Iterator it = omvT.getEmail().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.eMail,nl,objectPropertyIndividual));
+			}
+		}
+		if (omvT.getPhoneNumber().size()>0) { //if (omvT.getPhoneNumber()!=null) changes.add(getEvent(Constants.phoneNumber,omvT.getPhoneNumber(),objectPropertyIndividual));
+			Iterator it = omvT.getPhoneNumber().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.phoneNumber,nl,objectPropertyIndividual));
+			}
+		}
+		if (omvT.getFaxNumber().size()>0) { //if (omvT.getFaxNumber()!=null) changes.add(getEvent(Constants.faxNumber,omvT.getFaxNumber(),objectPropertyIndividual));
+			Iterator it = omvT.getFaxNumber().iterator();
+			while(it.hasNext()){
+					String nl = (String)it.next();
+					changes.add(getEvent(Constants.faxNumber,nl,objectPropertyIndividual));
+			}
+		}
 		if (omvT.getIsContactPerson().size()>0) {
 			List<OntologyChangeEvent> tChanges = getDataSetEvent(Constants.isContactPerson,omvT.getIsContactPerson(),objectPropertyIndividual,1); 
 			if (tChanges!=null) changes.addAll(tChanges);
@@ -940,6 +996,7 @@ public class Oyster2Manager{
 		OMVOntologyTask omv6;
 		OMVMapping omv7;
 		OMVMappingProperty omv8;
+		String omv100="";
 		
 		Iterator it = which.iterator();
 		try{
@@ -986,6 +1043,10 @@ public class Oyster2Manager{
 				else if (tClass==8) {
 					omv8=(OMVMappingProperty)it.next();
 					temp=temp+omv8.getID()+" ";
+				}
+				else if (tClass==100) {
+					omv100=(String)it.next();
+					temp=temp+omv100+" ";
 				}
 			}
 		}catch(Exception ignore){

@@ -1,6 +1,5 @@
 package org.neon_toolkit.omv.api.core;
 
-//import java.util.HashMap;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -14,16 +13,16 @@ import org.neon_toolkit.registry.api.Oyster2Manager;
  * The class OMVOntology provides the object representation
  * of the Ontology class of OMV ontology.
  * @author Raul Palma
- * @version 0.97, October 2007
+ * @version 0.98, October 2007
  */
 public class OMVOntology {
 	
 	private String URI;
-	private String name;
+	private Set <String> name = new HashSet<String>();
 	private String acronym;
 	private String description;
 	private String documentation;
-	private String keywords;
+	private Set <String> keywords = new HashSet<String>();
 	private String status;
 	private String creationDate;
 	private String modificationDate;
@@ -34,7 +33,7 @@ public class OMVOntology {
 	private Set <OMVKnowledgeRepresentationParadigm> usedKnowledgeRepresentationParadigm = new HashSet <OMVKnowledgeRepresentationParadigm>();
 	private Set <OMVOntologyDomain> hasDomain = new HashSet <OMVOntologyDomain>();
 	private OMVOntologyType isOfType;
-	private String naturalLanguage;
+	private Set <String> naturalLanguage = new HashSet<String>();
 	private Set <OMVOntologyTask> designedForOntologyTask = new HashSet <OMVOntologyTask>();
 	private OMVOntologyLanguage hasOntologyLanguage;
 	private OMVOntologySyntax hasOntologySyntax;
@@ -52,8 +51,8 @@ public class OMVOntology {
 	private Integer numberOfAxioms;
 	
 	private String notes;
-	private String keyClasses;
-	private String knownUsage;
+	private Set<String> keyClasses = new HashSet<String>();
+	private Set<String> knownUsage = new HashSet<String>();
 	private String expressiveness;
 	private Boolean isConsistentAccordingToReasoner;
 	private Boolean containsTBox;
@@ -70,11 +69,11 @@ public class OMVOntology {
 	public void append(OMVOntology element)
     {
 		if (this.getURI()==null && element.getURI()!=null) {this.setURI(element.getURI());return;}
-		if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
+		if (element.getName().size()>0) {this.name.addAll(element.getName());return;} //if (this.getName()==null && element.getName()!=null) {this.setName(element.getName());return;}
 		if (this.getAcronym()==null && element.getAcronym()!=null) {this.setAcronym(element.getAcronym());return;}
 		if (this.getDescription()==null && element.getDescription()!=null) {this.setDescription(element.getDescription());return;}
 		if (this.getDocumentation()==null && element.getDocumentation()!=null) {this.setDocumentation(element.getDocumentation());return;}
-		if (this.getKeywords()==null && element.getKeywords()!=null) {this.setKeywords(element.getKeywords());return;}
+		if (element.getKeywords().size()>0) {this.keywords.addAll(element.getKeywords());return;} //if (this.getKeywords()==null && element.getKeywords()!=null) {this.setKeywords(element.getKeywords());return;}
 		if (this.getStatus()==null && element.getStatus()!=null) {this.setStatus(element.getStatus());return;}
 		if (this.getCreationDate()==null && element.getCreationDate()!=null) {this.setCreationDate(element.getCreationDate());return;}
 		if (this.getModificationDate()==null && element.getModificationDate()!=null) {this.setModificationDate(element.getModificationDate());return;}
@@ -85,7 +84,7 @@ public class OMVOntology {
 		if (element.getUsedOntologyEngineeringTool().size()>0) {this.usedOntologyEngineeringTool.addAll(element.getUsedOntologyEngineeringTool());return;}
 		if (element.getHasDomain().size()>0) {this.hasDomain.addAll(element.getHasDomain());return;}
 		if (this.getIsOfType()==null && element.getIsOfType()!=null) {this.setIsOfType(element.getIsOfType());return;}
-		if (this.getNaturalLanguage()==null && element.getNaturalLanguage()!=null) {this.setNaturalLanguage(element.getNaturalLanguage());return;}
+		if (element.getNaturalLanguage().size()>0) {this.naturalLanguage.addAll(element.getNaturalLanguage());return;}    //if (this.getNaturalLanguage()==null && element.getNaturalLanguage()!=null) {this.setNaturalLanguage(element.getNaturalLanguage());return;}
 		if (element.getDesignedForOntologyTask().size()>0) {this.designedForOntologyTask.addAll(element.getDesignedForOntologyTask());return;}
 		if (this.getHasOntologyLanguage()==null && element.getHasOntologyLanguage()!=null) {this.setHasOntologyLanguage(element.getHasOntologyLanguage());return;}
 		if (this.getHasOntologySyntax()==null && element.getHasOntologySyntax()!=null) {this.setHasOntologySyntax(element.getHasOntologySyntax());return;}
@@ -102,8 +101,8 @@ public class OMVOntology {
 		if (this.getNumberOfAxioms()==null && element.getNumberOfAxioms()!=null) {this.setNumberOfAxioms(element.getNumberOfAxioms());return;}
 		if (this.getNumberOfIndividuals()==null && element.getNumberOfIndividuals()!=null) {this.setNumberOfIndividuals(element.getNumberOfIndividuals());return;}
 		if (this.getNotes()==null && element.getNotes()!=null) {this.setNotes(element.getNotes());return;}
-		if (this.getKeyClasses()==null && element.getKeyClasses()!=null) {this.setKeyClasses(element.getKeyClasses());return;}
-		if (this.getKnownUsage()==null && element.getKnownUsage()!=null) {this.setKnownUsage(element.getKnownUsage());return;}
+		if (element.getKeyClasses().size()>0) {this.keyClasses.addAll(element.getKeyClasses());return;} //if (this.getKeyClasses()==null && element.getKeyClasses()!=null) {this.setKeyClasses(element.getKeyClasses());return;}
+		if (this.getKnownUsage().size()>0) {this.knownUsage.addAll(element.getKnownUsage());return;} //if (this.getKnownUsage()==null && element.getKnownUsage()!=null) {this.setKnownUsage(element.getKnownUsage());return;}
 		if (this.getExpressiveness()==null && element.getExpressiveness()!=null) {this.setExpressiveness(element.getExpressiveness());return;}
 		if (this.getIsConsistentAccordingToReasoner()==null && element.getIsConsistentAccordingToReasoner()!=null) {this.setIsConsistentAccordingToReasoner(element.getIsConsistentAccordingToReasoner());return;}
 		if (this.getContainsTBox()==null && element.getContainsTBox()!=null) {this.setContainsTBox(element.getContainsTBox());return;}
@@ -140,12 +139,17 @@ public class OMVOntology {
 		return this.URI;
 	}
 	
-	public void setName(String newName)
+	public void addName (String newName)
 	{
-		this.name=newName;
+		this.name.add(newName);
 	}
 	
-	public String getName()
+	public void removeName (String oldName)
+	{
+		this.name.remove(oldName);
+	}
+	
+	public Set <String> getName()
 	{
 		return this.name;
 	}
@@ -180,12 +184,17 @@ public class OMVOntology {
 		return this.documentation;
 	}
 	
-	public void setKeywords(String newKeywords)
+	public void addKeywords (String newKeyword)
 	{
-		this.keywords=newKeywords;
+		this.keywords.add(newKeyword);
 	}
 	
-	public String getKeywords()
+	public void removeKeywords (String oldKeyword)
+	{
+		this.keywords.remove(oldKeyword);
+	}
+	
+	public Set <String> getKeywords()
 	{
 		return this.keywords;
 	}
@@ -320,12 +329,18 @@ public class OMVOntology {
 		return this.isOfType;
 	}
 	
-	public void setNaturalLanguage(String newNaturalLanguage)
+	
+	public void addNaturalLanguage (String newNaturalLanguage)
 	{
-		this.naturalLanguage=newNaturalLanguage;
+		this.naturalLanguage.add(newNaturalLanguage);
 	}
 	
-	public String getNaturalLanguage()
+	public void removeNaturalLanguage (String oldNaturalLanguage)
+	{
+		this.naturalLanguage.remove(oldNaturalLanguage);
+	}
+	
+	public Set <String> getNaturalLanguage()
 	{
 		return this.naturalLanguage;
 	}
@@ -375,24 +390,6 @@ public class OMVOntology {
 		return this.hasFormalityLevel;
 	}
 	
-	public void addResourceLocator(String newResourceLocator)
-	{
-		if (this.resourceLocator!=null && this.resourceLocator!="")
-			this.resourceLocator=this.resourceLocator+";"+newResourceLocator;
-		else
-			this.resourceLocator=newResourceLocator;
-	}
-	
-	public void removeResourceLocator(String oldResourceLocator)
-	{
-		if (this.resourceLocator!=null && this.resourceLocator!=""){
-			int space=this.resourceLocator.indexOf(oldResourceLocator);
-			if (space>=0) {
-				String t1=this.resourceLocator.substring(0, space);
-				t1=t1+this.resourceLocator.substring(space+oldResourceLocator.length()+1,this.resourceLocator.length());
-			}
-		}
-	}
 
 	public void setResourceLocator(String newResourceLocator)
 	{
@@ -539,22 +536,32 @@ public class OMVOntology {
 		return this.notes;
 	}
 	
-	public void setKeyClasses(String newValue)
+	public void addKeyClasses (String newKeyClasses)
 	{
-		this.keyClasses=newValue;
+		this.keyClasses.add(newKeyClasses);
 	}
 	
-	public String getKeyClasses()
+	public void removeKeyClasses (String oldKeyClasses)
+	{
+		this.keyClasses.remove(oldKeyClasses);
+	}
+	
+	public Set <String> getKeyClasses()
 	{
 		return this.keyClasses;
 	}
 	
-	public void setKnownUsage(String newValue)
+	public void addKnownUsage (String newKnownUsage)
 	{
-		this.knownUsage=newValue;
+		this.knownUsage.add(newKnownUsage);
 	}
 	
-	public String getKnownUsage()
+	public void removeKnownUsage (String oldKnwonUsage)
+	{
+		this.knownUsage.remove(oldKnwonUsage);
+	}
+	
+	public Set <String> getKnownUsage()
 	{
 		return this.knownUsage;
 	}
@@ -625,3 +632,83 @@ public class OMVOntology {
 	}
 	
 }
+
+
+/*
+public void setNaturalLanguage(String newNaturalLanguage)
+{
+	this.naturalLanguage=newNaturalLanguage;
+}
+
+public String getNaturalLanguage()
+{
+	return this.naturalLanguage;
+}
+*/
+
+//public void addResourceLocator(String newResourceLocator)
+//{
+//	if (this.resourceLocator!=null && this.resourceLocator!="")
+//		this.resourceLocator=this.resourceLocator+";"+newResourceLocator;
+//	else
+//		this.resourceLocator=newResourceLocator;
+//}
+
+//public void removeResourceLocator(String oldResourceLocator)
+//{
+//	if (this.resourceLocator!=null && this.resourceLocator!=""){
+//		int space=this.resourceLocator.indexOf(oldResourceLocator);
+//		if (space>=0) {
+//			String t1=this.resourceLocator.substring(0, space);
+//			t1=t1+this.resourceLocator.substring(space+oldResourceLocator.length()+1,this.resourceLocator.length());
+//		}
+//	}
+//}
+
+/*
+public void setName(String newName)
+{
+	this.name=newName;
+}
+
+public String getName()
+{
+	return this.name;
+}
+*/
+
+/*
+public void setKeywords(String newKeywords)
+{
+	this.keywords=newKeywords;
+}
+
+public String getKeywords()
+{
+	return this.keywords;
+}
+*/
+
+/*
+public void setKeyClasses(String newValue)
+{
+	this.keyClasses=newValue;
+}
+
+public String getKeyClasses()
+{
+	return this.keyClasses;
+}
+*/
+
+/*
+public void setKnownUsage(String newValue)
+{
+	this.knownUsage=newValue;
+}
+
+public String getKnownUsage()
+{
+	return this.knownUsage;
+}
+*/

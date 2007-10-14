@@ -12,7 +12,7 @@ import org.semanticweb.kaon2.api.owl.elements.*;
  *
  * @author Jeen Broekstra
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  **/
 public class Utilities {
 
@@ -71,6 +71,28 @@ public class Utilities {
 	    	System.err.println(e + " in isBool");
 	    	return false;
 	    }
+    	return false;
+    }
+    
+    public static Boolean multiple(String prop){
+    	//Ontology typeOntology = mOyster2.getTypeOntology();
+    	
+    	if (prop.equalsIgnoreCase("naturalLanguage")) return true;
+    	if (prop.equalsIgnoreCase("name")) return true;	
+    	if (prop.equalsIgnoreCase("keywords")) return true;
+    	if (prop.equalsIgnoreCase("keyClasses")) return true;
+    	if (prop.equalsIgnoreCase("knowUsage")) return true;
+    	
+    	return false;
+    }
+    
+    public static Boolean multipleO(String prop){
+    	//Ontology typeOntology = mOyster2.getTypeOntology();
+    	
+    	if (prop.equalsIgnoreCase("eMail")) return true;
+    	if (prop.equalsIgnoreCase("phoneNumber")) return true;
+    	if (prop.equalsIgnoreCase("faxNumber")) return true;
+    	
     	return false;
     }
     

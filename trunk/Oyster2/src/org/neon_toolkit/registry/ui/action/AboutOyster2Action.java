@@ -16,7 +16,7 @@ public class AboutOyster2Action extends Action {
 		try {
 			this.window = window;
 			setText("About...");
-			setToolTipText("Show info about Bibster");
+			setToolTipText("Show info about Oyster2");
 		} catch (Throwable t) {
 			//LOG.error("Error", t);
 		}

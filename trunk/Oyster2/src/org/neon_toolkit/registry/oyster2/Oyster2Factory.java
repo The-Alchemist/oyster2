@@ -303,9 +303,12 @@ public class Oyster2Factory {
 						+ serializeFileName(store
 								.getString(Constants.LocalRegistry)));
 				*/
+				
 				connection.setOntologyResolver(resolver);
 				this.localRegistryOntology = connection.openOntology(
 						localRegistryURI, new HashMap<String, Object>());
+				
+				
 			}
 
 			//2//
@@ -323,6 +326,8 @@ public class Oyster2Factory {
 			//3//
 			
 		} catch (KAON2Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
 			System.err.println(e + " in Oyster2 init1()");
 			retInit=1;
 			return;
@@ -330,6 +335,8 @@ public class Oyster2Factory {
 			//if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
 			//System.exit(1);
 		} catch (InterruptedException e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
 			System.err.println(e + " in Oyster2 init2()");
 			retInit=1;
 			return;
