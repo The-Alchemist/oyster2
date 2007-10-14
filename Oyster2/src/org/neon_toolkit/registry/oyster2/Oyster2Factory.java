@@ -117,7 +117,7 @@ public class Oyster2Factory {
 
 	private Entity topicRoot;
 
-	private PreferenceStore store = new PreferenceStore("new Store");
+	private PreferenceStore store = new PreferenceStore("new store");
 
 	/**
 	 * The queryListener
