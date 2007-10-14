@@ -357,7 +357,12 @@ public class Oyster2Factory {
 			mLocalHost = new XMLOyster2Host(localGUID, InetAddress
 					.getLocalHost(), 1099);
 		} catch (UnknownHostException e) {
-			System.exit(-1);
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			System.err.println(e + " in Oyster2 init() creating Host");
+			//System.exit(-1);
+			retInit=1;
+			return;
 		}
 		if ((store.getString(Constants.LocalPeerName) != null)
 				&& (store.getString(Constants.LocalPeerName).length() > 0))
