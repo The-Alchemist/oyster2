@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0">
+    <annotation>
+        <documentation xml:lang="en">The schema for OASIS ebXML Registry Information Model</documentation>
+    </annotation>
+    <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xsd1.xsd"/>
+    <simpleType name="referenceURI">
+        <annotation>
+            <documentation xml:lang="en">
+        referenceURI is used by reference attributes within RIM.
+        Each attribute of type referenceURI references a RegistryObject with
+        specified URI as id.
+      </documentation>
+        </annotation>
+        <restriction base="anyURI"/>
+    </simpleType>
+    <simpleType name="String4">
+        <restriction base="string">
+            <maxLength value="4"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="String8">
+        <restriction base="string">
+            <maxLength value="8"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="String16">
+        <restriction base="string">
+            <maxLength value="16"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="String32">
+        <restriction base="string">
+            <maxLength value="32"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="ShortName">
+        <restriction base="string">
+            <maxLength value="64"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="LongName">
+        <restriction base="string">
+            <maxLength value="256"/>
+        </restriction>
+    </simpleType>
+    <simpleType name="FreeFormText">
+        <restriction base="string">
+            <maxLength value="1024"/>
+        </restriction>
+    </simpleType>
+    <complexType name="InternationalStringType">
+        <sequence maxOccurs="unbounded">
+            <element ref="rim:LocalizedString"/>
+        </sequence>
+    </complexType>
+    <element name="InternationalString" type="rim:InternationalStringType"/>
+    <element name="Name" type="rim:InternationalStringType"/>
+    <element name="Description" type="rim:InternationalStringType"/>
+    <complexType name="LocalizedStringType">
+        <attribute default="en-US" ref="xml:lang"/>
+        <attribute default="UTF-8" name="charset" type="string"/>
+        <attribute name="value" type="rim:FreeFormText" use="required"/>
+    </complexType>
+    <element name="LocalizedString" type="rim:LocalizedStringType"/>
+    <complexType name="SlotType1">
+        <sequence>
+            <element ref="rim:ValueList"/>
+        </sequence>
+        <attribute name="name" type="rim:LongName" use="required"/>
+        <attribute name="slotType" type="rim:referenceURI"/>
+    </complexType>
+    <element name="Slot" type="rim:SlotType1"/>
+    <complexType name="ValueListType">
+        <sequence maxOccurs="unbounded">
+            <element ref="rim:Value"/>
+        </sequence>
+    </complexType>
+    <element name="ValueList" type="rim:ValueListType"/>
+    <element name="Value" type="rim:LongName"/>
+    <complexType name="SlotListType">
+        <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" ref="rim:Slot"/>
+        </sequence>
+    </complexType>
+    <element name="SlotList" type="rim:SlotListType"/>
+    <complexType name="IdentifiableType">
+        <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" ref="rim:Slot"/>
+        </sequence>
+        <attribute name="id" type="anyURI" use="required"/>
+        <attribute name="home" type="anyURI"/>
+    </complexType>
+    <element name="Identifiable" type="rim:IdentifiableType"/>
+    <complexType name="ObjectRefType">
+        <complexContent>
+            <extension base="rim:IdentifiableType">
+                <attribute default="false" name="createReplica" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ObjectRefListType">
+        <sequence maxOccurs="unbounded">
+            <element ref="rim:ObjectRef"/>
+        </sequence>
+    </complexType>
+    <element name="ObjectRefList" type="rim:ObjectRefListType"/>
+    <element name="ObjectRef" substitutionGroup="rim:Identifiable" type="rim:ObjectRefType"/>
+    <complexType name="RegistryObjectType">
+        <complexContent>
+            <extension base="rim:IdentifiableType">
+                <sequence>
+                    <element minOccurs="0" ref="rim:Name"/>
+                    <element minOccurs="0" ref="rim:Description"/>
+                    <element minOccurs="0" name="VersionInfo" type="rim:VersionInfoType"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:Classification"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:ExternalIdentifier"/>
+                </sequence>
+                <attribute name="lid" type="anyURI"/>
+                <attribute name="objectType" type="rim:referenceURI"/>
+                <attribute name="status" type="rim:referenceURI"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="RegistryObject" substitutionGroup="rim:Identifiable" type="rim:RegistryObjectType"/>
+    <complexType name="RegistryObjectListType">
+        <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" ref="rim:Identifiable"/>
+        </sequence>
+    </complexType>
+    <element name="RegistryObjectList" type="rim:RegistryObjectListType"/>
+    <complexType name="AssociationType1">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute name="associationType" type="rim:referenceURI" use="required"/>
+                <attribute name="sourceObject" type="rim:referenceURI" use="required"/>
+                <attribute name="targetObject" type="rim:referenceURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Association" substitutionGroup="rim:Identifiable" type="rim:AssociationType1"/>
+    <complexType name="AuditableEventType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element name="affectedObjects" type="rim:ObjectRefListType"/>
+                </sequence>
+                <attribute name="eventType" type="rim:referenceURI" use="required"/>
+                <attribute name="timestamp" type="dateTime" use="required"/>
+                <attribute name="user" type="rim:referenceURI" use="required"/>
+                <attribute name="requestId" type="rim:referenceURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="AuditableEvent" substitutionGroup="rim:Identifiable" type="rim:AuditableEventType"/>
+    <complexType name="ClassificationType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute name="classificationScheme" type="rim:referenceURI"/>
+                <attribute name="classifiedObject" type="rim:referenceURI" use="required"/>
+                <attribute name="classificationNode" type="rim:referenceURI"/>
+                <attribute name="nodeRepresentation" type="rim:LongName"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Classification" substitutionGroup="rim:Identifiable" type="rim:ClassificationType"/>
+    <complexType name="ClassificationNodeType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:ClassificationNode"/>
+                </sequence>
+                <attribute name="parent" type="rim:referenceURI"/>
+                <attribute name="code" type="rim:LongName"/>
+                <attribute name="path" type="string"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ClassificationNode" substitutionGroup="rim:Identifiable" type="rim:ClassificationNodeType"/>
+    <complexType name="ClassificationSchemeType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:ClassificationNode"/>
+                </sequence>
+                <attribute name="isInternal" type="boolean" use="required"/>
+                <attribute name="nodeType" type="rim:referenceURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ClassificationScheme" substitutionGroup="rim:Identifiable" type="rim:ClassificationSchemeType"/>
+    <complexType name="ExternalIdentifierType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute name="registryObject" type="rim:referenceURI" use="required"/>
+                <attribute name="identificationScheme" type="rim:referenceURI" use="required"/>
+                <attribute name="value" type="rim:LongName" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ExternalIdentifier" substitutionGroup="rim:Identifiable" type="rim:ExternalIdentifierType"/>
+    <complexType name="ExternalLinkType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute name="externalURI" type="anyURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ExternalLink" substitutionGroup="rim:Identifiable" type="rim:ExternalLinkType"/>
+    <complexType name="ExtrinsicObjectType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element minOccurs="0" name="ContentVersionInfo" type="rim:VersionInfoType"/>
+                </sequence>
+                <attribute default="application/octet-stream" name="mimeType" type="rim:LongName"/>
+                <attribute default="false" name="isOpaque" type="boolean"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ExtrinsicObject" substitutionGroup="rim:Identifiable" type="rim:ExtrinsicObjectType"/>
+    <element name="Address" type="rim:PostalAddressType"/>
+    <complexType name="OrganizationType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:Address"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:TelephoneNumber"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:EmailAddress"/>
+                </sequence>
+                <attribute name="parent" type="rim:referenceURI"/>
+                <attribute name="primaryContact" type="rim:referenceURI"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Organization" substitutionGroup="rim:Identifiable" type="rim:OrganizationType"/>
+    <complexType name="PersonNameType">
+        <attribute name="firstName" type="rim:ShortName"/>
+        <attribute name="middleName" type="rim:ShortName"/>
+        <attribute name="lastName" type="rim:ShortName"/>
+    </complexType>
+    <element name="PersonName" type="rim:PersonNameType"/>
+    <complexType name="EmailAddressType">
+        <attribute name="address" type="rim:ShortName" use="required"/>
+        <attribute name="type" type="rim:String32"/>
+    </complexType>
+    <element name="EmailAddress" type="rim:EmailAddressType"/>
+    <complexType name="PostalAddressType">
+        <attribute name="city" type="rim:ShortName"/>
+        <attribute name="country" type="rim:ShortName"/>
+        <attribute name="postalCode" type="rim:ShortName"/>
+        <attribute name="stateOrProvince" type="rim:ShortName"/>
+        <attribute name="street" type="rim:ShortName"/>
+        <attribute name="streetNumber" type="rim:String32"/>
+    </complexType>
+    <element name="PostalAddress" type="rim:PostalAddressType"/>
+    <complexType name="VersionInfoType">
+        <attribute default="1.1" name="versionName" type="rim:String16"/>
+        <attribute name="comment" type="string"/>
+    </complexType>
+    <complexType name="RegistryPackageType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element minOccurs="0" ref="rim:RegistryObjectList"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="RegistryPackage" substitutionGroup="rim:Identifiable" type="rim:RegistryPackageType"/>
+    <complexType name="ServiceType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:ServiceBinding"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Service" substitutionGroup="rim:Identifiable" type="rim:ServiceType"/>
+    <complexType name="ServiceBindingType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:SpecificationLink"/>
+                </sequence>
+                <attribute name="service" type="rim:referenceURI" use="required"/>
+                <attribute name="accessURI" type="anyURI"/>
+                <attribute name="targetBinding" type="rim:referenceURI"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="ServiceBinding" substitutionGroup="rim:Identifiable" type="rim:ServiceBindingType"/>
+    <complexType name="SpecificationLinkType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element minOccurs="0" ref="rim:UsageDescription"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:UsageParameter"/>
+                </sequence>
+                <attribute name="serviceBinding" type="rim:referenceURI" use="required"/>
+                <attribute name="specificationObject" type="rim:referenceURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="SpecificationLink" substitutionGroup="rim:Identifiable" type="rim:SpecificationLinkType"/>
+    <element name="UsageDescription" type="rim:InternationalStringType"/>
+    <element name="UsageParameter" type="rim:FreeFormText"/>
+    <complexType name="TelephoneNumberType">
+        <attribute name="areaCode" type="rim:String8"/>
+        <attribute name="countryCode" type="rim:String8"/>
+        <attribute name="extension" type="rim:String8"/>
+        <attribute name="number" type="rim:String16"/>
+        <attribute name="phoneType" type="rim:String32"/>
+    </complexType>
+    <element name="TelephoneNumber" type="rim:TelephoneNumberType"/>
+    <complexType name="TelephoneNumberListType">
+        <sequence>
+            <element maxOccurs="unbounded" minOccurs="0" ref="rim:TelephoneNumber"/>
+        </sequence>
+    </complexType>
+    <complexType name="PersonType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:Address"/>
+                    <element minOccurs="0" ref="rim:PersonName"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:TelephoneNumber"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:EmailAddress"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Person" substitutionGroup="rim:Identifiable" type="rim:PersonType"/>
+    <complexType name="UserType">
+        <complexContent>
+            <extension base="rim:PersonType"/>
+        </complexContent>
+    </complexType>
+    <element name="User" substitutionGroup="rim:Identifiable" type="rim:UserType"/>
+    <simpleType name="ConformanceProfileType">
+        <restriction base="NCName">
+            <enumeration value="registryFull"/>
+            <enumeration value="registryLite"/>
+        </restriction>
+    </simpleType>
+    <complexType name="RegistryType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute name="operator" type="rim:referenceURI" use="required"/>
+                <attribute name="specificationVersion" type="string" use="required"/>
+                <attribute default="P1D" name="replicationSyncLatency" type="duration"/>
+                <attribute default="P1D" name="catalogingLatency" type="duration"/>
+                <attribute default="registryLite" name="conformanceProfile" type="rim:ConformanceProfileType"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Registry" substitutionGroup="rim:Identifiable" type="rim:RegistryType"/>
+    <complexType name="FederationType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <attribute default="P1D" name="replicationSyncLatency" type="duration"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Federation" substitutionGroup="rim:Identifiable" type="rim:FederationType"/>
+    <complexType name="AdhocQueryType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element minOccurs="0" ref="rim:QueryExpression"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="AdhocQuery" substitutionGroup="rim:RegistryObject" type="rim:AdhocQueryType"/>
+    <complexType mixed="true" name="QueryExpressionType">
+        <sequence>
+            <any namespace="##other" processContents="lax"/>
+        </sequence>
+        <attribute name="queryLanguage" type="rim:referenceURI" use="required"/>
+    </complexType>
+    <element name="QueryExpression" type="rim:QueryExpressionType"/>
+    <complexType name="NotificationType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element ref="rim:RegistryObjectList"/>
+                </sequence>
+                <attribute name="subscription" type="rim:referenceURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Notification" type="rim:NotificationType"/>
+    <element name="Action" type="rim:ActionType"/>
+    <complexType name="SubscriptionType">
+        <complexContent>
+            <extension base="rim:RegistryObjectType">
+                <sequence>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="rim:Action"/>
+                </sequence>
+                <attribute name="selector" type="rim:referenceURI" use="required"/>
+                <attribute name="startTime" type="dateTime"/>
+                <attribute name="endTime" type="dateTime"/>
+                <attribute default="P1D" name="notificationInterval" type="duration"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="Subscription" substitutionGroup="rim:Identifiable" type="rim:SubscriptionType"/>
+    <complexType abstract="true" name="ActionType"/>
+    <complexType name="NotifyActionType">
+        <complexContent>
+            <extension base="rim:ActionType">
+                <attribute default="urn:oasis:names:tc:ebxml-regrep:NotificationOptionType:ObjectRefs" name="notificationOption" type="rim:referenceURI"/>
+                <attribute name="endPoint" type="anyURI" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="NotifyAction" substitutionGroup="rim:Action" type="rim:NotifyActionType"/>
+</schema>
