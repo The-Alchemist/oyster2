@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.importWizards">
+      	   <category
+            id="org.neon_toolkit.oyster.plugin.iwizard.Registry"
+            name="Registry"/>
+      <wizard
+            category="org.neon_toolkit.oyster.plugin.iwizard.Registry"
+            class="org.neon_toolkit.oyster.plugin.iwizard.RegistryImportWizard"
+            icon="icons/o1.GIF"
+            id="org.neon_toolkit.oyster.plugin.iwizard.RegistryImportWizard"
+            name="RegistryImportWizard"/>
+      	 
+      
+   </extension>
+
+</plugin>
