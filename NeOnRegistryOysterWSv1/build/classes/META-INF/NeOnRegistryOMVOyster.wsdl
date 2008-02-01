@@ -1,0 +1,1167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="NeOnRegistryOMVOyster" targetNamespace="urn:neon-toolkit-org:registry:omv:service:2.3" xmlns:tns="urn:neon-toolkit-org:registry:omv:service:2.3" xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:ns1="urn:neon-toolkit-org:registry:omv:xsd:rim:2.3" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://schemas.xmlsoap.org/soap/encoding/" xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:query-omv="urn:neon-toolkit-org:registry:omv:xsd:query:2.3" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+			<annotation>
+				<documentation xml:lang="en">The schema for OASIS ebXML Registry Services</documentation>
+			</annotation>
+			<!-- Import the rim.xsd file with XML schema mappaing from RIM -->
+			<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="xsd0.xsd"/>
+			<complexType name="RegistryRequestType">
+				<annotation>
+					<documentation xml:lang="en">Base type for all ebXML Registry requests</documentation>
+				</annotation>
+				<sequence>
+					<!-- every request may be extended using Slots. -->
+					<element minOccurs="0" name="RequestSlotList" type="rim:SlotListType"/>
+				</sequence>
+				<attribute name="id" type="anyURI" use="optional"/>
+				<attribute name="comment" type="string" use="optional"/>
+				<!--Comment may be used by requestor to describe the request. Used in VersionInfo.comment-->
+			</complexType>
+			<element name="RegistryRequest" type="rs:RegistryRequestType"/>
+			<complexType name="RegistryErrorListType">
+				<sequence>
+					<element maxOccurs="unbounded" ref="rs:RegistryError"/>
+				</sequence>
+				<attribute name="highestSeverity" type="rim:referenceURI" use="optional"/>
+			</complexType>
+			<element name="RegistryErrorList" type="rs:RegistryErrorListType">
+				<annotation>
+					<documentation xml:lang="en">The RegistryErrorList is derived from the ErrorList element from the ebXML Message Service Specification</documentation>
+				</annotation>
+			</element>
+			<complexType name="RegistryErrorType">
+				<simpleContent>
+					<extension base="string">
+						<attribute name="codeContext" type="string" use="required"/>
+						<attribute name="errorCode" type="string" use="required"/>
+						<attribute default="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" name="severity" type="rim:referenceURI"/>
+						<attribute name="location" type="string" use="optional"/>
+					</extension>
+				</simpleContent>
+			</complexType>
+			<element name="RegistryError" type="rs:RegistryErrorType"/>
+			<complexType name="RegistryResponseType">
+				<annotation>
+					<documentation xml:lang="en">Base type for all ebXML Registry responses</documentation>
+				</annotation>
+				<sequence>
+					<!-- every response may be extended using Slots. -->
+					<element minOccurs="0" name="ResponseSlotList" type="rim:SlotListType"/>
+					<element minOccurs="0" ref="rs:RegistryErrorList"/>
+				</sequence>
+				<attribute name="status" type="rim:referenceURI" use="required"/>
+				<attribute name="requestId" type="anyURI" use="optional"/>
+				<!-- id is the request if for the request for which this is a response -->
+			</complexType>
+			<element name="RegistryResponse" type="rs:RegistryResponseType"/>
+		</schema>
+    <schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+			<!-- Import the rim.xsd file with XML schema mappaing from RIM -->
+			<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="xsd0.xsd"/>
+			<!-- 			<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" schemaLocation="rs.xsd"/>  -->
+			<simpleType name="ResponseOptionReturnType">
+				<restriction base="NCName">
+					<enumeration value="ObjectRef"/>
+					<enumeration value="RegistryObject"/>
+					<enumeration value="LeafClass"/>
+					<enumeration value="LeafClassWithRepositoryItem"/>
+				</restriction>
+			</simpleType>
+			<complexType name="ResponseOptionType">
+				<attribute default="RegistryObject" name="returnType" type="query:ResponseOptionReturnType"/>
+				<attribute default="false" name="returnComposedObjects" type="boolean"/>
+			</complexType>
+			<element name="ResponseOption" type="query:ResponseOptionType"/>
+			<element name="AdhocQueryRequest">
+				<annotation>
+					<documentation xml:lang="en">An Ad hoc query request specifies an ad hoc query.</documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element ref="query:ResponseOption"/>
+								<element ref="rim:AdhocQuery"/>
+							</sequence>
+							<attribute default="false" name="federated" type="boolean" use="optional"/>
+							<attribute name="federation" type="anyURI" use="optional"/>
+							<attribute default="0" name="startIndex" type="integer"/>
+							<attribute default="-1" name="maxResults" type="integer"/>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="AdhocQueryResponse">
+				<annotation>
+					<documentation xml:lang="en">
+        The response includes a RegistryObjectList which has zero or more
+        RegistryObjects that match the query specified in AdhocQueryRequest.
+      </documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryResponseType">
+							<sequence>
+								<element ref="rim:RegistryObjectList"/>
+							</sequence>
+							<attribute default="0" name="startIndex" type="integer"/>
+							<attribute name="totalResultCount" type="integer" use="optional"/>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<complexType abstract="true" name="FilterQueryType">
+				<sequence>
+					<element minOccurs="0" name="PrimaryFilter" type="query:FilterType"/>
+				</sequence>
+			</complexType>
+			<complexType abstract="true" name="BranchType">
+				<complexContent>
+					<extension base="query:FilterQueryType"/>
+				</complexContent>
+			</complexType>
+			<complexType name="InternationalStringBranchType">
+				<complexContent>
+					<extension base="query:BranchType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="LocalizedStringFilter" type="query:FilterType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<complexType name="SlotBranchType">
+				<complexContent>
+					<extension base="query:BranchType">
+						<sequence/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<complexType name="RegistryObjectQueryType">
+				<complexContent>
+					<extension base="query:FilterQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="SlotBranch" type="query:SlotBranchType"/>
+							<element minOccurs="0" name="NameBranch" type="query:InternationalStringBranchType"/>
+							<element minOccurs="0" name="DescriptionBranch" type="query:InternationalStringBranchType"/>
+							<element minOccurs="0" name="VersionInfoFilter" type="query:FilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" ref="query:ClassificationQuery"/>
+							<element maxOccurs="unbounded" minOccurs="0" ref="query:ExternalIdentifierQuery"/>
+							<element minOccurs="0" name="ObjectTypeQuery" type="query:ClassificationNodeQueryType"/>
+							<element minOccurs="0" name="StatusQuery" type="query:ClassificationNodeQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SourceAssociationQuery" type="query:AssociationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="TargetAssociationQuery" type="query:AssociationQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="RegistryObjectQuery" type="query:RegistryObjectQueryType"/>
+			<complexType name="AssociationQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="AssociationTypeQuery" type="query:ClassificationNodeQueryType"/>
+							<element minOccurs="0" name="SourceObjectQuery" type="query:RegistryObjectQueryType"/>
+							<element minOccurs="0" name="TargetObjectQuery" type="query:RegistryObjectQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="AssociationQuery" type="query:AssociationQueryType"/>
+			<complexType name="AuditableEventQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="AffectedObjectQuery" type="query:RegistryObjectQueryType"/>
+							<element minOccurs="0" name="EventTypeQuery" type="query:ClassificationNodeQueryType"/>
+							<element minOccurs="0" name="UserQuery" type="query:UserQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="AuditableEventQuery" type="query:AuditableEventQueryType"/>
+			<complexType name="ClassificationQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" ref="query:ClassificationSchemeQuery"/>
+							<element minOccurs="0" name="ClassifiedObjectQuery" type="query:RegistryObjectQueryType"/>
+							<element minOccurs="0" ref="query:ClassificationNodeQuery"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ClassificationQuery" type="query:ClassificationQueryType"/>
+			<complexType name="ClassificationNodeQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="ParentQuery" type="query:RegistryObjectQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="ChildrenQuery" type="query:ClassificationNodeQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ClassificationNodeQuery" type="query:ClassificationNodeQueryType"/>
+			<complexType name="ClassificationSchemeQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="ChildrenQuery" type="query:ClassificationNodeQueryType"/>
+							<element minOccurs="0" name="NodeTypeQuery" type="query:ClassificationNodeQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ClassificationSchemeQuery" type="query:ClassificationSchemeQueryType"/>
+			<complexType name="ExternalIdentifierQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" ref="query:RegistryObjectQuery"/>
+							<element minOccurs="0" name="IdentificationSchemeQuery" type="query:ClassificationSchemeQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ExternalIdentifierQuery" type="query:ExternalIdentifierQueryType"/>
+			<complexType name="ExternalLinkQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ExternalLinkQuery" type="query:ExternalLinkQueryType"/>
+			<complexType name="ExtrinsicObjectQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="ContentVersionInfoFilter" type="query:FilterType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ExtrinsicObjectQuery" type="query:ExtrinsicObjectQueryType"/>
+			<complexType name="OrganizationQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="AddressFilter" type="query:FilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="TelephoneNumberFilter" type="query:FilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="EmailAddressFilter" type="query:FilterType"/>
+							<element minOccurs="0" name="ParentQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="ChildOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element minOccurs="0" name="PrimaryContactQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OrganizationQuery" type="query:OrganizationQueryType"/>
+			<complexType name="RegistryPackageQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType"/>
+				</complexContent>
+			</complexType>
+			<element name="RegistryPackageQuery" type="query:RegistryPackageQueryType"/>
+			<complexType name="ServiceQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" ref="query:ServiceBindingQuery"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ServiceQuery" type="query:ServiceQueryType"/>
+			<complexType name="ServiceBindingQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" ref="query:ServiceQuery"/>
+							<element maxOccurs="unbounded" minOccurs="0" ref="query:SpecificationLinkQuery"/>
+							<element minOccurs="0" name="TargetBindingQuery" type="query:ServiceBindingQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="ServiceBindingQuery" type="query:ServiceBindingQueryType"/>
+			<complexType name="SpecificationLinkQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="UsageDescriptionBranch" type="query:InternationalStringBranchType"/>
+							<element minOccurs="0" ref="query:ServiceBindingQuery"/>
+							<element minOccurs="0" name="SpecificationObjectQuery" type="query:RegistryObjectQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="SpecificationLinkQuery" type="query:SpecificationLinkQueryType"/>
+			<complexType name="PersonQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="AddressFilter" type="query:FilterType"/>
+							<element minOccurs="0" name="PersonNameFilter" type="query:FilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="TelephoneNumberFilter" type="query:FilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="EmailAddressFilter" type="query:FilterType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="PersonQuery" type="query:PersonQueryType"/>
+			<complexType name="UserQueryType">
+				<complexContent>
+					<extension base="query:PersonQueryType">
+						<sequence/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="UserQuery" type="query:UserQueryType"/>
+			<complexType name="RegistryQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="OperatorQuery" type="query:OrganizationQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="RegistryQuery" type="query:RegistryQueryType"/>
+			<complexType name="FederationQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="FederationQuery" type="query:FederationQueryType"/>
+			<complexType name="AdhocQueryQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="QueryExpressionBranch" type="query:QueryExpressionBranchType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="AdhocQueryQuery" type="query:AdhocQueryQueryType"/>
+			<complexType name="QueryExpressionBranchType">
+				<complexContent>
+					<extension base="query:BranchType">
+						<sequence>
+							<element minOccurs="0" name="QueryLanguageQuery" type="query:ClassificationNodeQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<complexType name="NotificationQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" ref="query:RegistryObjectQuery"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="NotificationQuery" type="query:NotificationQueryType"/>
+			<complexType name="SubscriptionQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element minOccurs="0" name="SelectorQuery" type="query:AdhocQueryQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="SubscriptionQuery" type="query:SubscriptionQueryType"/>
+			<!-- The Filter type hierarchy -->
+			<complexType name="FilterType">
+				<attribute default="false" name="negate" type="boolean"/>
+			</complexType>
+			<element abstract="true" name="Filter" type="query:FilterType"/>
+			<simpleType name="LogicalOperatorType">
+				<restriction base="NCName">
+					<enumeration value="AND"/>
+					<enumeration value="OR"/>
+				</restriction>
+			</simpleType>
+			<complexType name="CompoundFilterType">
+				<complexContent>
+					<extension base="query:FilterType">
+						<sequence>
+							<element name="LeftFilter" type="query:FilterType"/>
+							<element name="RightFilter" type="query:FilterType"/>
+						</sequence>
+						<attribute name="logicalOperator" type="query:LogicalOperatorType" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="CompoundFilter" type="query:CompoundFilterType"/>
+			<simpleType name="ComparatorType">
+				<restriction base="NCName">
+					<enumeration value="LE"/>
+					<enumeration value="LT"/>
+					<enumeration value="GE"/>
+					<enumeration value="GT"/>
+					<enumeration value="EQ"/>
+					<enumeration value="NE"/>
+					<enumeration value="Like"/>
+					<enumeration value="NotLike"/>
+				</restriction>
+			</simpleType>
+			<complexType abstract="true" name="SimpleFilterType">
+				<annotation><documentation>We have set domainAttribute to optional so that it can be used to 
+filter data types directly in OMV queries.</documentation>
+</annotation>
+				<complexContent>
+					<extension base="query:FilterType">
+						<attribute name="domainAttribute" type="string" use="optional"/>
+						<attribute name="comparator" type="query:ComparatorType" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<complexType name="BooleanFilterType">
+				<complexContent>
+					<extension base="query:SimpleFilterType">
+						<attribute name="value" type="boolean" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="BooleanFilter" type="query:BooleanFilterType"/>
+			<complexType name="IntegerFilterType">
+				<complexContent>
+					<extension base="query:SimpleFilterType">
+						<attribute name="value" type="integer" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="IntegerFilter" type="query:IntegerFilterType"/>
+			<complexType name="FloatFilterType">
+				<complexContent>
+					<extension base="query:SimpleFilterType">
+						<attribute name="value" type="float" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="FloatFilter" type="query:FloatFilterType"/>
+			<complexType name="DateTimeFilterType">
+				<complexContent>
+					<extension base="query:SimpleFilterType">
+						<attribute name="value" type="dateTime" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="DateTimeFilter" type="query:DateTimeFilterType"/>
+			<complexType name="StringFilterType">
+				<complexContent>
+					<extension base="query:SimpleFilterType">
+						<attribute name="value" type="string" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="StringFilter" type="query:StringFilterType"/>
+		</schema>
+    <schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:lcm="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rs="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0">
+			<annotation>
+				<documentation xml:lang="en">The schema for OASIS ebXML Registry Services</documentation>
+			</annotation>
+			<!-- 	<import namespace="urn:neon-project:software-ag:ebxml-omv:xsd:rim-omv:2.0" schemaLocation="rim_omv.xsd"/>
+ xmlns:rim_omv="urn:neon-project:software-ag:ebxml-omv:xsd:rim-omv:2.0" -->
+			<!-- Import the rim.xsd file with XML schema mappaing from RIM -->
+			<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="xsd0.xsd"/>
+			<!-- Import the rs.xsd file with XML schema for base rs related schema -->
+			<!-- had to be copied before, because direct import did not work in xmlspy       consequence is that it can be no longer imported again for query 	<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" schemaLocation="rs.xsd"/>  -->
+			<element name="SubmitObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">The SubmitObjectsRequest allows one to submit a list of RegistryObject elements. Each RegistryEntry element provides metadata for a single submitted object.  Note that the repository item being submitted is in a separate document that is not in this DTD. The ebXML Messaging Services Specfication defines packaging, for submission, of the metadata of a repository item with the repository item itself. The value of the id attribute of the ExtrinsicObject element must be the same as the xlink:href attribute within the Reference element within the Manifest element of the MessageHeader.</documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element ref="rim:RegistryObjectList"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="UpdateObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">The UpdateObjectsRequest allows one to update a list of RegistryObject elements. Each RegistryEntry element provides metadata for a single submitted object.  Note that the repository item being submitted is in a separate document that is not in this DTD. The ebXML Messaging Services Specfication defines packaging, for submission, of the metadata of a repository item with the repository item itself. The value of the id attribute of the ExtrinsicObject element must be the same as the xlink:href attribute within the Reference element within the Manifest element of the MessageHeader.</documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element ref="rim:RegistryObjectList"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="ApproveObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">
+        The ObjectRefList and AdhocQuery identify the list of
+        objects being approved.
+      </documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element minOccurs="0" ref="rim:AdhocQuery"/>
+								<element minOccurs="0" ref="rim:ObjectRefList"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="DeprecateObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">
+        The ObjectRefList and AdhocQuery identify the list of
+        objects being deprecated.
+      </documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element minOccurs="0" ref="rim:AdhocQuery"/>
+								<element minOccurs="0" ref="rim:ObjectRefList"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="UndeprecateObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">
+        The ObjectRefList is the list of
+        refs to the registry entrys being un-deprecated.
+      </documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element minOccurs="0" ref="rim:AdhocQuery"/>
+								<element minOccurs="0" ref="rim:ObjectRefList"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="RemoveObjectsRequest">
+				<annotation>
+					<documentation xml:lang="en">
+        The ObjectRefList is the list of
+        refs to the registry entrys being removed
+      </documentation>
+				</annotation>
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element minOccurs="0" ref="rim:AdhocQuery"/>
+								<element minOccurs="0" ref="rim:ObjectRefList"/>
+							</sequence>
+							<attribute default="urn:oasis:names:tc:ebxml-regrep:DeletionScopeType:DeleteAll" name="deletionScope" type="rim:referenceURI" use="optional"/>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="RelocateObjectsRequest">
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<sequence>
+								<element ref="rim:AdhocQuery"/>
+								<element name="SourceRegistry" type="rim:ObjectRefType"/>
+								<element name="DestinationRegistry" type="rim:ObjectRefType"/>
+								<element name="OwnerAtSource" type="rim:ObjectRefType"/>
+								<element name="OwnerAtDestination" type="rim:ObjectRefType"/>
+							</sequence>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+			<element name="AcceptObjectsRequest">
+				<!-- The ObjectRefList must only contain local ObjectRefs such that they do not specify home attribute -->
+				<complexType>
+					<complexContent>
+						<extension base="rs:RegistryRequestType">
+							<attribute name="correlationId" type="anyURI" use="required"/>
+						</extension>
+					</complexContent>
+				</complexType>
+			</element>
+		</schema>
+    <schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:neon-toolkit-org:registry:omv:xsd:rim:2.3" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns1="urn:neon-toolkit-org:registry:omv:xsd:rim:2.3" xmlns:query-omv="urn:neon-toolkit-org:registry:omv:xsd:query:2.3" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" xmlns:rim-omv="urn:neon-toolkit-org:registry:omv:xsd:rim:2.3" xmlns:tns="urn:neon-toolkit-org:registry:omv:service:2.3">
+			<annotation>
+				<documentation xml:lang="en">The schema for NEON OMV 2.0 extention of the OASIS ebXML Registry Information Model</documentation>
+			</annotation>
+			<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" schemaLocation="xsd0.xsd"/>
+			<!-- Begin information model mapping from ebRIM. -->
+			<complexType name="OMVObjectRefType">
+				<annotation>
+					<documentation xml:lang="en">A type that would allow referencing multiply objects within an OMV ontology.</documentation>
+				</annotation>
+				<attribute name="id" type="rim:referenceURI" use="required"/>
+			</complexType>
+			<complexType name="OMVRegistryObjectType">
+				<annotation>
+					<documentation xml:lang="en">Basic OMV type that adds the acronym and documentation elements to the ebXML RegistryObect.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim:RegistryObjectType">
+						<attribute name="acronym" type="rim:ShortName" use="optional"/>
+						<attribute name="documentation" type="anyURI" use="optional"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<complexType name="Ontology_Type">
+				<annotation>
+					<documentation xml:lang="en">OMV Ontology type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<element maxOccurs="unbounded" minOccurs="0" name="Keywords" type="rim:InternationalStringType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="NaturalLanguage" type="rim:InternationalStringType"/>
+							<!--hasContributor value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="hasContributor" type="rim-omv:OMVObjectRefType"/>
+							<!--hasCreator value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" name="hasCreator" type="rim-omv:OMVObjectRefType"/>
+							<!--usedOntologyEngineeringTool value MUST reference an OntologyEngineeringTool -->
+							<element maxOccurs="unbounded" minOccurs="0" name="usedOntologyEngineeringTool" type="rim-omv:OMVObjectRefType"/>
+							<!--usedOntologyEngineeringMethodology value MUST reference an OntologyEngineeringMethodology -->
+							<element maxOccurs="unbounded" minOccurs="0" name="usedOntologyEngineeringMethodology" type="rim-omv:OMVObjectRefType"/>
+							<!--usedKnowledgeRepresentationParadigm value MUST reference a KnowledgeRepresentationParadigm -->
+							<element maxOccurs="unbounded" minOccurs="0" name="usedKnowledgeRepresentationParadigm" type="rim-omv:OMVObjectRefType"/>
+							<!--designedForOntologyTask value MUST reference an OntologyTask -->
+							<element maxOccurs="unbounded" minOccurs="0" name="designedForOntologyTask" type="rim-omv:OMVObjectRefType"/>
+							<!--useImports value MUST reference an Ontology -->
+							<element maxOccurs="unbounded" minOccurs="0" name="useImports" type="rim-omv:OMVObjectRefType"/>
+							<!--isBackwardCompatibleWith value MUST reference an Ontology -->
+							<element maxOccurs="unbounded" minOccurs="0" name="isBackwardCompatibleWith" type="rim-omv:OMVObjectRefType"/>
+							<!--isIncompatibleWith value MUST reference an Ontology -->
+							<element maxOccurs="unbounded" minOccurs="0" name="isIncompatibleWith" type="rim-omv:OMVObjectRefType"/>
+							<!--endorsedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="endorsedBy" type="rim-omv:OMVObjectRefType"/>
+							<!--hasDomain value MUST reference an OntologyDomain -->
+							<element maxOccurs="unbounded" minOccurs="0" name="hasDomain" type="rim-omv:OMVObjectRefType"/>
+							<!--hasDomain value MUST reference an OntologyLanguage -->
+							<element maxOccurs="unbounded" minOccurs="0" name="hasOntologyLanguage" type="rim-omv:OMVObjectRefType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="keyClasses" type="string"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="knownUsage" type="string"/>
+						</sequence>
+						<attribute name="isOfType" type="rim:referenceURI" use="required"/>
+						<attribute name="hasOntologySyntax" type="rim:referenceURI" use="required"/>
+						<attribute name="hasLicense" type="rim:referenceURI" use="optional"/>
+						<attribute name="hasFormalityLevel" type="rim:referenceURI" use="optional"/>
+						<attribute name="hasPriorVersion" type="rim:referenceURI" use="optional"/>
+						<attribute name="numberOfClasses" type="integer" use="required"/>
+						<attribute name="numberOfProperties" type="integer" use="required"/>
+						<attribute name="numberOfIndividuals" type="integer" use="required"/>
+						<attribute name="numberOfAxioms" type="integer" use="required"/>
+						<attribute name="ontologyStatus" type="rim:ShortName" use="optional"/>
+						<attribute name="creationDate" type="dateTime" use="required"/>
+						<attribute name="modificationDate" type="dateTime" use="optional"/>
+						<attribute name="resourceLocator" type="anyURI" use="required"/>
+						<attribute name="URI" type="anyURI" use="required"/>
+						<attribute name="version" type="rim:FreeFormText" use="required"/>
+						<attribute name="isConsistentAccordingToReasoner" type="boolean" use="optional"/>
+						<attribute name="containsABox" type="boolean" use="optional"/>
+						<attribute name="containsRBox" type="boolean" use="optional"/>
+						<attribute name="containsTBox" type="boolean" use="optional"/>
+						<attribute name="expressiveness" type="string" use="optional"/>
+						<attribute name="notes" type="string" use="optional"/>
+					</extension>
+					<!--isOfType value MUST reference an OntologyType -->
+					<!--hasOntologySyntax value MUST reference an OntologySyntax -->
+					<!--hasOntologyLanguage value MUST reference an OntologyLanguage -->
+					<!--hasLicense value MUST reference a LicenseModel -->
+					<!--hasFormalityLevel value MUST reference a FormalityLevel -->
+					<!--hasPriorVersion value MUST reference an Ontology -->
+				</complexContent>
+			</complexType>
+			<element name="Ontology" substitutionGroup="rim:Identifiable" type="rim-omv:Ontology_Type"/>
+			<complexType name="OntologyType_Type">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyType type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--definedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="definedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyType" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyType_Type"/>
+			<complexType name="LicenseModelType">
+				<annotation>
+					<documentation xml:lang="en">OMV LicenseModel type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--specifiedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="specifiedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="LicenseModel" substitutionGroup="rim:Identifiable" type="rim-omv:LicenseModelType"/>
+			<complexType name="OntologyEngineeringMethodologyType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyEngineeringMethodology type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--developedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="developedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyEngineeringMethodology" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyEngineeringMethodologyType"/>
+			<complexType name="OntologyEngineeringToolType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyEngineeringTool type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--developedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="developedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyEngineeringTool" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyEngineeringToolType"/>
+			<complexType name="OntologySyntaxType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologySyntax type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--developedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="developedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologySyntax" substitutionGroup="rim:Identifiable" type="rim-omv:OntologySyntaxType"/>
+			<complexType name="OntologyLanguageType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyLanguage type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--developedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="developedBy" type="rim-omv:OMVObjectRefType"/>
+							<!--supportsRepresentationParadigm value MUST reference a KnowledgeRepresentationParadigm -->
+							<element maxOccurs="unbounded" minOccurs="0" name="supportsRepresentationParadigm" type="rim-omv:OMVObjectRefType"/>
+							<!--hasSyntax value MUST reference an OntologySyntax -->
+							<element maxOccurs="unbounded" minOccurs="0" name="hasSyntax" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyLanguage" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyLanguageType"/>
+			<complexType name="KnowledgeRepresentationParadigmType">
+				<annotation>
+					<documentation xml:lang="en">OMV KnowledgeRepresentationParadigm type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--specifiedBy value MUST reference a ebXML User or Organization -->
+							<element maxOccurs="unbounded" minOccurs="0" name="specifiedBy" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="KnowledgeRepresentationParadigm" substitutionGroup="rim:Identifiable" type="rim-omv:KnowledgeRepresentationParadigmType"/>
+			<complexType name="FormalityLevelType">
+				<annotation>
+					<documentation xml:lang="en">OMV FormalityLevel type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType"/>
+				</complexContent>
+			</complexType>
+			<element name="FormalityLevel" substitutionGroup="rim:Identifiable" type="rim-omv:FormalityLevelType"/>
+			<complexType name="OntologyTaskType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyTask type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType"/>
+				</complexContent>
+			</complexType>
+			<element name="OntologyTask" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyTaskType"/>
+			<complexType name="OntologyDomainType">
+				<annotation>
+					<documentation xml:lang="en">OMV OntologyTask type.</documentation>
+				</annotation>
+				<complexContent>
+					<extension base="rim-omv:OMVRegistryObjectType">
+						<sequence minOccurs="0">
+							<!--isSubDomainOf value MUST reference an OntologyDomain -->
+							<element maxOccurs="unbounded" minOccurs="0" name="isSubDomainOf" type="rim-omv:OMVObjectRefType"/>
+						</sequence>
+						<attribute name="URI" type="anyURI" use="required"/>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyDomain" substitutionGroup="rim:Identifiable" type="rim-omv:OntologyDomainType"/>
+		</schema>
+    <schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:neon-toolkit-org:registry:omv:xsd:query:2.3" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:query="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" xmlns:query_omv="urn:neon-toolkit-org:registry:omv:xsd:query:2.3">
+			<!-- Import the query.xsd file with XML schema mappaing from general ebXML registry -->
+			<!-- 	<import namespace="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" schemaLocation="query.xsd"/>  -->
+			<complexType name="FormalityLevelQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType"/>
+				</complexContent>
+			</complexType>
+			<element name="FormalityLevelQuery" type="query_omv:FormalityLevelQueryType"/>
+			<complexType name="KnowledgeRepresentationParadigmQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SpecifiedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SpecifiedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="KnowledgeRepresentationParadigmQuery" type="query_omv:KnowledgeRepresentationParadigmQueryType"/>
+			<complexType name="LicenseModelQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SpecifiedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SpecifiedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="LicenseModelQuery" type="query_omv:LicenseModelQueryType"/>
+			<complexType name="OntologyEngineeringMethodologyQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyEngineeringMethodologyQuery" type="query_omv:OntologyEngineeringMethodologyQueryType"/>
+			<complexType name="OntologyEngineeringToolQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyEngineeringToolQuery" type="query_omv:OntologyEngineeringToolQueryType"/>
+			<complexType name="OntologyLanguageQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByPersonQuery" type="query:PersonQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="SupportsRepresentationParadigmQuery" type="query_omv:KnowledgeRepresentationParadigmQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasSyntaxQuery" type="query_omv:OntologySyntaxQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyLanguageQuery" type="query_omv:OntologyLanguageQueryType"/>
+			<complexType name="OntologySyntaxQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DevelopedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologySyntaxQuery" type="query_omv:OntologySyntaxQueryType"/>
+			<complexType name="OntologyTaskQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyTaskQuery" type="query_omv:OntologyTaskQueryType"/>
+			<complexType name="OntologyTypeQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DefinedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DefinedByPersonQuery" type="query:PersonQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyTypeQuery" type="query_omv:OntologyTypeQueryType"/>
+			<complexType name="OntologyDomainQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="1" minOccurs="0" name="URIFilter" type="query:StringFilterType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="IsSubDomainOfQuery" type="query_omv:OntologyDomainQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyDomainQuery" type="query_omv:OntologyDomainQueryType"/>
+			<complexType name="OntologyQueryType">
+				<complexContent>
+					<extension base="query:RegistryObjectQueryType">
+						<sequence>
+							<element maxOccurs="unbounded" minOccurs="0" name="IsOfTypeQuery" type="query_omv:OntologyTypeQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasOntologySyntaxQuery" type="query_omv:OntologySyntaxQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasOntologyLanguageQuery" type="query_omv:OntologyLanguageQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasLicenseQuery" type="query_omv:LicenseModelQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasFormalityLevelQuery" type="query_omv:FormalityLevelQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasPriorVersionQuery" type="query_omv:OntologyQueryType"/>
+							<element maxOccurs="1" minOccurs="0" name="AcronymFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="DocumentationFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="NumberOfClassesFilter" type="query:IntegerFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="NumberOfPropertiesFilter" type="query:IntegerFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="NumberOfIndividualsFilter" type="query:IntegerFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="NumberOfAxiomsFilter" type="query:IntegerFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="OntologyStatusFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="CreationDateFilter" type="query:DateTimeFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ModificationDateFilter" type="query:DateTimeFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ResourceLocatorFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="URIFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="VersionFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="IsConsistentAccordingToReasonerFilter" type="query:BooleanFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ContainsABoxFilter" type="query:BooleanFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ContainsRBoxFilter" type="query:BooleanFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ContainsTBoxFilter" type="query:BooleanFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="ExpressivenessFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="KeyClassesFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="KnownUsageFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="NotesFilter" type="query:StringFilterType"/>
+							<element maxOccurs="1" minOccurs="0" name="KeywordsBranch" type="query:InternationalStringBranchType"/>
+							<element maxOccurs="1" minOccurs="0" name="NaturalLanguageBranch" type="query:InternationalStringBranchType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasCreatorOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasCreatorPersonQuery" type="query:PersonQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasContributorOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasContributorPersonQuery" type="query:PersonQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="UsedOntologyEngineeringToolQuery" type="query_omv:OntologyEngineeringToolQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="UsedOntologyEngineeringMethodologyQuery" type="query_omv:OntologyEngineeringMethodologyQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="UsedKnowledgeRepresentationParadigmQuery" type="query_omv:KnowledgeRepresentationParadigmQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="DesignedForOntologyTaskQuery" type="query_omv:OntologyTaskQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="UseImportsQuery" type="query_omv:OntologyQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="IsBackwardCompatibleWithQuery" type="query_omv:OntologyQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="IsIncompatibleWithQuery" type="query_omv:OntologyQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="EndorsedByPersonQuery" type="query:PersonQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="EndorsedByOrganizationQuery" type="query:OrganizationQueryType"/>
+							<element maxOccurs="unbounded" minOccurs="0" name="HasDomainQuery" type="query_omv:OntologyDomainQueryType"/>
+						</sequence>
+					</extension>
+				</complexContent>
+			</complexType>
+			<element name="OntologyQuery" type="query_omv:OntologyQueryType"/>
+		</schema>
+  </types>
+  <message name="msgApproveObjectsRequest">
+    <part name="partApproveObjectsRequest" element="lcm:ApproveObjectsRequest">
+    </part>
+  </message>
+  <message name="msgRegistryResponse">
+<documentation>Defines a RegistryResponse message.</documentation>
+    <part name="partRegistryResponse" element="rs:RegistryResponse">
+    </part>
+  </message>
+  <message name="msgUpdateObjectsRequest">
+    <part name="partUpdateObjectsRequest" element="lcm:UpdateObjectsRequest">
+    </part>
+  </message>
+  <message name="msgAdhocQueryResponse">
+    <part name="partAdhocQueryResponse" element="query:AdhocQueryResponse">
+    </part>
+  </message>
+  <message name="msgDeprecateObjectsRequest">
+    <part name="partDeprecateObjectsRequest" element="lcm:DeprecateObjectsRequest">
+    </part>
+  </message>
+  <message name="msgRemoveObjectsRequest">
+    <part name="partRemoveObjectsRequest" element="lcm:RemoveObjectsRequest">
+    </part>
+  </message>
+  <message name="msgSubmitObjectsRequest">
+    <part name="partSubmitObjectsRequest" element="lcm:SubmitObjectsRequest">
+    </part>
+  </message>
+  <message name="msgAdhocQueryRequest">
+    <part name="partAdhocQueryRequest" element="query:AdhocQueryRequest">
+    </part>
+  </message>
+  <message name="msgUndeprecateObjectsRequest">
+    <part name="partUndeprecateObjectsRequest" element="lcm:UndeprecateObjectsRequest">
+    </part>
+  </message>
+  <portType name="LifeCycleManagerPortType">
+    <operation name="approveObjects">
+      <input message="tns:msgApproveObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+    <operation name="deprecateObjects">
+      <input message="tns:msgDeprecateObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+    <operation name="undeprecateObjects">
+      <input message="tns:msgUndeprecateObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+    <operation name="removeObjects">
+      <input message="tns:msgRemoveObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+    <operation name="submitObjects">
+      <input message="tns:msgSubmitObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+    <operation name="updateObjects">
+      <input message="tns:msgUpdateObjectsRequest">
+    </input>
+      <output message="tns:msgRegistryResponse">
+    </output>
+    </operation>
+  </portType>
+  <portType name="QueryManagerPortType">
+    <operation name="submitAdhocQuery">
+      <input message="tns:msgAdhocQueryRequest">
+    </input>
+      <output message="tns:msgAdhocQueryResponse">
+    </output>
+    </operation>
+  </portType>
+  <binding name="QueryManagerSOAPBinding" type="tns:QueryManagerPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="submitAdhocQuery">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:QueryManagerPortType#submitAdhocQuery"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="LifeCycleManagerSOAPBinding" type="tns:LifeCycleManagerPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="approveObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#approveObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="deprecateObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#deprecateObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="undeprecateObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#undeprecateObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="removeObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#removeObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="submitObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#submitObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="updateObjects">
+      <soap:operation soapAction="urn:oasis:names:tc:ebxml-regrep:wsdl:registry:bindings:3.0:LifeCycleManagerPortType#updateObjects"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="NeOnRegistryOMVOyster">
+    <port name="QueryManagerPort" binding="tns:QueryManagerSOAPBinding">
+      <soap:address location="http://localhost:28080/soap"/>
+    </port>
+    <port name="LifeCycleManagerPort" binding="tns:LifeCycleManagerSOAPBinding">
+      <soap:address location="http://localhost:28080/soap"/>
+    </port>
+  </service>
+</definitions>
