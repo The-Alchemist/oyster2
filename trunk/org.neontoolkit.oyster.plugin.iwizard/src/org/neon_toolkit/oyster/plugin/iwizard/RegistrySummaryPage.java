@@ -469,12 +469,16 @@ public class RegistrySummaryPage extends WizardPage  {
 	//search ontologies using Oyster
 	private Set<OMVOntology> executeSearchInOyster(OMVOntology conditions) {
 
+		
 		//Oyster2Connection connection = Oyster2Manager.newConnection(false, pathOyster);
 		Oyster2Connection connection = Oyster2Manager.newConnection(false);
+		
 		
 		//execute the search
 		Set<OMVOntology> OMVSet2 = new HashSet<OMVOntology>();
 		Set<Object> OMVOb1 = connection.search(conditions);
+		
+		
 		if (OMVOb1.size()>0){
 			Iterator it = OMVOb1.iterator();
 			try{

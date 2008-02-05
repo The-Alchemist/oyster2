@@ -26,6 +26,8 @@ import com.ontoprise.ontostudio.io.wizard.ImportProgressListener;
 import com.ontoprise.util.URIUtilities;
 
 
+
+
 public class RegistryImportWizard extends AbstractImportWizard {
 
 	//constructor
@@ -63,6 +65,7 @@ public class RegistryImportWizard extends AbstractImportWizard {
         //ImportExportControl control = new ImportExportControl();
         ImportOntology control = new ImportOntology();
         ProgressListener pl = null;
+        
         if(monitor != null) {
         	//monitor.beginTask(Messages.getString("FileSystemImportWizard.3"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
         	pl = new ImportProgressListener("", monitor);

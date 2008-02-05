@@ -58,6 +58,7 @@ public class RegistryConditionPage extends WizardPage  {
 		
 		public void createControl(Composite parent) {
 			
+			
 		    Composite topLevel = new Composite(parent, SWT.NONE);
 		    topLevel.setLayout(new GridLayout(2, false));
 
