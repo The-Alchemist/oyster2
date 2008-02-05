@@ -56,6 +56,7 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
 
     @Override
     public URL getSelectedURL() {
+    	
         try {
         	return new URL(locator);
             //return new URL(_fileInput.getText());
@@ -146,7 +147,8 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
 
     @Override
     protected void initControls() {
-        try {
+    	
+    	try {
             String[] projects = DatamodelPlugin.getDefault().getOntologyProjects();
             updateCombo(projects);
             
