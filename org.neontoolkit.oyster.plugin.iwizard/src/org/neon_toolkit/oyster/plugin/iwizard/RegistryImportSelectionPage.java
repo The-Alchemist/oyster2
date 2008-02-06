@@ -151,21 +151,19 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
     	try {
             String[] projects = DatamodelPlugin.getDefault().getOntologyProjects();
             updateCombo(projects);
-            
             if (projects.length == 0) {
                 _createButton.setVisible(true);
             } else {
                 if (projects.length == 1) { 
                     _projectCombo.select(_projectCombo.indexOf(projects[0]));
                 }
-            } 
+            }
         } catch (CoreException e) {
-            IOPlugin.logError("", e); 
+            IOPlugin.logError("", e); //$NON-NLS-1$
         }
         if (_preselectedProject != null) {
             _projectCombo.select(_projectCombo.indexOf(_preselectedProject));
         }
-        
         checkStatus();
     }
 
