@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -18,6 +19,11 @@ import com.ontoprise.api.StringRepresentation;
 import com.ontoprise.extensionalDB.ModuleAlreadyExistsException;
 //import com.ontoprise.ontostudio.datamodel.util.IDTermUtil;
 import com.ontoprise.ontostudio.exception.OntoStudioExceptionHandler;
+import com.ontoprise.ontostudio.gui.navigator.IProjectElement;
+
+
+
+
 import com.ontoprise.ontostudio.io.Messages;
 import com.ontoprise.ontostudio.io.OntologyImportException;
 import com.ontoprise.ontostudio.io.wizard.AbstractImportSelectionPage;
@@ -42,6 +48,17 @@ public class RegistryImportWizard extends AbstractImportWizard {
         addPage(new RegistryConditionPage());
         addPage(new RegistrySummaryPage());
         addImportSelectionPage();
+        if (_selection != null) {
+            if (_selection instanceof IProject) {
+                _pageSelection.setSelectedProject(((IProject) _selection).getName());
+            } else if (_selection instanceof IProjectElement) {
+                _pageSelection.setSelectedProject(((IProjectElement) _selection).getProjectName());
+            }
+        }
+        if (_preselectedProject != null) {
+            _pageSelection.setSelectedProject(_preselectedProject);
+        }
+        
     }
     
     @Override
@@ -72,9 +89,13 @@ public class RegistryImportWizard extends AbstractImportWizard {
         }
         String[] s = null;
         try {
-        		//s = control.importFileSystem(project, location, defaultUri, pl);
+        	String uri = location.toURI().toString();
+            if (uri.startsWith("file://") && !uri.startsWith("file:////")) {
+            	uri = "file:////" + uri.substring(7);
+            }
+			//s = control.importFileSystem(project, uri, pl);
         	
-        		s = control.importFileSystem(project, location, "test", pl);
+        		s = control.importFileSystem(project, location, uri, pl);
         } catch (IOException e) {
             throw new OntologyImportException(location.toString(), e);
         } catch (ModuleAlreadyExistsException e) {

@@ -13,5 +13,6 @@ Require-Bundle: org.eclipse.ui,
  datamodel,
  util,
  datamodelBase,
- OysterPlugin
+ OysterPlugin,
+ org.eclipse.core.resources
 Eclipse-LazyStart: true
