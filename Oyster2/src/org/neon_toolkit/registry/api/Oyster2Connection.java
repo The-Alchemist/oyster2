@@ -800,7 +800,7 @@ public class Oyster2Connection {
 			String[] result =  p.split(localURI);
 			for (int i=0; i<result.length; i++){
 	            if(result[i].indexOf("version=")!=-1){
-	            	mainOntoReply.setVersion(result[i].substring(8, result[i].length()-1));
+	            	mainOntoReply.setVersion(result[i].substring(8, result[i].length())); //ERROR DELETED -1 FIXED FOR VERSION 0.99
 	            }
 	            else if(result[i].indexOf("location=")!=-1){
 	            	mainOntoReply.setResourceLocator(result[i].substring(9, result[i].length()));

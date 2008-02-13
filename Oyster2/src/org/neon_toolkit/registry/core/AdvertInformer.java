@@ -849,10 +849,13 @@ public class AdvertInformer{
     	List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
     	DataProperty ontologyName = KAON2Manager.factory().dataProperty(omv + Constants.name);
     	DataProperty ontologyURI = KAON2Manager.factory().dataProperty(omv + Constants.URI);
+    	DataProperty ontologyResourceLocator = KAON2Manager.factory().dataProperty(omv + Constants.resourceLocator);
     	String oldName = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyName)); //(String)
     	String newName = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyName)); //(String)
     	String oldURI = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyURI)); //(String)
     	String newURI = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyURI)); //(String)
+    	String oldResourceLocator = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyResourceLocator)); //(String)
+    	String newResourceLocator = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyResourceLocator)); //(String)
     	
     	if(newName!=null){
     		if(oldName == null){
@@ -872,6 +875,15 @@ public class AdvertInformer{
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyURI,ontologyIndiv,KAON2Manager.factory().constant(newURI)),OntologyChangeEvent.ChangeType.ADD));
     		}
     	}
+    	if(newResourceLocator != null){
+    		if(oldResourceLocator==null){
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyResourceLocator,ontologyIndiv,KAON2Manager.factory().constant(newResourceLocator)),OntologyChangeEvent.ChangeType.ADD));
+    		}else{
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyResourceLocator,ontologyIndiv,KAON2Manager.factory().constant(oldResourceLocator)),OntologyChangeEvent.ChangeType.REMOVE));
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyResourceLocator,ontologyIndiv,KAON2Manager.factory().constant(newResourceLocator)),OntologyChangeEvent.ChangeType.ADD));
+    		}
+    	}
+    	
     	
     	//TODO WHAT ATTRIBUTES SHOULD WE TRANSFER (only URI and LOCATION?)
     	
