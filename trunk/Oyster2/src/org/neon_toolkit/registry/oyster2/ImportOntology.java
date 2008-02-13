@@ -27,7 +27,7 @@ public class ImportOntology {
 	private DefaultOntologyResolver resolver = mOyster2.getResolver();
 	private File localRegistryFile = mOyster2.getLocalRegistryFile();
 	private LinkedList<OntologyProperty> propertyList = new LinkedList<OntologyProperty>();
-	private String localURI = localRegistry.getOntologyURI();;
+	private String localURI = localRegistry.getOntologyURI();
 						
 	
 	public List extractMetadata(String filename){
@@ -60,9 +60,8 @@ public class ImportOntology {
 			if (!isPropertyIn(prop))propertyList.add(prop);
 			prop = new OntologyProperty(Constants.resourceLocator, serializeFileName(filename));
 			if (!isPropertyIn(prop))propertyList.add(prop);
-			//1
-			//prop = new OntologyProperty(Constants.hasDomain,"");
-			//if (!isPropertyIn(prop))propertyList.add(prop);
+			
+			extractFormat(ontologyImported);
 			
 			// FINISH I DONT LIKE THIS
 			
@@ -71,6 +70,39 @@ public class ImportOntology {
 		}
 		return propertyList;
 		
+	}
+	
+	private void extractFormat(Ontology ontologyImported){
+		try{
+			OntologyFormatting oFormat = ontologyImported.getOntologyFormatting();
+			if (oFormat.getFormatName()!= null && oFormat.getFormatName()!=""){
+				OntologyProperty prop = new OntologyProperty(Constants.hasOntologySyntax, oFormat.getFormatName());
+		        if (!isPropertyIn(prop))propertyList.add(prop);
+		        
+		        LinkedList<OntologyProperty> pTempList = new LinkedList<OntologyProperty>();
+	    		String values = oFormat.getFormatName();
+	    		Individual refIndividual = KAON2Manager.factory().individual(values);
+	    		OWLClass oTConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.OntologySyntaxConcept);
+	    		
+	    			OntologyProperty propTemp = new OntologyProperty(Constants.name, values);
+	    			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oTConcept,refIndividual),true)){
+	    				Map dataPropertyMap = refIndividual.getDataPropertyValues(localRegistry);
+						Map objectPropertyMap = refIndividual.getObjectPropertyValues(localRegistry);
+						if ((dataPropertyMap.size()+objectPropertyMap.size())<=0){
+		        			pTempList.add(propTemp);
+		        			addConceptToRegistry(0,pTempList,9);
+						}
+	    			}
+	    			else {
+	        			pTempList.add(propTemp);
+	        			addConceptToRegistry(0,pTempList,9);
+	    			}    		
+			}
+	        
+		}catch(Exception e){
+				System.out.println("add format error when importing: "+e.getMessage());
+		}	
+	    	
 	}
 	
 	private void extractStatistics(Ontology ontologyImported ) {
@@ -102,85 +134,89 @@ public class ImportOntology {
            // it contains.
         Map.Entry entry = (Map.Entry)iter.next();
         String term = (String)entry.getKey();
-        Set lines = (Set)entry.getValue();      
-        values=getValues(lines);
+        Set lines = (Set)entry.getValue();
+        //values=getValues(lines);
         String predicate = getOMVPredicate(term);
         if (predicate.length()>0){
-        	prop = new OntologyProperty(predicate, values);
-        	if (!isPropertyIn(prop))propertyList.add(prop);
-        	else{
-        		if ((predicate.equalsIgnoreCase(Constants.description))){
+        	Iterator iVal = lines.iterator();
+            while (iVal.hasNext()){ 
+               values = (String)iVal.next();
+               prop = new OntologyProperty(predicate, values);
+               if (!isPropertyIn(prop))propertyList.add(prop);
+               else{
+            	   if ((predicate.equalsIgnoreCase(Constants.description))){
         			
-        			int pos=getPosition(prop);
-        			//System.out.println("INSIDE ELSE POSITION IS: "+pos);
-        			OntologyProperty more=(OntologyProperty)propertyList.get(pos);
-        			String val = more.getPropertyValue();
-        			propertyList.remove(pos);
-        			val=val+"  "+values;
-        			prop = new OntologyProperty(predicate, val);
-        			propertyList.add(pos,prop);
-        		}
-        		else if ((predicate.equalsIgnoreCase(Constants.useImports)) ||
+            		   int pos=getPosition(prop);
+            		   //System.out.println("INSIDE ELSE POSITION IS: "+pos);
+            		   OntologyProperty more=(OntologyProperty)propertyList.get(pos);
+            		   String val = more.getPropertyValue();
+            		   propertyList.remove(pos);
+            		   val=val+"  "+values;
+            		   prop = new OntologyProperty(predicate, val);
+            		   propertyList.add(pos,prop);
+            	   }
+            	   else if ((predicate.equalsIgnoreCase(Constants.useImports)) ||
         				(predicate.equalsIgnoreCase(Constants.isBackwardCompatibleWith)) ||	
         				(predicate.equalsIgnoreCase(Constants.isIncompatibleWith)) ||
         				(predicate.equalsIgnoreCase(Constants.hasDomain))
-        			){
-        			propertyList.addFirst(prop);
-        		}
-        		else if (org.neon_toolkit.registry.util.Utilities.multiple(predicate)){
+            	   ){
+            		   propertyList.addFirst(prop);
+            	   }
+            	   else if (org.neon_toolkit.registry.util.Utilities.multiple(predicate)){
         			//multiple datatypes values that can occur within the import process
         			propertyList.addFirst(prop);
-        		}		
-        	}
-        	if ((predicate.equalsIgnoreCase(Constants.useImports)) ||
+            	   }	
+               }
+               if ((predicate.equalsIgnoreCase(Constants.useImports)) ||
     				(predicate.equalsIgnoreCase(Constants.isBackwardCompatibleWith)) ||	
     				(predicate.equalsIgnoreCase(Constants.isIncompatibleWith)) ||
     				(predicate.equalsIgnoreCase(Constants.hasPriorVersion))
     				){
-        		LinkedList<OntologyProperty> pTempList = new LinkedList<OntologyProperty>();
-        		Individual refIndividual = KAON2Manager.factory().individual(values);
-        		OWLClass oTConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
-        		try{
-        			OntologyProperty propTemp = new OntologyProperty(Constants.URI, values);
-        			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oTConcept,refIndividual),true)){
-        				Map dataPropertyMap = refIndividual.getDataPropertyValues(localRegistry);
-    					Map objectPropertyMap = refIndividual.getObjectPropertyValues(localRegistry);
-    					if ((dataPropertyMap.size()+objectPropertyMap.size())<=0){
-    	        			pTempList.add(propTemp);
-    	        			addImportOntologyToRegistry(pTempList,3);
-    					}
-        			}
-        			else {
-	        			pTempList.add(propTemp);
-	        			addImportOntologyToRegistry(pTempList,3);
-        			}
-        		}catch(Exception e){
-        			System.out.println("add ontology reference error when importing: "+e.getMessage());
-        		}
-        	}
-        	if ((predicate.equalsIgnoreCase(Constants.hasDomain))){
-        		LinkedList<OntologyProperty> pTempList = new LinkedList<OntologyProperty>();
-        		if(!values.contains("://"))values = Constants.TopicsURI+values;  //Add namespace if not present
-        		Individual refIndividual = KAON2Manager.factory().individual(values);
-        		OWLClass oTConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.OntologyDomainConcept);
-        		try{
-        			OntologyProperty propTemp = new OntologyProperty(Constants.URI, values);
-        			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oTConcept,refIndividual),true)){
-        				Map dataPropertyMap = refIndividual.getDataPropertyValues(localRegistry);
-    					Map objectPropertyMap = refIndividual.getObjectPropertyValues(localRegistry);
-    					if ((dataPropertyMap.size()+objectPropertyMap.size())<=0){
-    	        			pTempList.add(propTemp);
-    	        			addConceptToRegistry(0,pTempList,5);
-    					}
-        			}
-        			else {
-	        			pTempList.add(propTemp);
-	        			addConceptToRegistry(0,pTempList,5);
-        			}
-        		}catch(Exception e){
-        			System.out.println("add domain error when importing: "+e.getMessage());
-        		}
-        	}
+            	   LinkedList<OntologyProperty> pTempList = new LinkedList<OntologyProperty>();
+            	   Individual refIndividual = KAON2Manager.factory().individual(values);
+            	   OWLClass oTConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
+            	   try{
+            		   OntologyProperty propTemp = new OntologyProperty(Constants.URI, values);
+            		   if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oTConcept,refIndividual),true)){
+            			   Map dataPropertyMap = refIndividual.getDataPropertyValues(localRegistry);
+            			   Map objectPropertyMap = refIndividual.getObjectPropertyValues(localRegistry);
+            			   if ((dataPropertyMap.size()+objectPropertyMap.size())<=0){
+            				   pTempList.add(propTemp);
+            				   addImportOntologyToRegistry(pTempList,3);
+            			   }
+            		   }
+            		   else {
+            			   pTempList.add(propTemp);
+            			   addImportOntologyToRegistry(pTempList,3);
+            		   }
+            	   }catch(Exception e){
+            		   System.out.println("add ontology reference error when importing: "+e.getMessage());
+            	   }
+               }
+               if ((predicate.equalsIgnoreCase(Constants.hasDomain))){
+            	   LinkedList<OntologyProperty> pTempList = new LinkedList<OntologyProperty>();
+            	   if(!values.contains("://"))values = Constants.TopicsURI+values;  //Add namespace if not present
+            	   Individual refIndividual = KAON2Manager.factory().individual(values);
+            	   OWLClass oTConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.OntologyDomainConcept);
+            	   try{
+            		   OntologyProperty propTemp = new OntologyProperty(Constants.URI, values);
+            		   if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oTConcept,refIndividual),true)){
+            			   Map dataPropertyMap = refIndividual.getDataPropertyValues(localRegistry);
+            			   Map objectPropertyMap = refIndividual.getObjectPropertyValues(localRegistry);
+            			   if ((dataPropertyMap.size()+objectPropertyMap.size())<=0){
+            				   pTempList.add(propTemp);
+            				   addConceptToRegistry(0,pTempList,5);
+            			   }
+            		   }
+            		   else {
+            			   pTempList.add(propTemp);
+            			   addConceptToRegistry(0,pTempList,5);
+            		   }
+            	   }catch(Exception e){
+            		   System.out.println("add domain error when importing: "+e.getMessage());
+            	   }
+               }
+            }
         }
         //System.out.println("Term: " + term + " ");
         //System.out.println("Values: "+ values);
@@ -228,6 +264,7 @@ public class ImportOntology {
 		return "";
 	}
 		
+	/*
 	private String getValues( Set stringSet ) {
         // Assume that all the objects in the set are of
         // type Integer.  Print the integer values on
@@ -254,6 +291,7 @@ public class ImportOntology {
      }
      return tempValues;
   }
+	*/
 	
 	public boolean isPropertyIn(OntologyProperty p){
 		Iterator it = propertyList.iterator();
@@ -1177,3 +1215,7 @@ Individual oldObjectPropertyIndividual = oIndividual.getObjectPropertyValue(loca
 if(oldObjectPropertyIndividual != null)	changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,oldObjectPropertyIndividual),OntologyChangeEvent.ChangeType.REMOVE));	
 changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 */
+
+//1
+//prop = new OntologyProperty(Constants.hasDomain,"");
+//if (!isPropertyIn(prop))propertyList.add(prop);
