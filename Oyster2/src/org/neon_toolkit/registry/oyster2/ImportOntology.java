@@ -732,7 +732,7 @@ public class ImportOntology {
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 		OWLClass ontologyConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
     	ObjectProperty hasDomain = KAON2Manager.factory().objectProperty(Constants.OMVURI + Constants.hasDomain);
-		ObjectProperty ontologyLocation = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.ontologyOMVLocation);
+		ObjectProperty ontologyOMVLocation = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.ontologyOMVLocation);
     	ObjectProperty provideOntology = KAON2Manager.factory().objectProperty(pOMVURI + "#"+Constants.provideOntology);
     	
     	//Manage composite OMV identification. Before it was the same as Ontology URI
@@ -987,8 +987,8 @@ public class ImportOntology {
 			}	
 			if (what!=3){
 				Individual peerIndiv = mOyster2.getLocalAdvertInformer().getLocalPeer();
-				if(!localRegistry.containsAxiom(KAON2Manager.factory().objectPropertyMember(ontologyLocation,ontologyIndividual,peerIndiv),true))
-					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyLocation,ontologyIndividual,peerIndiv),OntologyChangeEvent.ChangeType.ADD));	
+				if(!localRegistry.containsAxiom(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndividual,peerIndiv),true))
+					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndividual,peerIndiv),OntologyChangeEvent.ChangeType.ADD));	
 				if(!localRegistry.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndividual),true))
 					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndividual),OntologyChangeEvent.ChangeType.ADD));
 			}

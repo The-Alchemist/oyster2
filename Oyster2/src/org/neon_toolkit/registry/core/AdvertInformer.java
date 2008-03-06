@@ -517,7 +517,9 @@ public class AdvertInformer{
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(Peer,newPeer),OntologyChangeEvent.ChangeType.ADD));
     		}
     		else 
-    			System.err.println(targetOntology.getPhysicalURI()+" already contains: "+newPeer.getURI());
+    			{
+    			//System.err.println(targetOntology.getPhysicalURI()+" already contains: "+newPeer.getURI());
+    			}
     		
     		if(olduid ==null||!olduid.equals(uid)){
     			//System.out.println("olduid in " + targetOntology.getPhysicalURI()+ " "+olduid + " uid in " +remoteOntologyRegistry.getPhysicalURI()+" "+uid);
@@ -546,7 +548,7 @@ public class AdvertInformer{
     	try{
     		localOntologyRegistry = mOyster2.getLocalHostOntology();
     		if(localOntologyRegistry.containsEntity(localPeerIndiv, true)){
-    			System.out.println("local registry contains already a peer with the same peer name: "+peerName);
+    			//System.out.println("local registry contains already a peer with the same peer name: "+peerName);
     		}
     		else{
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(Peer,localPeerIndiv),OntologyChangeEvent.ChangeType.ADD));
@@ -584,7 +586,7 @@ public class AdvertInformer{
     	try{
     		localOntologyRegistry = mOyster2.getLocalHostOntology();
     		if(localOntologyRegistry.containsEntity(localPeerIndiv, true)){
-    			System.out.println("local registry contains already a peer with the same peer name: "+peerName);
+    			//System.out.println("local registry contains already a peer with the same peer name: "+peerName);
     		}
     		else{
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(Peer,localPeerIndiv),OntologyChangeEvent.ChangeType.ADD));
@@ -594,7 +596,7 @@ public class AdvertInformer{
     	    	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(localPeer,localPeerIndiv,false),OntologyChangeEvent.ChangeType.ADD));
     	    	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ipAdr,localPeerIndiv,ip),OntologyChangeEvent.ChangeType.ADD));
     	    	*/
-    			if (!uid.equalsIgnoreCase("")) changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(GUID,localPeerIndiv,KAON2Manager.factory().constant(uid)),OntologyChangeEvent.ChangeType.ADD));
+    			if (uid!=null && !uid.equalsIgnoreCase("")) changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(GUID,localPeerIndiv,KAON2Manager.factory().constant(uid)),OntologyChangeEvent.ChangeType.ADD));
     	    	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(type,localPeerIndiv,KAON2Manager.factory().constant("R")),OntologyChangeEvent.ChangeType.ADD));
     	    	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(localPeer,localPeerIndiv,KAON2Manager.factory().constant(false)),OntologyChangeEvent.ChangeType.ADD));
     	    	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ipAdr,localPeerIndiv,KAON2Manager.factory().constant(ip)),OntologyChangeEvent.ChangeType.ADD));
@@ -606,7 +608,7 @@ public class AdvertInformer{
     
     		}
     	}catch(Exception e){
-    		System.err.println(e.getMessage()+"in setLocalPeer().");
+    		System.err.println(e.getMessage()+"in setBootPeer().");
     	}
     }
     
@@ -645,6 +647,13 @@ public class AdvertInformer{
     	Collection ontologySet = getOntologyDoc(remoteOntologyRegistry,peerIndiv);
     	Collection mappingSet = getMappings(remoteOntologyRegistry,peerIndiv);
     	Collection domainSet = getExpertise(remoteOntologyRegistry,peerIndiv);
+    	
+    	ObjectProperty ontologyOMVLocation= KAON2Manager.factory().objectProperty(pdURI+"#"+Constants.ontologyOMVLocation);
+    	ObjectProperty mappingOMVLocation= KAON2Manager.factory().objectProperty(pdURI+"#"+Constants.mappingOMVLocation);
+    	Collection ontologySetT = getOntologyDoc(targetOntology,peerIndiv);
+    	Collection mappingSetT = getMappings(targetOntology,peerIndiv);
+    	Collection domainSetT = getExpertise(targetOntology,peerIndiv);
+    	
     	ObjectProperty provideOntology = KAON2Manager.factory().objectProperty(pdURI + "#provideOntology");
     	ObjectProperty provideMapping = KAON2Manager.factory().objectProperty(pdURI + "#provideMapping");
     	ObjectProperty hasExpertise = KAON2Manager.factory().objectProperty(pdURI + "#hasExpertise");
@@ -661,9 +670,8 @@ public class AdvertInformer{
     		Individual contextIndiv = getContextOntology(remoteOntologyRegistry,peerIndiv);
     		String type = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(remoteOntologyRegistry,peerType)); //(String)
     		//boolean local = getBoolean(util.Utilities.getString(peerIndiv.getDataPropertyValue(remoteOntologyRegistry,localPeer))); //(Boolean) 
-    		
     		if(!targetOntology.containsAxiom(KAON2Manager.factory().classMember(Peer,peerIndiv),true)){
-	    		changes.clear();
+    			changes.clear();
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(Peer,peerIndiv),OntologyChangeEvent.ChangeType.ADD));
 	    		targetOntology.applyChanges(changes);
 	    		//System.out.println("add peer.");
@@ -687,37 +695,99 @@ public class AdvertInformer{
         		//System.out.println("localPeer (boolean attribute).");
         	}
     		
+    		//First remove all expertise
+    		Iterator elementsT = ontologySetT.iterator();
+    		while(elementsT.hasNext()){
+    			Individual ontologyIndiv =(Individual) elementsT.next();
+    			changes.clear();
+    			if(targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndiv),true)){
+    				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			}
+    			if(targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndiv,peerIndiv),true)){	
+    				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndiv,peerIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			}
+    			if (!changes.isEmpty()) {    				
+    				targetOntology.applyChanges(changes);
+    			}
+        	}
+    		//Now add expertise
     		Iterator elements = ontologySet.iterator();
     		while(elements.hasNext()){
     			Individual ontologyIndiv =(Individual) elements.next();
+    			changes.clear();
     			if(!targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndiv),true)){
-    				changes.clear();
     				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideOntology,peerIndiv,ontologyIndiv),OntologyChangeEvent.ChangeType.ADD));
-    				targetOntology.applyChanges(changes);
     				//System.out.println("add "+peerIndiv+" provide: "+ontologyIndiv);
     			}        	
     			if(!targetOntology.containsAxiom(KAON2Manager.factory().classMember(OntologyDoc,ontologyIndiv),true)){
     				//System.out.println("add OntologyIndiv to target registry :"+ontologyIndiv);
     				addExpertiseOntology(remoteOntologyRegistry,ontologyIndiv,targetOntology);
     			}
-    			else System.out.println(targetOntology.getOntologyURI()+" already contains: "+ontologyIndiv.getURI());
+    			else {
+    				if(!targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndiv,peerIndiv),true)){
+        				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyOMVLocation,ontologyIndiv,peerIndiv),OntologyChangeEvent.ChangeType.ADD));
+        			}
+    				//System.out.println(targetOntology.getOntologyURI()+" already contains: "+ontologyIndiv.getURI());
+    			}
+    			if (!changes.isEmpty()) {    				
+    				targetOntology.applyChanges(changes);
+    			}
         	}
+    		
+    		//First remove all mapping expertise
+    		elementsT=null;
+    		elementsT = mappingSetT.iterator();
+    		while(elementsT.hasNext()){
+    			Individual mappingIndiv =(Individual) elementsT.next();
+    			changes.clear();
+    			if(targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideMapping,peerIndiv,mappingIndiv),true)){
+    				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideMapping,peerIndiv,mappingIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			}
+    			if(targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(mappingOMVLocation,mappingIndiv,peerIndiv),true)){
+    				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(mappingOMVLocation,mappingIndiv,peerIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			}
+    			if (!changes.isEmpty()) {
+    				targetOntology.applyChanges(changes);
+    			}
+        	}
+    		//Now add mapping expertise
     		elements = null;
     		elements = mappingSet.iterator();
     		while(elements.hasNext()){
     			Individual mappingIndiv =(Individual) elements.next();
-    			if(!targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideMapping,peerIndiv,mappingIndiv),true)){
-    				changes.clear();
+    			changes.clear();
+    			if(!targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(provideMapping,peerIndiv,mappingIndiv),true)){    				
     				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(provideMapping,peerIndiv,mappingIndiv),OntologyChangeEvent.ChangeType.ADD));
-    				targetOntology.applyChanges(changes);
     				//System.out.println("add "+peerIndiv+" provide: "+mappingIndiv);
     			}        	
     			if(!targetOntology.containsAxiom(KAON2Manager.factory().classMember(mappingClass,mappingIndiv),true)){
-    				//System.out.println("add OntologyIndiv to target registry :"+ontologyIndiv);
+    				//System.out.println("add OntologyIndiv to target registry :"+mappingIndiv);
     				addMappingExpertise(remoteOntologyRegistry,mappingIndiv,targetOntology);
     			}
-    			else System.out.println(targetOntology.getOntologyURI()+" already contains: "+mappingIndiv.getURI());
+    			else {
+    				if(!targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(mappingOMVLocation,mappingIndiv,peerIndiv),true)){
+        				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(mappingOMVLocation,mappingIndiv,peerIndiv),OntologyChangeEvent.ChangeType.ADD));
+        			}
+    				//System.out.println(targetOntology.getOntologyURI()+" already contains: "+mappingIndiv.getURI());
+    			}
+    			if (!changes.isEmpty()) {
+    				targetOntology.applyChanges(changes);
+    			}
         	}
+    		//First remove all domain expertise
+    		elementsT=null;
+    		elementsT = domainSetT.iterator();
+    		while(elementsT.hasNext()){
+    			Individual domainIndiv =(Individual) elementsT.next();
+    			changes.clear();
+    			if(targetOntology.containsAxiom(KAON2Manager.factory().objectPropertyMember(hasExpertise,peerIndiv,domainIndiv),true)){
+    				changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(hasExpertise,peerIndiv,domainIndiv),OntologyChangeEvent.ChangeType.REMOVE));
+    			}
+    			if (!changes.isEmpty()) {
+    				targetOntology.applyChanges(changes);
+    			}
+        	}
+    		//Now add domain expertise
     		elements = null;
     		elements = domainSet.iterator();
     		while(elements.hasNext()){
@@ -732,8 +802,11 @@ public class AdvertInformer{
     				//System.out.println("add domainIndiv to target registry :"+domainIndiv);
     				addDomainExpertise(remoteOntologyRegistry,domainIndiv,targetOntology);
     			}
-    			else System.out.println(targetOntology.getOntologyURI()+" already contains: "+domainIndiv.getURI());
+    			else {
+    				//System.out.println(targetOntology.getOntologyURI()+" already contains: "+domainIndiv.getURI());
+    			}
         	}
+    		targetOntology.persist();
     	}catch(Exception e){
     		System.err.println(e + " in updatePeerAttributes() in AdvertInformer. ");
     	}
@@ -850,12 +923,15 @@ public class AdvertInformer{
     	DataProperty ontologyName = KAON2Manager.factory().dataProperty(omv + Constants.name);
     	DataProperty ontologyURI = KAON2Manager.factory().dataProperty(omv + Constants.URI);
     	DataProperty ontologyResourceLocator = KAON2Manager.factory().dataProperty(omv + Constants.resourceLocator);
+    	DataProperty ontologyVersion = KAON2Manager.factory().dataProperty(omv + Constants.version);
     	String oldName = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyName)); //(String)
     	String newName = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyName)); //(String)
     	String oldURI = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyURI)); //(String)
     	String newURI = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyURI)); //(String)
     	String oldResourceLocator = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyResourceLocator)); //(String)
     	String newResourceLocator = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyResourceLocator)); //(String)
+    	String oldVersion = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(targetOntology,ontologyVersion)); //(String)
+    	String newVersion = org.neon_toolkit.registry.util.Utilities.getString(ontologyIndiv.getDataPropertyValue(remoteOntologyRegistry,ontologyVersion)); //(String)
     	
     	if(newName!=null){
     		if(oldName == null){
@@ -883,9 +959,16 @@ public class AdvertInformer{
     			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyResourceLocator,ontologyIndiv,KAON2Manager.factory().constant(newResourceLocator)),OntologyChangeEvent.ChangeType.ADD));
     		}
     	}
+    	if(newVersion != null){
+    		if(oldVersion==null){
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyVersion,ontologyIndiv,KAON2Manager.factory().constant(newVersion)),OntologyChangeEvent.ChangeType.ADD));
+    		}else{
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyVersion,ontologyIndiv,KAON2Manager.factory().constant(oldVersion)),OntologyChangeEvent.ChangeType.REMOVE));
+    			changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyVersion,ontologyIndiv,KAON2Manager.factory().constant(newVersion)),OntologyChangeEvent.ChangeType.ADD));
+    		}
+    	}
     	
-    	
-    	//TODO WHAT ATTRIBUTES SHOULD WE TRANSFER (only URI and LOCATION?)
+    	//TODO WHAT ATTRIBUTES SHOULD WE TRANSFER (URI and LOCATION and version and name) or nothing?
     	
     	/*if((newPeerIndiv != null)&&(oldPeerIndiv != newPeerIndiv))
     		changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(location,ontologyIndiv,newPeerIndiv),OntologyChangeEvent.ChangeType.ADD));*/
@@ -1049,24 +1132,33 @@ public class AdvertInformer{
   	    changes.clear();
     }
   
+    /**
+     * Update local peer every "discoveryFrec" seconds i.e. within the exchangeinitiator 
+     * process.
+     * Gets the list of all known peers from the remote peer and update the local registry
+     * with them i.e. if it is not known by the local peer it is added, if is alrady known
+     * the information is updated with the information from the remote peer.
+     * 
+     * @param remoteOntologyRegistry
+     * @param localOntologyRegistry
+     */
+    
     public synchronized void updateRegistry(Ontology remoteOntologyRegistry,Ontology localOntologyRegistry){
-      //String remoteURI = remoteOntologyRegistry.getOntologyURI();
-  	  //String localURI = localOntologyRegistry.getOntologyURI();
   	  try{
-  		  Map remotePeerSet = getPeerSet(remoteOntologyRegistry);
-  		  Map localPeerSet = getPeerSet(localOntologyRegistry);
   		  //Collection remoteMappingSet = getMappingSet(remoteOntologyRegistry);
   		  //Collection localMappingSet = getMappingSet(localOntologyRegistry);
+  		  //Iterator mapping = remoteMappingSet.iterator();
+  		  Map remotePeerSet = getPeerSet(remoteOntologyRegistry);
+  		  Map localPeerSet = getPeerSet(localOntologyRegistry);
   		  int remoteVersion = getRegistryVersion(remoteOntologyRegistry);
   		  int localVersion = getRegistryVersion(localOntologyRegistry);
   		  if(localVersion > remoteVersion)return;
   		  Collection remoteGUIDs = remotePeerSet.keySet();
   		  Iterator remotePeer = remoteGUIDs.iterator();
   		  Collection localGUIDs = localPeerSet.keySet();
-  		  //Iterator mapping = remoteMappingSet.iterator();
+  		  
   		  while(remotePeer.hasNext()){
   			  String peerGUID = (String) remotePeer.next();
-  			  //System.out.println("remoteContains:"+peerGUID);  			  
   			  if(!peerGUID.equals(this.getLocalUID())){  			  
   				  Individual peerIndiv =(Individual) remotePeerSet.get(peerGUID);
   				  if(!localGUIDs.contains(peerGUID)){
@@ -1082,20 +1174,13 @@ public class AdvertInformer{
   					  //else
   						//  System.out.println("Peer was not reachable when trying to add it, so it was not added");
   				  }
-  				  else
+  				  else{
+  					  //System.out.println("local registry already contain: "+peerGUID+". The peer that will be updated is: "+peerIndiv);
   					  updatePeerAttributes(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
+  				  }
   			  }
   		  }
-  		  /*
-  		  while(mapping.hasNext()){
-  			  System.out.println("mapping testing!");
-  			  Individual mappingIndiv = (Individual) mapping.next();
-  			  if(!containsMapping(localOntologyRegistry,mappingIndiv)){
-  				  addMappingOntology(remoteOntologyRegistry,mappingIndiv,localOntologyRegistry); 
-  				  System.out.println("add Mapping: "+mappingIndiv);
-  			  }
-  		  }
-  		  */
+  		  //1A
   		  updateRegistryVersion(localOntologyRegistry);
   		  localOntologyRegistry = mOyster2.getLocalHostOntology();
   		  localOntologyRegistry.persist();
@@ -1115,9 +1200,22 @@ public class AdvertInformer{
     	}
     }
     
-    public synchronized void informerIP(Ontology remoteOntology,Ontology localOntology){
+    
+    /**
+     * AVERTISE TO REMOTE PEER (I.E. TO THE RENDEVZVOUS PEER)
+     * Every time the peer starts, informerIP runs to update local peer information in remote peer.
+     * e.g. inform to rendezvous peer.
+     * Add local peer to remote registry. If it exists already, the information is updated in the
+     * remote peer with the current local information.
+     * The local peer in the local registry is also updated with the current IP address in case 
+     * the peer has dynamic IP
+     * 
+     * @param remoteOntology
+     * @param localOntology
+     */
+    public synchronized void informerIP(Ontology remoteOntology,Ontology localOntology, String rendezvouzPeerIP){
 	  try{
-	  List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
+	  //List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 	  DataProperty IPAdress = KAON2Manager.factory().dataProperty(pdURI+"#IPAdress");
 	  String localGUID = mOyster2.getLocalHost().getGUID().toString();
 	  String newIP = mOyster2.getLocalHost().getAddress();
@@ -1127,20 +1225,16 @@ public class AdvertInformer{
 	  Individual peerIndiv =(Individual)peerSet.get(localGUID);
 	  try{
 		  if(peerIndiv!=null){
-			  localOldIP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(localOntology,IPAdress)); //(String)
-			  String remoteOldIP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(remoteOntology,IPAdress)); //(String)
-			  //System.out.println("remoteOldIP in remote peer: "+remoteOldIP);
-			  if(remoteOldIP !=null)
-				  changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(IPAdress,peerIndiv,KAON2Manager.factory().constant(remoteOldIP)),OntologyChangeEvent.ChangeType.REMOVE));
-			  changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(IPAdress,peerIndiv,KAON2Manager.factory().constant(newIP)),OntologyChangeEvent.ChangeType.ADD));
-			  remoteOntology.applyChanges(changes);
+			  //System.out.println("update local peer to remote.");
+			  //1B
+			  updatePeerAttributes(localOntology,peerIndiv,remoteOntology);
 		  }
 		  else {
-			  peerIndiv = getLocalPeer();
-			  localOldIP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(localOntology,IPAdress));
 			  //System.out.println("add local peer to remote.");
-			  if(peerIndiv!=null)
+			  peerIndiv = getLocalPeer();
+			  if(peerIndiv!=null){
 				  addExpertisePeer(localOntology,peerIndiv,remoteOntology);
+			  }
 			  else 
 				  System.err.println("localPeer is null in localRegistry when informerIP process runs");
 		  }
@@ -1149,9 +1243,36 @@ public class AdvertInformer{
 	  catch(Exception e){
 		  System.err.println(e);
 	  }
-	 
-	  remoteOntology.persist();
 	  
+	  /* NOT NECESSARY */
+	  //UPDATE GUID
+	  /*
+	  try{
+		  Iterator it = peerSet.values().iterator();
+		  while (it.hasNext()){
+			  Individual peer = (Individual)it.next();
+			  String add=getPeerIP(remoteOntology,peer);
+			  if (add.equalsIgnoreCase(rendezvouzPeerIP)){
+				  List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
+				  DataProperty GUID = KAON2Manager.factory().dataProperty(pdURI + "#GUID");
+				  String oldGUID = org.neon_toolkit.registry.util.Utilities.getString(peer.getDataPropertyValue(localOntology,GUID)); //(String)
+				  String newGUID = org.neon_toolkit.registry.util.Utilities.getString(peer.getDataPropertyValue(remoteOntology,GUID)); //(String)
+				  if(oldGUID !=null)
+			        	changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(GUID,peer,KAON2Manager.factory().constant(oldGUID)),OntologyChangeEvent.ChangeType.REMOVE));
+			      changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(GUID,peer,KAON2Manager.factory().constant(newGUID)),OntologyChangeEvent.ChangeType.ADD));
+			      localOntology.applyChanges(changes);
+			      localOntology.persist();
+			      save(localOntology);
+			  }
+		  }
+	  }
+	  catch(Exception e){
+		  System.err.println(e + " updating rendezvous GUID");
+	  }
+	  */
+	  //END
+	  remoteOntology.persist();
+	  localOldIP = org.neon_toolkit.registry.util.Utilities.getString(getLocalPeer().getDataPropertyValue(localOntology,IPAdress)); //(String)
 	  if (!localOldIP.equals(newIP)){
 		  //System.out.println("localOldIP: "+localOldIP +" newIP: "+newIP);
 		  List<OntologyChangeEvent> changes2=new ArrayList<OntologyChangeEvent>();
@@ -1187,7 +1308,7 @@ public class AdvertInformer{
 		  versionNo++;
 		  version = Integer.toString(versionNo);
 		  regOntology.addOntologyProperty(versionInfo,version);
-		  System.out.println("Version Number updated to: "+version);
+		  //System.out.println("Version Number updated to: "+version);
 	  }catch(Exception e){
 		  System.err.println(e+ " updateRegistryVersion() in AdvertInformer.");
 	  }
@@ -1214,3 +1335,21 @@ public class AdvertInformer{
 	  //remoteConnection.close();
   }
 }
+//1A
+/*
+  while(mapping.hasNext()){
+	  System.out.println("mapping testing!");
+	  Individual mappingIndiv = (Individual) mapping.next();
+	  if(!containsMapping(localOntologyRegistry,mappingIndiv)){
+		  addMappingOntology(remoteOntologyRegistry,mappingIndiv,localOntologyRegistry); 
+		  System.out.println("add Mapping: "+mappingIndiv);
+	  }
+  }
+  */
+
+//1B
+//String remoteOldIP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(remoteOntology,IPAdress)); //(String)
+//if(remoteOldIP !=null)
+//	  changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(IPAdress,peerIndiv,KAON2Manager.factory().constant(remoteOldIP)),OntologyChangeEvent.ChangeType.REMOVE));
+//changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(IPAdress,peerIndiv,KAON2Manager.factory().constant(newIP)),OntologyChangeEvent.ChangeType.ADD));
+//remoteOntology.applyChanges(changes);

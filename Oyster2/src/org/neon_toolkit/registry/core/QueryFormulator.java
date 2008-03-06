@@ -6,9 +6,9 @@ import org.neon_toolkit.registry.oyster2.Condition;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
 import org.neon_toolkit.registry.util.GUID;
-import org.semanticweb.kaon2.api.KAON2Manager;
+//import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
-import org.semanticweb.kaon2.api.OntologyChangeEvent;
+//import org.semanticweb.kaon2.api.OntologyChangeEvent;
 
 
 public class QueryFormulator {
@@ -23,7 +23,7 @@ public class QueryFormulator {
 	//private int variableCounter = 0;
 	private String typeClause = "";
 	private StringBuffer queryBuffer = new StringBuffer();
-	private String subjectClause = "";
+	//private String subjectClause = "";
 	private String domainClause = "";
 	//private List variableList = new LinkedList();
 	private List<Condition> literalCondition = new LinkedList<Condition>();
@@ -35,7 +35,7 @@ public class QueryFormulator {
 	public QueryFormulator(){
 		this.queryUID = new GUID();
 	}
-	public void generateDataQuery(LinkedList conditions) {
+	public void generateDataQuery(LinkedList conditions, int scope) {
 		//if(conditions.size()<=0){badRequest= true;return;}
 		typeClause = "";
 		for (int i = 0; i < conditions.size(); i++) {
@@ -78,11 +78,12 @@ public class QueryFormulator {
 			queryBuffer.append(domainClause);
 		}
 		queryBuffer.append("}");
-		generateTypeQuery(queryBuffer); 
+		generateTypeQuery(queryBuffer,scope); 
 	}
 	
-	public void generateOntologyQuery(LinkedList conditions){
+	public void generateOntologyQuery(LinkedList conditions, int scope){
 	    if(conditions.size()<=0)badRequest= true;
+	    /*
 		for (int i = 0; i < conditions.size(); i++) {
 			Condition condition =(Condition) conditions.get(i);
 			if(condition.getPred() != null && condition.getConditionType()==(Condition.LITERAL_TYPE))
@@ -102,9 +103,39 @@ public class QueryFormulator {
 			}
 		}
 		queryBuffer.append("}");
+		*/
+	    
+	    typeClause = "";
+		for (int i = 0; i < conditions.size(); i++) {
+			Condition condition =(Condition) conditions.get(i);
+			if(condition.getPred() != null && condition.getConditionType()==(Condition.LITERAL_TYPE))
+				addLiteralCondition(condition);
+		    else if (condition.getPred() != null && condition.getPred().equals(Condition.TYPE_CONDITION)) 
+				addTypeCondition(condition);
+		    else if (condition.getPred() != null && condition.getPred().equals(Condition.TOPIC_CONDITION))
+		    	addTopicCondition(condition);
+			else addLiteralCondition(condition);  //RESOURSE_TYPE IS RESOLVED LATER 
+			
+		}
+		if(badRequest)return;
+		queryBuffer.append("SELECT ?x WHERE ");
+		if (typeClause!="")	queryBuffer.append(typeClause);
+		else queryBuffer.append(" { ?x rdf:type <"+Constants.OMVURI+Constants.ontologyConcept+"> ");
+		
+		for(int i = 0;i<literalCondition.toArray().length;i++){
+			Condition condition = (Condition)(literalCondition.toArray()[i]);
+			if((!condition.getValue().equals(""))&&(condition.getValue()!=null)){	
+			queryBuffer.append(". ?x ");
+			addFilter(queryBuffer,condition,i);
+			}
+		}
+		if (domainClause!=""){
+			queryBuffer.append(domainClause);
+		}
+		queryBuffer.append("}");
 		
 		System.out.println("ontology query is: "+queryBuffer.toString());
-		generateTopicQuery(queryBuffer); 
+		generateTopicQuery(queryBuffer,scope); 
 		
 	}
 	
@@ -244,16 +275,16 @@ public class QueryFormulator {
 			return null;
 		return this.typeQuery;
 	}
-	private void generateTopicQuery(StringBuffer queryBuffer){
-		Oyster2Query query = new Oyster2Query(queryUID,Oyster2Query.TOPIC_QUERY,queryBuffer.toString());
+	private void generateTopicQuery(StringBuffer queryBuffer,int scope){
+		Oyster2Query query = new Oyster2Query(queryUID,scope, Oyster2Query.TOPIC_QUERY,queryBuffer.toString());
 		this.topicQuery = query;
 		int bufferLength = queryBuffer.length();
 		queryBuffer.delete(0,bufferLength);
 		System.out.println("topicQuery: "+topicQuery.getQueryString());
 	}
 	
-	private void generateTypeQuery(StringBuffer queryBuffer){
-		Oyster2Query query = new Oyster2Query(queryUID,Oyster2Query.TYPE_QUERY,queryBuffer.toString());
+	private void generateTypeQuery(StringBuffer queryBuffer, int scope){
+		Oyster2Query query = new Oyster2Query(queryUID, scope, Oyster2Query.TYPE_QUERY,queryBuffer.toString());
 		this.typeQuery = query;
 		int bufferLength = queryBuffer.length();
 		queryBuffer.delete(0,bufferLength);
@@ -275,7 +306,7 @@ public class QueryFormulator {
 			//return;
 		}
 		String topicURI = c.getValue();
-		subjectClause=" { ?x <"+Constants.OMVURI+Constants.hasDomain+"> <"+topicURI+"> ";
+		//subjectClause=" { ?x <"+Constants.OMVURI+Constants.hasDomain+"> <"+topicURI+"> ";
 		domainClause=". ?x <"+Constants.OMVURI+Constants.hasDomain+"> <"+topicURI+"> ";
 	}
 	/**

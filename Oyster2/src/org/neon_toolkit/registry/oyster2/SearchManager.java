@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-
 import org.neon_toolkit.registry.core.Searcher;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
 import org.neon_toolkit.registry.util.GUID;
@@ -27,6 +26,8 @@ public class SearchManager {
 	protected QueryReplyListener peerDocListener;
 	protected QueryReplyListener replyListener;
 	protected Hashtable<GUID, Oyster2Query> mSentQueries = new Hashtable<GUID, Oyster2Query>();
+	protected Thread runningSearchThread=null;
+	protected Searcher runningSearchClass=null;
 	//private boolean which;
 	//private Thread searchThread;
 	
@@ -45,7 +46,8 @@ public class SearchManager {
  	* @return void
  	*/
 	public void notifyReplyListener(QueryReply queryReply){
-		replyListener.newReplyReceived(queryReply);
+		if (replyListener!=null)
+			replyListener.newReplyReceived(queryReply);
 		/*
 		if (which)
 			((Result)replyListener).newReplyReceived(queryReply);
@@ -59,7 +61,8 @@ public class SearchManager {
 	 * @param ontologyDocList
 	 */
 	public void notifyReplyListener(List ontologyDocList){
-		replyListener.entryReceived(ontologyDocList);
+		if (replyListener!=null)
+			replyListener.entryReceived(ontologyDocList);
 		/*
 		if (which)
 			((Result)replyListener).entryReceived(ontologyDocList);
@@ -83,7 +86,7 @@ public class SearchManager {
 	public synchronized void addReplyListener(QueryReplyListener listener) {
 		replyListeners.add(listener);
 		try{
-		wait();
+			wait();
 		}catch(InterruptedException e){
 			
 		}
@@ -113,9 +116,53 @@ public class SearchManager {
 	 * 
 	 */
 	public void stopSearch(){
+		replyListener=null;
 		replyListeners.clear();
 		mSentQueries.clear();
-		//mKaonP2P.getMainWindow().operationFinished();
+		if (runningSearchClass!=null) runningSearchClass.shutdown();
+	}
+	
+	public void stopSearchFull(){
+		replyListener=null;
+		replyListeners.clear();
+		mSentQueries.clear();
+		if (runningSearchClass!=null) runningSearchClass.shutdown();
+		try {
+			if (runningSearchThread!=null && runningSearchThread.isAlive()){
+				runningSearchThread.interrupt();
+				runningSearchThread.join(10000);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void checkIfRunning(){
+		try {
+			if (runningSearchThread!=null && runningSearchThread.isAlive()){
+				runningSearchThread.interrupt();
+				runningSearchThread.join(10000);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * Starts a new search.
+	 *
+	 * @param query the new query.
+	 */
+	public void startSearch(Oyster2Query topicQuery,Oyster2Query typeQuery,Set peerSet, boolean keywordSearch) {
+		//mSentQueries.put(topicQuery.getGUID(), topicQuery);
+		checkIfRunning(); //JUST IN CASE A PREVIOUS QUERY TIMED OUT AND DIDNT HAVE CHANCE TO SHUTDOWN
+		Searcher neu=new Searcher(topicQuery,typeQuery,peerSet, keywordSearch);
+		Thread t = new Thread(neu,"Searcher1");
+		runningSearchClass=neu;
+		runningSearchThread=t;
+		t.setDaemon(true);
+		t.start();
 	}
 	
 	/**
@@ -123,29 +170,37 @@ public class SearchManager {
 	 *
 	 * @param query the new query.
 	 */
-	public void startSearch(Oyster2Query topicQuery,Oyster2Query typeQuery,boolean manualSelected) {
+	public void startSearch(Oyster2Query topicQuery,Oyster2Query typeQuery,Set peerSet, boolean keywordSearch, boolean normalFlag) {
 		//mSentQueries.put(topicQuery.getGUID(), topicQuery);
-		
-		/*
-		if (!manualSelected){
-			if (topicQuery!=null) which = false;
-			else which=true;
-		}else
-			which=true;
-		*/
-		Thread t = new Thread(new Searcher(topicQuery,typeQuery,manualSelected));
+		checkIfRunning(); //JUST IN CASE A PREVIOUS QUERY TIMED OUT AND DIDNT HAVE CHANCE TO SHUTDOWN
+		Searcher neu=new Searcher(topicQuery,typeQuery,peerSet, keywordSearch, normalFlag);
+		Thread t = new Thread(neu,"Searcher2");
+		runningSearchClass=neu;
+		runningSearchThread=t;
 		t.setDaemon(true);
 		t.start();
 	}
 	
 	public void startSearch(Set peerSet){
 		//which=false;
-		Thread t = new Thread(new Searcher(peerSet));
+		checkIfRunning(); //JUST IN CASE A PREVIOUS QUERY TIMED OUT AND DIDNT HAVE CHANCE TO SHUTDOWN
+		Searcher neu=new Searcher(peerSet);
+		Thread t = new Thread(neu,"Searcher3");
+		runningSearchClass=neu;
+		runningSearchThread=t;
 		t.setDaemon(true);
 		t.start();	
 	}
 }
 
+
+/*
+if (!manualSelected){
+	if (topicQuery!=null) which = false;
+	else which=true;
+}else
+	which=true;
+*/
 
 /*public void notifyReplyListener(QueryReply queryReply){
 invoked();

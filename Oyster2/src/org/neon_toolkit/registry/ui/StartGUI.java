@@ -1,25 +1,37 @@
 package org.neon_toolkit.registry.ui;
 
 import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.widgets.Display;
+import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.ui.ConditionPreferencePage;
 import org.neon_toolkit.registry.ui.MainPreferencePage;
 import org.neon_toolkit.registry.ui.MainWindow;
+//import org.eclipse.jface.preference.PreferenceStore;
 //import org.semanticweb.kaon2.api.KAON2Exception;
 //import org.semanticweb.kaon2.api.*;
 //import org.semanticweb.kaon2.server.context.*;
 //import org.semanticweb.kaon2.server.rmi.*;
+//import org.neon_toolkit.registry.util.EntryDetailSerializer;
 
 public class StartGUI {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
-	private static PreferenceStore store = mOyster2.getPreferenceStore();
+	//private static PreferenceStore store = mOyster2.getPreferenceStore();
 	public static Process serverProcess = null;
+	private static Properties mprop = mOyster2.getProperties();
+	//private static String kaon2File = System.getProperty("user.dir")+System.getProperty("file.separator")+"kaon2.jar";
+	//private static String serverRoot= System.getProperty("user.dir")+System.getProperty("file.separator")+"server";
+	//private static String startParameters= "";
+	private static boolean startKAON2=true;
 	
 	/**
 	 * The main windows of Oyster2 GUI.
@@ -33,27 +45,54 @@ public class StartGUI {
 	protected static boolean appWindowToBeShown = true;
 
 	private static boolean isSystemTrayActive;
+	
+	
 
 	
 	public static void main(String[] args)throws Exception{
 		
-		serverProcess = Runtime.getRuntime().exec("java -cp kaon2.jar org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ args[0]); 
-		if(serverProcess!=null) System.out.println("server started...");
-		Thread.sleep(2000);	//Thread.currentThread().sleep(2000);
-		//List :)
-        configureProperties();
+		if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;
+		if (startKAON2){			
+			try {
+				URLClassLoader cl = new URLClassLoader(new URL[] { new URL("http://ontoware.org/frs/download.php/455/kaon2.jar") });//new URLClassLoader(urls);
+				cl.loadClass("org.semanticweb.kaon2.server.ServerMain");
+				Class cls = Class.forName("org.semanticweb.kaon2.server.ServerMain", false, cl);
+		    	Method method = cls.getDeclaredMethod("main", new Class[] { String[].class });
+		        String[] argum= new String[4];
+		        argum[0]="-registry";
+		        argum[1]="-rmi";
+		        argum[2]="-ontologies";
+		        argum[3]="server";
+		        method.invoke(null, new Object[] { argum });
+			} catch (Exception ex) {
+		        System.out.println(ex.getMessage()+"couldnt start KAON2 server...");
+		        startKAON2=false;
+		        shutdown();
+			}
+			startKAON2=false;
+			Thread.sleep(500);
+			//serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp "+ EntryDetailSerializer.QUOTE + kaon2File + EntryDetailSerializer.QUOTE + " org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ EntryDetailSerializer.QUOTE + serverRoot +EntryDetailSerializer.QUOTE); //serverProcess = Runtime.getRuntime().exec("java -cp kaon2.jar org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ args[0]);
+			//if(serverProcess!=null) System.out.println("server started...");
+			//else {System.out.println("could not start KAON2 server..."); shutdown();}
+			//Thread.sleep(2000);	//Thread.currentThread().sleep(2000);
+		}
+        configurePropertiesL();
         mOyster2.init(null);
-        if (mOyster2.retInit==0)
-        	run();
+        if (mOyster2.retInit==0){
+        	mOyster2.initUI();
+        	if (mOyster2.retInit==0)
+        		run();
+        }
 		shutdown();
     }
 	
 	private static void shutdown(){
 		mOyster2.shutdown();
-		serverProcess.destroy();	
+		if (startKAON2) serverProcess.destroy();
 		System.exit(0);
 	}
 	
+	/*
 	public static void configureProperties(){
 		Boolean first=true;
 		try{
@@ -76,6 +115,7 @@ public class StartGUI {
 		
 			d.create();
 			d.open();
+			
 			try {
 				// Save the preferences
 				store.save();
@@ -83,7 +123,39 @@ public class StartGUI {
 		    	e.printStackTrace();
 		    }
 		}
+		
 		mOyster2.setPreferenceStore(store);
+	}
+	*/
+	
+	public static void configurePropertiesL(){
+		File mFile = new File(Constants.PROPERTY_FILE);
+		try {
+			if (!mFile.exists()) {
+				mprop.init();
+				Display display = new Display();
+				PreferenceManager pm = new PreferenceManager();
+				
+				MainPreferencePage p = new MainPreferencePage("Main preferences");
+				ConditionPreferencePage cp = new ConditionPreferencePage("ConditionPreference");
+				
+				PreferenceNode mainprop=new PreferenceNode("mainOyster2Properties", p);
+				PreferenceNode conditionsprop=new PreferenceNode("searchConditions",cp);
+				
+				pm.addToRoot(mainprop);
+				pm.addToRoot(conditionsprop);
+				
+				PreferenceDialog d = new PreferenceDialog(display.getActiveShell(), pm);
+				//d.setSelectedNode("searchConditions");
+				d.create();
+				d.open();
+			}
+			else{
+				mprop.init();
+			} 
+		} catch (Exception e) {
+				System.err.println(e+" in configure propertiesL");
+		}
 	}
 	
 	public static void run() {

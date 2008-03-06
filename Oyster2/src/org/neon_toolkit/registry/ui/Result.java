@@ -1,11 +1,13 @@
 package org.neon_toolkit.registry.ui;
 
 import java.util.*;
+
 import org.eclipse.jface.viewers.TreeViewer;
 import org.neon_toolkit.registry.oyster2.QueryReply;
 import org.neon_toolkit.registry.oyster2.QueryReplyListener;
 import org.neon_toolkit.registry.ui.provider.ResultViewerContentProvider;
 import org.neon_toolkit.registry.ui.provider.ResultViewerLabelProvider;
+import org.neon_toolkit.registry.util.Property;
 import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.*;
 //import ui.provider.OntologyLabelProvider;
@@ -21,7 +23,11 @@ public class Result implements QueryReplyListener{
 	private TreeViewer viewer;
 	private List<Object> entries = new ArrayList<Object>();
 	private ResultViewerContentProvider contentProvider;
+	Resource todelete=null;
 	String  columnContent[];
+	
+	//private List vocabulary;
+	
 	//private Map resourceMap =new HashMap();
 	public Result(ResultViewer resultViewer,int resourceType){
 		this.viewer = resultViewer.getWrapedViewer(); //this.viewer = resultViewer;
@@ -45,18 +51,35 @@ public class Result implements QueryReplyListener{
 	 */
 	public void newReplyReceived(QueryReply reply) {
 		int type = reply.getType();
-		if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
+		if (type==-1){
+			StartGUI.getMainWindow().operationFinished();
+		}else if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
 			Iterator it = reply.getResourceSet().iterator();
 			while(it.hasNext()){
 				final Resource  entry =(Resource) it.next();
-				entries.add(entry.getEntity());
-				viewer.getControl().getDisplay().syncExec(new Runnable(){
-					public void run(){
-						viewer.add(entries, entry.getEntity());
-					}
-				});
+				
+				Collection<Property> propertySet=mergeDuplicates(entry);
+				if (propertySet.size()>0 && todelete!=null) {
+					entry.setPropertySet(propertySet);
+					int a=entries.indexOf(todelete);
+					entries.set(a, entry);
+					viewer.getControl().getDisplay().syncExec(new Runnable(){
+						public void run(){
+							viewer.refresh();
+						}	
+					});
+					todelete=null;
+				}
+				else{
+					entries.add(entry);  //entry.getEntity()
+					viewer.getControl().getDisplay().syncExec(new Runnable(){
+						public void run(){
+							viewer.add(entries, entry); //entry.getEntity()
+						}
+					});
+				}
 			}
-		}else if((type==QueryReply.TYPE_BAD_REQUEST)||(type==QueryReply.TYPE_INIT)||(reply.getResourceSet().size()<=0)){
+		}else if((type==QueryReply.TYPE_BAD_REQUEST)||(type==QueryReply.TYPE_INIT)){//||(reply.getResourceSet().size()<=0)){
 			final String msg= "<no relevant resource found>";
 			entries.add((String)msg);
 			viewer.getControl().getDisplay().syncExec(new Runnable(){
@@ -64,8 +87,8 @@ public class Result implements QueryReplyListener{
 					viewer.add(entries, msg);
 				}
 			});	
-		}		
-		StartGUI.getMainWindow().operationFinished();   //mOyster2.getMainWindow().operationFinished();
+		}
+		//StartGUI.getMainWindow().operationFinished();   //mOyster2.getMainWindow().operationFinished();
 		//entries.clear();
 	}
 	
@@ -119,5 +142,57 @@ public class Result implements QueryReplyListener{
 	 */
 	public final List getAllEntries(){
 		return entries;
+	}
+	
+	public Collection<Property> mergeDuplicates(Resource entry){
+		Collection<Property> propertySet = new ArrayList<Property>();
+		
+		Iterator a = entries.iterator();
+		while (a.hasNext()){
+			Resource t=(Resource)a.next();
+			if (t.getEntity().equals(entry.getEntity())){
+				todelete=t;
+				propertySet.clear();
+				Iterator in = t.getPropertySet().iterator();
+				while (in.hasNext()){
+					Property rin=(Property)in.next();
+					String value=rin.getValue().toString();
+					Iterator inNew = entry.getPropertySet().iterator();
+					while (inNew.hasNext()){
+						Property rinNew=(Property)inNew.next();
+						if (rin.getPred().equalsIgnoreCase(rinNew.getPred())){
+							if (!rin.getValue().toString().equalsIgnoreCase(rinNew.getValue().toString())){
+								value=rin.getValue().toString()+rinNew.getValue().toString();
+							}
+						}
+					}
+					Property end = new Property(rin.getPred(),value);
+					propertySet.add(end);
+				}
+				boolean found=false;
+				Iterator inNew = entry.getPropertySet().iterator();
+				while (inNew.hasNext()){
+					Property rinNew=(Property)inNew.next();
+					in = t.getPropertySet().iterator();
+					while (in.hasNext()){
+						Property rin=(Property)in.next();
+						if (rin.getPred().equalsIgnoreCase(rinNew.getPred())){
+							found=true;
+						}
+					}
+					if (!found){
+						propertySet.add(rinNew);
+					}
+					found=false;
+				}
+				//Iterator testing = propertySet.iterator();
+				//while (testing.hasNext()){
+				//	Property tprop = (Property)testing.next();
+				//	System.out.println(tprop.getPred()+": "+tprop.getValue().toString());
+				//}
+			}
+		}
+		
+		return propertySet;
 	}
 }

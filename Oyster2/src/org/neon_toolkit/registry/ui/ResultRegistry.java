@@ -45,14 +45,16 @@ public class ResultRegistry implements QueryReplyListener{
 	 */
 	public void newReplyReceived(QueryReply reply) {
 		int type = reply.getType();
-		if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
+		if (type==-1){
+			StartGUI.getMainWindow().operationFinished();
+		}else if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
 			Iterator it = reply.getResourceSet().iterator();
 			while(it.hasNext()){
 				final Resource  entry =(Resource) it.next();
-				entries.add(entry.getEntity());
+				entries.add(entry); //entry.getEntity()
 				viewer.getControl().getDisplay().syncExec(new Runnable(){
 					public void run(){
-						viewer.add(entries, entry.getEntity());
+						viewer.add(entries, entry); //entry.getEntity()
 					}
 				});
 			}
@@ -65,8 +67,8 @@ public class ResultRegistry implements QueryReplyListener{
 				}
 			});	
 		}
-		StartGUI.getMainWindow().operationFinished();   //mOyster2.getMainWindow().operationFinished();
-		entries.clear();
+		//StartGUI.getMainWindow().operationFinished();   //mOyster2.getMainWindow().operationFinished();
+		//entries.clear();
 	}
 	
 	public void entryReceived(final List entryList){

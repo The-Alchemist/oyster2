@@ -2,7 +2,7 @@ package org.neon_toolkit.registry.oyster2;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import org.eclipse.jface.preference.PreferenceStore;
+//import org.eclipse.jface.preference.PreferenceStore;
 
 /**
  * This class represents a host of the Oyster2 Network.
@@ -36,7 +36,8 @@ public abstract class Host {
 	 * The PGrid facility.
 	 */
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
-	private PreferenceStore store = mOyster2.getPreferenceStore();
+	private Properties mprop = mOyster2.getProperties();
+	//private PreferenceStore store = mOyster2.getPreferenceStore();
 
 	/**
 	 * The listening port of the host.
@@ -136,9 +137,9 @@ public abstract class Host {
 	 * @return the Internet address.
 	 */
 	public String getAddress() {
-		if ((store.getString(Constants.PeerRouterIP) != null)
-				&& (store.getString(Constants.PeerRouterIP).length() > 0))
-			return store.getString(Constants.PeerRouterIP);
+		if ((mprop.getString(Constants.PeerRouterIP) != null)
+				&& (mprop.getString(Constants.PeerRouterIP).length() > 0))
+			return mprop.getString(Constants.PeerRouterIP);
 		else
 			return mNetAddr.getHostAddress();
 	}
@@ -185,7 +186,7 @@ public abstract class Host {
 	 * @return the Internet name.
 	 */
 	public String getName() {
-		if (mOyster2.propertyBoolean(Properties.RESOLVE_IP)) {
+		if (mprop.getBoolean(Properties.RESOLVE_IP)) {
 			if (mAddrStringResolved == null) {
 				if (mNetAddr == null) {
 					mAddrStringResolved = "0.0.0.0";
@@ -206,3 +207,7 @@ public abstract class Host {
 	}
 
 }
+
+/*if ((store.getString(Constants.PeerRouterIP) != null)
+&& (store.getString(Constants.PeerRouterIP).length() > 0))
+return store.getString(Constants.PeerRouterIP);*/

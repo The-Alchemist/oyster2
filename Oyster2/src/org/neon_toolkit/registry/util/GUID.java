@@ -1,7 +1,7 @@
 package org.neon_toolkit.registry.util;
 
 /**
- * $Id: GUID.java,v 1.1 2007-10-05 15:12:28 rpa Exp $
+ * $Id: GUID.java,v 1.2 2008-03-06 22:40:08 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -49,7 +49,7 @@ public class GUID implements Comparable, Serializable {
 	/**
 	 * The list of already created GUIDs.
 	 */
-	protected static Hashtable mGUIDs = new Hashtable();
+	protected static Hashtable<String, GUID> mGUIDs = new Hashtable<String, GUID>();
 
 	/**
 	 * the unique ID.

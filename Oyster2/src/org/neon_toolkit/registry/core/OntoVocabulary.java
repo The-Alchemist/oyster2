@@ -18,12 +18,12 @@ public class OntoVocabulary {
 	private List vocabulary = new LinkedList();
 	private Ontology ontology;
 	private File file;
-	private Oyster2Factory mKaonP2P = Oyster2Factory.sharedInstance();
-	private AdvertInformer mInformer = mKaonP2P.getLocalAdvertInformer();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	private Entity rootEntity;
 	public OntoVocabulary()throws Exception{
-		this.ontology = mKaonP2P.getTypeOntology();
-		this.rootEntity = mKaonP2P.getTypeOntologyRoot();
+		this.ontology = mOyster2.getTypeOntology();
+		this.rootEntity = mOyster2.getTypeOntologyRoot();
 	}
 	public  OntoVocabulary(Ontology ontology)throws Exception{
 		this.ontology = ontology;

@@ -34,8 +34,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.QueryReply;
-import org.neon_toolkit.registry.ui.provider.ResultViewerContentProvider;
-import org.neon_toolkit.registry.ui.provider.ResultViewerLabelProvider;
+//import org.neon_toolkit.registry.ui.provider.ResultViewerContentProvider;
+//import org.neon_toolkit.registry.ui.provider.ResultViewerLabelProvider;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
@@ -44,8 +44,8 @@ public class ResultViewerRegistry extends Composite {
 	
 	private static String OMV = "http://omv.ontoware.org/2005/05/ontology#";
 	private TreeViewer wrapedViewer;
-	private ResultViewerContentProvider contentProvider;
-	private ResultViewerLabelProvider labelProvider;
+	//private ResultViewerContentProvider contentProvider;
+	//private ResultViewerLabelProvider labelProvider;
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 
 	private List columns = new LinkedList();
@@ -162,7 +162,7 @@ public class ResultViewerRegistry extends Composite {
 				TreeColumn[] columns = wrapedViewer.getTree().getColumns();
 				for(int i=0; i<columns.length; i++){
 					if(columns[i].equals(e.widget)){
-						ResultViewerColumnInfo colInf = (ResultViewerColumnInfo)ResultViewerRegistry.this.columns.get(i);
+						//ResultViewerColumnInfo colInf = (ResultViewerColumnInfo)ResultViewerRegistry.this.columns.get(i);
 						break;
 					}
 				}

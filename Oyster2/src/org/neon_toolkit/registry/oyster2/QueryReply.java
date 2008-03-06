@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import org.neon_toolkit.registry.util.GUID;
+import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.Ontology;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -41,7 +42,7 @@ public class QueryReply extends DefaultHandler {
 	/**
 	 * The reply entity: normally an instance of one class,such as: an instance of Book.
 	 */
-	private Collection resourceSet;
+	private Collection<Resource> resourceSet;
 	/**
 	 * The ontology which contains the reply entity: may we just use virtual ontology,because it imports all the other expertise ontologies.
 	 */
@@ -76,14 +77,14 @@ public class QueryReply extends DefaultHandler {
 	 * @param entity      the Reply entity.
 	 * @param Ontology     the ontology containing reply entity.
 	 */
-	public QueryReply(GUID guid,Collection entrySet, Ontology ontology){
+	public QueryReply(GUID guid,Collection<Resource> entrySet, Ontology ontology){
     	this.mQueryID = guid;
     	this.mType = TYPE_OK;
 		this.resourceSet = entrySet;
     	this.ontology = ontology;
     }
 	
-    public Collection getResourceSet(){
+    public Collection<Resource> getResourceSet(){
     	return resourceSet;
     }
     

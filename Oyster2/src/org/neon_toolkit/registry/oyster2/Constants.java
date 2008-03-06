@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.1 $".replace('$', ' ').trim() + " (" + "$Date: 2007-10-05 15:12:31 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.2 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-06 22:40:07 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -24,7 +24,7 @@ public class Constants {
 	/**
 	 * The default property file.
 	 */
-	public static final String PROPERTY_FILE = new String(System.getProperty("user.home") + System.getProperty("file.separator") + "Oyster2.ini");
+	public static final String PROPERTY_FILE = new String(System.getProperty("user.dir") + System.getProperty("file.separator") + ".propertiesOyster"); //System.getProperty("user.home")
 	public static final String DMOZURI = "http://dmoz.org/";
 	public static final String TopicsURI = "http://daml.umbc.edu/ontologies/topic-ont#Top/";
 	public static final String OMVURI = "http://omv.ontoware.org/2005/05/ontology#";
@@ -183,8 +183,12 @@ public class Constants {
 	public static final String LocalRegistry ="localRegistry";
 	public static final String PDOntology = "peerDescriptionOntology";
 	public static final String MDOntology = "mappingDescriptionOntology";
+	public static final String owlChangeOntology = "owlChangeOntology";
+	public static final String changeOntology = "changeOntology";
 	public static final String TypeOntology = "typeOntology";
 	public static final String TopicOntology = "topicOntology";
+	public static final String owlodmOntology = "owlodmOntology";
+	public static final String workflowOntology = "workflowOntology";
 	public static final String Image = "image"; 
 	public static final String TypeOntologyRoot = "typeOntologyRoot";
 	public static final String TopicOntologyRoot = "topicOntologyRoot";
@@ -199,14 +203,33 @@ public class Constants {
 	public static final String BootStrapPeerUID = "bootStrapPeerUID";
 	public static final String BootStrapPeerIP = "bootStrapPeerIP";
 	public static final String PeerRouterIP = "peerRouterIP";
+	public static final String discoveryFrec="discoveryFrec";
 	public static final String DefaultLocalRegistry = "O2serverfiles/localRegistry.owl";
-	//public static final String DefaultPDOntology = "O2serverfiles/peersExpertiseRegistry.owl";
+	
+	/*
 	public static final String DefaultPDOntology = "O2serverfiles/pOMV.owl";
 	public static final String DefaultMDOntology = "O2serverfiles/mappingOMV.owl";
 	public static final String DefaultTypeOntology = "O2serverfiles/OMV.owl";
 	public static final String DefaultTopicOntology = "O2serverfiles/dmozT.rdf";
+	public static final String DefaultOWLChangeOntology = "O2serverfiles/OWLChanges.owl";
+	public static final String DefaultChangeOntology = "O2serverfiles/changes.owl";
+	public static final String DefaultOWLODMOntology = "O2serverfiles/owl11v1.3.owl";
+	public static final String DefaultWorkflowOntology = "O2serverfiles/workflow.owl";
+	public static final String DefaultImage = "O2serverfiles/o1.GIF"; 
 	//public static final String DefaultImage = "file:///O2serverfiles/oyster.jpg";
-	public static final String DefaultImage = "file:O2serverfiles/oyster.jpg";
+	*/
+	
+	public static final String DefaultPDOntology = "http://omv.ontoware.org/2007/05/pomv";
+	public static final String DefaultMDOntology = "http://omv.ontoware.org/2007/05/mappingomv";
+	public static final String DefaultTypeOntology = "http://omv.ontoware.org/2005/05/ontology";
+	public static final String DefaultTopicOntology = "http://oyster2.ontoware.org/dmozT.rdf";
+	public static final String DefaultOWLChangeOntology = "http://omv.ontoware.org/2007/07/OWLChanges";
+	public static final String DefaultChangeOntology = "http://omv.ontoware.org/2007/10/changes";
+	public static final String DefaultOWLODMOntology = "http://owlodm.ontoware.org/OWL1.1";	
+	public static final String DefaultWorkflowOntology = "http://omv.ontoware.org/2007/07/workflow";
+	public static final String DefaultImage = "http://oyster2.ontoware.org/o1.gif";
+	
+	
 	public static final String DefaultTypeOntologyRoot = "#Ontology";
 	public static final String DefaultMappingOntologyRoot = "#Mapping";
 	public static final String DefaultTopicOntologyRoot = "Top";
@@ -217,17 +240,26 @@ public class Constants {
 	public static final String DefaultSearchCondition_5 = "omv:keywords";
 	public static final String DefaultLocalPeerName = "localhost";
 	public static final String DefaultLocalPeerType = "S";
-	public static final String DefaultBootStrapPeerName = "localhost";
-	public static final String DefaultBootStrapPeerIP = "localhost";
+	public static final String DefaultBootStrapPeerName = "oysterUPM";
+	public static final String DefaultBootStrapPeerIP = "138.100.11.159";
 	
 	public static final String NUMBER_OF_COLUMNS="NUMBER_OF_COLUMNS";
 	public static final String COLUMN_TYPE="COLUMN_TYPE";
 	public static final String COLUMN_NAME="COLUMN_NAME";
 	public static final String COLUMN_WIDTH="COLUMN_WIDTH";
 	
+	public static final String DefaultNUMBER_OF_COLUMNS="3";
+	public static final String DefaultCOLUMN_TYPE0="http://omv.ontoware.org/2005/05/ontology#name";
+	public static final String DefaultCOLUMN_TYPE1="http://omv.ontoware.org/2005/05/ontology#description";
+	public static final String DefaultCOLUMN_TYPE2="http://omv.ontoware.org/2007/05/pomv#ontologyOMVLocation";
+	public static final String DefaultCOLUMN_NAME0="Ontology Name";
+	public static final String DefaultCOLUMN_NAME1="Description";
+	public static final String DefaultCOLUMN_NAME2="oyster:peer";
+	public static final String DefaultCOLUMN_WIDTH0="100";
+	public static final String DefaultCOLUMN_WIDTH1="163";
+	public static final String DefaultCOLUMN_WIDTH2="100";
 	
-	
-	
+	public static final Integer offlineTries=5;
 }
 /*
 

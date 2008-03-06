@@ -13,7 +13,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 //import org.eclipse.jface.preference.IPreferenceStore;
 //import org.eclipse.jface.preference.JFacePreferences;
-import org.eclipse.jface.preference.PreferenceStore;
+//import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.TreeItem;
 //import org.eclipse.swt.widgets.TableColumn;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.oyster2.QueryReply;
 import org.neon_toolkit.registry.ui.action.SetColumnVisibleAction;
 import org.neon_toolkit.registry.ui.provider.ResultViewerContentProvider;
@@ -166,13 +167,14 @@ public class ResultViewer extends Composite {
 		Tree tree = wrapedViewer.getTree();
 		tree.setHeaderVisible(true);
 		
-		PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		//PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		Properties mprop = mOyster2.getProperties();
 		//IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
-		int count = prefStore.getInt(Constants.NUMBER_OF_COLUMNS);
+		int count = mprop.getInteger(Constants.NUMBER_OF_COLUMNS);
 		for(int i=0; i<count; i++){
-			String columnType = prefStore.getString(Constants.COLUMN_TYPE+i);
-			String columnName = prefStore.getString(Constants.COLUMN_NAME+i);
-			int columnWidth = prefStore.getInt(Constants.COLUMN_WIDTH+i);
+			String columnType = mprop.getString(Constants.COLUMN_TYPE+i);
+			String columnName = mprop.getString(Constants.COLUMN_NAME+i);
+			int columnWidth = mprop.getInteger(Constants.COLUMN_WIDTH+i);
 			addColumn(new ResultViewerColumnInfo(columnName, columnType, columnWidth));
 		}
 		
@@ -381,22 +383,29 @@ public class ResultViewer extends Composite {
 	 */
 	private void storComponentProperties(){
 		//IPreferenceStore prefStore = JFacePreferences.getPreferenceStore();
-		PreferenceStore prefStore = mOyster2.getPreferenceStore();
-		int count = prefStore.getInt(Constants.NUMBER_OF_COLUMNS);
+		//PreferenceStore prefStore = mOyster2.getPreferenceStore();
+		Properties mprop = mOyster2.getProperties();
+		int count = mprop.getInteger(Constants.NUMBER_OF_COLUMNS);
 		for(int i=0; i<count; i++){
+			mprop.setString(Constants.COLUMN_TYPE+i, mprop.getDefaultString(Constants.COLUMN_TYPE+i));
+			mprop.setString(Constants.COLUMN_NAME+i, mprop.getDefaultString(Constants.COLUMN_NAME+i));
+			mprop.setString(Constants.COLUMN_WIDTH+i, mprop.getDefaultString(Constants.COLUMN_WIDTH+i));
+			/*
 			prefStore.setToDefault(Constants.COLUMN_TYPE+i);
 			prefStore.setToDefault(Constants.COLUMN_NAME+i);
 			prefStore.setToDefault(Constants.COLUMN_WIDTH+i);
+			*/
 		}
-		prefStore.setValue(Constants.NUMBER_OF_COLUMNS, columns.size());
+		mprop.setString(Constants.NUMBER_OF_COLUMNS, ""+columns.size());
 		for(int i=0; i<columns.size(); i++){
 			ResultViewerColumnInfo colInf = getColumnInfo(i);
-			prefStore.setValue(Constants.COLUMN_NAME + i, colInf.getColumnName());
-			prefStore.setValue(Constants.COLUMN_TYPE + i, colInf.getColumnType());
-			prefStore.setValue(Constants.COLUMN_WIDTH + i, colInf.getWidth());
+			mprop.setString(Constants.COLUMN_NAME + i, colInf.getColumnName());
+			mprop.setString(Constants.COLUMN_TYPE + i, colInf.getColumnType());
+			mprop.setString(Constants.COLUMN_WIDTH + i, ""+colInf.getWidth());
 		}
 		try{
-			prefStore.save();
+			mprop.storeOn();
+			//prefStore.save();
 		}
 		catch(Exception IO){
 			System.out.println("couldnt save properties");

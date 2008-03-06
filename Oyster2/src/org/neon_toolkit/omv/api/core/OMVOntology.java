@@ -1,8 +1,8 @@
 package org.neon_toolkit.omv.api.core;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
+//import java.text.DateFormat;
+//import java.util.Date;
+//import java.util.Locale;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -13,7 +13,7 @@ import org.neon_toolkit.registry.api.Oyster2Manager;
  * The class OMVOntology provides the object representation
  * of the Ontology class of OMV ontology.
  * @author Raul Palma
- * @version 0.98, October 2007
+ * @version 1.0, March 2008
  */
 public class OMVOntology {
 	
@@ -110,12 +110,15 @@ public class OMVOntology {
 		if (this.getContainsABox()==null && element.getContainsABox()!=null) {this.setContainsABox(element.getContainsABox());return;}
 		if (element.getEndorsedBy().size()>0) {this.endorsedBy.addAll(element.getEndorsedBy());return;}
 		
+		if (this.getTimeStamp()==null && element.getTimeStamp()!=null) {this.setTimeStamp(element.getTimeStamp());return;}
+		/*
 		if (this.getTimeStamp()==null && element.getTimeStamp()!=null){
 			Date now = new Date();
 			String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
 			this.setTimeStamp(sNow);
 			return;
 		}
+		*/
     }
 	
 	/**

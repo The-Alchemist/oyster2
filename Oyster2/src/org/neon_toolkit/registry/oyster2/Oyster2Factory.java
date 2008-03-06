@@ -4,11 +4,8 @@ package org.neon_toolkit.registry.oyster2;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.io.*;
-import org.eclipse.jface.preference.PreferenceStore;
-//import org.eclipse.jface.dialogs.MessageDialog;
-//import ui.MainWindow;
-//import org.semanticweb.kaon2.api.rules.*;  //OLD VERSION
 import org.neon_toolkit.registry.core.AdvertInformer;
 import org.neon_toolkit.registry.core.ExchangeInitiator;
 import org.neon_toolkit.registry.core.Exchanger;
@@ -19,6 +16,10 @@ import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.util.GUID;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.logic.*;
+
+//import org.eclipse.jface.preference.PreferenceStore;
+//import org.eclipse.jface.dialogs.MessageDialog;
+//import org.semanticweb.kaon2.api.rules.*;  //OLD VERSION
 
 /**
  * This class represents the Oyster2 facility. It is responsible for all
@@ -57,11 +58,6 @@ public class Oyster2Factory {
 	 * The file storing the localExpertiseRegistry.
 	 */
 	private File localRegistryFile = null;
-
-	/**
-	 * The application properties.
-	 */
-	private Properties mProperties = new Properties();
 
 	/**
 	 * The local host.
@@ -117,7 +113,12 @@ public class Oyster2Factory {
 
 	private Entity topicRoot;
 
-	private PreferenceStore store = new PreferenceStore("new store");
+	//private PreferenceStore store = new PreferenceStore("new store");
+	
+	/**
+	 * The application properties.
+	 */
+	private Properties mProperties = new Properties();
 
 	/**
 	 * The queryListener
@@ -142,11 +143,7 @@ public class Oyster2Factory {
 	 */
 	private Thread mExchangeInitiatorThread = null;
 	
-	/**
-	 * the virtual ontology.
-	 */
-	//private Ontology virtualOntology;
-
+	
 	/**
 	 * the localExpertiseRegistry Ontology.
 	 */
@@ -166,14 +163,51 @@ public class Oyster2Factory {
 	 * the mapping Description Ontology.
 	 */
 	private Ontology mappingDescOntology;
+	
+	/**
+	 * the change Ontology.
+	 */
+	private Ontology owlChangeOntology;
 
+	/**
+	 * the generic change Ontology.
+	 */
+	private Ontology changeOntology;
+	
+	/**
+	 * the owlodm Ontology.
+	 */
+	private Ontology owlodmOntology;
+
+	/**
+	 * the workflow Ontology.
+	 */
+	private Ontology workflowOntology;
+	
 	/**
 	 * the uri of mapping Description Ontology.
 	 */
 	private String mappingDescOntologyURI;
-
-
 	
+	/**
+	 * the uri of change Ontology.
+	 */
+	private String owlChangeOntologyURI;
+
+	/**
+	 * the uri of generic change Ontology.
+	 */
+	private String changeOntologyURI;
+	
+	/**
+	 * the uri of owlodm Ontology.
+	 */
+	private String owlodmOntologyURI;
+	
+	/**
+	 * the uri of workflow Ontology.
+	 */
+	private String workflowOntologyURI;
 	/**
 	 * the KAON2 connection used to connect to the servers.
 	 */
@@ -192,6 +226,10 @@ public class Oyster2Factory {
 	private List<String> searchDetails = new ArrayList<String>();
 
 	private String imageLocation = "";
+	
+	private Map<String,Integer> offlinePeers = new HashMap<String,Integer>();
+	
+	
 
 	/**
 	 * This creates the only instance of this class. This differs from the C++
@@ -209,6 +247,8 @@ public class Oyster2Factory {
 	
 	public int retInit = 0;
 	
+	
+	
 	/**
 	 * Initializes the oyster2 facility with the given properties.
 	 * 
@@ -220,40 +260,94 @@ public class Oyster2Factory {
 		String localRegistryURI = null;
 		String typeOntologyURI = null;
 		String topicOntologyURI = null;
-		//String virtualOntologyURI = null;
+	
 		
 		//0//
 		
 		if (connection == null)  //new version of kaon2 (01/2007)
 			connection = KAON2Manager.newConnection();
-
-		imageLocation = "file:"+serializeFileName(store.getString(Constants.Image));
+		
+		if (mProperties.getString(Constants.Image).contains("://")) imageLocation = mProperties.getString(Constants.Image);
+		else imageLocation = "file:"+serializeFileName(mProperties.getString(Constants.Image));
+		
 		try {
 			//1//			
-			if ((store.getString(Constants.PDOntology) != null)
-					&& (store.getString(Constants.PDOntology).length() > 0))
-				peerDescOntologyURI = resolver.registerOntology("file:"
-						+ serializeFileName(store
+			if ((mProperties.getString(Constants.PDOntology) != null)
+					&& (mProperties.getString(Constants.PDOntology).length() > 0))
+				if (mProperties.getString(Constants.PDOntology).contains("://"))
+					peerDescOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.PDOntology));
+				else
+					peerDescOntologyURI = resolver.registerOntology("file:"
+						+ serializeFileName(mProperties
 								.getString(Constants.PDOntology)));
-			if ((store.getString(Constants.MDOntology) != null)
-					&& (store.getString(Constants.MDOntology).length() > 0))
-				mappingDescOntologyURI = resolver.registerOntology("file:"
-						+ serializeFileName(store
+			if ((mProperties.getString(Constants.MDOntology) != null)
+					&& (mProperties.getString(Constants.MDOntology).length() > 0))
+				if (mProperties.getString(Constants.MDOntology).contains("://"))
+					mappingDescOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.MDOntology));
+				else
+					mappingDescOntologyURI = resolver.registerOntology("file:"
+						+ serializeFileName(mProperties
 								.getString(Constants.MDOntology)));
-			if ((store.getString(Constants.TypeOntology) != null)
-					&& (store.getString(Constants.TypeOntology).length() > 0))
-				typeOntologyURI = resolver.registerOntology("file:"
-						+ serializeFileName(store
+			if ((mProperties.getString(Constants.owlChangeOntology) != null)
+					&& (mProperties.getString(Constants.owlChangeOntology).length() > 0))
+				if (mProperties.getString(Constants.owlChangeOntology).contains("://"))
+					owlChangeOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.owlChangeOntology));
+				else
+					owlChangeOntologyURI = resolver.registerOntology("file:"
+						+ serializeFileName(mProperties
+								.getString(Constants.owlChangeOntology)));
+			if ((mProperties.getString(Constants.TypeOntology) != null)
+					&& (mProperties.getString(Constants.TypeOntology).length() > 0))
+				if (mProperties.getString(Constants.TypeOntology).contains("://"))
+					typeOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.TypeOntology));
+				else
+					typeOntologyURI = resolver.registerOntology("file:"
+						+ serializeFileName(mProperties
 								.getString(Constants.TypeOntology)));
-			if ((store.getString(Constants.TopicOntology) != null)
-					&& (store.getString(Constants.TopicOntology).length() > 0))
-				topicOntologyURI = resolver.registerOntology("file:"
-						+ serializeFileName(store
-								.getString(Constants.TopicOntology)));
-			this.localRegistryFile = new File(serializeFileName(store
+			if ((mProperties.getString(Constants.TopicOntology) != null)
+					&& (mProperties.getString(Constants.TopicOntology).length() > 0))
+				if (mProperties.getString(Constants.TopicOntology).contains("://"))
+					topicOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.TopicOntology));
+				else
+					topicOntologyURI = resolver.registerOntology("file:"
+							+ serializeFileName(mProperties
+									.getString(Constants.TopicOntology)));
+			if ((mProperties.getString(Constants.owlodmOntology) != null)
+					&& (mProperties.getString(Constants.owlodmOntology).length() > 0))
+				if (mProperties.getString(Constants.owlodmOntology).contains("://"))
+					owlodmOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.owlodmOntology));
+				else
+					owlodmOntologyURI = resolver.registerOntology("file:"
+							+ serializeFileName(mProperties
+									.getString(Constants.owlodmOntology)));
+			if ((mProperties.getString(Constants.changeOntology) != null)
+					&& (mProperties.getString(Constants.changeOntology).length() > 0))
+				if (mProperties.getString(Constants.changeOntology).contains("://"))
+					changeOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.changeOntology));
+				else
+					changeOntologyURI = resolver.registerOntology("file:"
+							+ serializeFileName(mProperties
+									.getString(Constants.changeOntology)));
+			if ((mProperties.getString(Constants.workflowOntology) != null)
+					&& (mProperties.getString(Constants.workflowOntology).length() > 0))
+				if (mProperties.getString(Constants.workflowOntology).contains("://"))
+					workflowOntologyURI = resolver.registerOntology(
+							mProperties.getString(Constants.workflowOntology));
+				else
+					workflowOntologyURI = resolver.registerOntology("file:"
+							+ serializeFileName(mProperties
+									.getString(Constants.workflowOntology)));
+			
+			this.localRegistryFile = new File(serializeFileName(mProperties
 					.getString(Constants.LocalRegistry)));
 			
-			//System.out.println(serializeFileName(store.getString(Constants.LocalRegistry)));
 			
 			if ((!localRegistryFile.exists())
 					|| (localRegistryFile.length() <= 0)) {
@@ -280,11 +374,17 @@ public class Oyster2Factory {
 						peerDescOntologyURI, new HashMap<String, Object>());
 				this.mappingDescOntology = connection.openOntology(
 						mappingDescOntologyURI, new HashMap<String, Object>());
+				this.owlChangeOntology = connection.openOntology(
+						owlChangeOntologyURI, new HashMap<String, Object>());
 				this.topicOntology = connection.openOntology(topicOntologyURI,
 						new HashMap<String, Object>());
+				this.workflowOntology = connection.openOntology(
+						workflowOntologyURI, new HashMap<String, Object>());
 				this.localRegistryOntology.addToImports(peerDescOntology);
 				this.localRegistryOntology.addToImports(mappingDescOntology);
+				this.localRegistryOntology.addToImports(owlChangeOntology);
 				this.localRegistryOntology.addToImports(topicOntology);
+				this.localRegistryOntology.addToImports(workflowOntology);
 				this.localRegistryOntology.addOntologyProperty(
 						Constants.VERSIONINFO, Integer.toString(1));
 				
@@ -318,11 +418,14 @@ public class Oyster2Factory {
 					peerDescOntologyURI, new HashMap<String, Object>());
 			this.mappingDescOntology = connection.openOntology(
 					mappingDescOntologyURI, new HashMap<String, Object>());
-			this.typeOntology = connection.openOntology(typeOntologyURI,
-					new HashMap<String, Object>());
+			this.owlChangeOntology = connection.openOntology(
+					owlChangeOntologyURI, new HashMap<String, Object>());			
 			this.topicOntology = connection.openOntology(topicOntologyURI,
 					new HashMap<String, Object>());
-			
+			this.workflowOntology = connection.openOntology(
+					workflowOntologyURI, new HashMap<String, Object>());
+			this.typeOntology = connection.openOntology(typeOntologyURI,
+					new HashMap<String, Object>());
 			//3//
 			
 		} catch (KAON2Exception e) {
@@ -331,18 +434,14 @@ public class Oyster2Factory {
 			System.err.println(e + " in Oyster2 init1()");
 			retInit=1;
 			return;
-			//if (StartGUI.serverProcess!=null) StartGUI.serverProcess.destroy();
-			//if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
-			//System.exit(1);
+			
 		} catch (InterruptedException e) {
 			System.out.println(e.getMessage());
 			System.out.println(e.getCause());
 			System.err.println(e + " in Oyster2 init2()");
 			retInit=1;
 			return;
-			//if (StartGUI.serverProcess!=null) StartGUI.serverProcess.destroy();
-			//if (Oyster2Manager.serverProcess!=null) Oyster2Manager.serverProcess.destroy();
-			//System.exit(1);
+			
 		}
 		
 		
@@ -360,62 +459,94 @@ public class Oyster2Factory {
 			System.out.println(e.getMessage());
 			System.out.println(e.getCause());
 			System.err.println(e + " in Oyster2 init() creating Host");
-			//System.exit(-1);
+			
 			retInit=1;
 			return;
 		}
-		if ((store.getString(Constants.LocalPeerName) != null)
-				&& (store.getString(Constants.LocalPeerName).length() > 0))
-			mInformer.setLocalPeer(store.getString(Constants.LocalPeerName),
-					uid, mLocalHost.getAddress(), store
+		
+		if ((mProperties.getString(Constants.LocalPeerName) != null)
+				&& (mProperties.getString(Constants.LocalPeerName).length() > 0))
+			mInformer.setLocalPeer(mProperties.getString(Constants.LocalPeerName),
+					uid, mLocalHost.getAddress(), mProperties
 							.getString(Constants.LocalPeerType));
-		if ((store.getString(Constants.BootStrapPeerName) != null)
-				&& (store.getString(Constants.BootStrapPeerName).length() > 0))
-			mInformer.addBootPeer(store.getString(Constants.BootStrapPeerName),
-					store.getString(Constants.BootStrapPeerUID), store
+		if ((mProperties.getString(Constants.BootStrapPeerName) != null)
+				&& (mProperties.getString(Constants.BootStrapPeerName).length() > 0))
+			mInformer.addBootPeer(mProperties.getString(Constants.BootStrapPeerName),
+					mProperties.getString(Constants.BootStrapPeerUID), mProperties
 							.getString(Constants.BootStrapPeerIP));
 		Entity typeRoot = KAON2Manager.factory().owlClass(
 				typeOntology.getOntologyURI()
-						+ store.getString(Constants.TypeOntologyRoot));
+						+ mProperties.getString(Constants.TypeOntologyRoot));
 		Entity topicRoot = KAON2Manager.factory().owlClass(
 				topicOntology.getOntologyURI()
-						+ store.getString(Constants.TopicOntologyRoot));
+						+ mProperties.getString(Constants.TopicOntologyRoot));
 
 		setTypeOntologyRoot(typeRoot);
 		setTopicOntologyRoot(topicRoot);
 		mExchangeInitiator = new ExchangeInitiator();
-		mExchangeInitiatorThread = new Thread(mExchangeInitiator);
+		mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
 		mExchangeInitiatorThread.setDaemon(true);
-		mExchangeInitiatorThread.start();
-		searchDetails.add(store.getString(Constants.SearchCondition_1));
-		searchDetails.add(store.getString(Constants.SearchCondition_2));
-		searchDetails.add(store.getString(Constants.SearchCondition_3));
-		searchDetails.add(store.getString(Constants.SearchCondition_4));
-		searchDetails.add(store.getString(Constants.SearchCondition_5));
+		mExchangeInitiatorThread.start();	
 	}
+	
+	
+	public void initUI(){
+		try {
+		searchDetails.add(mProperties.getString(Constants.SearchCondition_1));
+		searchDetails.add(mProperties.getString(Constants.SearchCondition_2));
+		searchDetails.add(mProperties.getString(Constants.SearchCondition_3));
+		searchDetails.add(mProperties.getString(Constants.SearchCondition_4));
+		searchDetails.add(mProperties.getString(Constants.SearchCondition_5));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			System.out.println(e.getCause());
+			System.err.println(e + " in Oyster2 initUI()");
+			retInit=1;
+			return;
+		}
+	}
+	
 	
 	/*
 	 * Shutdowns the oyster2 facility.
 	 */
 
 	synchronized public void shutdown() {
+		System.out.println("shutting down");
+		System.out.println(" Searcher");
+		getSearchManager().stopSearchFull();
 		try {
-			System.out.println("shutting down");
-			if (this.localRegistryOntology!=null) this.localRegistryOntology.persist();
+			System.out.println(" KAON2 saving");
+			if (this.localRegistryOntology!=null) this.localRegistryOntology.persist();			
 			if (this.mLocalRegistry!=null) this.mLocalRegistry.save();
+		} catch (Exception e) {
+			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + KAON2error");
+		}	
+		try {
+			System.out.println(" Exchange Initiator");
 			if (this.mExchangeInitiator!=null) {
 				this.mExchangeInitiator.shutdown();
 				this.mExchangeInitiator=null;
 			}
 			if (this.mExchangeInitiatorThread!=null) {
-				this.mExchangeInitiatorThread.interrupt();
-				this.mExchangeInitiatorThread.join();
+				if (this.mExchangeInitiatorThread.isAlive()){
+					this.mExchangeInitiatorThread.interrupt();
+					this.mExchangeInitiatorThread.join(10000);
+				}
 				this.mExchangeInitiatorThread=null;
 			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + ExchangeInitiator Thread");
+		}
+		try{
+			System.out.println(" Closing connection");
 			if (this.connection!=null) {
 				this.connection.close();
 				this.connection=null;
 			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + closing connection");
+		}
 			int numThreads = Thread.activeCount();
 	        Thread[] threads = new Thread[numThreads*2];
 	        numThreads = Thread.enumerate(threads);
@@ -425,14 +556,17 @@ public class Oyster2Factory {
 	            if (thread!=Thread.currentThread()){ 
 	            	ThreadGroup root = thread.getThreadGroup().getParent();
 	            	if (root==Thread.currentThread().getThreadGroup()){
-	            		thread.interrupt();
-	            		thread.join();
+	            		try{
+	            			System.out.println("Killing thread: "+thread.getName());
+	            			thread.interrupt();
+	            			thread.join(10000);
+	            		} catch (Exception e) {
+	            			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + Killing pending Threads");
+	            		}
 	            	}
 	            }
 	        }
-		} catch (Exception e) {
-			System.err.println(e + " when oyster2 shutdown!");
-		}
+		
 
 	}
 
@@ -452,7 +586,7 @@ public class Oyster2Factory {
 	 *            the current common length.
 	 */
 	public void randomExchange(Oyster2Host[] hosts, int recursion, int lCurrent) {
-		// mExchangeInitiator.randomExchange(hosts, recursion, lCurrent, false);
+		//mExchangeInitiator.randomExchange(hosts, recursion, lCurrent, false);
 	}
 
 	/**
@@ -475,14 +609,16 @@ public class Oyster2Factory {
 		return mLocalHost;
 	}
 
-	public PreferenceStore getPreferenceStore() {
-		return store;
+	public Properties getProperties() {
+		return mProperties;
 	}
 
-	public void setPreferenceStore(PreferenceStore store) {
-		this.store = store;
+	public void setProperties(Properties mprop) {
+		this.mProperties = mprop;
 	}
 
+	
+	
 	/**
 	 * Sets the local host.
 	 * 
@@ -536,6 +672,31 @@ public class Oyster2Factory {
 	}
 	
 	/**
+	 * Returns the OWL change description ontology
+	 */
+	public Ontology getOWLChangeOntology() {
+		return owlChangeOntology;
+	}
+	/**
+	 * Returns the change description ontology
+	 */
+	public Ontology getChangeOntology() {
+		return changeOntology;
+	}
+	/**
+	 * Returns the owlodm description ontology
+	 */
+	public Ontology getOWLODMOntology() {
+		return owlodmOntology;
+	}
+	/**
+	 * Returns the workflow description ontology
+	 */
+	public Ontology getWorkflowOntology() {
+		return workflowOntology;
+	}
+	
+	/**
 	 * return the query reply Listener
 	 */
 	public SearchManager getSearchManager() {
@@ -565,84 +726,7 @@ public class Oyster2Factory {
 		this.topicRoot = root;
 	}
 
-	/**
-	 * Returns the default property value as boolean.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the default value of the property.
-	 */
-	public boolean defaultPropertyBoolean(String key) {
-		return mProperties.getDefaultBoolean(key);
-	}
-
-	/**
-	 * Returns the default property value as integer.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the default value of the property.
-	 */
-	public int defaultPropertyInteger(String key) {
-		return mProperties.getDefaultInteger(key);
-	}
-
-	/**
-	 * Returns the default property value as string.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the default value of the property.
-	 */
-	public String defaultPropertyString(String key) {
-		return mProperties.getDefaultString(key);
-	}
-
-	/**
-	 * Returns the property value as boolean.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the value of the property.
-	 */
-	public boolean propertyBoolean(String key) {
-		return mProperties.getBoolean(key);
-	}
-
-	/**
-	 * Returns the property value as integer.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the value of the property.
-	 */
-	public int propertyInteger(String key) {
-		return mProperties.getInteger(key);
-	}
-
-	/**
-	 * Returns the property value as string.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @return the value of the property.
-	 */
-	public String propertyString(String key) {
-		return mProperties.getString(key);
-	}
-
-	/**
-	 * Sets the property value by the delivered string.
-	 * 
-	 * @param key
-	 *            the key of the property.
-	 * @param value
-	 *            the value of the property.
-	 */
-	public void setProperty(String key, String value) {
-		mProperties.setString(key, value);
-	}
-
+		
 	private String serializeFileName(String filename) {
 		String seperator = System.getProperty("file.separator");
 		filename = filename.replace(seperator.charAt(0), '/');
@@ -651,23 +735,7 @@ public class Oyster2Factory {
 
 	public Ontology getLocalHostOntology() {
 		return localRegistryOntology;
-		/*
-		Ontology localHostOntology = null;
-		try {
-			//For the second file
-			localHostOntology = connection.openOntology("kaon2rmi://localhost?"
-					+ localRegistryOntology.getOntologyURI(),
-					new HashMap<String, Object>());
-			
-			// For 1 file only  
-			//localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
-			//				new HashMap<String, Object>());
-		
-		} catch (Exception e) {
-			System.err.println(e + " getLocalHostOntology()in Oyster2.");
-		}
-		return localHostOntology;
-		*/
+		//1++
 	}
 
 	public File getLocalRegistryFile() {
@@ -681,6 +749,22 @@ public class Oyster2Factory {
 	
 	public String getMappingDescOntologyURI() {
 		return this.mappingDescOntologyURI;
+	}
+	
+	public String getOWLChangeOntologyURI() {
+		return this.owlChangeOntologyURI;
+	}
+	
+	public String getChangeOntologyURI() {
+		return this.changeOntologyURI;
+	}
+	
+	public String getOWLODMOntologyURI() {
+		return this.owlodmOntologyURI;
+	}
+	
+	public String getWorkflowOntologyURI() {
+		return this.workflowOntologyURI;
 	}
 	
 	public String getTypeOntologyURI() {
@@ -702,7 +786,47 @@ public class Oyster2Factory {
 	public String getImageLocation() {
 		return this.imageLocation;
 	}
+	
+	synchronized public Set<String> getOfflinePeers() {
+		return this.offlinePeers.keySet();
+	}
 
+	
+	synchronized public void addOfflinePeer(String peer) {
+		this.offlinePeers.put(peer,Constants.offlineTries);
+	}
+
+	synchronized public boolean isOfflinePeer(String peer) {
+		if (this.offlinePeers.containsKey(peer)) return true;
+		else return false;
+	}
+	
+	synchronized public void  updateOfflinePeerList(){
+		List<String> todel=new LinkedList<String>();
+		Set<Entry<String,Integer>> entries = this.offlinePeers.entrySet();
+		for(Map.Entry<String, Integer> entry : entries) {   
+			Integer value = entry.getValue();
+			if (value<1){
+				String key = entry.getKey();
+				todel.add(key);//this.offlinePeers.remove(key);
+			}else{
+				value--;
+				entry.setValue(value);
+			}
+		}
+		if (!todel.isEmpty()){
+			Iterator i=todel.iterator();
+			while (i.hasNext()){
+				this.offlinePeers.remove((String)i.next());
+			}
+		}
+		/*System.out.println("offline peers: ");
+		for(Object key : this.offlinePeers.keySet()) {
+			Object value = this.offlinePeers.get(key);   
+			System.out.println(key + " = " + value);
+		}*/
+	}
+	
 }
 
 /*
@@ -858,4 +982,119 @@ private void createWindow() {
  */
 //public MainWindow getMainWindow() {
 //	return this.mainWindow;
+//}
+
+//1++
+/*
+Ontology localHostOntology = null;
+try {
+	//For the second file
+	localHostOntology = connection.openOntology("kaon2rmi://localhost?"
+			+ localRegistryOntology.getOntologyURI(),
+			new HashMap<String, Object>());
+	
+	// For 1 file only  
+	//localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
+	//				new HashMap<String, Object>());
+
+} catch (Exception e) {
+	System.err.println(e + " getLocalHostOntology()in Oyster2.");
+}
+return localHostOntology;
+*/
+
+/*
+public PreferenceStore getPreferenceStore() {
+	return store;
+}
+
+public void setPreferenceStore(PreferenceStore store) {
+	this.store = store;
+}
+*/
+
+/*
+ * Returns the default property value as boolean.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the default value of the property.
+ */
+//public boolean defaultPropertyBoolean(String key) {
+//	return mProperties.getDefaultBoolean(key);
+//}
+
+/*
+ * Returns the default property value as integer.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the default value of the property.
+ */
+//public int defaultPropertyInteger(String key) {
+//	return mProperties.getDefaultInteger(key);
+//}
+
+/*
+ * Returns the default property value as string.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the default value of the property.
+ */
+//public String defaultPropertyString(String key) {
+//	return mProperties.getDefaultString(key);
+//}
+
+/*
+ * Returns the property value as boolean.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the value of the property.
+ */
+//public boolean propertyBoolean(String key) {
+//	return mProperties.getBoolean(key);
+//}
+
+/*
+ * Returns the property value as integer.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the value of the property.
+ */
+//public int propertyInteger(String key) {
+//	return mProperties.getInteger(key);
+//}
+
+/*
+ * Returns the property value as string.
+ * 
+ * @param key
+ *            the key of the property.
+ * @return the value of the property.
+ */
+//public String propertyString(String key) {
+//	return mProperties.getString(key);
+//}
+
+/*
+ * Sets the property value by the delivered string.
+ * 
+ * @param key
+ *            the key of the property.
+ * @param value
+ *            the value of the property.
+ */
+//public void setProperty(String key, String value) {
+//	mProperties.setString(key, value);	
+//}
+
+/*
+ * Store the properties in corresponding file.
+ * 
+ */
+//public void storeProperties(){
+//	mProperties.storeOn();
 //}

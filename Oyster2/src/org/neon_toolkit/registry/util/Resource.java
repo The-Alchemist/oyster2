@@ -2,7 +2,9 @@ package org.neon_toolkit.registry.util;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.semanticweb.kaon2.api.*;
+import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 
 public class Resource implements Entity,Serializable {
 	private static final long serialVersionUID = 1L;
@@ -12,19 +14,28 @@ public class Resource implements Entity,Serializable {
 	private String uri;
     private Entity entity;
     private Ontology ontology;
-    private Collection propertySet = new LinkedList();
+    //private Collection propertySet = new LinkedList();
+    Collection<Property> propertySet = new ArrayList<Property>();
     private int resourceType;
-    public Resource(String uri,Entity entity, Collection propertySet,int resourceType){
+    private OWLClass typeClass;
+    public Resource(String uri,Entity entity, Collection<Property> propertySet,int resourceType){
     	this.uri = uri;
     	this.entity = entity;
     	this.propertySet = propertySet;
     	this.resourceType = resourceType;
     }
+    public Resource(String uri,Entity entity, Collection<Property> propertySet, OWLClass typeClass, int resourceType){
+    	this.uri = uri;
+    	this.entity = entity;
+    	this.propertySet = propertySet;
+    	this.typeClass=typeClass;
+    	this.resourceType = resourceType;
+    }
+    
     public Resource(String uri, Entity entity, int resourceType){
     	this.uri = uri;
     	this.entity = entity;
     	this.resourceType = resourceType;
-    	//this.propertySet = new LinkedList();
     }
     public Entity getEntity(){
     	return entity;
@@ -32,12 +43,21 @@ public class Resource implements Entity,Serializable {
     public Ontology getOntology(){
     	return ontology;
     }
-    public void addAttribute(String attribute){
+    public OWLClass getTypeClass(){
+    	return typeClass;
+    }
+    public void addProperty(Property attribute){
     	propertySet.add(attribute);
     }
+    
     public Collection getPropertySet(){
     	return propertySet;
     }
+    
+    public void setPropertySet(Collection<Property> propertyS){
+    	this.propertySet= propertyS;
+    }
+    
     public int resouceType(){
     	return this.resourceType;
     }

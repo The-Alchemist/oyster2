@@ -9,7 +9,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.File;
-import org.eclipse.jface.preference.PreferenceStore;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+//import org.eclipse.jface.preference.PreferenceStore;
 import org.neon_toolkit.omv.api.core.OMVFormalityLevel;
 import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
 import org.neon_toolkit.omv.api.core.OMVLicenseModel;
@@ -30,6 +33,7 @@ import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingProperty;
 import org.neon_toolkit.omv.api.extensions.peer.OMVPeer;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.util.EntryDetailSerializer;
 import org.semanticweb.kaon2.api.DefaultOntologyResolver;
 import org.semanticweb.kaon2.api.KAON2Manager;
@@ -48,18 +52,18 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class Oyster2Manager provides the initial connection to Oyster2
  * registry, and the means to display results
  * @author Raul Palma
- * @version 0.98, October 2007
+ * @version 1.0, March 2008
  */
 public class Oyster2Manager{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
-	private static PreferenceStore store = mOyster2.getPreferenceStore();
+	private static Properties mprop = mOyster2.getProperties();
 	public static Process serverProcess = null;
 	private static String kaon2File = System.getProperty("user.dir")+System.getProperty("file.separator")+"kaon2.jar";
-	private static String prefFile = System.getProperty("user.dir")+System.getProperty("file.separator")+"new store";
 	private static String serverRoot= System.getProperty("user.dir")+System.getProperty("file.separator")+"server";
 	private static String startParameters= "";
 	private static String localURI="";
 	private static boolean startKAON2=true;
+	private static boolean onlineKAON2=true;
 	
 	public Oyster2Manager()
 	    {
@@ -77,7 +81,7 @@ public class Oyster2Manager{
 	public static Oyster2Connection newConnection(boolean startKAON2Server)
     {
 		startKAON2 = startKAON2Server; 
-		setPreferencesFile(prefFile);
+		configureProperties("");		//setPreferencesFile("");
 		initialize();
 		return new Oyster2Connection();
     }
@@ -94,7 +98,7 @@ public class Oyster2Manager{
 	public static Oyster2Connection newConnection(boolean startKAON2Server, String preferencesFilename)
     {
 		startKAON2 = startKAON2Server; 
-		setPreferencesFile(preferencesFilename);
+		configureProperties(preferencesFilename); //setPreferencesFile(preferencesFilename);
 		initialize();
 		return new Oyster2Connection();
     }
@@ -115,7 +119,8 @@ public class Oyster2Manager{
 	public static Oyster2Connection newConnection(String preferencesFilename, String kaon2Filename, String serverRootFolder, String javaStartParameters)
     {
 		startKAON2 = true;
-		setPreferencesFile(preferencesFilename);
+		onlineKAON2 = false;
+		configureProperties(preferencesFilename); //setPreferencesFile(preferencesFilename);
 		setKaon2File(kaon2Filename);
 		setServerRoot(serverRootFolder);
 		setStartParameters(javaStartParameters);
@@ -140,11 +145,10 @@ public class Oyster2Manager{
 	 */
 	public static void closeConnection(){
 		mOyster2.shutdown();
-		if (startKAON2) serverProcess.destroy();	
+		if (startKAON2 && !onlineKAON2) serverProcess.destroy();	
 		//System.exit(0);
 	}
-	
-	
+		
 	/**
 	 * Return the string representation of a registry object.
 	 * @param o the registry object.
@@ -1060,12 +1064,31 @@ public class Oyster2Manager{
 	private static void initialize(){
 		try{
 			if (startKAON2){
-				serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp "+ EntryDetailSerializer.QUOTE + kaon2File + EntryDetailSerializer.QUOTE + " org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ EntryDetailSerializer.QUOTE + serverRoot +EntryDetailSerializer.QUOTE);
-				if(serverProcess!=null) System.out.println("server started...");
-				else {System.out.println("could not start KAON2 server..."); closeConnection();}
-				Thread.sleep(2000);
+				if (onlineKAON2){
+					try {
+						URLClassLoader cl = new URLClassLoader(new URL[] { new URL("http://ontoware.org/frs/download.php/455/kaon2.jar") });//new URLClassLoader(urls);
+						cl.loadClass("org.semanticweb.kaon2.server.ServerMain");
+						Class cls = Class.forName("org.semanticweb.kaon2.server.ServerMain", false, cl);
+				    	Method method = cls.getDeclaredMethod("main", new Class[] { String[].class });
+				        String[] argum= new String[4];
+				        argum[0]="-registry";
+				        argum[1]="-rmi";
+				        argum[2]="-ontologies";
+				        argum[3]="server";
+				        method.invoke(null, new Object[] { argum });
+				        Thread.sleep(500);
+					} catch (Exception ex) {
+				        System.out.println(ex.getMessage()+"couldnt start KAON2 server...");
+				        closeConnection();
+					}
+				}else{
+					serverProcess = Runtime.getRuntime().exec("java " + startParameters +" -cp "+ EntryDetailSerializer.QUOTE + kaon2File + EntryDetailSerializer.QUOTE + " org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ EntryDetailSerializer.QUOTE + serverRoot +EntryDetailSerializer.QUOTE);
+					if(serverProcess!=null) System.out.println("server started...");
+					else {System.out.println("could not start KAON2 server..."); closeConnection();}
+					Thread.sleep(2000);
+				}
+				
 			}
-			store.load();
 			mOyster2.init(null);
 			if (mOyster2.retInit!=0) closeConnection();
 	    } catch (Exception e) {
@@ -1073,18 +1096,13 @@ public class Oyster2Manager{
 		}
 	}
 	
-	
-	private static void setPreferencesFile(String fileName){
-		String tFile;
-		if (fileName!="" && fileName!=null)
-			tFile = fileName;
+	public static void configureProperties(String file){
+		if (file!=null && file!="")
+			mprop.init(file);
 		else
-			tFile = prefFile;
-		PreferenceStore customStore = new PreferenceStore(tFile);
-		mOyster2.setPreferenceStore(customStore);
-		store = mOyster2.getPreferenceStore();
+			mprop.init();
 	}
-	
+		
 	private static void setKaon2File(String fileName){
 		if (fileName!="" && fileName!="")
 			kaon2File=fileName;
@@ -1100,58 +1118,5 @@ public class Oyster2Manager{
 			startParameters=sParameters;
 	}
 }	
-
-
-
-/*	
-	public static void main(String[] args)throws Exception{
-		
-		serverProcess = Runtime.getRuntime().exec("java -cp kaon2.jar org.semanticweb.kaon2.server.ServerMain -registry -rmi -ontologies "+ args[0]); 
-		if(serverProcess!=null) System.out.println("server started...");
-		Thread.currentThread().sleep(2000);
-		//List :)
-        configureProperties();
-		mOyster2.init(null);
-		shutdown();
-    }
-	
-	public static void shutdown(){
-		mOyster2.shutdown();
-		serverProcess.destroy();	
-		System.exit(0);
-	}
-	
-	public static void configureProperties(){
-		Boolean first=true;
-		try{
-			store.load();
-			first=false;
-		} catch (Exception e) {
-			first=true;
-			System.out.println("First Time");
-		}
-		if (first){
-			Display display = new Display();
-			PreferenceManager pm = new PreferenceManager();
-			MainPreferencePage p = new MainPreferencePage("Main preferences");
-			ConditionPreferencePage cp = new ConditionPreferencePage("ConditionPreference");
-
-			pm.addToRoot(new PreferenceNode("mainOyster2Properties", p));
-			pm.addToRoot(new PreferenceNode("searchConditions",cp));
-			PreferenceDialog d = new PreferenceDialog(display.getActiveShell(), pm);
-			d.setPreferenceStore(store);
-		
-			d.create();
-			d.open();
-			try {
-				// Save the preferences
-				store.save();
-		    } catch (IOException e) {
-		    	e.printStackTrace();
-		    }
-		}
-		mOyster2.setPreferenceStore(store);
-	}
-*/
 
 
