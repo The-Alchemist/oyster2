@@ -10,8 +10,8 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.osgi_3.2.0.v20060601.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.core.jobs_3.2.0.v20060603.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.equinox.registry_3.2.0.v20060601.jar"/>
-	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/workbench.jar"/>
 	<classpathentry kind="lib" path="F:/EclipseProjectsWTP/Oyster2/lib/kaon2.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jface_3.1.0.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

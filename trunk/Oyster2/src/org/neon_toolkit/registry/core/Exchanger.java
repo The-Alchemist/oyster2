@@ -56,7 +56,7 @@ public class Exchanger implements Runnable{
 			while(it.hasNext()){
 				String IP = it.next().toString();
 				Ontology remoteRegistry = localInformer.openRemoteRegistry(IP);
-				localInformer.informerIP(remoteRegistry,localRegistry);
+				localInformer.informerIP(remoteRegistry,localRegistry, IP);
 			}
 		}catch(Exception e){
 			System.err.println("Exception thrown in randomExchangeInitor:Exchanger");

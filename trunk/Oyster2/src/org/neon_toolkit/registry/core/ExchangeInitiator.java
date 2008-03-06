@@ -1,10 +1,12 @@
 package org.neon_toolkit.registry.core;
 
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
+import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.registry.oyster2.Properties;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
@@ -13,23 +15,28 @@ public class ExchangeInitiator implements Runnable{
 	/**
 	 * The maximum of failed trys to contact a fidget peer before trying to contact a bootstrap peer.
 	 */
-	private static int MAX_FAILED_COUNT = 5;
+	//private static int MAX_FAILED_COUNT = 5;
 
 	/**
 	 * The min. time to sleep between two exchanges (30 sec.).
 	 */
 	private static int MIN_SLEEP_TIME = 30000;
+	/**
+	 * The time to sleep between two exchanges (30 sec.).
+	 */
+	private static int SLEEP_TIME = 120000;
 
 	/**
 	 * Pause initiating or not.
 	 */
-	private boolean mPauseFlag = false;
-	private boolean isExchangeTime = false;
+	//private boolean mPauseFlag = false;
+	//private boolean isExchangeTime = false;
 
 	/**
 	 * The Oyster2 facility.
 	 */
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	private Properties mprop = mOyster2.getProperties();
 	
 	/**
 	 * The local Analyzer.
@@ -45,8 +52,22 @@ public class ExchangeInitiator implements Runnable{
 	 * Constructs the Exchanger.
 	 */
 	public ExchangeInitiator() {
+		if ((mprop.getString(Constants.discoveryFrec) != null)
+				&& (mprop.getString(Constants.discoveryFrec).length() > 0)){
+			SLEEP_TIME= mprop.getInteger(Constants.discoveryFrec);
+		}
 	}
 	
+	/**
+	 * First advertises to rendezvousPeers and send them local peer information e.g.
+	 * Peer object, Ontologies (limited to resourceLocator, URI, name), Mappings
+	 * (limited to URI, name), Domains.
+	 * Second, updates the local peer with the list of the rendezvous known peers
+	 * It retrieves the peer information of every known peer and add it or update 
+	 * it locally e.g. Peer object, Ontologies (limited to resourceLocator, 
+	 * URI, name), Mappings (limited to URI, name), Domains. 
+	 *
+	 */
 	public void randomExchange(){
 		Map peerSet = localInformer.getRendezVousPeers(localInformer.getLocalRegistry());
 		//Ontology localRegistry = mKaonP2P.getLocalRegistryOntology();
@@ -57,16 +78,17 @@ public class ExchangeInitiator implements Runnable{
 			Iterator it = peers.iterator(); 
 			//System.out.println("remote rendezvousPeers size: "+peers.size());
 			while(it.hasNext()){
+				if (mShutdownFlag) return;
 				String IP = it.next().toString();
 				System.out.println("rendezvous peers IP: "+IP);
 				remoteRegistry = localInformer.openRemoteRegistry(IP);
 				if (remoteRegistry!=null){
 					//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
-					localInformer.informerIP(remoteRegistry,localRegistry);
-					localInformer.updateRegistry(remoteRegistry,localRegistry);
+					localInformer.informerIP(remoteRegistry,localRegistry, IP);
+					localInformer.updateRegistry(remoteRegistry,localRegistry); //NOT NECESSARY (BUT TO FORCE EXCHANGE IN THE NEXT CALL WITH NEW PEERS)...
 				}
 				else {
-					System.out.println("Didn't find peer on randomExchange");
+					//System.out.println("Didn't find rendezvousPeers peer on randomExchange");
 				}
 			}
 		}catch(Exception e){
@@ -75,14 +97,26 @@ public class ExchangeInitiator implements Runnable{
 	}
 	
 	public void expertiseExchange(){
-		long lastTime = System.currentTimeMillis();
-		while(true){
+		//long lastTime = System.currentTimeMillis();
+		boolean keepGoing=true;
+		while(keepGoing){
+			System.out.println("informer process starts..."+System.currentTimeMillis());
 			exchange();
 			if (mShutdownFlag)
 				return;
-			this.sleep(120000);
+			System.out.println("informer process finish, now to sleep..."+System.currentTimeMillis());
+			keepGoing=this.sleep(sleepTime());
 		}
 	}
+	
+	/**
+	 * Contacts every known peer (i.e. remote peer). For each remote peer, updates the 
+	 * local peer with the list of the remote peer known peers.
+	 * It retrieves the peer information of every known peer and add it or update 
+	 * it locally e.g. Peer object, Ontologies (limited to resourceLocator, 
+	 * URI, name), Mappings (limited to URI, name), Domains.
+	 *
+	 */
 	public void exchange(){
 		Collection peerList = localInformer.getPeerList(localInformer.getLocalRegistry());
 		Ontology localRegistry = localInformer.getLocalRegistry();
@@ -91,24 +125,26 @@ public class ExchangeInitiator implements Runnable{
 		try{
 			Iterator it = peerList.iterator(); 
 			while(it.hasNext()){
-				Individual peerIndiv = (Individual)it.next(); 
-				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry)){
+				if (mShutdownFlag) return;
+				Individual peerIndiv = (Individual)it.next();
+				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry) &&	!mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					IP = localInformer.getPeerIP(localRegistry,peerIndiv);
-					//System.out.println("exchange with peer: "+IP);
+					System.out.println("Attempt to connect with peer: "+IP+" from exchange process");
 					remoteRegistry = localInformer.openRemoteRegistry(IP);
 					if (remoteRegistry!=null){
 						//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
 						localInformer.updateRegistry(remoteRegistry,localRegistry);
 					}
 					else{
-						System.out.println("Didn't find peer on Exchange");
+						//System.out.println("Didn't find peer on Exchange");
+						mOyster2.addOfflinePeer(peerIndiv.getURI());
 					}
 				}
 				else localInformer.updateLocalRegistry();
 			}
-			
+			mOyster2.updateOfflinePeerList();
 		}catch(Exception e){
-			System.out.println("error! when connect to remote rendezvous peers in randomExchangeInitor,some peer may not start the server!");
+			System.out.println(e+" "+e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" error! when connect to remote peers in randomExchangeInitor,some peer may not start the server!");
 		}
 		
 	}
@@ -133,13 +169,13 @@ public class ExchangeInitiator implements Runnable{
 	 * @return the time to sleep.
 	 */
 	private long sleepTime() {
-		// minimal sleep time
-		int time = MIN_SLEEP_TIME;
+		// sleep time
+		int time = SLEEP_TIME;
 		// as longer the path as longer to sleep
 		
 	
 		// if the computed time is too short, set it to the minimum
-		if (time < MIN_SLEEP_TIME)
+		if (SLEEP_TIME < MIN_SLEEP_TIME)
 			time = MIN_SLEEP_TIME;
 		// if i'm in bootstrap process, reduce the sleep time
 		return time;
@@ -155,11 +191,12 @@ public class ExchangeInitiator implements Runnable{
 	 * Starts the Exchanger.
 	 */
 	public void run(){
+			System.out.println("ExchangeInitiator starting..."+System.currentTimeMillis());
 			if (mShutdownFlag)
 				return;
-			
+			System.out.println("Rendezvouz exchange starting..."+System.currentTimeMillis());
 			randomExchange();
-			//System.out.println("exchangeInitiator finished.");
+			System.out.println("Rendezvouz exchange finished..."+System.currentTimeMillis());
 			expertiseExchange();
 			
 			

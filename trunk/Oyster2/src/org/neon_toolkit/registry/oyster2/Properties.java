@@ -1,7 +1,7 @@
 package org.neon_toolkit.registry.oyster2;
 
 /**
- * $Id: Properties.java,v 1.1 2007-10-05 15:12:30 rpa Exp $
+ * $Id: Properties.java,v 1.2 2008-03-06 22:40:07 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -28,8 +28,13 @@ package org.neon_toolkit.registry.oyster2;
 //import pgrid.locale.ResourceKeys;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map.Entry;
 //import java.util.logging.Level;
 //import java.util.zip.Deflater;
 
@@ -48,90 +53,144 @@ public class Properties {
 	 */
 	public static final String LOCALE = "Locale";
 
-	/**
-	 * Property "LocalExpertiseRegistry", the used ExpertiseRegistry file.
-	 */
-	public static final String LocalRegistryFile = "LocalExpertiseRegistry";
-	
-
-	/**
-	 * Property "basicExpertiseRegistry " template file.
-	 */
-	public static final String PeerRegistryFile = "PeerRegistryFile";
-
-	/**
-	 * Property "virtualOntology" file, the ontology file to store the virtual ontology.
-	 */
-	public static final String VirtualOntologyFile = "VirtualOntologyFile";
+		
 	/**
 	 * Property "basicTypeOntology", the ontology file imported by the type ontology.
 	 */
-	public static final String BasicSchemaOntologyFile1 = "BasicSchemaOntologyFile1";
-	public static final String BasicSchemaOntologyFile2 = "BasicSchemaOntologyFile2";
-	public static final String BasicSchemaOntologyFile3 = "BasicSchemaOntologyFile3";
-	public static final String BasicSchemaOntologyFile4 = "BasicSchemaOntologyFile4";
-	/**
-	 * Property "typeOntology", the ontology file used as the type ontology for the application,such as: SWRC.
-	 */
-	public static final String TypeOntologyFile = "DefaultTypeOntology";
-	/**
-	 * Property "topicOntology", the ontology file used as the topic ontology for the application,such as: ACM.
-	 */
-	public static final String TopicOntologyFile = "DefaultTopicOntology";
+	public static final String localRegistry = "localRegistry";
+	public static final String typeOntology = "typeOntology";
+	public static final String peerDescriptionOntology = "peerDescriptionOntology";
+	public static final String mappingDescriptionOntology = "mappingDescriptionOntology";
+	public static final String owlChangeOntology = "owlChangeOntology";
+	public static final String topicOntology = "topicOntology";
+	public static final String changeOntology = "changeOntology";
+	public static final String owlodmOntology = "owlodmOntology";
+	public static final String workflowOntology = "workflowOntology";
+	
+	public static final String image = "image";
+	
+	
 	/**
 	 * Property "ResolveIPs", if to lookup the hostname of remote host.
 	 */
 	public static final String RESOLVE_IP ="resolveIP";
-	public static final String TypeOntologyRoot ="TypeOntologyRoot";
-	public static final String TopicOntologyRoot = "TopicOntologyRoot";
-	public static final String Condition_title = "Condition_title";
-	public static final String Condition_year = "Condition_year";
-	public static final String Condition_abstract= "Condition_abstract";
-	public static final String Condition_4th="Condition_4th";
-	public static final String Condition_5th="Condition_5th";
-	public static final String ImageLocation = "ImageLocation";
-	public static final String LocalPeerName = "LocalPeerName";
-	public static final String LocalPeerType = "LocalPeerType";
-	public static final String BootstrapPeerName = "BootstrapPeerName";
-	public static final String BootstrapPeerAdr = "BootstrapPeerAdr";
-	public static final String BootstrapPeerUID = "BootstrapPeerUID";
+	public static final String typeOntologyRoot ="typeOntologyRoot";
+	public static final String topicOntologyRoot = "topicOntologyRoot";
+	
+	
+	public static final String localPeerName = "localPeerName";
+	public static final String localPeerType = "localPeerType";
+	public static final String bootStrapPeerName = "bootStrapPeerName";
+	public static final String bootStrapPeerIP = "bootStrapPeerIP";
+	public static final String discoveryFrec = "discoveryFrec";
+	
+	
+	public static final String searchCondition_1 = "searchCondition_1";
+	public static final String searchCondition_2 = "searchCondition_2";
+	public static final String searchCondition_3= "searchCondition_3";
+	public static final String searchCondition_4="searchCondition_4";
+	public static final String searchCondition_5="searchCondition_5";
+	
+	
+	public static final String NUMBER_OF_COLUMNS="NUMBER_OF_COLUMNS";
+	public static final String COLUMN_TYPE0 = "COLUMN_TYPE0";
+	public static final String COLUMN_TYPE1 = "COLUMN_TYPE1";
+	public static final String COLUMN_TYPE2= "COLUMN_TYPE2";
+	public static final String COLUMN_NAME0="COLUMN_NAME0";
+	public static final String COLUMN_NAME1="COLUMN_NAME1";
+	public static final String COLUMN_NAME2="COLUMN_NAME2";
+	public static final String COLUMN_WIDTH0="COLUMN_WIDTH0";
+	public static final String COLUMN_WIDTH1="COLUMN_WIDTH1";
+	public static final String COLUMN_WIDTH2="COLUMN_WIDTH2";
+	
 	/**
 	 * The default property values.
+	 *
+	 *
 	 */
-	private static final String[] DEFAULTS = {"#", "Oyster2 properties file",
-																						"#", "",
-																						"#", "automatically generated",
-																						"#", "",
-																						"", "",
-																						/* General */ "#", "General",
-																						//LOCALE, "",
-																						BasicSchemaOntologyFile1,"C:/GuoRui/server1/swrc.owl", 
-																						BasicSchemaOntologyFile2,"C:/GuoRui/server2/protons.owl",
-																						BasicSchemaOntologyFile3,"C:/GuoRui/server2/protont.owl",
-																						BasicSchemaOntologyFile4,"C:/GuoRui/kaonserver/omv.owl",
-																						LocalRegistryFile, "C:/GuoRui/server/localRegistry.owl",
-																						PeerRegistryFile, "C:/GuoRui/server/server/pOMV.owl",
-																						VirtualOntologyFile, "C:/GuoRui/server/virtualOntology.owl",
-																						TypeOntologyFile, "C:/GuoRui/server/swrc.owl",
-																						TopicOntologyFile, "C:/GuoRui/server/acm.rdf",
-																						RESOLVE_IP , "true",
-																						TypeOntologyRoot, "#Publication",
-																						TopicOntologyRoot, "ACMTopic",
-																						Condition_title,"swrc:title",
-																						Condition_year, "swrc:year",
-																						Condition_abstract, "swrc:abstract",
-																						Condition_4th, "swrc:keywords",
-																						Condition_5th, "swrc:author",
-																						ImageLocation, "C:/GuoRui/kaon.jpg",
-																						LocalPeerName, "newPeer",
-																						LocalPeerType, "S",
-																						BootstrapPeerName, "muriel",
-																						BootstrapPeerAdr, "localhost",
-																						BootstrapPeerUID, ""
-																						
-																						
+	private static final String[] HEADER = {"#", "Oyster2 properties file",
+		"#", "",
+		"#", "The paths can be absolute (e.g. ",
+		"#", "e\\:/this is a test/oyster.jpg), however",
+		"#", "it is not allowed to use blank spaces in the path",
+		"#", "of an ontology (e.g. topicOntology, typeOntology,",
+		"#", "peerDescriptionOntology, mapppingDescriptionOntology), since this string",
+		"#", "(the path of the ontology) should be a normal url",
+		"#", "(java.net.URI). But you can use %20 instead of a blank space",
+		"#", "",
+		"", "",
+	};
+	
+	/*
+	private static final String[] DEFAULTS = {										localRegistry,"O2serverfiles/localRegistry.owl",
+																						typeOntology,"O2serverfiles/OMV.owl",
+																						peerDescriptionOntology, "O2serverfiles/pOMV.owl",
+																						mappingDescriptionOntology,"O2serverfiles/mappingOMV.owl", 
+																						owlChangeOntology,"O2serverfiles/OWLChanges.owl",
+																						topicOntology,"O2serverfiles/dmozT.rdf",
+																						changeOntology,"O2serverfiles/changes.owl",
+																						owlodmOntology,"O2serverfiles/owl11v1.3.owl",
+																						workflowOntology,"O2serverfiles/workflow.owl",
+																						image, "O2serverfiles/o1.GIF",
+																						typeOntologyRoot, "#Ontology",
+																						topicOntologyRoot, "Top",
+																						localPeerName, "localhost",
+																						localPeerType, "S",
+																						bootStrapPeerName, "oysterUPM",
+																						bootStrapPeerIP, "138.100.11.159",
+																						discoveryFrec, "120000",
+																						searchCondition_1,"omv:name",
+																						searchCondition_2, "omv:isOfType",
+																						searchCondition_3, "omv:naturalLanguage",
+																						searchCondition_4, "omv:hasOntologyLanguage",
+																						searchCondition_5, "omv:keywords",																						
+																						NUMBER_OF_COLUMNS, "3",																			
+																						COLUMN_TYPE0,"http://omv.ontoware.org/2005/05/ontology#name",
+																						COLUMN_TYPE1, "http://omv.ontoware.org/2005/05/ontology#description",
+																						COLUMN_TYPE2, "http://omv.ontoware.org/2007/05/pomv#ontologyOMVLocation",
+																						COLUMN_NAME0, "Ontology Name",
+																						COLUMN_NAME1, "Description",
+																						COLUMN_NAME2, "oyster:peer",
+																						COLUMN_WIDTH0, "100",
+																						COLUMN_WIDTH1, "163",
+																						COLUMN_WIDTH2, "100",
+	};
+	*/																				
+	
+	private static final String[] DEFAULTS = {											localRegistry,"O2serverfiles/localRegistry.owl",
+																						typeOntology,"http://omv.ontoware.org/2005/05/ontology",
+																						peerDescriptionOntology, "http://omv.ontoware.org/2007/05/pomv",
+																						mappingDescriptionOntology,"http://omv.ontoware.org/2007/05/mappingomv", 
+																						owlChangeOntology,"http://omv.ontoware.org/2007/07/OWLChanges",
+																						topicOntology,"http://oyster2.ontoware.org/dmozT.rdf",
+																						changeOntology,"http://omv.ontoware.org/2007/10/changes",
+																						owlodmOntology,"http://owlodm.ontoware.org/OWL1.1",
+																						workflowOntology,"http://omv.ontoware.org/2007/07/workflow",
+																						image, "http://oyster2.ontoware.org/o1.gif",
+																						typeOntologyRoot, "#Ontology",
+																						topicOntologyRoot, "Top",
+																						localPeerName, "localhost",
+																						localPeerType, "S",
+																						bootStrapPeerName, "oysterUPM",
+																						bootStrapPeerIP, "138.100.11.159",
+																						discoveryFrec, "120000",
+																						searchCondition_1,"omv:name",
+																						searchCondition_2, "omv:isOfType",
+																						searchCondition_3, "omv:naturalLanguage",
+																						searchCondition_4, "omv:hasOntologyLanguage",
+																						searchCondition_5, "omv:keywords",																						
+																						NUMBER_OF_COLUMNS, "3",																			
+																						COLUMN_TYPE0,"http://omv.ontoware.org/2005/05/ontology#name",
+																						COLUMN_TYPE1, "http://omv.ontoware.org/2005/05/ontology#description",
+																						COLUMN_TYPE2, "http://omv.ontoware.org/2007/05/pomv#ontologyOMVLocation",
+																						COLUMN_NAME0, "Ontology Name",
+																						COLUMN_NAME1, "Description",
+																						COLUMN_NAME2, "oyster:peer",
+																						COLUMN_WIDTH0, "100",
+																						COLUMN_WIDTH1, "163",
+																						COLUMN_WIDTH2, "100",
 	};																				
-																						
+
 	 /**
 	  * * The property file.
 	 */
@@ -153,24 +212,32 @@ public class Properties {
 	public Properties() {
 		// create defaults
 		for (int i = 0; i < DEFAULTS.length; i = i + 2)
-			if ((!DEFAULTS[i].equals("")) && (!DEFAULTS[i].equals("#")))
+			if ((!DEFAULTS[i].equals("")) && (!DEFAULTS[i].equals("#"))){
 				mProperties.put(DEFAULTS[i], DEFAULTS[i + 1]);
+			}
 	}
 
 	/**
 	 * Initializes the properties with default values.
 	 */
-	synchronized void init() {
+	synchronized public void  init() {
 		_init(Constants.PROPERTY_FILE);
 	}
 
+	/**
+	 * Initializes the properties with default values.
+	 */
+	synchronized public void  init(String file) {
+		_init(file);
+	}
+	
 	/**
 	 * Initializes the properties with the given property file and properties.
 	 *
 	 * @param file       the property file.
 	 * @param properties further initialization properties.
 	 */
-	synchronized void init(String file, java.util.Properties properties) {
+	synchronized public void init(String file, java.util.Properties properties) {
 		_init(file);
 		if (properties != null) {
 			for (Enumeration enu = properties.propertyNames(); enu.hasMoreElements();) {
@@ -189,16 +256,20 @@ public class Properties {
 	 * @param file the property file.
 	 */
 	synchronized private void _init(String file) {
-		//mOyster2 = Oyster2Factory.sharedInstance();
 		mFile = new File(file);
 		try {
 			if (!mFile.exists()) {
+				System.out.println("It's your first time...");
 				mFile.createNewFile();
 				store();
+				String host = InetAddress.getLocalHost().getHostName();
+				setString(localPeerName,host);
+				storeOn();
 			} else {
 				System.out.println("file existed, loading...");
+				mProperties.clear();
 				load();
-				//store();
+				storeOn();
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println(e+" _init("+file+")");
@@ -215,7 +286,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the value of the property.
 	 */
-	boolean getBoolean(String key) {
+	public boolean getBoolean(String key) {
 		if (getString(key).equals("true"))
 			return true;
 		else
@@ -228,7 +299,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the default value of the property.
 	 */
-	boolean getDefaultBoolean(String key) {
+	public boolean getDefaultBoolean(String key) {
 		for (int i = 0; i < DEFAULTS.length; i = i + 2) {
 			if (DEFAULTS[i].equals(key)) {
 				if (DEFAULTS[i + 1].equals("true"))
@@ -246,7 +317,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the default value of the property.
 	 */
-	int getDefaultInteger(String key) {
+	public int getDefaultInteger(String key) {
 		for (int i = 0; i < DEFAULTS.length; i = i + 2) {
 			if (DEFAULTS[i].equals(key)) {
 				int val;
@@ -263,7 +334,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the default value of the property.
 	 */
-	String getDefaultString(String key) {
+	public String getDefaultString(String key) {
 		for (int i = 0; i < DEFAULTS.length; i = i + 2) {
 			if (DEFAULTS[i].equals(key)) {
 				return DEFAULTS[i + 1];
@@ -278,7 +349,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the value of the property.
 	 */
-	int getInteger(String key) {
+	public int getInteger(String key) {
 		int val;
 		val = Integer.parseInt(getString(key));
 		return val;
@@ -290,7 +361,7 @@ public class Properties {
 	 * @param key the key of the property.
 	 * @return the value of the property.
 	 */
-	String getString(String key) {
+	public String getString(String key) {
 		return (String)mProperties.get(key);
 	}
 
@@ -300,11 +371,13 @@ public class Properties {
 	 * @param key   the key of the property.
 	 * @param value the value of the property.
 	 */
-	synchronized void setString(String key, String value) {
-		if (mProperties.containsKey(key)) {
-			mProperties.put(key, value);
-			store();
-		}
+	synchronized public void setString(String key, String value) {
+		//if (mProperties.containsKey(key)) {
+		//	mProperties.put(key, value);
+		//	storeOn();
+		//}
+		mProperties.put(key, value);
+		
 	}
 
 	/**
@@ -324,6 +397,7 @@ public class Properties {
 			}
 			in.close();
 		} catch (IOException e) {
+			System.out.println("Couldnt load existing file");
 			//pgrid.Constants.LOGGER.log(Level.WARNING, mPGrid.getResource(ResourceKeys.PROPERTY_FILE_NO_READ_WRITE).replaceFirst("FILENAME", mFile.getName()), e);
 		}
 	}
@@ -331,9 +405,18 @@ public class Properties {
 	/**
 	 * Stores the properties to the defined file.
 	 */
-	synchronized private void store() {
+	synchronized public void store() {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(mFile));
+			GregorianCalendar calendar = new GregorianCalendar();
+			out.write("# "+ calendar.get(Calendar.DATE) + " " + (calendar.get(Calendar.MONTH) + 1) + " " + calendar.get(Calendar.YEAR) + " "+ calendar.get(Calendar.HOUR_OF_DAY)+ ":"+calendar.get(Calendar.MINUTE)+ Constants.LINE_SEPERATOR);
+			for (int i = 0; i < HEADER.length; i = i + 2)
+				if (HEADER[i].equals(""))
+					out.write(Constants.LINE_SEPERATOR);
+				else if (HEADER[i].equals("#"))
+					out.write("# " + HEADER[i + 1] + Constants.LINE_SEPERATOR);
+				else
+					out.write(HEADER[i] + "=" + getString(HEADER[i]) + Constants.LINE_SEPERATOR);
 			for (int i = 0; i < DEFAULTS.length; i = i + 2)
 				if (DEFAULTS[i].equals(""))
 					out.write(Constants.LINE_SEPERATOR);
@@ -341,6 +424,35 @@ public class Properties {
 					out.write("# " + DEFAULTS[i + 1] + Constants.LINE_SEPERATOR);
 				else
 					out.write(DEFAULTS[i] + "=" + getString(DEFAULTS[i]) + Constants.LINE_SEPERATOR);
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+			
+		}
+	}
+	
+	/**
+	 * Stores the properties to the defined file.
+	 */
+	@SuppressWarnings("unchecked")
+	synchronized public void storeOn() {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(mFile));
+			GregorianCalendar calendar = new GregorianCalendar();
+			out.write("# "+ calendar.get(Calendar.DATE) + " " + (calendar.get(Calendar.MONTH) + 1) + " " + calendar.get(Calendar.YEAR) + " "+ calendar.get(Calendar.HOUR_OF_DAY)+ ":"+calendar.get(Calendar.MINUTE)+ Constants.LINE_SEPERATOR);
+			for (int i = 0; i < HEADER.length; i = i + 2)
+				if (HEADER[i].equals(""))
+					out.write(Constants.LINE_SEPERATOR);
+				else if (HEADER[i].equals("#"))
+					out.write("# " + HEADER[i + 1] + Constants.LINE_SEPERATOR);
+				else
+					out.write(HEADER[i] + "=" + getString(HEADER[i]) + Constants.LINE_SEPERATOR);
+			
+			Iterator it = mProperties.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> h = (Entry<String,String>)it.next();
+				out.write(h.getKey().toString() + "=" + h.getValue().toString() + Constants.LINE_SEPERATOR);
+			}
 			out.flush();
 			out.close();
 		} catch (IOException e) {

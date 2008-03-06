@@ -76,10 +76,11 @@ public class Oyster2Query extends DefaultHandler implements Serializable {
 	 * @param query    the search string.
 	 * 
 	 */
-	public Oyster2Query(int type,String query) {
+	public Oyster2Query(int scope, int type,String query) {
 		mGUID = new org.neon_toolkit.registry.util.GUID();
 		mType = type;
 		mQueryString = query;
+		mScope=scope;
 		relatedSearch = true;
 	}
 	
@@ -98,10 +99,11 @@ public class Oyster2Query extends DefaultHandler implements Serializable {
 	 * @param scope      the type of Query.
 	 * @param query     the search string.
 	 */
-	public Oyster2Query(org.neon_toolkit.registry.util.GUID guid, int type, String query) {
+	public Oyster2Query(org.neon_toolkit.registry.util.GUID guid, int scope, int type, String query) {
 		mGUID = guid;
 		mType = type;
 		mQueryString = query;
+		mScope=scope;
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package org.neon_toolkit.registry.oyster2;
+package org.neon_toolkit.registry.oyster2.tests;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
-
 import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
 import org.neon_toolkit.omv.api.core.OMVPerson;
@@ -22,10 +21,15 @@ import org.neon_toolkit.registry.api.Oyster2Manager;
 
 
 
+
 public class Test {
 	
 	public static void main(String[] args)throws Exception{
         
+		
+		//String[] arguments = new String[] {"-startKAON2", "-KAON2Path=\"O2ServerFiles\\kaon2.jar\"", "-serverRootPath=\"server\"","-preferenceFile=testingOyster"};
+		//StartServer.main(arguments);
+
 		OMVOntologyDomain topic = new OMVOntologyDomain();
 		topic.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Arts");
 		OMVOntologyDomain kritem = new OMVOntologyDomain();
@@ -37,12 +41,9 @@ public class Test {
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.96\\new store", "F:\\My Documents\\Oyster2APIv0.96\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.96\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
-		
-		
+						
 		//HERE WE TEST IMPORT METHOD
 		oyster2Conn.importOntology("F:\\wine.rdf");
-		
-		
 		
 		//IMPORTED ONTOLOGY
 		OMVOntology newOnto1 = new OMVOntology();
@@ -344,8 +345,8 @@ public class Test {
 		System.out.println("Submit adhoc query(mapping): ");
 		System.out.println(OMVSetSerial5);
 		
-		oyster2Conn.remove(newOnto0);
-		oyster2Conn.remove(nMapping);
+		//oyster2Conn.remove(newOnto0);
+		//oyster2Conn.remove(nMapping);
 
 		//ADD Other objects
 		OMVPerson t1= new OMVPerson();
@@ -367,7 +368,6 @@ public class Test {
 		String OMVSetSerialMd = Oyster2Manager.serializeOMVMappings(OMVSetMd);
 		System.out.println("Search Mappings after delete: ");
 		System.out.println(OMVSetSerialMd);
-		
 		
 		
 		//CLOSE CONNECTION

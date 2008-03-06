@@ -1,12 +1,11 @@
 package org.neon_toolkit.registry.ui;
 
-//import org.eclipse.jface.preference.FieldEditor;
-//import org.eclipse.jface.preference.JFacePreferences;
-//import org.eclipse.swt.*;
-//import org.eclipse.swt.layout.FillLayout;
-//import org.eclipse.swt.widgets.Display;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
+//import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,9 +14,17 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.*;
 import org.neon_toolkit.registry.oyster2.Constants;
+import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.registry.oyster2.Properties;
 
 
 public class ConditionPreferencePage extends PreferencePage{
+	
+	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	private static Properties mprop = mOyster2.getProperties();
+	
+	String host="";
+	
 	private Text typeOntologyRoot;
 	private Text topicOntologyRoot;
 	private Text searchCondition_1;
@@ -28,7 +35,6 @@ public class ConditionPreferencePage extends PreferencePage{
 	private Text localPeerName;
 	private Text localPeerType;
 	private Text bootstrapPeerName;
-	//private Text bootstrapPeerUID;
 	private Text bootstrapPeerIP;
 	private Text peerRouterIP;
 	private Boolean routerDisabled = false;
@@ -128,11 +134,12 @@ public class ConditionPreferencePage extends PreferencePage{
 		peerRouterIP.setVisible(false);
 		fieldLabel13.setVisible(false);
 		
-		/*localPeerName.setText(Constants.DefaultLocalPeerName);
+		setHost();
+		
+		localPeerName.setText(host);
 		localPeerType.setText(Constants.DefaultLocalPeerType);
 		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
-		bootstrapPeerIP.setText(Constants.DefaultBootStrapPeerIP);*/
-	
+		bootstrapPeerIP.setText(Constants.DefaultBootStrapPeerIP);
 		typeOntologyRoot.setText(Constants.DefaultTypeOntologyRoot);
 		topicOntologyRoot.setText(Constants.DefaultTopicOntologyRoot);
 		searchCondition_1.setText(Constants.DefaultSearchCondition_1);
@@ -146,8 +153,23 @@ public class ConditionPreferencePage extends PreferencePage{
 	 * Method declared on IPreferencePage.
 	 */
 	public boolean performOk() {
+		mprop.setString(Constants.TypeOntologyRoot, typeOntologyRoot.getText());
+		mprop.setString(Constants.TopicOntologyRoot, topicOntologyRoot.getText());
+		mprop.setString(Constants.SearchCondition_1, searchCondition_1.getText());
+		mprop.setString(Constants.SearchCondition_2, searchCondition_2.getText());
+		mprop.setString(Constants.SearchCondition_3, searchCondition_3.getText());
+		mprop.setString(Constants.SearchCondition_4, searchCondition_4.getText());
+		mprop.setString(Constants.SearchCondition_5, searchCondition_5.getText());
+		mprop.setString(Constants.LocalPeerName, localPeerName.getText());
+		mprop.setString(Constants.LocalPeerType, localPeerType.getText());
+		mprop.setString(Constants.BootStrapPeerName, bootstrapPeerName.getText());
+		mprop.setString(Constants.BootStrapPeerIP, bootstrapPeerIP.getText());
+		
+		mprop.storeOn();
+		//mprop.setString(Constants.PeerRouterIP, peerRouterIP.getText());
+		
+		/*
 		IPreferenceStore pref = this.getPreferenceStore();
-		//pref.setValue(Constants.BootStrapPeerUID, bootstrapPeerUID.getText());
 		pref.setValue(Constants.TypeOntologyRoot, typeOntologyRoot.getText());
 		pref.setValue(Constants.TopicOntologyRoot, topicOntologyRoot.getText());
 		pref.setValue(Constants.SearchCondition_1, searchCondition_1.getText());
@@ -160,6 +182,7 @@ public class ConditionPreferencePage extends PreferencePage{
 		pref.setValue(Constants.BootStrapPeerName, bootstrapPeerName.getText());
 		pref.setValue(Constants.BootStrapPeerIP, bootstrapPeerIP.getText());
 		pref.setValue(Constants.PeerRouterIP, peerRouterIP.getText());
+		*/
 		return true;
 	}
 	
@@ -167,10 +190,11 @@ public class ConditionPreferencePage extends PreferencePage{
 	 * It is overrided method. 
 	 */
 	protected void performDefaults() {
-		/*localPeerName.setText(Constants.DefaultLocalPeerName);
+		setHost();
+		localPeerName.setText(host);
 		localPeerType.setText(Constants.DefaultLocalPeerType);
 		bootstrapPeerName.setText(Constants.DefaultBootStrapPeerName);
-		bootstrapPeerIP.setText(Constants.BootStrapPeerIP);*/
+		bootstrapPeerIP.setText(Constants.BootStrapPeerIP);
 		typeOntologyRoot.setText(Constants.DefaultTypeOntologyRoot);
 		topicOntologyRoot.setText(Constants.DefaultTopicOntologyRoot);
 		searchCondition_1.setText(Constants.DefaultSearchCondition_1);
@@ -180,6 +204,27 @@ public class ConditionPreferencePage extends PreferencePage{
 		searchCondition_5.setText(Constants.DefaultSearchCondition_5);
 		super.performDefaults();
 	}
-
+	
+	private void setHost(){
+		try {
+			host = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }
+
+/*
+mprop.setString(Constants.NUMBER_OF_COLUMNS, Constants.DefaultNUMBER_OF_COLUMNS);
+mprop.setString(Constants.COLUMN_TYPE+"0", Constants.DefaultCOLUMN_TYPE0);
+mprop.setString(Constants.COLUMN_TYPE+"1", Constants.DefaultCOLUMN_TYPE1);
+mprop.setString(Constants.COLUMN_TYPE+"2", Constants.DefaultCOLUMN_TYPE2);
+mprop.setString(Constants.COLUMN_NAME+"0", Constants.DefaultCOLUMN_NAME0);
+mprop.setString(Constants.COLUMN_NAME+"1", Constants.DefaultCOLUMN_NAME1);
+mprop.setString(Constants.COLUMN_NAME+"2", Constants.DefaultCOLUMN_NAME2);
+mprop.setString(Constants.COLUMN_WIDTH+"0", Constants.DefaultCOLUMN_WIDTH0);
+mprop.setString(Constants.COLUMN_WIDTH+"1", Constants.DefaultCOLUMN_WIDTH1);
+mprop.setString(Constants.COLUMN_WIDTH+"2", Constants.DefaultCOLUMN_WIDTH2);
+*/

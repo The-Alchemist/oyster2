@@ -1,6 +1,8 @@
 package org.neon_toolkit.registry.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.neon_toolkit.registry.core.AdvertInformer;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.semanticweb.kaon2.api.*;
+import org.semanticweb.kaon2.api.owl.elements.Individual;
 
 public class PeerSelectionDialog implements IStructuredContentProvider, ILabelProvider{
 	
@@ -87,8 +90,18 @@ public class PeerSelectionDialog implements IStructuredContentProvider, ILabelPr
 							PeerSelectionDialog.this, "Please select peers ");
 					dialogUI.setTitle("Please select peers");
 					//dialogUI.setInitialSelections(new Object[]{});
-					dialogUI.setInitialSelections(peersInput.toArray());
+					dialogUI.setInitialSelections(peersInput.toArray());					
 					dialogUI.create();
+
+					Iterator it = mOyster2.getOfflinePeers().iterator();
+					List<Individual> grayedElements = new ArrayList<Individual>();
+					while (it.hasNext()){
+						Individual peerIndiv = KAON2Manager.factory().individual((String)it.next());
+						grayedElements.add(peerIndiv);
+
+					}
+					dialogUI.listViewer.setGrayedElements(grayedElements.toArray());
+					
 					listViewer = dialogUI.listViewer;
 					System.out.println("Opening...");
 					if(dialogUI ==null)

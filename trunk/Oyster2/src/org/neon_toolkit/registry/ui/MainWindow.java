@@ -157,6 +157,7 @@ public class MainWindow extends ApplicationWindow {
 	private boolean mappingUsed = true;
 	//private boolean manualSelected = false;
 	private String keywordSearch = "";
+	private Set peerSet=null;
 
 	
 	public MainWindow(Shell shell) {
@@ -386,7 +387,7 @@ public class MainWindow extends ApplicationWindow {
 		Composite RegistryMonitorPanel = new Composite(parent,SWT.NULL);
 		Composite peerSelectionPanel = createPeerSelectionPanel(RegistryMonitorPanel,true);
 		Composite ontologySearchPanel = createOntologySearchPanel(RegistryMonitorPanel);
-		Composite searchButton = createSearchButtonPanel(RegistryMonitorPanel,true);
+		Composite searchPanelRegistry = createSearchButtonPanel(RegistryMonitorPanel,true);
 		FormLayout layout = new FormLayout();
 		layout.marginWidth = 3;
 		layout.marginHeight = 3;
@@ -409,7 +410,7 @@ public class MainWindow extends ApplicationWindow {
 		data3.left = new FormAttachment(0, 0);
 		data3.right = new FormAttachment(100, 0);
 		data3.top = new FormAttachment(ontologySearchPanel);
-		searchButton.setLayoutData(data3);
+		searchPanelRegistry.setLayoutData(data3);
 
 		
 		RegistryMonitorPanel.setLayout(layout);
@@ -494,8 +495,9 @@ public class MainWindow extends ApplicationWindow {
 		searchButton.setText("Search Now");
 		searchButton.setFont(JFaceResources.getBannerFont());
 		if(registrySearch){
-		searchButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			searchButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					
 					performOntologySearch();
 			}
 		});
@@ -503,7 +505,8 @@ public class MainWindow extends ApplicationWindow {
 		else {
 			searchButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-						performDataSearch();
+					
+					performDataSearch();
 				}
 			});
 		}
@@ -516,10 +519,7 @@ public class MainWindow extends ApplicationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if ( result != null || resultRegistry != null) {
 					try {
-						mOyster2.getSearchManager().stopSearch();
-						searchButton.setEnabled(true);
-						if (progresMonitor != null)
-							progresMonitor.done();
+						operationFinished();
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
@@ -613,22 +613,22 @@ public class MainWindow extends ApplicationWindow {
 		if(ontologySearch){
 			System.out.println(" here in ontology search of peerselctionpanel");
 			final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
-			final Button vo = new Button(peerSelectionPanel, SWT.RADIO);
 			final Button localPeer = new Button(peerSelectionPanel, SWT.RADIO);
-			final Button allPeers = new Button(peerSelectionPanel, SWT.RADIO);
+			final Button localRegistry = new Button(peerSelectionPanel, SWT.RADIO);
+			final Button selectedPeers = new Button(peerSelectionPanel, SWT.RADIO);
 			peerSelectionPanel.setText("Registry Explorer");
-			vo.setText("Local Peer");
-			vo.setBackground(backgroundColor);
-			localPeer.setText("Local Registry Detail");
+			localPeer.setText("Local Peer");
 			localPeer.setBackground(backgroundColor);
-			allPeers.setText("Selected Peers");
-			allPeers.setBackground(backgroundColor);
+			localRegistry.setText("Local Registry Detail");
+			localRegistry.setBackground(backgroundColor);
+			selectedPeers.setText("Selected Peers");
+			selectedPeers.setBackground(backgroundColor);
 			//localPeer.setSelection(true);
 			searchingScope = SearchingScope.local();
-			System.out.println(searchingScope);
-			vo.addSelectionListener(new SelectionAdapter() {
+			//System.out.println(searchingScope);
+			localPeer.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					if (vo.getSelection()) {
+					if (localPeer.getSelection()) {
 						//List ontologyInfo = new LinkedList();
 						resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.RegistryResource);
 						//ontologyInfo.add(mKaonP2P.getVirtualOntology());
@@ -640,9 +640,9 @@ public class MainWindow extends ApplicationWindow {
 					}
 				}
 			});
-			localPeer.addSelectionListener(new SelectionAdapter() {
+			localRegistry.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					if (localPeer.getSelection()) {
+					if (localRegistry.getSelection()) {
 						List<Ontology> ontologyInfo = new LinkedList<Ontology>();
 						resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.RegistryResource);
 						ontologyInfo.add(mOyster2.getLocalHostOntology());
@@ -654,11 +654,11 @@ public class MainWindow extends ApplicationWindow {
 					}
 				}
 			});
-			allPeers.addSelectionListener(new SelectionAdapter() {
+			selectedPeers.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					if (allPeers.getSelection()) {
+					if (selectedPeers.getSelection()) {
 					//allPeers.setEnabled(true);
-					Set peerSet = dialog.getPeerSelection();
+					peerSet = dialog.getPeerSelection();
 					resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.OntologyResource);
 					mOyster2.getSearchManager().addListener(resultRegistry);
 					mOyster2.getSearchManager().startSearch(peerSet);
@@ -673,15 +673,15 @@ public class MainWindow extends ApplicationWindow {
 
 		FormData voFormData = new FormData();
 		voFormData.top = new FormAttachment(0, 5);
-		vo.setLayoutData(voFormData);
+		localPeer.setLayoutData(voFormData);
 		
 		FormData localPeerFormData = new FormData();
-		localPeerFormData.top = new FormAttachment(vo, 5);
-		localPeer.setLayoutData(localPeerFormData);
+		localPeerFormData.top = new FormAttachment(localPeer, 5);
+		localRegistry.setLayoutData(localPeerFormData);
 
 		FormData allPeersFormData = new FormData();
-		allPeersFormData.top = new FormAttachment(localPeer, 5);
-		allPeers.setLayoutData(allPeersFormData);
+		allPeersFormData.top = new FormAttachment(localRegistry, 5);
+		selectedPeers.setLayoutData(allPeersFormData);
 
 		peerSelectionPanel.setLayout(layout);
 		}
@@ -695,7 +695,7 @@ public class MainWindow extends ApplicationWindow {
 				SWT.BOLD));	
 		
 		
-		//final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
+		final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
 		final Button localPeer = new Button(peerSelectionPanel, SWT.RADIO);
 		final Button automaticPeer = new Button(peerSelectionPanel, SWT.RADIO);
 		final Button selectedPeers = new Button(peerSelectionPanel, SWT.RADIO);
@@ -737,8 +737,8 @@ public class MainWindow extends ApplicationWindow {
 			public void widgetSelected(SelectionEvent e) {
 				if (selectedPeers.getSelection()) {
 					searchingScope = SearchingScope.manual();
-					//Set peerSet = dialog.getPeerSelection();
-					result = new Result(resultViewer,Resource.OntologyResource);
+					peerSet = dialog.getPeerSelection();
+					result = new Result(resultViewer,Resource.RegistryResource);//.OntologyResource);
 					//mOyster2.getSearchManager().addListener(result);
 					//mOyster2.getSearchManager().startSearch(peerSet);
 				}
@@ -1331,23 +1331,32 @@ public class MainWindow extends ApplicationWindow {
 		return false;
 	}
 	
-	private void performDataSearch(LinkedList<Condition> conditions) {	
+	private int getScope(){
+		if (searchingScope.getType().getName().equalsIgnoreCase("Local")) return Oyster2Query.Local_Scope;
+		else if (searchingScope.getType().getName().equalsIgnoreCase("Automatic")) return Oyster2Query.Auto_Scope;
+		else if (searchingScope.getType().getName().equalsIgnoreCase("Manual")) return Oyster2Query.Selected_Scope;
+		return Oyster2Query.Local_Scope;
+	}
+	
+	private void performDataSearch(LinkedList<Condition> conditions) {
+		if (!searchButton.getEnabled()) return;
 		searchButton.setEnabled(false);
 		progresMonitor = getStatusLineManager().getProgressMonitor();
 		progresMonitor.beginTask("Searching metadata entries ... ",	0);
 		QueryFormulator mFormulator = new QueryFormulator();
-		mFormulator.generateDataQuery(conditions);
+		mFormulator.generateDataQuery(conditions,getScope());
 		Oyster2Query typeQuery = mFormulator.getTypeQuery();
 		//Z
 		result = new Result(resultViewer,Resource.DataResource);
 		if (keywordSearch.length()>0){
-			Oyster2Query query = new Oyster2Query(new GUID(),Oyster2Query.TOPIC_QUERY,keywordSearch);
-			if (conditions.size()>0) searchManager.startSearch(query,typeQuery,true);
-			else searchManager.startSearch(query,null,true);
+			Oyster2Query query = new Oyster2Query(new GUID(),getScope(),Oyster2Query.TOPIC_QUERY,keywordSearch);
+			if (conditions.size()>0) searchManager.startSearch(query,typeQuery,peerSet, true);
+			else searchManager.startSearch(query,null,peerSet, true);
 		}
 		else	
-			searchManager.startSearch(null,typeQuery,false);
+			searchManager.startSearch(null,typeQuery,peerSet, false);
 		searchManager.addListener(result);   //mOyster2.getSearchManager().addListener(result);
+		
 	}
 	
 	private void performOntologySearch(){
@@ -1376,22 +1385,21 @@ public class MainWindow extends ApplicationWindow {
 	}
 	
 	private void performOntologySearch(LinkedList<Condition> conditions){
+		if (!searchButton.getEnabled()) return;
 		System.out.println("performOntologySearch(LinkedList conditions).... ");
 		searchButton.setEnabled(false);
 		progresMonitor = getStatusLineManager().getProgressMonitor();
 		progresMonitor.beginTask("Searching ontology entries ... ",
 				0);
 		QueryFormulator mFormulator = new QueryFormulator();
-		mFormulator.generateOntologyQuery(conditions);
+		mFormulator.generateOntologyQuery(conditions,getScope());
 		Oyster2Query topicQuery = mFormulator.getTopicQuery();
 		if((topicQuery == null)){
 			errorDialog("query null","topic should be specified!");
-			searchManager.stopSearch();
-			if (progresMonitor != null)
-				progresMonitor.done();
+			operationFinished();
 			return;
 		}
-		searchManager.startSearch(topicQuery,null,false);
+		searchManager.startSearch(topicQuery,null,peerSet, false);
 		//result = new Result(resultViewer.getWrapedViewer());
 		resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.OntologyResource);
 		newEntryAction.setResult(resultRegistry);
@@ -1410,6 +1418,7 @@ public class MainWindow extends ApplicationWindow {
 		
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
+				searchManager.stopSearch();
 				searchButton.setEnabled(true);
 				if (progresMonitor != null)
 					progresMonitor.done();

@@ -5,7 +5,7 @@ import java.util.Collection;
 //import java.util.HashSet;
 import java.util.Iterator;
 //import java.util.LinkedList;
-import java.util.Map;
+//import java.util.Map;
 //import org.eclipse.swt.widgets.Shell;
 //import util.Utilities;
 
@@ -32,6 +32,7 @@ import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.util.EntryDetailSerializer;
 import org.neon_toolkit.registry.util.Property;
+import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 
@@ -110,18 +111,26 @@ public class DetailViewer extends Composite{
 	 */
 	public void append(Entity entry){
 		//EntryDetailSerializer serializer = EntryDetailSerializer.getInstance();
-		Collection properties = getReplyPropertySet(mOyster2.getLocalHostOntology(),(Individual)entry);
-		if (properties.size()>0){
-			try{
-				OWLClass typeClass =(OWLClass) (((Individual) entry).getDescriptionsMemberOf(mOyster2.getLocalHostOntology()).toArray())[0];
-				appendText(serializeType(typeClass).toString(),SWT.BOLD,null);
-				appendText(serializeKey(entry).toString(),SWT.NORMAL,null);
-				serializeProperties(properties);
-				appendText(serializeEndOfEntry().toString(),SWT.BOLD,null);
-				//wrapedTextComponent.append(serializer.serialize(entry,mOyster2.getLocalHostOntology(),properties));
-			}catch(KAON2Exception e){
-				System.out.println(e.toString()+" :append");
-			}	
+		//Ontology against=mOyster2.getLocalHostOntology();
+		Collection properties;
+		OWLClass typeClass;
+		
+		if (entry instanceof Resource){
+			properties = ((Resource)entry).getPropertySet();//getReplyPropertySet(against,(Individual)entry);
+			if (properties.size()>0){
+				try{
+					typeClass = ((Resource)entry).getTypeClass();//(OWLClass) (((Individual) entry).getDescriptionsMemberOf(against).toArray())[0];
+					appendText(serializeType(typeClass).toString(),SWT.BOLD,null);
+					appendText(serializeKey(entry).toString(),SWT.NORMAL,null);
+					serializeProperties(properties);
+					appendText(serializeEndOfEntry().toString(),SWT.BOLD,null);
+					//wrapedTextComponent.append(serializer.serialize(entry,mOyster2.getLocalHostOntology(),properties));
+				}catch(Exception e){
+					System.out.println(e.toString()+" :append");
+				}	
+			}
+			else 
+				appendText("details not available",SWT.BOLD,null);//wrapedTextComponent.append("details not available");
 		}
 		else 
 			appendText("details not available",SWT.BOLD,null);//wrapedTextComponent.append("details not available");
@@ -145,14 +154,14 @@ public class DetailViewer extends Composite{
 		wrapedTextComponent.append(serializer.serialize(ontology));
 		wrapedTextComponent.setTopIndex(0);
 	}
-	
+	/*
 	private Collection getReplyPropertySet(Ontology virtualOntology,Individual docIndiv){
 		Collection<Property> propertySet = new ArrayList<Property>();
 		Property replyProperty;
 		try{
 			if(docIndiv ==null)System.out.println("docIndiv is null");
-		/*virtualOntology.removeFromImports(mKaonP2P.getLocalHostOntology());
-		virtualOntology.addToImports(mKaonP2P.getLocalHostOntology());*/
+		//virtualOntology.removeFromImports(mKaonP2P.getLocalHostOntology());
+		//virtualOntology.addToImports(mKaonP2P.getLocalHostOntology());
 		Map dataPropertyMap = docIndiv.getDataPropertyValues(virtualOntology);
 		Map objectPropertyMap = docIndiv.getObjectPropertyValues(virtualOntology);
 		Collection keySet = dataPropertyMap.keySet();
@@ -187,7 +196,7 @@ public class DetailViewer extends Composite{
 		}
 		return propertySet;
 	}
-	
+	*/
 	
 	//private HashSet appendOrderedProperties(Entity entry){
 	//	HashSet hashSet = new HashSet();
