@@ -130,7 +130,7 @@ public class SearchManager {
 		try {
 			if (runningSearchThread!=null && runningSearchThread.isAlive()){
 				runningSearchThread.interrupt();
-				runningSearchThread.join(10000);
+				runningSearchThread.join(2000);
 			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

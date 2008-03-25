@@ -229,7 +229,11 @@ public class Oyster2Factory {
 	
 	private Map<String,Integer> offlinePeers = new HashMap<String,Integer>();
 	
+	private boolean isSimple=false;
 	
+	private boolean caching=true;
+	
+	private boolean workflowSupport=false;
 
 	/**
 	 * This creates the only instance of this class. This differs from the C++
@@ -418,12 +422,16 @@ public class Oyster2Factory {
 					peerDescOntologyURI, new HashMap<String, Object>());
 			this.mappingDescOntology = connection.openOntology(
 					mappingDescOntologyURI, new HashMap<String, Object>());
+			this.changeOntology = connection.openOntology(
+					changeOntologyURI, new HashMap<String, Object>());
 			this.owlChangeOntology = connection.openOntology(
 					owlChangeOntologyURI, new HashMap<String, Object>());			
 			this.topicOntology = connection.openOntology(topicOntologyURI,
 					new HashMap<String, Object>());
 			this.workflowOntology = connection.openOntology(
 					workflowOntologyURI, new HashMap<String, Object>());
+			this.owlodmOntology = connection.openOntology(
+					owlodmOntologyURI, new HashMap<String, Object>());
 			this.typeOntology = connection.openOntology(typeOntologyURI,
 					new HashMap<String, Object>());
 			//3//
@@ -483,10 +491,13 @@ public class Oyster2Factory {
 
 		setTypeOntologyRoot(typeRoot);
 		setTopicOntologyRoot(topicRoot);
-		mExchangeInitiator = new ExchangeInitiator();
-		mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
-		mExchangeInitiatorThread.setDaemon(true);
-		mExchangeInitiatorThread.start();	
+		
+		if (!isSimple){
+			mExchangeInitiator = new ExchangeInitiator();
+			mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
+			mExchangeInitiatorThread.setDaemon(true);
+			mExchangeInitiatorThread.start();
+		}
 	}
 	
 	
@@ -523,17 +534,19 @@ public class Oyster2Factory {
 			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + KAON2error");
 		}	
 		try {
-			System.out.println(" Exchange Initiator");
-			if (this.mExchangeInitiator!=null) {
-				this.mExchangeInitiator.shutdown();
-				this.mExchangeInitiator=null;
-			}
-			if (this.mExchangeInitiatorThread!=null) {
-				if (this.mExchangeInitiatorThread.isAlive()){
-					this.mExchangeInitiatorThread.interrupt();
-					this.mExchangeInitiatorThread.join(10000);
+			if (!isSimple){
+				System.out.println(" Exchange Initiator");
+				if (this.mExchangeInitiator!=null) {
+					this.mExchangeInitiator.shutdown();
+					this.mExchangeInitiator=null;
 				}
-				this.mExchangeInitiatorThread=null;
+				if (this.mExchangeInitiatorThread!=null) {
+					if (this.mExchangeInitiatorThread.isAlive()){
+						this.mExchangeInitiatorThread.interrupt();
+						this.mExchangeInitiatorThread.join(2000);
+					}
+					this.mExchangeInitiatorThread=null;
+				}
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + ExchangeInitiator Thread");
@@ -559,7 +572,7 @@ public class Oyster2Factory {
 	            		try{
 	            			System.out.println("Killing thread: "+thread.getName());
 	            			thread.interrupt();
-	            			thread.join(10000);
+	            			thread.join(2000);
 	            		} catch (Exception e) {
 	            			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + Killing pending Threads");
 	            		}
@@ -575,6 +588,7 @@ public class Oyster2Factory {
 		t.start();
 	}
 
+	
 	/**
 	 * Invites one of the delivered hosts for an exchange.
 	 * 
@@ -827,6 +841,29 @@ public class Oyster2Factory {
 		}*/
 	}
 	
+	public void setIsSimple(boolean value) {
+		this.isSimple=value;
+	}
+	
+	public boolean getIsSimple() {
+		return this.isSimple;
+	}
+	
+	public void setCaching(boolean value) {
+		this.caching=value;
+	}
+	
+	public boolean getCaching() {
+		return this.caching;
+	}
+	
+	public void setWorkflowSupport(boolean value) {
+		this.workflowSupport=value;
+	}
+	
+	public boolean getWorkflowSupport() {
+		return this.workflowSupport;
+	}
 }
 
 /*

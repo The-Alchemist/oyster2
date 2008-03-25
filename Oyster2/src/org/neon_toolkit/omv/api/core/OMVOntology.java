@@ -15,7 +15,7 @@ import org.neon_toolkit.registry.api.Oyster2Manager;
  * @author Raul Palma
  * @version 1.0, March 2008
  */
-public class OMVOntology {
+public class OMVOntology extends OMVCoreObject{
 	
 	private String URI;
 	private Set <String> name = new HashSet<String>();
@@ -61,6 +61,8 @@ public class OMVOntology {
 	private Set <OMVParty> endorsedBy = new HashSet <OMVParty>();
 	
 	private String timeStamp;
+	
+	private String hasOntologyState;
 	
 	public OMVOntology()
 	    {
@@ -111,6 +113,7 @@ public class OMVOntology {
 		if (element.getEndorsedBy().size()>0) {this.endorsedBy.addAll(element.getEndorsedBy());return;}
 		
 		if (this.getTimeStamp()==null && element.getTimeStamp()!=null) {this.setTimeStamp(element.getTimeStamp());return;}
+		
 		/*
 		if (this.getTimeStamp()==null && element.getTimeStamp()!=null){
 			Date now = new Date();
@@ -119,6 +122,8 @@ public class OMVOntology {
 			return;
 		}
 		*/
+		
+		if (this.getHasOntologyState()==null && element.getHasOntologyState()!=null) {this.setHasOntologyState(element.getHasOntologyState());return;}
     }
 	
 	/**
@@ -633,7 +638,17 @@ public class OMVOntology {
 	{
 		return this.endorsedBy;
 	}
+
+	public void setHasOntologyState(String newHasOntologyState)
+	{
+		this.hasOntologyState=newHasOntologyState;
+	}
 	
+	public String getHasOntologyState()
+	{
+		return this.hasOntologyState;
+	}
+
 }
 
 

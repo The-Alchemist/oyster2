@@ -6,7 +6,7 @@ package org.neon_toolkit.omv.api.core;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVFormalityLevel {
+public class OMVFormalityLevel extends OMVCoreObject{
 	
 	private String name;
 	private String description;

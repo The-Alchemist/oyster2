@@ -10,7 +10,7 @@ import java.util.Set;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVParty {
+public class OMVParty extends OMVCoreObject{
 	
 	private Set <OMVLocation> isLocatedAt = new HashSet <OMVLocation>();
 	private Set <OMVOntologyEngineeringTool> developesOntologyEngineeringTool = new HashSet <OMVOntologyEngineeringTool>();

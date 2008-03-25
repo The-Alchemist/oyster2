@@ -6,7 +6,7 @@ package org.neon_toolkit.omv.api.core;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVLocation {
+public class OMVLocation extends OMVCoreObject{
 	
 	private String state;
 	private String country;

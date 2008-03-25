@@ -43,7 +43,7 @@ public class Test {
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.96\\new store", "F:\\My Documents\\Oyster2APIv0.96\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.96\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 						
 		//HERE WE TEST IMPORT METHOD
-		oyster2Conn.importOntology("F:\\wine.rdf");
+		oyster2Conn.importOntology("F:\\myTestWatson.owl");//wine.rdf");
 		
 		//IMPORTED ONTOLOGY
 		OMVOntology newOnto1 = new OMVOntology();

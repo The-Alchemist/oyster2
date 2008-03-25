@@ -40,10 +40,11 @@ public class OysterInitiator implements Runnable{
 
 	public void justWait(){
 		//long lastTime = System.currentTimeMillis();
-		while(true){
+		boolean keepGoing=true;
+		while(keepGoing){
 			if (mShutdownFlag)
 				return;
-			this.sleep(120000);
+			keepGoing=this.sleep(120000);
 		}
 	}
 
@@ -51,6 +52,7 @@ public class OysterInitiator implements Runnable{
 	 * Shutdown.
 	 */
 	synchronized public void shutdown() {
+		StartServer.closeConnection();
 		mShutdownFlag = true;
 	}
 	/**

@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.2 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-06 22:40:07 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.3 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-25 22:23:28 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -31,6 +31,10 @@ public class Constants {
 	//public static final String PDURI = "http://localhost/basicRegistry#";
 	public static final String POMVURI = "http://omv.ontoware.org/2007/05/pomv#";
 	public static final String MOMVURI = "http://omv.ontoware.org/2007/05/mappingomv#";
+	public static final String CHANGEURI = "http://omv.ontoware.org/2007/10/changes#";
+	public static final String OWLODMURI = "http://owlodm.ontoware.org/OWL1.1#";
+	public static final String OWLCHANGEURI = "http://omv.ontoware.org/2007/07/OWLChanges#";
+	public static final String WORKFLOWURI = "http://omv.ontoware.org/2007/07/workflow#";
 	public static final String OMV= "http://omv.ontoware.org/2005/05/ontology";
 	public static final String LocalRegistryURI = "http://localhost/localRegistry";
 	public static final String VERSIONINFO ="http://www.w3.org/2002/07/owl#versionInfo";
@@ -170,6 +174,212 @@ public class Constants {
 	public static final String containsABox = "containsABox";
 	public static final String endorsedBy = "endorsedBy";
 	
+	
+	public static final String changeConcept = "Change";
+	public static final String atomicChangeConcept = "AtomicChange";
+	public static final String compositeChangeConcept = "CompositeChange";
+	public static final String entityChangeConcept = "EntityChange";
+	public static final String additionConcept = "Addition";
+	public static final String removalConcept = "Removal";
+	public static final String addSubtreeConcept = "AddSubtree";
+	public static final String mergeSiblingsConcept = "MergeSiblings";
+	public static final String moveSiblingsDownConcept = "MoveSiblingsDown";
+	public static final String moveSiblingsUpConcept = "MoveSiblingsUp";
+	public static final String moveSubtreeConcept = "MoveSubtree";
+	public static final String removeSubtreeConcept = "RemoveSubtree";
+	public static final String splitClassConcept = "SplitClass";
+	public static final String annotationPropertyChangeConcept = "AnnotationPropertyChange";
+	public static final String addCommentConcept = "AddComment";
+	public static final String removeCommentConcept = "RemoveComment";
+	public static final String addLabelConcept = "AddLabel";
+	public static final String removeLabelConcept = "RemoveLabel";
+	public static final String addSubClassOfConcept = "AddSubClassOf";
+	public static final String removeSubClassOfConcept = "RemoveSubClassOf";
+	public static final String addDisjointClassConcept = "AddDisjointClass";
+	public static final String removeDisjointClassConcept = "RemoveDisjointClass";
+	public static final String addEquivalentClassConcept = "AddEquivalentClass";
+	public static final String removeEquivalentClassConcept = "RemoveEquivalentClass";
+	public static final String addDisjointUnionConcept = "AddDisjointUnion";
+	public static final String removeDisjointUnionConcept = "RemoveDisjointUnion";
+	public static final String addSameIndividualConcept = "AddSameIndividual";
+	public static final String removeSameIndividualConcept = "RemoveSameIndividual";
+	public static final String addIndividualDataPropertyConcept = "AddIndividualDataProperty";
+	public static final String removeIndividualDataPropertyConcept = "RemoveIndividualDataProperty";
+	public static final String addIndividualObjectPropertyConcept = "AddIndividualObjectProperty";
+	public static final String removeIndividualObjectPropertyConcept = "RemoveIndividualObjectProperty";
+	public static final String addDifferentIndividualConcept = "AddDifferentIndividual";
+	public static final String removeDifferentIndividualConcept = "RemoveDifferentIndividual";
+	public static final String addClassConcept = "AddClass";
+	public static final String addIndividualConcept = "AddIndividual";
+	public static final String addObjectPropertyConcept = "AddObjectProperty";
+	public static final String addDataPropertyConcept = "AddDataProperty";
+	public static final String removeClassConcept = "RemoveClass";
+	public static final String removeIndividualConcept = "RemoveIndividual";
+	public static final String removeDataPropertyConcept = "RemoveDataProperty";
+	public static final String removeObjectPropertyConcept = "RemoveObjectProperty";
+	public static final String addDatatypeConcept = "AddDatatype";
+	public static final String removeDatatypeConcept = "RemoveDatatype";
+	
+	public static final String addAsymmetricObjectPropertyConcept = "AddAsymmetricObjectProperty";
+	public static final String removeAsymmetricObjectPropertyConcept = "RemoveAsymmetricObjectProperty";
+	public static final String addDisjointObjectPropertyConcept = "AddDisjointObjectProperty";
+	public static final String removeDisjointObjectPropertyConcept = "RemoveDisjointObjectProperty";
+	public static final String addEquivalentObjectPropertyConcept = "AddEquivalentObjectProperty";
+	public static final String removeEquivalentObjectPropertyConcept = "RemoveEquivalentObjectProperty";
+	public static final String addFunctionalObjectPropertyConcept = "AddFunctionalObjectProperty";
+	public static final String removeFunctionalObjectPropertyConcept = "RemoveFunctionalObjectProperty";
+	public static final String addInverseFunctionalObjectPropertyConcept = "AddInverseFunctionalObjectProperty";
+	public static final String removeInverseFunctionalObjectProperty = "RemoveInverseFunctionalObjectProperty";
+	public static final String addInverseObjectPropertyConcept = "AddInverseObjectProperty";
+	public static final String removeInverseObjectPropertyConcept = "RemoveInverseObjectProperty";
+	public static final String addIrreflexiveObjectPropertyConcept = "AddIrreflexiveObjectProperty";
+	public static final String removeIrreflexiveObjectPropertyConcept = "RemoveIrreflexiveObjectProperty";
+	public static final String addObjectPropertyDomainConcept = "AddObjectPropertyDomain";
+	public static final String removeObjectPropertyDomainConcept = "RemoveObjectPropertyDomain";
+	public static final String addObjectPropertyRangeConcept = "AddObjectPropertyRange";
+	public static final String removeObjectPropertyRangeConcept = "RemoveObjectPropertyRange";
+	public static final String addReflexiveObjectPropertyConcept = "AddReflexiveObjectProperty";
+	public static final String removeReflexiveObjectPropertyConcept = "RemoveReflexiveObjectProperty";
+	public static final String addSubObjectPropertyOfConcept = "AddSubObjectPropertyOf";
+	public static final String removeSubObjectPropertyOfConcept = "RemoveSubObjectPropertyOf";
+	public static final String addSymmetricObjectPropertyConcept = "AddSymmetricObjectProperty";
+	public static final String removeSymmetricObjectPropertyConcept = "RemoveSymmetricObjectProperty";
+	public static final String addTransitiveObjectPropertyConcept = "AddTransitiveObjectProperty";
+	public static final String removeTransitiveObjectPropertyConcept = "RemoveTransitiveObjectProperty";
+	
+	public static final String addDataPropertyDomainConcept = "AddDataPropertyDomain";
+	public static final String removeDataPropertyDomainConcept = "RemoveDataPropertyDomain";
+	public static final String addDataPropertyRangeConcept = "AddDataPropertyRange";
+	public static final String removeDataPropertyRangeConcept = "RemoveDataPropertyRange";
+	public static final String addDisjointDataPropertyConcept = "AddDisjointDataProperty";
+	public static final String removeDisjointDataPropertyConcept = "RemoveDisjointDataProperty";
+	public static final String addEquivalentDataPropertyConcept = "AddEquivalentDataProperty";
+	public static final String removeEquivalentDataPropertyConcept = "RemoveEquivalentDataProperty";
+	public static final String addFunctionalDataPropertyConcept = "AddFunctionalDataProperty";
+	public static final String removeFunctionalDataPropertyConcept = "RemoveFunctionalDataProperty";
+	public static final String addSubDataPropertyOfConcept = "AddSubDataPropertyOf";
+	public static final String removeSubDataPropertyOfConcept = "RemoveSubDataPropertyOf";
+	
+	public static final String changeSpecificationConcept = "ChangeSpecification";
+	public static final String LogConcept = "Log";
+	
+	public static final String causeChange = "causeChange";
+	public static final String cost = "cost";
+	public static final String date = "date";
+	public static final String hasAuthor = "hasAuthor";
+	public static final String hasPreviousChange = "hasPreviousChange";
+	public static final String priority = "priority";
+	public static final String relevance = "relevance";
+	public static final String time = "time";
+	public static final String appliedAxiom = "appliedAxiom";
+	public static final String consistsOf = "consistsOf";
+	public static final String consistsOfAtomicOperation = "consistsOfAtomicOperation";
+	public static final String hasRelatedEntity = "hasRelatedEntity";
+	public static final String hasEntityState = "hasEntityState";
+	public static final String hasOntologyState = "hasOntologyState";
+	public static final String hasRole = "hasRole";
+	
+	public static final String AxiomConcept = "Axiom";
+	public static final String ClassAxiomConcept = "ClassAxiom";
+	public static final String DisjointClassesConcept = "DisjointClasses";
+	public static final String DisjointUnionConcept = "DisjointUnion";
+	public static final String EquivalentClassesConcept = "EquivalentClasses";
+	public static final String SubClassOfConcept = "SubClassOf";
+	public static final String DataPropertyAxiomConcept = "DataPropertyAxiom";
+	public static final String DataPropertyDomainConcept = "DataPropertyDomain";
+	public static final String DataPropertyRangeConcept = "DataPropertyRange";
+	public static final String DisjointDataPropertiesConcept = "DisjointDataProperties";
+	public static final String EquivalentDataPropertiesConcept = "EquivalentDataProperties";
+	public static final String FunctionalDataPropertyConcept = "FunctionalDataProperty";
+	public static final String SubDataPropertyOfConcept = "SubDataPropertyOf";
+	public static final String DeclarationConcept = "Declaration";
+	public static final String EntityAnnotationConcept = "EntityAnnotation";
+	public static final String FactConcept = "Fact";
+	public static final String ClassAssertionConcept = "ClassAssertion";
+	public static final String DataPropertyAssertionConcept = "DataPropertyAssertion";
+	public static final String DifferentIndividualsConcept = "DifferentIndividuals";
+	public static final String NegativeDataPropertyAssertionConcept = "NegativeDataPropertyAssertion";
+	public static final String NegativeObjectPropertyAssertionConcept = "NegativeObjectPropertyAssertion";
+	public static final String ObjectPropertyAssertionConcept = "ObjectPropertyAssertion";
+	public static final String SameIndividualConcept = "SameIndividual";
+	public static final String AsymmetricObjectPropertyConcept = "AsymmetricObjectProperty";
+	public static final String DisjointObjectPropertiesConcept = "DisjointObjectProperties";
+	public static final String EquivalentObjectPropertiesConcept = "EquivalentObjectProperties";
+	public static final String FunctionalObjectPropertyConcept = "FunctionalObjectProperty";
+	public static final String InverseFunctionalObjectPropertyConcept = "InverseFunctionalObjectProperty";
+	public static final String InverseObjectPropertiesConcept = "InverseObjectProperties";
+	public static final String IrreflexiveObjectPropertyConcept = "IrreflexiveObjectProperty";
+	public static final String ObjectPropertyDomainConcept = "ObjectPropertyDomain";
+	public static final String ObjectPropertyRangeConcept = "ObjectPropertyRange";
+	public static final String ReflexiveObjectPropertyConcept = "ReflexiveObjectProperty";
+	public static final String SubObjectPropertyOfConcept = "SubObjectPropertyOf";
+	public static final String SymmetricObjectPropertyConcept = "SymmetricObjectProperty";
+	public static final String TransitiveObjectPropertyConcept = "TransitiveObjectProperty";
+	
+	public static final String OWLEntityConcept = "OWLEntity";
+	public static final String DataPropertyConcept = "DataProperty";
+	public static final String DatatypeConcept = "Datatype";
+	public static final String IndividualConcept = "Individual";
+	public static final String ObjectPropertyConcept = "ObjectProperty";
+	public static final String OWLClassConcept = "OWLClass";
+	
+	public static final String axiomAnnotation = "axiomAnnotation";
+	public static final String disjointClasses = "disjointClasses";
+	public static final String unionClass = "unionClass";
+	public static final String equivalentClasses = "equivalentClasses";
+	public static final String subClass = "subClass";
+	public static final String superClass = "superClass";
+	public static final String dataProperty = "dataProperty";
+	public static final String domain = "domain";
+	public static final String range = "range";
+	public static final String dataProperties = "dataProperties";
+	public static final String subDataProperty = "subDataProperty";
+	public static final String superDataProperty = "superDataProperty";
+	public static final String entity = "entity";
+	public static final String entityAnnotation = "entityAnnotation";
+	public static final String individual = "individual";
+	public static final String sourceIndividual = "sourceIndividual";
+	public static final String targetValue = "targetValue";
+	public static final String differentIndividuals = "differentIndividuals";
+	public static final String sameIndividuals = "sameIndividuals";
+	public static final String objectProperty = "objectProperty";
+	public static final String targetIndividual = "targetIndividual";
+	public static final String disjointObjectProperties = "disjointObjectProperties";
+	public static final String equivalentObjectProperties = "equivalentObjectProperties";
+	public static final String inverseObjectProperties = "inverseObjectProperties";
+	public static final String subObjectProperties = "subObjectProperties";
+	public static final String superObjectProperty = "superObjectProperty";
+	public static final String OWLClass = "class";
+	
+	public static final String hasLastChange = "hasLastChange";
+	
+	public static final String appliedToOntology = "appliedToOntology";
+	public static final String hasRelatedOntology = "hasRelatedOntology";
+	
+	public static final String initialTimestamp = "initialTimestamp";
+	public static final String lastTimestamp = "lastTimestamp";
+	public static final String changeFromVersion = "changeFromVersion";
+	public static final String changeToVersion = "changeToVersion";
+	public static final String hasChange = "hasChange";
+	
+	
+	//Workflow constants
+	public static final String ApprovedState = "http://omv.ontoware.org/2007/07/workflow#Approved";
+	public static final String DeletedState = "http://omv.ontoware.org/2007/07/workflow#Deleted";
+	public static final String DraftState = "http://omv.ontoware.org/2007/07/workflow#Draft";
+	public static final String ToBeApprovedState = "http://omv.ontoware.org/2007/07/workflow#ToBeApproved";
+	public static final String ToBeDeletedState = "http://omv.ontoware.org/2007/07/workflow#ToBeDeleted";
+	public static final String PublishState = "http://omv.ontoware.org/2007/07/workflow#Published";
+	public static final String timestamp="timestamp";
+	public static final String performedBy="performedBy";
+	public static final String relatedChange="relatedChange";
+	public static final String relatedOntology="relatedOntology";
+	public static final String ActionConcept="Action";
+	public static final String SubjectExpert="SubjectExpert";
+	public static final String Validator="Validator";
+	public static final String Viewer="Viewer";
+	
+	
 	/*RDFS Parameters
 	 * 
 	 */
@@ -204,6 +414,7 @@ public class Constants {
 	public static final String BootStrapPeerIP = "bootStrapPeerIP";
 	public static final String PeerRouterIP = "peerRouterIP";
 	public static final String discoveryFrec="discoveryFrec";
+	
 	public static final String DefaultLocalRegistry = "O2serverfiles/localRegistry.owl";
 	
 	/*
