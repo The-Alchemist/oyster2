@@ -1,4 +1,4 @@
-package org.neon_toolkit.registry.api;
+package org.neon_toolkit.registry.api.properties;
 
 
 import java.util.Iterator;

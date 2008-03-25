@@ -28,9 +28,46 @@ import org.neon_toolkit.omv.api.core.OMVOntologyType;
 import org.neon_toolkit.omv.api.core.OMVOrganisation;
 import org.neon_toolkit.omv.api.core.OMVParty;
 import org.neon_toolkit.omv.api.core.OMVPerson;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVCompositeChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
 import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
 import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingProperty;
 import org.neon_toolkit.omv.api.extensions.peer.OMVPeer;
+import org.neon_toolkit.owlodm.api.Axiom;
+import org.neon_toolkit.owlodm.api.Axiom.Declaration;
+import org.neon_toolkit.owlodm.api.Axiom.EntityAnnotation;
+import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.DisjointClasses;
+import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.DisjointUnion;
+import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.EquivalentClasses;
+import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.SubClassOf;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.DataPropertyDomain;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.DataPropertyRange;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.DisjointDataProperties;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.EquivalentDataProperties;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.FunctionalDataProperty;
+import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom.SubDataPropertyOf;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.ClassAssertion;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.DataPropertyAssertion;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.DifferentIndividuals;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.NegativeDataPropertyAssertion;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.NegativeObjectPropertyAssertion;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.ObjectPropertyAssertion;
+import org.neon_toolkit.owlodm.api.Axiom.Fact.SameIndividual;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.AsymmetricObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.DisjointObjectProperties;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.EquivalentObjectProperties;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.FunctionalObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.InverseFunctionalObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.InverseObjectProperties;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.IrreflexiveObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyDomain;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyRange;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ReflexiveObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SubObjectPropertyOf;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SymmetricObjectProperty;
+import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.TransitiveObjectProperty;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Properties;
@@ -70,6 +107,37 @@ public class Oyster2Manager{
 		System.out.println("Created new Manager");
 	    }
 
+	/**
+	 * Set the Peer to not start the exchange process
+	 * i.e. when oyster will be open and close quick 
+	 * @param simplePeer specifies if Oyster2 should be simple
+	 */
+	public static void setSimplePeer(boolean simplePeer)
+    {
+		mOyster2.setIsSimple(simplePeer);
+    }
+
+	/**
+	 * Set the Peer to cache information during the exchange process
+	 * i.e. save locally remote objects. 
+	 * Note: This property has effect only if the peer is not set
+	 * as a simple peer.
+	 * @param caching specifies if Oyster2 should cache information
+	 */
+	public static void setCachingPeer(boolean caching)
+    {
+		mOyster2.setCaching(caching);
+    }
+
+	/**
+	 * Specify if workflow support is enabled
+	 * @param workflowSupport
+	 */
+	public static void setWorkflowSupport(boolean workflowSupport)
+    {
+		mOyster2.setWorkflowSupport(workflowSupport);
+    }
+	
 	/**
 	 * Creates a new connection to Oyster2 registry. Initializes
 	 * the registry factory and its preference store with
@@ -229,6 +297,7 @@ public class Oyster2Manager{
 			if (omv.getContainsRBox()!=null) serial = serial + getData(omv.getContainsRBox().toString(),"containsRBox");
 			if (omv.getContainsABox()!=null) serial = serial + getData(omv.getContainsABox().toString(),"containsABox");
 			serial = serial + getDataSetString(omv.getEndorsedBy(),"endorsedBy",1);
+			serial = serial+ getData(omv.getHasOntologyState(),"hasOntologyState");
 			serial = serial + "}\n\n";
 		}
 		}catch(Exception ignore){
@@ -300,6 +369,85 @@ public class Oyster2Manager{
 			//-- ignore
 		}
 		return serial;
+	}
+	
+	/**
+	 * Return the string representation of a set of OMVMapping objects.
+	 * @param OMVSet the set of OMVMapping objects.
+	 * @return the string representation of the set of OMVMapping objects.
+	 */
+	public static String serializeOMVChanges(List<OMVChange> OMVSet){
+		String serial="";
+		
+		Iterator it = OMVSet.iterator();
+		try{
+		while(it.hasNext()){
+			OMVChange omv = (OMVChange)it.next();
+			//System.out.println("processing change: "+omv.getURI());
+			serial=serial+"OMVChange {\n"+"\t"+"type:"+omv.getClass().getSimpleName()+"\n"+
+			getData(omv.getURI(),"URI")+
+			getData(omv.getCost(),"cost")+
+			getData(omv.getDate(),"date")+
+			getData(omv.getPriority(),"priority")+
+			getData(omv.getRelevance(),"relevance")+
+			getData(omv.getVersion(),"version")+
+			getData(omv.getTime(),"time")+
+			getData(omv.getHasPreviousChange(),"hasPreviousChange");
+			if (omv.getAppliedToOntology()!=null) serial = serial + getData(omv.getAppliedToOntology().getURI(),"appliedToOntology");
+			serial=serial+getDataSetString(omv.getHasAuthor(),"hasAuthor",1);
+			serial=serial+getDataSetString(omv.getCauseChange(),"causeChange",100);
+			if (omv instanceof OMVAtomicChange){
+				String temp=getAxiomString(((OMVAtomicChange)omv).getAppliedAxiom());
+				serial=serial+"\t"+"appliedAxiom: "+"\n"+temp;
+			}else if (omv instanceof OMVCompositeChange){
+				serial=serial+getDataSetString(((OMVCompositeChange)omv).getConsistsOf(),"consistsOf",100);
+			}else if (omv instanceof OMVEntityChange){
+				serial=serial+getData(((OMVEntityChange)omv).getHasEntityState(),"hasEntityState");
+				serial=serial+getDataSetString(((OMVEntityChange)omv).getHasRelatedEntity(),"hasRelatedEntity",100);
+				serial=serial+getDataSetString(((OMVEntityChange)omv).getConsistsOfAtomicOperation(),"consistsOfAtomicOperation",100);
+			}
+			serial = serial + "}\n\n";
+		}
+		}catch(Exception ignore){
+			//-- ignore
+		}
+		return serial;
+	}
+	
+	private static String getAxiomString(Axiom a){
+		if (a instanceof DisjointClasses) return "\t"+ getDataSetString(((DisjointClasses)a).getDisjointClasses(),"disjointClasses",100);
+		else if (a instanceof DisjointUnion) return "\t"+getData(((DisjointUnion)a).getUnionClass(),"unionClass")+"\t"+getDataSetString(((DisjointUnion)a).getDisjointClasses(),"disjointClasses",100);
+		else if (a instanceof EquivalentClasses) return "\t"+getDataSetString(((EquivalentClasses)a).getEquivalentClasses(),"equivalentClasses",100);
+		else if (a instanceof SubClassOf) return "\t"+getData(((SubClassOf)a).getSubClass(),"subClass")+"\t"+getData(((SubClassOf)a).getSuperClass(),"superClass");
+		else if (a instanceof DataPropertyDomain) return "\t"+getData(((DataPropertyDomain)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyDomain)a).getDomain(),"domain");
+		else if (a instanceof DataPropertyRange) return "\t"+getData(((DataPropertyRange)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyRange)a).getRange(),"range");
+		else if (a instanceof DisjointDataProperties) return "\t"+getDataSetString(((DisjointDataProperties)a).getDataProperties(),"dataProperties",100);
+		else if (a instanceof EquivalentDataProperties) return "\t"+getDataSetString(((EquivalentDataProperties)a).getDataProperties(),"dataProperties",100);
+		else if (a instanceof FunctionalDataProperty) return "\t"+getData(((FunctionalDataProperty)a).getDataProperty(),"dataProperty");
+		else if (a instanceof SubDataPropertyOf) return "\t"+getData(((SubDataPropertyOf)a).getSubDataProperty(),"subDataProperty")+"\t"+getData(((SubDataPropertyOf)a).getSuperDataProperty(),"superDataProperty");
+		else if (a instanceof Declaration) return "\t"+getData(((Declaration)a).getEntity(),"entity");
+		else if (a instanceof EntityAnnotation) return "\t"+getData(((EntityAnnotation)a).getEntity(),"entity")+"\t"+getDataSetString(((EntityAnnotation)a).getEntityAnnotation(),"entityAnnotation",100);
+		else if (a instanceof ClassAssertion) return "\t"+getData(((ClassAssertion)a).getOWLClass(),"OWLClass")+"\t"+getData(((ClassAssertion)a).getIndividual(),"individual");
+		else if (a instanceof DataPropertyAssertion) return "\t"+getData(((DataPropertyAssertion)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((DataPropertyAssertion)a).getTargetValue(),"targetValue");
+		else if (a instanceof DifferentIndividuals) return "\t"+getDataSetString(((DifferentIndividuals)a).getDifferentIndividuals(),"differentIndividuals",100);
+		else if (a instanceof NegativeDataPropertyAssertion) return "\t"+getData(((NegativeDataPropertyAssertion)a).getDataProperty(),"dataProperty")+"\t"+getData(((NegativeDataPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((NegativeDataPropertyAssertion)a).getTargetValue(),"targetValue");
+		else if (a instanceof NegativeObjectPropertyAssertion) return "\t"+getData(((NegativeObjectPropertyAssertion)a).getObjectProperty(),"objectProperty")+"\t"+getData(((NegativeObjectPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((NegativeObjectPropertyAssertion)a).getTargetIndividual(),"targetIndividual");
+		else if (a instanceof ObjectPropertyAssertion) return "\t"+getData(((ObjectPropertyAssertion)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((ObjectPropertyAssertion)a).getTargetIndividual(),"targetIndividual");
+		else if (a instanceof SameIndividual) return "\t"+getDataSetString(((SameIndividual)a).getSameIndividuals(),"sameIndividuals",100);
+		else if (a instanceof AsymmetricObjectProperty) return "\t"+getData(((AsymmetricObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof DisjointObjectProperties) return "\t"+getDataSetString(((DisjointObjectProperties)a).getDisjointObjectProperties(),"disjointObjectProperties",100);
+		else if (a instanceof EquivalentObjectProperties) return "\t"+getDataSetString(((EquivalentObjectProperties)a).getEquivalentObjectProperties(),"equivalentObjectProperties",100);
+		else if (a instanceof FunctionalObjectProperty) return "\t"+getData(((FunctionalObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof InverseFunctionalObjectProperty) return "\t"+getData(((InverseFunctionalObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof InverseObjectProperties) return "\t"+getDataSetString(((InverseObjectProperties)a).getInverseObjectProperties(),"inverseObjectProperties",100);
+		else if (a instanceof IrreflexiveObjectProperty) return "\t"+getData(((IrreflexiveObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof ObjectPropertyDomain) return "\t"+getData(((ObjectPropertyDomain)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyDomain)a).getDomain(),"domain");
+		else if (a instanceof ObjectPropertyRange) return "\t"+getData(((ObjectPropertyRange)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyRange)a).getRange(),"range");
+		else if (a instanceof ReflexiveObjectProperty) return "\t"+getData(((ReflexiveObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof SymmetricObjectProperty) return "\t"+getData(((SymmetricObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof TransitiveObjectProperty) return "\t"+getData(((TransitiveObjectProperty)a).getObjectProperty(),"objectProperty");
+		else if (a instanceof SubObjectPropertyOf) return "\t"+getData(((SubObjectPropertyOf)a).getSuperObjectProperty(),"superObjectProperty")+"\t"+getDataSetString(((SubObjectPropertyOf)a).getSubObjectProperties(),"subObjectProperties",100);		
+		return null;
 	}
 	
 	/**

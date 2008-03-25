@@ -116,9 +116,9 @@ public class StartServer {
 	 * Closes the connection to Oyster2 registry. Destroys Kaon2 instance.
 	 */
 	public static void closeConnection(){
+		appClosed=true;
 		mOyster2.shutdown();
 		if (startKAON2 && !onlineKAON2) serverProcess.destroy();	
-		//System.exit(0);
 	}
 	
 	
@@ -133,15 +133,15 @@ public class StartServer {
 	}
 		
 	
-	private static void shutdown(){
-		mOyster2.shutdown();
-		serverProcess.destroy();	
-		System.exit(0);
+	private static void shutdown(){ //NOT NECESSARY ANYMORE
+		//appClosed=true;
+		//mOyster2.shutdown();
+		//if (startKAON2 && !onlineKAON2) serverProcess.destroy();	
+		//System.exit(0);
 	}
 	
 		
 	public static void run() {
-		//openWindowAndBlock();
 		while (!appClosed) {
 			
 			try {

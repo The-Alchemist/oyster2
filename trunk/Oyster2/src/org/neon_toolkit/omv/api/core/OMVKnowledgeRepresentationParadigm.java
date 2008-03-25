@@ -10,7 +10,7 @@ import java.util.HashSet;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVKnowledgeRepresentationParadigm {
+public class OMVKnowledgeRepresentationParadigm extends OMVCoreObject{
 	
 	private String name;
 	private String acronym;

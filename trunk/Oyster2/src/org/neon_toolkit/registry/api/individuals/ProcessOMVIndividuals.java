@@ -1,4 +1,4 @@
-package org.neon_toolkit.registry.api;
+package org.neon_toolkit.registry.api.individuals;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -57,6 +57,7 @@ public class ProcessOMVIndividuals{
 	 OMVLocation locationReply=null;
 	 OMVPerson personReply=null;
 	 OMVOrganisation organisationReply=null;
+	 
 	 //OMVOntology oReferencesReply=null;
 	 //OMVOntologyDomain oDomainReplySub=null;
 	 if (!onProcess.contains(ontoIndiv)){
@@ -83,7 +84,7 @@ public class ProcessOMVIndividuals{
 			else if (whichClass.equalsIgnoreCase("organisation")) organisationReply = new OMVOrganisation();
 			//else if (whichClass.equalsIgnoreCase("oReferences")) oReferencesReply = new OMVOntology();
 			//else if (whichClass.equalsIgnoreCase("oDomainSub")) oDomainReplySub = new OMVOntologyDomain();
-			
+						
 			Collection keySet = dataPropertyMap.keySet();
 			Iterator keys = keySet.iterator();
 			while(keys.hasNext()){
@@ -500,6 +501,9 @@ public class ProcessOMVIndividuals{
 		
 		if (URI.equalsIgnoreCase(Constants.OMVURI+Constants.timeStamp)) {
 			mainOntoReply.setTimeStamp(value);return mainOntoReply;
+		}
+		if (URI.equalsIgnoreCase(Constants.WORKFLOWURI+Constants.hasOntologyState)) {
+			mainOntoReply.setHasOntologyState(value);return mainOntoReply;
 		}
 	  }catch(Exception e){
 			System.out.println(e.toString()+" Search Problem in createOMVOntology");
@@ -925,6 +929,9 @@ public class ProcessOMVIndividuals{
 			if (organisationReply!=null) personReply.addIsContactPerson(organisationReply);
 			organisationReply = null;
 			return personReply;
+		}
+		if (URI.equalsIgnoreCase(Constants.WORKFLOWURI+Constants.hasRole)) { 
+			personReply.setHasRole(value);return personReply;
 		}
 		return personReply;
 	}

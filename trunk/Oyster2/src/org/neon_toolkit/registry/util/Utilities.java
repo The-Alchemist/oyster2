@@ -12,7 +12,7 @@ import org.semanticweb.kaon2.api.owl.elements.*;
  *
  * @author Jeen Broekstra
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  **/
 public class Utilities {
 
@@ -92,6 +92,8 @@ public class Utilities {
     	if (prop.equalsIgnoreCase("eMail")) return true;
     	if (prop.equalsIgnoreCase("phoneNumber")) return true;
     	if (prop.equalsIgnoreCase("faxNumber")) return true;
+    	
+    	//Change ontology data properties of multiple value...none
     	
     	return false;
     }

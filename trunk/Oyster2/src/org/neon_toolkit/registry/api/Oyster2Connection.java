@@ -11,10 +11,11 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.text.DateFormat;
 import java.util.Locale;
-//import java.util.regex.*;
+import org.neon_toolkit.omv.api.core.OMVCoreObject;
 import org.neon_toolkit.omv.api.core.OMVFormalityLevel;
 import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
 import org.neon_toolkit.omv.api.core.OMVLicenseModel;
+import org.neon_toolkit.omv.api.core.OMVLocation;
 import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
 import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringMethodology;
@@ -25,14 +26,36 @@ import org.neon_toolkit.omv.api.core.OMVOntologyTask;
 import org.neon_toolkit.omv.api.core.OMVOntologyType;
 import org.neon_toolkit.omv.api.core.OMVOrganisation;
 import org.neon_toolkit.omv.api.core.OMVPerson;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChangeSpecification;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
 import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
-//import org.neon_toolkit.omv.api.core.OMVLocation;
-//import org.neon_toolkit.omv.api.core.OMVParty;
-//import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingEvidence;
-//import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingMethod;
-//import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingParameter;
-//import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingProperty;
 import org.neon_toolkit.omv.api.extensions.peer.OMVPeer;
+import org.neon_toolkit.registry.api.change.ChangeManagement;
+import org.neon_toolkit.registry.api.conditions.MappingConditions;
+import org.neon_toolkit.registry.api.conditions.OMVConditions;
+import org.neon_toolkit.registry.api.duplicates.processDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processFLDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processKRPDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processLMDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processLocationDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processMappingDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processODDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOEMDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOETDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOLDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOSDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOTADuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOTDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processOrganisationDuplicates;
+import org.neon_toolkit.registry.api.duplicates.processPersonDuplicates;
+import org.neon_toolkit.registry.api.individuals.ProcessMappingIndividuals;
+import org.neon_toolkit.registry.api.individuals.ProcessOMVIndividuals;
+import org.neon_toolkit.registry.api.individuals.ProcessPeerIndividuals;
+import org.neon_toolkit.registry.api.properties.MappingProperties;
+import org.neon_toolkit.registry.api.properties.OMVProperties;
+import org.neon_toolkit.registry.api.workflow.WorkflowManagement;
 import org.neon_toolkit.registry.core.AdvertInformer;
 import org.neon_toolkit.registry.core.LocalExpertiseRegistry;
 import org.neon_toolkit.registry.core.QueryFormulator;
@@ -68,9 +91,23 @@ public class Oyster2Connection {
 	static private int TIMEOUT=120000; 
 	static private Set<OMVOntology> OMVSetDistributed=new HashSet <OMVOntology>();
 	static private Set<OMVMapping> OMVMappingSetDistributed=new HashSet <OMVMapping>();
+	static private Set<OMVPerson> OMVPersonSetDistributed=new HashSet <OMVPerson>();
+	static private Set<OMVOrganisation> OMVOrganisationSetDistributed=new HashSet <OMVOrganisation>();
+	static private Set<OMVOntologyEngineeringTool> OMVOETSetDistributed=new HashSet <OMVOntologyEngineeringTool>();
+	static private Set<OMVOntologyEngineeringMethodology> OMVOEMSetDistributed=new HashSet <OMVOntologyEngineeringMethodology>();
+	static private Set<OMVKnowledgeRepresentationParadigm> OMVKRPSetDistributed=new HashSet <OMVKnowledgeRepresentationParadigm>();
+	static private Set<OMVOntologyDomain> OMVODSetDistributed=new HashSet <OMVOntologyDomain>();
+	static private Set<OMVOntologyType> OMVOTSetDistributed=new HashSet <OMVOntologyType>();
+	static private Set<OMVOntologyTask> OMVOTASetDistributed=new HashSet <OMVOntologyTask>();
+	static private Set<OMVOntologyLanguage> OMVOLSetDistributed=new HashSet <OMVOntologyLanguage>();
+	static private Set<OMVOntologySyntax> OMVOSSetDistributed=new HashSet <OMVOntologySyntax>();
+	static private Set<OMVFormalityLevel> OMVFLSetDistributed=new HashSet <OMVFormalityLevel>();
+	static private Set<OMVLicenseModel> OMVLMSetDistributed=new HashSet <OMVLicenseModel>();
+	static private Set<OMVLocation> OMVLocationSetDistributed=new HashSet <OMVLocation>();
 	static private Set<QueryReply> qReplyDistributedSet= new HashSet <QueryReply>();
 	static private boolean waitMore=true;
 	static private int OMVObject;
+	private String lastChange;
 	
 	public Oyster2Connection()
     {
@@ -90,7 +127,15 @@ public class Oyster2Connection {
 		else if (o instanceof OMVMapping){
 			register ((OMVMapping)o);
 		}
-		else {
+		else if (o instanceof OMVChange || o instanceof OMVChangeSpecification){
+			ChangeManagement cMgmt= new ChangeManagement();
+			if (o instanceof OMVChange){
+				lastChange=cMgmt.register ((OMVChange)o);
+			}else{
+				cMgmt.register ((OMVChangeSpecification)o);
+			}
+		}
+		else if (o instanceof OMVCoreObject){
 			OMVOntology nO = new OMVOntology();
 			nO.addName("temporaryTrick");
 			nO.setURI("http://localhost/temporaryTrick#");
@@ -109,7 +154,9 @@ public class Oyster2Connection {
 			register (nO);
 			remove (nO);
 		}
-		
+		else {
+			System.out.println("Object not supported..");
+		}
 	}
 		
 	/**
@@ -127,24 +174,15 @@ public class Oyster2Connection {
 		else if (o instanceof OMVMapping){
 			replace ((OMVMapping)o);
 		}
+		else if (o instanceof OMVChangeSpecification){
+			ChangeManagement cMgmt= new ChangeManagement();
+			cMgmt.replace ((OMVChangeSpecification)o);
+		}
+		else if (o instanceof OMVCoreObject){ //FOR THE REST OF OBJECTS
+			replace ((OMVCoreObject)o);
+		}
 		else {
-			OMVOntology nO = new OMVOntology();
-			nO.addName("temporaryTrick");
-			nO.setURI("http://localhost/temporaryTrick#");
-			if (o instanceof OMVPerson) nO.addHasCreator((OMVPerson)o);
-			else if (o instanceof OMVOrganisation) nO.addHasCreator((OMVOrganisation)o);
-			else if (o instanceof OMVFormalityLevel) nO.setHasFormalityLevel((OMVFormalityLevel)o);
-			else if (o instanceof OMVKnowledgeRepresentationParadigm) nO.addUsedKnowledgeRepresentationParadigm((OMVKnowledgeRepresentationParadigm)o);
-			else if (o instanceof OMVLicenseModel) nO.setHasLicense((OMVLicenseModel)o);
-			else if (o instanceof OMVOntologyDomain) nO.addHasDomain((OMVOntologyDomain)o);
-			else if (o instanceof OMVOntologyEngineeringMethodology) nO.addUsedOntologyEngineeringMethodology((OMVOntologyEngineeringMethodology)o);
-			else if (o instanceof OMVOntologyEngineeringTool) nO.addUsedOntologyEngineeringTool((OMVOntologyEngineeringTool)o);
-			else if (o instanceof OMVOntologyLanguage) nO.setHasOntologyLanguage((OMVOntologyLanguage)o);
-			else if (o instanceof OMVOntologySyntax) nO.setHasOntologySyntax((OMVOntologySyntax)o);
-			else if (o instanceof OMVOntologyTask) nO.addDesignedForOntologyTask((OMVOntologyTask)o);
-			else if (o instanceof OMVOntologyType) nO.setIsOfType((OMVOntologyType)o);
-			replace (nO);
-			remove (nO);
+			System.out.println("Object not supported..");
 		}
 	}
 
@@ -161,7 +199,16 @@ public class Oyster2Connection {
 		else if (o instanceof OMVMapping){
 			remove ((OMVMapping)o);
 		}
-		//TODO FOR THE REST OF OBJECTS
+		else if (o instanceof OMVChangeSpecification){
+			ChangeManagement cMgmt= new ChangeManagement();
+			cMgmt.remove ((OMVChangeSpecification)o);
+		}
+		else if (o instanceof OMVCoreObject){ //FOR THE REST OF OBJECTS
+			remove ((OMVCoreObject)o);
+		}
+		else {
+			System.out.println("Object not supported..");
+		}
 	}
 
 	/**
@@ -180,6 +227,9 @@ public class Oyster2Connection {
 		}
 		else if (o instanceof OMVMapping){
 			OMVSet.addAll(searchMappings ((OMVMapping)o));
+		}
+		else {
+			System.out.println("Object not supported..");
 		}
 		return OMVSet;
 	}
@@ -208,6 +258,9 @@ public class Oyster2Connection {
 		else if (o instanceof OMVMapping){
 			OMVSet.addAll(searchMappings((OMVMapping)o, scope, peerSet));
 		}
+		else {
+			System.out.println("Object not supported..");
+		}
 		return OMVSet;
 	}
 
@@ -219,12 +272,12 @@ public class Oyster2Connection {
 	 * of an ontology, since this string (the path of the ontology) 
 	 * should be a normal url (java.net.URI). But you can 
 	 * use %20 instead of a blank space
-	 * @param URI is the path or URL of the ontology file.
+	 * @param URL is the path or URL of the ontology file.
 	 */
-	public void importOntology(String URI)
+	public void importOntology(String URL)
 	{
 		pList.clear();
-		pList=IOntology.extractMetadata(URI);
+		pList=IOntology.extractMetadata(URL);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
@@ -404,6 +457,41 @@ public class Oyster2Connection {
 	}
 
 	/**
+	 * Search Oyster2 registry to retrieve all available changes
+	 * for a specific ontology in historical order. 
+	 * @param o is the specified ontology 
+	 * @return The list of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public List<OMVChange> getChanges(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedChanges(o,false);
+	}
+	
+	/**
+	 * Search Oyster2 registry to retrieve changes
+	 * of specific kind for a specific ontology. 
+	 * @param o is the specified ontology 
+	 * @param c is the kind of ontology change
+	 * @return The set of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public Set<OMVChange> getChanges(OMVOntology o, OMVChange c){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedChanges(o,c);
+	}
+	
+	/**
+	 * Search Oyster2 registry to retrieve all ontologies with
+	 * change history. 
+	 * @return The set of OMVOntology objects
+	 */
+	public Set<OMVOntology> getOntologiesWithChanges(){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedOntologies();
+	}
+		
+	/**
 	 * Send a SPARQL query to Oyster2 local registry and returns the 
 	 * metadata entries that are part of the result.
 	 * @param sparqlQuery is the SPARQL query as a string.
@@ -434,7 +522,7 @@ public class Oyster2Connection {
 		}
 		else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2007/05/mappingomv#Mapping>")>0){
 			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
-			Set<OMVMapping> OMVSet1 = processMappings(qReply);
+			Set<OMVMapping> OMVSet1 = processMappingsReply(qReply);
 			if (OMVSet1.size()>0){
 				Iterator it = OMVSet1.iterator();
 				try{
@@ -447,6 +535,58 @@ public class Oyster2Connection {
 					//	-- ignore
 				}
 			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Person>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,2);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Organisation>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,3);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyEngineeringTool>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,4);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyEngineeringMethodology>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,5);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#KnowledgeRepresentationParadigm>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,6);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyDomain>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,7);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyType>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,8);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyTask>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,9);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyLanguage>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,10);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologySyntax>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,11);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#formalityLevel>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,12);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#LicenseModel>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,13);
+			OMVRet.addAll(OMVSet1);
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Location>")>0){
+			qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),query,Resource.DataResource);
+			Set<Object> OMVSet1 = processGeneralOMVReply(qReply,14);
+			OMVRet.addAll(OMVSet1);
 		}
 		return OMVRet;
 	}
@@ -512,6 +652,240 @@ public class Oyster2Connection {
 					//	-- ignore
 				}
 			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Person>")>0){
+			OMVPersonSetDistributed=new HashSet <OMVPerson>();
+			OMVObject=3;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(3);
+			if (OMVPersonSetDistributed.size()>0){
+				Iterator it = OMVPersonSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Organisation>")>0){
+			OMVOrganisationSetDistributed=new HashSet <OMVOrganisation>();
+			OMVObject=4;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(4);
+			if (OMVOrganisationSetDistributed.size()>0){
+				Iterator it = OMVOrganisationSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyEngineeringTool>")>0){
+			OMVOETSetDistributed=new HashSet <OMVOntologyEngineeringTool>();
+			OMVObject=5;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(5);
+			if (OMVOETSetDistributed.size()>0){
+				Iterator it = OMVOETSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyEngineeringMethodology>")>0){
+			OMVOEMSetDistributed=new HashSet <OMVOntologyEngineeringMethodology>();
+			OMVObject=6;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(6);
+			if (OMVOEMSetDistributed.size()>0){
+				Iterator it = OMVOEMSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#KnowledgeRepresentationParadigm>")>0){
+			OMVKRPSetDistributed=new HashSet <OMVKnowledgeRepresentationParadigm>();
+			OMVObject=7;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(7);
+			if (OMVKRPSetDistributed.size()>0){
+				Iterator it = OMVKRPSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyDomain>")>0){
+			OMVODSetDistributed=new HashSet <OMVOntologyDomain>();
+			OMVObject=8;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(8);
+			if (OMVODSetDistributed.size()>0){
+				Iterator it = OMVODSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyType>")>0){
+			OMVOTSetDistributed=new HashSet <OMVOntologyType>();
+			OMVObject=9;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(9);
+			if (OMVOTSetDistributed.size()>0){
+				Iterator it = OMVOTSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyTask>")>0){
+			OMVOTASetDistributed=new HashSet <OMVOntologyTask>();
+			OMVObject=10;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(10);
+			if (OMVOTASetDistributed.size()>0){
+				Iterator it = OMVOTASetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologyLanguage>")>0){
+			OMVOLSetDistributed=new HashSet <OMVOntologyLanguage>();
+			OMVObject=11;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(11);
+			if (OMVOLSetDistributed.size()>0){
+				Iterator it = OMVOLSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#OntologySyntax>")>0){
+			OMVOSSetDistributed=new HashSet <OMVOntologySyntax>();
+			OMVObject=12;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(12);
+			if (OMVOSSetDistributed.size()>0){
+				Iterator it = OMVOSSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#formalityLevel>")>0){
+			OMVFLSetDistributed=new HashSet <OMVFormalityLevel>();
+			OMVObject=13;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(13);
+			if (OMVFLSetDistributed.size()>0){
+				Iterator it = OMVFLSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#LicenseModel>")>0){
+			OMVLMSetDistributed=new HashSet <OMVLicenseModel>();
+			OMVObject=14;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(14);
+			if (OMVLMSetDistributed.size()>0){
+				Iterator it = OMVLMSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
+		}else if (sparqlQuery.indexOf("rdf:type <http://omv.ontoware.org/2005/05/ontology#Location>")>0){
+			OMVLocationSetDistributed=new HashSet <OMVLocation>();
+			OMVObject=15;
+			
+			searchManager.startSearch(null,query,peerList, false, false);
+			waitReply(15);
+			if (OMVLocationSetDistributed.size()>0){
+				Iterator it = OMVLocationSetDistributed.iterator();
+				try{
+					while(it.hasNext()){
+						Object omv = (Object)it.next();
+						OMVRet.add(omv);
+					}
+					
+				}catch(Exception ignore){
+					//	-- ignore
+				}
+			}
 		}
 		return OMVRet;
 	}
@@ -526,7 +900,7 @@ public class Oyster2Connection {
 	{
 		AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 		List peers = mInformer.getPeerList(mOyster2.getLocalHostOntology());
-		Map<String, OMVPeer> OMVPeerSet = processPeers(peers);
+		Map<String, OMVPeer> OMVPeerSet = processPeersReply(peers);
 		return OMVPeerSet;
 	}
 
@@ -544,7 +918,12 @@ public class Oyster2Connection {
 		Set<OMVOntology> OMVSet= new HashSet <OMVOntology>();
 		Individual peerIndiv = KAON2Manager.factory().individual(peerURI);
 		AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
-		Collection ontologySet = mInformer.getOntologyDoc(mOyster2.getLocalHostOntology(),peerIndiv);
+		//Collection ontologySet = mInformer.getOntologyDoc(mOyster2.getLocalHostOntology(),peerIndiv);
+		//TEST
+		String IP = mInformer.getPeerIP(mOyster2.getLocalHostOntology(), peerIndiv); 
+		Ontology registry=mInformer.openRemoteRegistry(IP);
+		Collection ontologySet = mInformer.getOntologyDoc(registry,peerIndiv);
+		//END TEST
 		Iterator ontology = ontologySet.iterator();
 		try{
 			while(ontology.hasNext()){
@@ -583,7 +962,7 @@ public class Oyster2Connection {
 		//Oyster2Query topicQuery = mFormulator.getTopicQuery();
 		Oyster2Query typeQuery = mFormulator.getTypeQuery();
 		qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource);
-		Set<OMVMapping> OMVSet = processMappings(qReply);
+		Set<OMVMapping> OMVSet = processMappingsReply(qReply);
 		return OMVSet;
 	}
 
@@ -621,6 +1000,75 @@ public class Oyster2Connection {
 		return OMVMappingSetDistributed;
 	}
 
+	public String getLastChangeId(){
+		return lastChange;
+	}
+	
+	public Set<OMVAtomicChange> getAtomicChanges(OMVEntityChange c){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getAtomicChanges(c);
+	}
+	
+	
+	//WORKFLOW METHODS
+	
+	public void submitToBeApproved(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.submitToBeApproved(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void submitToApproved(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.submitToApproved(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void submitToBeDeleted(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.submitToBeDeleted(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void rejectToBeApproved(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.rejectToBeApproved(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void rejectToApproved(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.rejectToApproved(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void rejectToDraft(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.rejectToDraft(changeURI, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void publish(OMVOntology fromPublicVersion, OMVOntology toPublicVersion, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.publish(fromPublicVersion, toPublicVersion, p);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	public void removeWorkflowHistory(OMVOntology o){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.removeWorkflowHistory(o);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	//REAL IMPLEMENTATIONS OF SOME PUBLIC METHODS
 	/**
 	 * Register a new ontology into Oyster2 registry.
 	 * @param o is the OMVOntology object representing the
@@ -648,7 +1096,7 @@ public class Oyster2Connection {
 		pList=MappingProperties.getMappingProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		if (isPropertyIn(prop))
-			IOntology.addConceptToRegistry(0,pList,13);
+			IOntology.addConceptToRegistry(1,pList,13);
 	}
 	
 	/**
@@ -686,6 +1134,31 @@ public class Oyster2Connection {
 	}
 	
 	/**
+	 * Removes an existing mapping in Oyster2 registry
+	 * @param o is the OMVMapping object representing the
+	 * mapping that will be removed.
+	 */
+	private void replace(OMVCoreObject o)
+	{
+		int concept=-1;
+		pList.clear();
+		if (o instanceof OMVPerson) {pList=OMVProperties.getPropertiesPerson((OMVPerson)o);concept=0;}
+		else if (o instanceof OMVOrganisation) {pList=OMVProperties.getPropertiesOrganisation((OMVOrganisation)o);concept=1;}
+		else if (o instanceof OMVFormalityLevel) {pList=OMVProperties.getPropertiesFormalityLevel((OMVFormalityLevel)o);concept=10;}
+		else if (o instanceof OMVKnowledgeRepresentationParadigm) {pList=OMVProperties.getPropertiesKRParadigm((OMVKnowledgeRepresentationParadigm)o);concept=4;}
+		else if (o instanceof OMVLicenseModel) {pList=OMVProperties.getPropertiesLicense((OMVLicenseModel)o);concept=11;}
+		else if (o instanceof OMVOntologyDomain) {pList=OMVProperties.getPropertiesOntologyDomain((OMVOntologyDomain)o);concept=5;}
+		else if (o instanceof OMVOntologyEngineeringMethodology) {pList=OMVProperties.getPropertiesOntologyEngineeringMethodology((OMVOntologyEngineeringMethodology)o);concept=3;}
+		else if (o instanceof OMVOntologyEngineeringTool) {pList=OMVProperties.getPropertiesOntologyEngineeringTool((OMVOntologyEngineeringTool)o);concept=2;}
+		else if (o instanceof OMVOntologyLanguage) {pList=OMVProperties.getPropertiesOntologyLanguage((OMVOntologyLanguage)o);concept=8;}
+		else if (o instanceof OMVOntologySyntax){ pList=OMVProperties.getPropertiesOntologySyntax((OMVOntologySyntax)o);concept=9;}
+		else if (o instanceof OMVOntologyTask) {pList=OMVProperties.getPropertiesOntologyTask((OMVOntologyTask)o);concept=7;}
+		else if (o instanceof OMVOntologyType) {pList=OMVProperties.getPropertiesOntologyType((OMVOntologyType)o);concept=6;}
+		if (concept>=0)
+			IOntology.addConceptToRegistry(2,pList,concept);
+	}
+	
+	/**
 	 * Removes an existing ontology in Oyster2 registry
 	 * @param o is the OMVOntology object representing the
 	 * ontology that will be removed.
@@ -714,7 +1187,32 @@ public class Oyster2Connection {
 		if (isPropertyIn(prop))
 			IOntology.addConceptToRegistry(4,pList,13);
 	}
-		
+	
+	/**
+	 * Removes an existing mapping in Oyster2 registry
+	 * @param o is the OMVMapping object representing the
+	 * mapping that will be removed.
+	 */
+	private void remove(OMVCoreObject o)
+	{
+		int concept=-1;
+		pList.clear();
+		if (o instanceof OMVPerson) {pList=OMVProperties.getPropertiesPerson((OMVPerson)o);concept=0;}
+		else if (o instanceof OMVOrganisation) {pList=OMVProperties.getPropertiesOrganisation((OMVOrganisation)o);concept=1;}
+		else if (o instanceof OMVFormalityLevel) {pList=OMVProperties.getPropertiesFormalityLevel((OMVFormalityLevel)o);concept=10;}
+		else if (o instanceof OMVKnowledgeRepresentationParadigm) {pList=OMVProperties.getPropertiesKRParadigm((OMVKnowledgeRepresentationParadigm)o);concept=4;}
+		else if (o instanceof OMVLicenseModel) {pList=OMVProperties.getPropertiesLicense((OMVLicenseModel)o);concept=11;}
+		else if (o instanceof OMVOntologyDomain) {pList=OMVProperties.getPropertiesOntologyDomain((OMVOntologyDomain)o);concept=5;}
+		else if (o instanceof OMVOntologyEngineeringMethodology) {pList=OMVProperties.getPropertiesOntologyEngineeringMethodology((OMVOntologyEngineeringMethodology)o);concept=3;}
+		else if (o instanceof OMVOntologyEngineeringTool) {pList=OMVProperties.getPropertiesOntologyEngineeringTool((OMVOntologyEngineeringTool)o);concept=2;}
+		else if (o instanceof OMVOntologyLanguage) {pList=OMVProperties.getPropertiesOntologyLanguage((OMVOntologyLanguage)o);concept=8;}
+		else if (o instanceof OMVOntologySyntax){ pList=OMVProperties.getPropertiesOntologySyntax((OMVOntologySyntax)o);concept=9;}
+		else if (o instanceof OMVOntologyTask) {pList=OMVProperties.getPropertiesOntologyTask((OMVOntologyTask)o);concept=7;}
+		else if (o instanceof OMVOntologyType) {pList=OMVProperties.getPropertiesOntologyType((OMVOntologyType)o);concept=6;}
+		if (concept>=0)
+			IOntology.addConceptToRegistry(4,pList,concept);
+	}
+	
 	/**
 	 * Search Oyster2 local registry to retrieve all available ontology
 	 * metadata entries that fulfill certain conditions.
@@ -738,7 +1236,7 @@ public class Oyster2Connection {
 		
 		return OMVSet;
 	}				
-	
+		
 	/**
 	 * Search Oyster2 registry to retrieve all available ontology
 	 * metadata entries that fulfill certain conditions within a 
@@ -793,7 +1291,7 @@ public class Oyster2Connection {
 		mFormulator.generateDataQuery(conditions,scope);
 		Oyster2Query typeQuery = mFormulator.getTypeQuery();
 		qReply = localRegistry.returnQueryReplyGeneral(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource);
-		Set<OMVMapping> OMVSet = processMappings(qReply);
+		Set<OMVMapping> OMVSet = processMappingsReply(qReply);
 		return OMVSet;
 	}
 	
@@ -846,6 +1344,7 @@ public class Oyster2Connection {
 				final Resource  entry =(Resource) it.next();
 				final Individual oIndividual = (Individual)entry.getEntity();
 				
+				
 				OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(oIndividual, "ontology",ontologySearch);//(OMVOntology)processIndividual(oIndividual, "ontology");
 				if (mainOntoReply!=null){
 					if (mainOntoReply.getName()!=null && mainOntoReply.getURI()!=null)
@@ -860,7 +1359,7 @@ public class Oyster2Connection {
 		return OMVSet;
 	}
 	
-	private Map<String, OMVPeer> processPeers(List peers){
+	private Map<String, OMVPeer> processPeersReply(List peers){
 		//Set<OMVPeer> OMVPeerSet= new HashSet <OMVPeer>();
 		Map<String, OMVPeer> OMVPeerMap = new HashMap<String, OMVPeer>();
 		ontologySearch = mOyster2.getLocalHostOntology();
@@ -884,7 +1383,7 @@ public class Oyster2Connection {
 		return OMVPeerMap;
 	}
 	
-	private Set<OMVMapping> processMappings(QueryReply queryReply){
+	private Set<OMVMapping> processMappingsReply(QueryReply queryReply){
 		Set<OMVMapping> OMVSet= new HashSet <OMVMapping>();
 		ontologySearch = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
@@ -907,10 +1406,127 @@ public class Oyster2Connection {
 		return OMVSet;
 	}
 	
+	private Set<Object> processGeneralOMVReply(QueryReply queryReply, int which){
+		Set<Object> OMVSet= new HashSet <Object>();
+		ontologySearch = queryReply.getOntology();
+		Collection entrySet = queryReply.getResourceSet();
+		try{
+			Iterator it = entrySet.iterator();
+			while(it.hasNext()){
+				final Resource  entry =(Resource) it.next();
+				final Individual oIndividual = (Individual)entry.getEntity();
+				
+				if (which==1){
+					OMVOntology mainReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(oIndividual, "ontology",ontologySearch);//(OMVOntology)processIndividual(oIndividual, "ontology");
+					if (mainReply!=null){
+						if (mainReply.getName()!=null && mainReply.getURI()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==2){
+					OMVPerson mainReply=(OMVPerson)ProcessOMVIndividuals.processIndividual(oIndividual, "person", ontologySearch);//(OMVOntology)processIndividual(oIndividual, "ontology");
+					if (mainReply!=null){
+						if (mainReply.getFirstName()!=null && mainReply.getLastName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==3){
+					OMVOrganisation mainReply=(OMVOrganisation)ProcessOMVIndividuals.processIndividual(oIndividual, "organisation", ontologySearch);//(OMVOntology)processIndividual(oIndividual, "ontology");
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==4){
+					OMVOntologyEngineeringTool mainReply=(OMVOntologyEngineeringTool)ProcessOMVIndividuals.processIndividual(oIndividual, "ontoEngTool", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==5){
+					OMVOntologyEngineeringMethodology mainReply=(OMVOntologyEngineeringMethodology)ProcessOMVIndividuals.processIndividual(oIndividual, "ontoEngMet", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==6){
+					OMVKnowledgeRepresentationParadigm mainReply=(OMVKnowledgeRepresentationParadigm)ProcessOMVIndividuals.processIndividual(oIndividual, "krParadigm", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==7){
+					OMVOntologyDomain mainReply=(OMVOntologyDomain)ProcessOMVIndividuals.processIndividual(oIndividual, "oDomain", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getURI()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==8){
+					OMVOntologyType mainReply=(OMVOntologyType)ProcessOMVIndividuals.processIndividual(oIndividual, "oType", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==9){
+					OMVOntologyTask mainReply=(OMVOntologyTask)ProcessOMVIndividuals.processIndividual(oIndividual, "oTask", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==10){
+					OMVOntologyLanguage mainReply=(OMVOntologyLanguage)ProcessOMVIndividuals.processIndividual(oIndividual, "oLanguage", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==11){
+					OMVOntologySyntax mainReply=(OMVOntologySyntax)ProcessOMVIndividuals.processIndividual(oIndividual, "oSyntax", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==12){
+					OMVFormalityLevel mainReply=(OMVFormalityLevel)ProcessOMVIndividuals.processIndividual(oIndividual, "fLevel", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==13){
+					OMVLicenseModel mainReply=(OMVLicenseModel)ProcessOMVIndividuals.processIndividual(oIndividual, "lModel", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getName()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}else if (which==14){
+					OMVLocation mainReply=(OMVLocation)ProcessOMVIndividuals.processIndividual(oIndividual, "location", ontologySearch);
+					if (mainReply!=null){
+						if (mainReply.getStreet()!=null)
+							OMVSet.add(mainReply);
+						mainReply=null;
+					}
+				}
+			}
+			
+		}catch(Exception e){
+			System.out.println(e.toString()+" Search Problem in processReply");
+		}
+		return OMVSet;
+	}
+	
 	// MANAGE DISTRIBUTED QUERY
 	static public synchronized void addQueryReply(QueryReply qReplyDist){
 		System.out.println("recieving...");
-		if (OMVObject<10)
+		if (OMVObject<20)
 			qReplyDistributedSet.add(qReplyDist);
 	}
 	
@@ -949,11 +1565,99 @@ public class Oyster2Connection {
 		else if (which==2){
 			Iterator ir=qReplyDistributedSet.iterator();
 			while (ir.hasNext()){
-				Set<OMVMapping> OMVSetDist=processMappings((QueryReply)ir.next());
+				Set<OMVMapping> OMVSetDist=processMappingsReply((QueryReply)ir.next());
 				OMVMappingSetDistributed.addAll(OMVSetDist);
 			}
 			mergeDuplicates(which);
+		}else if (which>=3 && which <=15){
+			Set<Object> OMVSetDistFinal = new HashSet<Object>();
+			Iterator ir=qReplyDistributedSet.iterator();
+			while (ir.hasNext()){
+				Set<Object> OMVSetDist=processGeneralOMVReply((QueryReply)ir.next(),which-1);
+				OMVSetDistFinal.addAll(OMVSetDist);
+			}
+			if (which==3){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVPerson t=(OMVPerson)it.next();
+					OMVPersonSetDistributed.add(t);
+				}
+			}else if (which==4){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOrganisation t=(OMVOrganisation)it.next();
+					OMVOrganisationSetDistributed.add(t);
+				}
+			}else if (which==5){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyEngineeringTool t=(OMVOntologyEngineeringTool)it.next();
+					OMVOETSetDistributed.add(t);
+				}
+			}else if (which==6){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyEngineeringMethodology t=(OMVOntologyEngineeringMethodology)it.next();
+					OMVOEMSetDistributed.add(t);
+				}
+			}else if (which==7){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVKnowledgeRepresentationParadigm t=(OMVKnowledgeRepresentationParadigm)it.next();
+					OMVKRPSetDistributed.add(t);
+				}
+			}else if (which==8){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyDomain t=(OMVOntologyDomain)it.next();
+					OMVODSetDistributed.add(t);
+				}
+			}else if (which==9){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyType t=(OMVOntologyType)it.next();
+					OMVOTSetDistributed.add(t);
+				}
+			}else if (which==10){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyTask t=(OMVOntologyTask)it.next();
+					OMVOTASetDistributed.add(t);
+				}
+			}else if (which==11){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologyLanguage t=(OMVOntologyLanguage)it.next();
+					OMVOLSetDistributed.add(t);
+				}
+			}else if (which==12){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVOntologySyntax t=(OMVOntologySyntax)it.next();
+					OMVOSSetDistributed.add(t);
+				}
+			}else if (which==13){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVFormalityLevel t=(OMVFormalityLevel)it.next();
+					OMVFLSetDistributed.add(t);
+				}
+			}else if (which==14){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVLicenseModel t=(OMVLicenseModel)it.next();
+					OMVLMSetDistributed.add(t);
+				}
+			}else if (which==15){
+				Iterator it=OMVSetDistFinal.iterator();
+				while (it.hasNext()){
+					OMVLocation t=(OMVLocation)it.next();
+					OMVLocationSetDistributed.add(t);
+				}
+			}
+			mergeDuplicates(which);
 		}
+		
 	}
 	
 
@@ -963,12 +1667,76 @@ public class Oyster2Connection {
 			t.addAll(processDuplicates.mergeOMVDuplicates(OMVSetDistributed));
 			OMVSetDistributed.clear();
 			OMVSetDistributed.addAll(t);
-		}
-		else if (which==2){
+		}else if (which==2){
 			Set<OMVMapping> t = new HashSet<OMVMapping>();
 			t.addAll(processMappingDuplicates.mergeMappingDuplicates(OMVMappingSetDistributed));
 			OMVMappingSetDistributed.clear();
 			OMVMappingSetDistributed.addAll(t);
+		}else if (which==3){
+			Set<OMVPerson> t = new HashSet<OMVPerson>();
+			t.addAll(processPersonDuplicates.mergePersonDuplicates(OMVPersonSetDistributed));
+			OMVPersonSetDistributed.clear();
+			OMVPersonSetDistributed.addAll(t);
+		}else if (which==4){
+			Set<OMVOrganisation> t = new HashSet<OMVOrganisation>();
+			t.addAll(processOrganisationDuplicates.mergeOrganisationDuplicates(OMVOrganisationSetDistributed));
+			OMVOrganisationSetDistributed.clear();
+			OMVOrganisationSetDistributed.addAll(t);
+		}else if (which==5){
+			Set<OMVOntologyEngineeringTool> t = new HashSet<OMVOntologyEngineeringTool>();
+			t.addAll(processOETDuplicates.mergeOETDuplicates(OMVOETSetDistributed));
+			OMVOETSetDistributed.clear();
+			OMVOETSetDistributed.addAll(t);
+		}else if (which==6){
+			Set<OMVOntologyEngineeringMethodology> t = new HashSet<OMVOntologyEngineeringMethodology>();
+			t.addAll(processOEMDuplicates.mergeOEMDuplicates(OMVOEMSetDistributed));
+			OMVOEMSetDistributed.clear();
+			OMVOEMSetDistributed.addAll(t);
+		}else if (which==7){
+			Set<OMVKnowledgeRepresentationParadigm> t = new HashSet<OMVKnowledgeRepresentationParadigm>();
+			t.addAll(processKRPDuplicates.mergeKRPDuplicates(OMVKRPSetDistributed));
+			OMVKRPSetDistributed.clear();
+			OMVKRPSetDistributed.addAll(t);
+		}else if (which==8){
+			Set<OMVOntologyDomain> t = new HashSet<OMVOntologyDomain>();
+			t.addAll(processODDuplicates.mergeODDuplicates(OMVODSetDistributed));
+			OMVODSetDistributed.clear();
+			OMVODSetDistributed.addAll(t);
+		}else if (which==9){
+			Set<OMVOntologyType> t = new HashSet<OMVOntologyType>();
+			t.addAll(processOTDuplicates.mergeOTDuplicates(OMVOTSetDistributed));
+			OMVOTSetDistributed.clear();
+			OMVOTSetDistributed.addAll(t);
+		}else if (which==10){
+			Set<OMVOntologyTask> t = new HashSet<OMVOntologyTask>();
+			t.addAll(processOTADuplicates.mergeOTADuplicates(OMVOTASetDistributed));
+			OMVOTASetDistributed.clear();
+			OMVOTASetDistributed.addAll(t);
+		}else if (which==11){
+			Set<OMVOntologyLanguage> t = new HashSet<OMVOntologyLanguage>();
+			t.addAll(processOLDuplicates.mergeOLDuplicates(OMVOLSetDistributed));
+			OMVOLSetDistributed.clear();
+			OMVOLSetDistributed.addAll(t);
+		}else if (which==12){
+			Set<OMVOntologySyntax> t = new HashSet<OMVOntologySyntax>();
+			t.addAll(processOSDuplicates.mergeOSDuplicates(OMVOSSetDistributed));
+			OMVOSSetDistributed.clear();
+			OMVOSSetDistributed.addAll(t);
+		}else if (which==13){
+			Set<OMVFormalityLevel> t = new HashSet<OMVFormalityLevel>();
+			t.addAll(processFLDuplicates.mergeFLDuplicates(OMVFLSetDistributed));
+			OMVFLSetDistributed.clear();
+			OMVFLSetDistributed.addAll(t);
+		}else if (which==14){
+			Set<OMVLicenseModel> t = new HashSet<OMVLicenseModel>();
+			t.addAll(processLMDuplicates.mergeLMDuplicates(OMVLMSetDistributed));
+			OMVLMSetDistributed.clear();
+			OMVLMSetDistributed.addAll(t);
+		}else if (which==15){
+			Set<OMVLocation> t = new HashSet<OMVLocation>();
+			t.addAll(processLocationDuplicates.mergeLocationDuplicates(OMVLocationSetDistributed));
+			OMVLocationSetDistributed.clear();
+			OMVLocationSetDistributed.addAll(t);
 		}
 	}
 

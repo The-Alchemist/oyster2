@@ -1,4 +1,4 @@
-package org.neon_toolkit.registry.api;
+package org.neon_toolkit.registry.api.duplicates;
 
 
 import java.text.DateFormat;
@@ -21,54 +21,99 @@ import org.neon_toolkit.omv.api.core.OMVOntologyType;
 import org.neon_toolkit.omv.api.core.OMVOrganisation;
 import org.neon_toolkit.omv.api.core.OMVParty;
 import org.neon_toolkit.omv.api.core.OMVPerson;
-import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
 
 /**
- * The class processMappingDuplicates provides the methods to
- * process duplicates in OMV Mapping objects  
+ * The class processDuplicates provides the methods to
+ * process duplicates in OMV objects  
  * representing the result of a query 
  * @author Raul Palma
  * @version 1.0, March 2008
  */
-public class processMappingDuplicates{
+public class processDuplicates{
 	
-	static public Set<OMVMapping> mergeMappingDuplicates(Set<OMVMapping> OMVSet){
-		Set<OMVMapping> OMVSet1 = new HashSet<OMVMapping>();
-		Set<OMVMapping> OMVSet2 = new HashSet<OMVMapping>();
-		Set<OMVMapping> OMVSetMerged = new HashSet<OMVMapping>();
-		OMVSet1.addAll(OMVSet);
-		OMVSet2.addAll(OMVSet);
-		Iterator it1 = OMVSet1.iterator();
+	static public Set<OMVOntology> mergeOMVDuplicates(Set<OMVOntology> OMVSet){
+		Set<OMVOntology> OMVOntoSet1 = new HashSet<OMVOntology>();
+		Set<OMVOntology> OMVOntoSet2 = new HashSet<OMVOntology>();
+		Set<OMVOntology> OMVOntoSetMerged = new HashSet<OMVOntology>();
+		OMVOntoSet1.addAll(OMVSet);
+		OMVOntoSet2.addAll(OMVSet);
+		Iterator it1 = OMVOntoSet1.iterator();
 		while (it1.hasNext()){
-			OMVMapping o1 = (OMVMapping)it1.next();
-			Iterator it2 = OMVSet2.iterator();
+			OMVOntology o1 = (OMVOntology)it1.next();
+			Iterator it2 = OMVOntoSet2.iterator();
 			boolean match=false;
 			while (it2.hasNext()){
-				OMVMapping o2 = (OMVMapping)it2.next();
-				if(o2!=o1 && o1.getURI()!=null && o2.getURI()!=null && o1.getURI().equalsIgnoreCase(o2.getURI())){					
-					match=true;
-					OMVMapping m= new OMVMapping();
-					if (o1.getHasSourceOntology()!=null)
-						m=o1;
-					else
-						m=o2;
-					//m.setURI(o1.getURI()); //TODO merge properties							
-					//do not add twice the same merged object
-					Iterator dup = OMVSetMerged.iterator(); 
-					boolean add=true;
-					while (dup.hasNext()){
-						OMVMapping d = (OMVMapping)dup.next();
-						if(m.getURI()!=null && d.getURI()!=null && m.getURI().equalsIgnoreCase(d.getURI())){
-							add=false;
+				OMVOntology o2 = (OMVOntology)it2.next();
+				if(o2!=o1 && o1.getURI()!=null && o2.getURI()!=null && o1.getURI().equalsIgnoreCase(o2.getURI())){
+					if(o1.getResourceLocator()!=null && o2.getResourceLocator()!=null && o1.getResourceLocator().equalsIgnoreCase(o2.getResourceLocator())){
+						if((o1.getVersion()!=null && o2.getVersion()!=null && o1.getVersion().equalsIgnoreCase(o2.getVersion())) || (o1.getVersion()==null && o2.getVersion()==null)){
+							match=true;
+							OMVOntology m= new OMVOntology();
+							m.setURI(o1.getURI());
+							m.setResourceLocator(o1.getResourceLocator());
+							m.setVersion(o1.getVersion());
+							m.setAcronym(getData(o1.getAcronym(),o2.getAcronym()));
+							m.getName().addAll(getStringSet(o1.getName(),o2.getName()));
+							m.setDescription(getData(o1.getDescription(),o2.getDescription()));
+							m.setDocumentation(getData(o1.getDocumentation(),o2.getDocumentation()));
+							m.getKeywords().addAll(getStringSet(o1.getKeywords(),o2.getKeywords()));
+							m.setStatus(getData(o1.getStatus(),o2.getStatus()));
+							m.setCreationDate(getData(o1.getCreationDate(),o2.getCreationDate()));
+							m.setModificationDate(getData(o1.getModificationDate(),o2.getModificationDate()));
+							m.getHasContributor().addAll(getPartySet(o1.getHasContributor(),o2.getHasContributor()));
+							m.getHasCreator().addAll(getPartySet(o1.getHasCreator(),o2.getHasCreator()));
+							m.getUsedOntologyEngineeringTool().addAll(getOETSet(o1.getUsedOntologyEngineeringTool(),o2.getUsedOntologyEngineeringTool()));
+							m.getUsedOntologyEngineeringMethodology().addAll(getOEMSet(o1.getUsedOntologyEngineeringMethodology(),o2.getUsedOntologyEngineeringMethodology()));
+							m.getUsedKnowledgeRepresentationParadigm().addAll(getKRPSet(o1.getUsedKnowledgeRepresentationParadigm(),o2.getUsedKnowledgeRepresentationParadigm()));
+							m.getHasDomain().addAll(getODSet(o1.getHasDomain(),o2.getHasDomain()));
+							m.setIsOfType(getOTData(o1.getIsOfType(),o2.getIsOfType()));
+							m.getNaturalLanguage().addAll(getStringSet(o1.getNaturalLanguage(),o2.getNaturalLanguage()));
+							m.getDesignedForOntologyTask().addAll(getOTASet(o1.getDesignedForOntologyTask(),o2.getDesignedForOntologyTask()));
+							m.setHasOntologyLanguage(getOLData(o1.getHasOntologyLanguage(),o2.getHasOntologyLanguage()));
+							m.setHasOntologySyntax(getOSData(o1.getHasOntologySyntax(),o2.getHasOntologySyntax()));
+							m.setHasFormalityLevel(getFLData(o1.getHasFormalityLevel(),o2.getHasFormalityLevel()));
+							m.setHasLicense(getLMData(o1.getHasLicense(),o2.getHasLicense()));
+							m.getUseImports().addAll(getOntologySet(o1.getUseImports(),o2.getUseImports()));
+							m.setHasPriorVersion(getOntologyData(o1.getHasPriorVersion(),o2.getHasPriorVersion()));
+							m.getIsBackwardCompatibleWith().addAll(getOntologySet(o1.getIsBackwardCompatibleWith(),o2.getIsBackwardCompatibleWith()));
+							m.getIsIncompatibleWith().addAll(getOntologySet(o1.getIsIncompatibleWith(),o2.getIsIncompatibleWith()));
+							m.setNumberOfAxioms(getIntData(o1.getNumberOfAxioms(),o2.getNumberOfAxioms()));
+							m.setNumberOfClasses(getIntData(o1.getNumberOfClasses(),o2.getNumberOfClasses()));
+							m.setNumberOfIndividuals(getIntData(o1.getNumberOfIndividuals(),o2.getNumberOfIndividuals()));
+							m.setNumberOfProperties(getIntData(o1.getNumberOfProperties(),o2.getNumberOfProperties()));
+							m.setNotes(getData(o1.getNotes(),o2.getNotes()));
+							m.getKeyClasses().addAll(getStringSet(o1.getKeyClasses(),o2.getKeyClasses()));
+							m.getKnownUsage().addAll(getStringSet(o1.getKnownUsage(),o2.getKnownUsage()));
+							m.setExpressiveness(getData(o1.getExpressiveness(),o2.getExpressiveness()));
+							m.setIsConsistentAccordingToReasoner(getBoolData(o1.getIsConsistentAccordingToReasoner(),o2.getIsConsistentAccordingToReasoner()));
+							m.setContainsABox(getBoolData(o1.getContainsABox(),o2.getContainsABox()));
+							m.setContainsTBox(getBoolData(o1.getContainsTBox(),o2.getContainsTBox()));
+							m.setContainsRBox(getBoolData(o1.getContainsRBox(),o2.getContainsRBox()));
+							m.getEndorsedBy().addAll(getPartySet(o1.getEndorsedBy(),o2.getEndorsedBy()));
+							m.setTimeStamp(getTimeStamp(o1.getTimeStamp(),o2.getTimeStamp()));
+							//do not add twice the same merged object
+							Iterator dup = OMVOntoSetMerged.iterator(); 
+							boolean add=true;
+							while (dup.hasNext()){
+								OMVOntology d = (OMVOntology)dup.next();
+								if(m.getURI()!=null && d.getURI()!=null && m.getURI().equalsIgnoreCase(d.getURI())){
+									if(m.getResourceLocator()!=null && d.getResourceLocator()!=null && m.getResourceLocator().equalsIgnoreCase(d.getResourceLocator())){
+										if((m.getVersion()!=null && d.getVersion()!=null && m.getVersion().equalsIgnoreCase(d.getVersion())) || (m.getVersion()==null && d.getVersion()==null)){
+											add=false;
+										}
+									}
+								}
+							}
+							if (add) OMVOntoSetMerged.add(m);		
 						}
 					}
-					if (add) OMVSetMerged.add(m);
-					
 				}
 			}
-			if (!match) OMVSetMerged.add(o1);
+			if (!match) OMVOntoSetMerged.add(o1);
 		}
-		return OMVSetMerged;
+		return OMVOntoSetMerged;
+		//OMVSetDistributed.clear();
+		//OMVSetDistributed.addAll(OMVOntoSetMerged);
 	}
 	
 	static public String getTimeStamp(String s1, String s2){

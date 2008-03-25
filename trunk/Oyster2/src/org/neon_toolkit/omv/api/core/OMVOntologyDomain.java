@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVOntologyDomain {
+public class OMVOntologyDomain extends OMVCoreObject{
 	
 	private String URI;
 	private String name;

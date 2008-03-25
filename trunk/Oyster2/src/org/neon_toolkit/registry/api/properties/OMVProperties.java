@@ -1,4 +1,4 @@
-package org.neon_toolkit.registry.api;
+package org.neon_toolkit.registry.api.properties;
 
 
 import java.util.Iterator;
@@ -1395,6 +1395,11 @@ public class OMVProperties{
 				}
 			}
 		}
+		if (o.getHasOntologyState()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.hasOntologyState, o.getHasOntologyState());
+			ontoProperties.addFirst(prop);
+		}
+		
 		return ontoProperties;
 	}
 	

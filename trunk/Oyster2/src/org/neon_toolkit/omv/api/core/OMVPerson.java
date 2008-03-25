@@ -19,6 +19,8 @@ public class OMVPerson extends OMVParty{
 	private Set<String> faxNumber = new HashSet<String>();
 	private Set <OMVOrganisation> isContactPerson =  new HashSet <OMVOrganisation>();
 	
+	private String hasRole;
+	
 	public OMVPerson()
 	    {
 	    }
@@ -31,6 +33,8 @@ public class OMVPerson extends OMVParty{
 		if (element.getPhoneNumber().size()>0) {this.phoneNumber.addAll(element.getPhoneNumber());return;} //if (this.getPhoneNumber()==null && element.getPhoneNumber()!=null) {this.setPhoneNumber(element.getPhoneNumber());return;}
 		if (element.getFaxNumber().size()>0) {this.faxNumber.addAll(element.getFaxNumber());return;} //if (this.getFaxNumber()==null && element.getFaxNumber()!=null) {this.setFaxNumber(element.getFaxNumber());return;}
 		if (element.getIsContactPerson().size()>0) {this.isContactPerson.addAll(element.getIsContactPerson());return;}
+		
+		if (this.getHasRole()==null && element.getHasRole()!=null) {this.setHasRole(element.getHasRole());return;}
     }
 	
 	public void setLastName(String newLastName)
@@ -113,6 +117,15 @@ public class OMVPerson extends OMVParty{
 		return this.isContactPerson;
 	}
 
+	public void setHasRole(String newHasRole)
+	{
+		this.hasRole=newHasRole;
+	}
+	
+	public String getHasRole()
+	{
+		return this.hasRole;
+	}
 }
 
 /*

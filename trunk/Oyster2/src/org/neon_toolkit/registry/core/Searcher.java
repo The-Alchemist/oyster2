@@ -148,6 +148,7 @@ public class Searcher implements Runnable {
 	/**
 	 * Processes a search request.
 	 */
+	@SuppressWarnings("unchecked")
 	public void run(){
 		if(normalSearchFlag){ //QUERY OMV ONTOLOGIES
 			QueryReply queryReply =null;

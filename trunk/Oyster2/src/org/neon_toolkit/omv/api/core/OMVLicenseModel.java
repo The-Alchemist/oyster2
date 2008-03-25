@@ -9,7 +9,7 @@ import java.util.Set;
  * @author Raul Palma
  * @version 0.1, March 2007
  */
-public class OMVLicenseModel {
+public class OMVLicenseModel extends OMVCoreObject{
 	
 	private String name;
 	private String acronym;
