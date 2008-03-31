@@ -65,7 +65,19 @@ public class ImportOntology {
 			extractFormat(ontologyImported);
 			
 			// FINISH I DONT LIKE THIS
-			
+			if (ontologyImported!=mOyster2.getLocalHostOntology() && 
+					ontologyImported!= mOyster2.getTypeOntology() &&
+					ontologyImported!= mOyster2.getTopicOntology() &&
+					ontologyImported!= mOyster2.getChangeOntology() &&
+					ontologyImported!= mOyster2.getOWLChangeOntology() &&
+					ontologyImported!= mOyster2.getWorkflowOntology() &&
+					ontologyImported!= mOyster2.getOWLODMOntology() &&
+					ontologyImported!= mOyster2.getPeerOntology() &&
+					ontologyImported!= mOyster2.getMappingOntology()){
+				Set<Ontology> finish = new HashSet<Ontology>();
+				finish.add(ontologyImported);
+				connection.closeOntologies(finish);
+			}
 		}catch(Exception e){
 			System.out.println(e.getMessage() + " in extractMetadata! " + e.getCause());
 		}

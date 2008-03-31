@@ -77,14 +77,16 @@ public class ChangeTests {
 			oyster2Conn.importOntology("f:\\localRegistryWatson.owl");
 		}
 		if (args[0].equalsIgnoreCase("9")){
-			oyster2Conn.importOntology("http://owlodm.ontoware.org/OWL1.1");
+			
 			oyster2Conn.importOntology("http://omv.ontoware.org/2007/07/workflow");
 			oyster2Conn.importOntology("http://omv.ontoware.org/2007/10/changes");
 			oyster2Conn.importOntology("http://oyster2.ontoware.org/dmozT.rdf");
+			oyster2Conn.importOntology("http://owlodm.ontoware.org/OWL1.1");
+			oyster2Conn.importOntology("http://ontoware.org/frs/download.php/354/swrc_updated_v0.7.1.owl");
 			oyster2Conn.importOntology("http://omv.ontoware.org/2007/07/OWLChanges");
 			oyster2Conn.importOntology("http://omv.ontoware.org/2005/05/ontology");
 			oyster2Conn.importOntology("http://omv.ontoware.org/2007/05/pomv");
-			oyster2Conn.importOntology("http://ontoware.org/frs/download.php/354/swrc_updated_v0.7.1.owl");
+			
 			
 			OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter mMethod=new OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter();
 			mMethod.setID("superFilter");
