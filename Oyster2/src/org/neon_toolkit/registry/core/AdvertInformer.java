@@ -30,17 +30,19 @@ public class AdvertInformer{
 	
 	public  synchronized Ontology openRemoteRegistry(String remoteHostPort){
     	try{
-    		//System.out.println("open RemoteRegistry at: "+remoteHostPort);
-    		String basicRegistry = "kaon2rmi://"+remoteHostPort+"?"+mOyster2.getPeerDescOntologyURI();
-    		String remoteRMIURI = "kaon2rmi://"+remoteHostPort+"?http://localhost/localRegistry";
-    		this.localURI = this.localOntologyRegistry.getOntologyURI();
+    		mOyster2.getLogger().info("open RemoteRegistry at: "+remoteHostPort);
+    		//String basicRegistry = "kaon2rmi://"+remoteHostPort+"?"+mOyster2.getPeerDescOntologyURI();
+    		//this.localURI = this.localOntologyRegistry.getOntologyURI();
     		//String remoteRMIURI = "kaon2rmi://"+remoteHostPort+"?"+localURI;
-    		resolver.registerOntology(basicRegistry);
+    		//resolver.registerOntology(basicRegistry);
+    		
+    		String remoteRMIURI = "kaon2rmi://"+remoteHostPort+"?http://localhost/localRegistry";
     		resolver.registerReplacement(localURI,remoteRMIURI);
     		mOyster2.getConnection().setOntologyResolver(resolver);
     		remoteOntologyRegistry = mOyster2.getConnection().openOntology(remoteRMIURI,new HashMap<String,Object>());
+    		mOyster2.getLogger().info("opened...: "+remoteHostPort);
     	}catch(Exception e){
-    		System.out.println(e+":when openRemoteRegistry().The reason may be remote server doesn't be started yet.");
+    		//System.out.println(e+":when openRemoteRegistry().The reason may be remote server doesn't be started yet.");
     		remoteOntologyRegistry=null;
     	}
 	    return remoteOntologyRegistry;

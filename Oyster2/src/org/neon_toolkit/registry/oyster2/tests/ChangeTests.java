@@ -252,11 +252,6 @@ public class ChangeTests {
 		newClassEntity1.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog");
 		newClassEntity1.addHasAuthor(se);
 		oyster2Conn.register(newClassEntity1);
-
-		
-		//CLOSE CONNECTION
-		Oyster2Manager.closeConnection();
-		shutdown();
 		
 		//Lets add a subclass
 		//First axiom changes
