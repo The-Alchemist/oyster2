@@ -12,7 +12,7 @@ import org.neon_toolkit.owlodm.api.Axiom;
  * representation of the change  
  * OMV ontology extension.
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class OMVChange {
 	

@@ -15,6 +15,7 @@ import org.neon_toolkit.registry.util.Resource;
 //import org.semanticweb.kaon2.api.DefaultOntologyResolver;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Connection;
+import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
@@ -96,7 +97,7 @@ public class LocalExpertiseRegistry {
 					while (!myQuery.afterLast()) {
 						String peerStr = myQuery.tupleBuffer()[0].toString();
 						Individual peerIndiv = KAON2Manager.factory().individual(peerStr);
-						System.out.println(peerIndiv+" provideOntology: "+ontologyIndiv);
+						mOyster2.getLogger().info(peerIndiv+" provideOntology: "+ontologyIndiv);
 						myQuery.next();
 					}
 					myQuery.close();
@@ -128,9 +129,10 @@ public class LocalExpertiseRegistry {
 			try{
 				Reasoner reasoner=mOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
+				if (mOntology!=mOyster2.getLocalHostOntology()) query.setLimit(100);
 				query.open();
 				while (!query.afterLast()) {
-					System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
+					//System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
 					String docURI = query.tupleBuffer()[0].toString();
 					Individual indiv =KAON2Manager.factory().individual(docURI);
 					//Filter
@@ -165,7 +167,7 @@ public class LocalExpertiseRegistry {
 						//	resourceSet.add(replyResource);
 						//}
 						
-					}catch(Exception e){
+					}catch(KAON2Exception e){
 	
 					}
 					query.next();
@@ -173,7 +175,10 @@ public class LocalExpertiseRegistry {
 				query.close();
 				query.dispose();
 				reasoner.dispose();
-			}catch(Exception e){
+			}catch(InterruptedException ie) {
+				System.err.println(ie.toString()+":LocalExpertiseRegistry,returnQueryReply() interrupted!");
+				return null;
+			}catch(KAON2Exception e){
 				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
 				return null;	
 			}	
@@ -192,7 +197,7 @@ public class LocalExpertiseRegistry {
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr); 
 				query.open();
 				while (!query.afterLast()) {
-					System.out.println("URI: "+query.tupleBuffer()[0].toString());
+					//System.out.println("URI: "+query.tupleBuffer()[0].toString());
 					String docURI = query.tupleBuffer()[0].toString();
 					Individual indiv =KAON2Manager.factory().individual(docURI);
 					//Filter

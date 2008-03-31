@@ -52,11 +52,11 @@ import org.neon_toolkit.registry.oyster2.Constants;
 
 
 /**
- * The class ProcessOMVIndividuals provides the methods to
- * create OMV objects  
+ * The class ProcessAxiomIndividuals provides the methods to
+ * create Axiom objects  
  * representing the result of a query 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class ProcessAxiomIndividuals{
 	static LinkedList<Individual> onProcess = new LinkedList<Individual>();

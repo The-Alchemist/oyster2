@@ -42,11 +42,11 @@ import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.OntologyProperty;
 
 /**
- * The class MappingProperties provides the methods to
- * retrieve the properties from OMV Mapping objects 
+ * The class AxiomProperties provides the methods to
+ * retrieve the properties from Axiom objects 
  * representing the object of the registry 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class AxiomProperties{
 	

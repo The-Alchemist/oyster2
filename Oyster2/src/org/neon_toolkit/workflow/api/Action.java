@@ -4,15 +4,14 @@ import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.omv.api.core.OMVPerson;
 
 /**
- * The class OMVMapping provides the object 
- * representation of the Mapping  
- * OMV ontology extension.
+ * The class Action provides the object 
+ * representation of the Workflow Ontology.
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class Action {
 	String URI;
-	private String timeStamp;
+	private String timestamp;
 	private OMVPerson performedBy;
 	
 	public Action()
@@ -22,7 +21,7 @@ public class Action {
 	public void append(Action element)
     {
 		if (this.getURI()==null && element.getURI()!=null) {this.setURI(element.getURI());return;}
-		if (this.getTimeStamp()==null && element.getTimeStamp()!=null) {this.setTimeStamp(element.getTimeStamp());return;}
+		if (this.getTimestamp()==null && element.getTimestamp()!=null) {this.setTimestamp(element.getTimestamp());return;}
 		if (this.getPerformedBy()==null && element.getPerformedBy()!=null) {this.setPerformedBy(element.getPerformedBy());return;}
     }
 	
@@ -36,14 +35,14 @@ public class Action {
 		return this.URI;
 	}
 	
-	public void setTimeStamp(String newTimeStamp)
+	public void setTimestamp(String newTimeStamp)
 	{
-		this.timeStamp=newTimeStamp;
+		this.timestamp=newTimeStamp;
 	}
 	
-	public String getTimeStamp()
+	public String getTimestamp()
 	{
-		return this.timeStamp;
+		return this.timestamp;
 	}
 	
 	public OMVPerson getPerformedBy()

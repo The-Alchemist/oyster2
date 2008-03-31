@@ -77,7 +77,7 @@ public class OMVProperties{
 					tURN=o.getName();
 					tList.clear();
 					tList=getPropertiesOrganisation(o);
-					IOntology.addConceptToRegistry(0,tList,1);
+					IOntology.addConceptToRegistry(0,tList,1, null);
 					OntologyProperty prop = new OntologyProperty(Constants.isContactPerson, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -92,7 +92,7 @@ public class OMVProperties{
 					tURN=l.getStreet();
 					tList.clear();
 					tList=getPropertiesLocation(l);
-					IOntology.addConceptToRegistry(0,tList,12);
+					IOntology.addConceptToRegistry(0,tList,12, null);
 					OntologyProperty prop = new OntologyProperty(Constants.isLocatedAt, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -107,7 +107,7 @@ public class OMVProperties{
 					tURN=oet.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringTool(oet);
-					IOntology.addConceptToRegistry(0,tList,2);
+					IOntology.addConceptToRegistry(0,tList,2, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringTool, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -122,7 +122,7 @@ public class OMVProperties{
 					tURN=ola.getName();
 					tList.clear();
 					tList=getPropertiesOntologyLanguage(ola);
-					IOntology.addConceptToRegistry(0,tList,8);
+					IOntology.addConceptToRegistry(0,tList,8, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyLanguage, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -137,7 +137,7 @@ public class OMVProperties{
 					tURN=osy.getName();
 					tList.clear();
 					tList=getPropertiesOntologySyntax(osy);
-					IOntology.addConceptToRegistry(0,tList,9);
+					IOntology.addConceptToRegistry(0,tList,9, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologySyntax, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -152,7 +152,7 @@ public class OMVProperties{
 					tURN=krp.getName();
 					tList.clear();
 					tList=getPropertiesKRParadigm(krp);
-					IOntology.addConceptToRegistry(0,tList,4);
+					IOntology.addConceptToRegistry(0,tList,4, null);
 					OntologyProperty prop = new OntologyProperty(Constants.specifiesKnowledgeRepresentationParadigm, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -167,7 +167,7 @@ public class OMVProperties{
 					tURN=ot.getName();
 					tList.clear();
 					tList=getPropertiesOntologyType(ot);
-					IOntology.addConceptToRegistry(0,tList,6);
+					IOntology.addConceptToRegistry(0,tList,6, null);
 					OntologyProperty prop = new OntologyProperty(Constants.definesOntologyType, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -182,7 +182,7 @@ public class OMVProperties{
 					tURN=oem.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringMethodology(oem);
-					IOntology.addConceptToRegistry(0,tList,3);
+					IOntology.addConceptToRegistry(0,tList,3, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringMethodology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -197,7 +197,7 @@ public class OMVProperties{
 					tURN=lm.getName();
 					tList.clear();
 					tList=getPropertiesLicense(lm);
-					IOntology.addConceptToRegistry(0,tList,11);
+					IOntology.addConceptToRegistry(0,tList,11, null);
 					OntologyProperty prop = new OntologyProperty(Constants.specifiesLicense, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -214,7 +214,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -225,7 +225,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -242,10 +242,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
 					tProperties.addFirst(prop);
@@ -262,15 +263,20 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
 					tProperties.addFirst(prop);
 				}
 			}
+		}
+		if (p.getHasRole()!=null) {
+			OntologyProperty prop = new OntologyProperty(Constants.hasRole, p.getHasRole());
+			tProperties.addFirst(prop);
 		}
 		return tProperties;
 	}
@@ -295,7 +301,7 @@ public class OMVProperties{
 					tURN=p.getFirstName()+p.getLastName();
 					tList.clear();
 					tList=getPropertiesPerson(p);
-					IOntology.addConceptToRegistry(0,tList,0);
+					IOntology.addConceptToRegistry(0,tList,0, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasContactPerson, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -310,7 +316,7 @@ public class OMVProperties{
 					tURN=l.getStreet();
 					tList.clear();
 					tList=getPropertiesLocation(l);
-					IOntology.addConceptToRegistry(0,tList,12);
+					IOntology.addConceptToRegistry(0,tList,12, null);
 					OntologyProperty prop = new OntologyProperty(Constants.isLocatedAt, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -325,7 +331,7 @@ public class OMVProperties{
 					tURN=oet.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringTool(oet);
-					IOntology.addConceptToRegistry(0,tList,2);
+					IOntology.addConceptToRegistry(0,tList,2, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringTool, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -340,7 +346,7 @@ public class OMVProperties{
 					tURN=ola.getName();
 					tList.clear();
 					tList=getPropertiesOntologyLanguage(ola);
-					IOntology.addConceptToRegistry(0,tList,8);
+					IOntology.addConceptToRegistry(0,tList,8, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyLanguage, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -355,7 +361,7 @@ public class OMVProperties{
 					tURN=osy.getName();
 					tList.clear();
 					tList=getPropertiesOntologySyntax(osy);
-					IOntology.addConceptToRegistry(0,tList,9);
+					IOntology.addConceptToRegistry(0,tList,9, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologySyntax, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -370,7 +376,7 @@ public class OMVProperties{
 					tURN=krp.getName();
 					tList.clear();
 					tList=getPropertiesKRParadigm(krp);
-					IOntology.addConceptToRegistry(0,tList,4);
+					IOntology.addConceptToRegistry(0,tList,4, null);
 					OntologyProperty prop = new OntologyProperty(Constants.specifiesKnowledgeRepresentationParadigm, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -385,7 +391,7 @@ public class OMVProperties{
 					tURN=ot.getName();
 					tList.clear();
 					tList=getPropertiesOntologyType(ot);
-					IOntology.addConceptToRegistry(0,tList,6);
+					IOntology.addConceptToRegistry(0,tList,6, null);
 					OntologyProperty prop = new OntologyProperty(Constants.definesOntologyType, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -400,7 +406,7 @@ public class OMVProperties{
 					tURN=oem.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringMethodology(oem);
-					IOntology.addConceptToRegistry(0,tList,3);
+					IOntology.addConceptToRegistry(0,tList,3, null);
 					OntologyProperty prop = new OntologyProperty(Constants.developesOntologyEngineeringMethodology, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -415,7 +421,7 @@ public class OMVProperties{
 					tURN=lm.getName();
 					tList.clear();
 					tList=getPropertiesLicense(lm);
-					IOntology.addConceptToRegistry(0,tList,11);
+					IOntology.addConceptToRegistry(0,tList,11, null);
 					OntologyProperty prop = new OntologyProperty(Constants.specifiesLicense, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -432,7 +438,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -443,7 +449,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasAffiliatedParty, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -460,10 +466,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.contributesToOntology, tURN);
 					tProperties.addFirst(prop);
@@ -480,10 +487,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.createsOntology, tURN);
 					tProperties.addFirst(prop);
@@ -523,7 +531,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -534,7 +542,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -574,7 +582,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -585,7 +593,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -625,7 +633,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -636,7 +644,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -670,7 +678,7 @@ public class OMVProperties{
 					}
 					tList.clear();
 					tList=getPropertiesOntologyDomain(odSub);
-					IOntology.addConceptToRegistry(0,tList,5);
+					IOntology.addConceptToRegistry(0,tList,5, null);
 					OntologyProperty prop = new OntologyProperty(Constants.isSubDomainOf, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -709,7 +717,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -720,7 +728,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -781,7 +789,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -792,7 +800,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -808,7 +816,7 @@ public class OMVProperties{
 					tURN=krp.getName();
 					tList.clear();
 					tList=getPropertiesKRParadigm(krp);
-					IOntology.addConceptToRegistry(0,tList,4);
+					IOntology.addConceptToRegistry(0,tList,4, null);
 					OntologyProperty prop = new OntologyProperty(Constants.supportsRepresentationParadigm, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -823,7 +831,7 @@ public class OMVProperties{
 					tURN=osy.getName();
 					tList.clear();
 					tList=getPropertiesOntologySyntax(osy);
-					IOntology.addConceptToRegistry(0,tList,9);
+					IOntology.addConceptToRegistry(0,tList,9, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasSyntax, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -862,7 +870,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -873,7 +881,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.developedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -926,7 +934,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -937,7 +945,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.specifiedBy, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -1027,7 +1035,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasContributor, tURN);
 						ontoProperties.addFirst(prop);
 					}
@@ -1038,7 +1046,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasContributor, tURN);
 						ontoProperties.addFirst(prop);
 					}
@@ -1056,7 +1064,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						ontoProperties.addFirst(prop);
 					}
@@ -1067,7 +1075,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						ontoProperties.addFirst(prop);
 					}
@@ -1083,7 +1091,7 @@ public class OMVProperties{
 					tURN=oet.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringTool(oet);
-					IOntology.addConceptToRegistry(0,tList,2);
+					IOntology.addConceptToRegistry(0,tList,2, null);
 					OntologyProperty prop = new OntologyProperty(Constants.usedOntologyEngineeringTool, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -1098,7 +1106,7 @@ public class OMVProperties{
 					tURN=oem.getName();
 					tList.clear();
 					tList=getPropertiesOntologyEngineeringMethodology(oem);
-					IOntology.addConceptToRegistry(0,tList,3);
+					IOntology.addConceptToRegistry(0,tList,3, null);
 					OntologyProperty prop = new OntologyProperty(Constants.usedOntologyEngineeringMethodology, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -1113,7 +1121,7 @@ public class OMVProperties{
 					tURN=krp.getName();
 					tList.clear();
 					tList=getPropertiesKRParadigm(krp);
-					IOntology.addConceptToRegistry(0,tList,4);
+					IOntology.addConceptToRegistry(0,tList,4, null);
 					OntologyProperty prop = new OntologyProperty(Constants.usedKnowledgeRepresentationParadigm, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -1133,7 +1141,7 @@ public class OMVProperties{
 					}
 					tList.clear();
 					tList=getPropertiesOntologyDomain(od);
-					IOntology.addConceptToRegistry(0,tList,5);
+					IOntology.addConceptToRegistry(0,tList,5, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasDomain, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -1146,7 +1154,7 @@ public class OMVProperties{
 				tURN=ot.getName();
 				tList.clear();
 				tList=getPropertiesOntologyType(ot);
-				IOntology.addConceptToRegistry(0,tList,6);
+				IOntology.addConceptToRegistry(0,tList,6, null);
 				OntologyProperty prop = new OntologyProperty(Constants.isOfType, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -1168,7 +1176,7 @@ public class OMVProperties{
 					tURN=ota.getName();
 					tList.clear();
 					tList=getPropertiesOntologyTask(ota);
-					IOntology.addConceptToRegistry(0,tList,7);
+					IOntology.addConceptToRegistry(0,tList,7, null);
 					OntologyProperty prop = new OntologyProperty(Constants.designedForOntologyTask, tURN);
 					ontoProperties.addFirst(prop);
 				}
@@ -1181,7 +1189,7 @@ public class OMVProperties{
 				tURN=ole.getName();
 				tList.clear();
 				tList=getPropertiesOntologyLanguage(ole);
-				IOntology.addConceptToRegistry(0,tList,8);
+				IOntology.addConceptToRegistry(0,tList,8, null);
 				OntologyProperty prop = new OntologyProperty(Constants.hasOntologyLanguage, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -1193,7 +1201,7 @@ public class OMVProperties{
 				tURN=osy.getName();
 				tList.clear();
 				tList=getPropertiesOntologySyntax(osy);
-				IOntology.addConceptToRegistry(0,tList,9);
+				IOntology.addConceptToRegistry(0,tList,9, null);
 				OntologyProperty prop = new OntologyProperty(Constants.hasOntologySyntax, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -1206,7 +1214,7 @@ public class OMVProperties{
 				tURN=fl.getName();
 				tList.clear();
 				tList=getPropertiesFormalityLevel(fl);
-				IOntology.addConceptToRegistry(0,tList,10);
+				IOntology.addConceptToRegistry(0,tList,10, null);
 				OntologyProperty prop = new OntologyProperty(Constants.hasFormalityLevel, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -1226,7 +1234,7 @@ public class OMVProperties{
 				tURN=lm.getName();
 				tList.clear();
 				tList=getPropertiesLicense(lm);
-				IOntology.addConceptToRegistry(0,tList,11);
+				IOntology.addConceptToRegistry(0,tList,11, null);
 				OntologyProperty prop = new OntologyProperty(Constants.hasLicense, tURN);
 				ontoProperties.addFirst(prop);
 			}
@@ -1241,10 +1249,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.useImports, tURN);
 					ontoProperties.addFirst(prop);
@@ -1259,10 +1268,11 @@ public class OMVProperties{
 				tList.clear();
 				tList=getProperties(otemp);
 				if (otemp.getResourceLocator()!=null){
-					IOntology.addImportOntologyToRegistry(tList,0);
+					IOntology.addImportOntologyToRegistry(tList,0, null);
+					tURN=IOntology.getOntologyID(otemp);
 				}
 				else{
-					IOntology.addImportOntologyToRegistry(tList,3);
+					IOntology.addImportOntologyToRegistry(tList,3, null);
 				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasPriorVersion, tURN);
 				ontoProperties.addFirst(prop);
@@ -1278,10 +1288,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.isBackwardCompatibleWith, tURN);
 					ontoProperties.addFirst(prop);
@@ -1298,10 +1309,11 @@ public class OMVProperties{
 					tList.clear();
 					tList=getProperties(otemp);
 					if (otemp.getResourceLocator()!=null){
-						IOntology.addImportOntologyToRegistry(tList,0);
+						IOntology.addImportOntologyToRegistry(tList,0, null);
+						tURN=IOntology.getOntologyID(otemp);
 					}
 					else{
-						IOntology.addImportOntologyToRegistry(tList,3);
+						IOntology.addImportOntologyToRegistry(tList,3, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.isIncompatibleWith, tURN);
 					ontoProperties.addFirst(prop);
@@ -1377,7 +1389,7 @@ public class OMVProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.endorsedBy, tURN);
 						ontoProperties.addFirst(prop);
 					}
@@ -1388,7 +1400,7 @@ public class OMVProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.endorsedBy, tURN);
 						ontoProperties.addFirst(prop);
 					}

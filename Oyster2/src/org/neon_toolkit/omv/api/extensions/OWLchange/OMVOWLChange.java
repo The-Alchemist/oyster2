@@ -4,16 +4,12 @@ import org.neon_toolkit.omv.api.extensions.change.OMVChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddProperty;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveProperty;
 
-
-
-
-
 /**
- * The class OMVMapping provides the object 
- * representation of the Mapping  
+ * The class OMVOWLChange provides the object 
+ * representation of the OWL Change  
  * OMV ontology extension.
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class OMVOWLChange extends OMVChange{
 	public OMVOWLChange()

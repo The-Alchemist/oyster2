@@ -1,8 +1,10 @@
 package org.neon_toolkit.registry.core;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
 import org.neon_toolkit.registry.oyster2.QueryReply;
@@ -46,7 +48,7 @@ public class Searcher implements Runnable {
 	//private Oyster2Host mHost = null;
 
 	/**
-	 * The KaonP2P facility.
+	 * The Oyster2 facility.
 	 */
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	
@@ -65,6 +67,8 @@ public class Searcher implements Runnable {
 	/**
 	 * The query to process.
 	 */
+	
+	
 	private Oyster2Query typeQuery;
 	private Oyster2Query topicQuery;
 	private Set peerSet=null;
@@ -72,6 +76,24 @@ public class Searcher implements Runnable {
 	private boolean positiveResult = false;
 	private boolean keywordSearch= false;
 	private boolean mShutdownFlag=false;
+	
+	
+	//CONCURRENT SEARCHES
+	
+	private long timeout=115; //A few sec less than the api timeout=120;
+	
+	private int poolSize = 5;
+	 
+    private int maxPoolSize = 5;
+ 
+    private long keepAliveTime = 60;
+ 
+    private final LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue <Runnable>();
+
+    private ThreadPoolExecutor threadPool = new ThreadPoolExecutor(poolSize, maxPoolSize,
+            keepAliveTime, TimeUnit.SECONDS, queue);
+
+	//END CONCURRENT
 	
 	/**
 	 * The amount of started remote searches.
@@ -142,6 +164,7 @@ public class Searcher implements Runnable {
 		
 	synchronized public void shutdown() {
 		mShutdownFlag = true;
+		shutdownPool();
 	}
 	
 
@@ -153,7 +176,7 @@ public class Searcher implements Runnable {
 		if(normalSearchFlag){ //QUERY OMV ONTOLOGIES
 			QueryReply queryReply =null;
 			if (!keywordSearch){
-				if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){ //THIS IS ONTOLOGYSEARCH QUERY?? DELETE??  
+				if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){ //THIS IS ONLY CALLED FROM ONTOLOGYSEARCH QUERY IN MAINWINDOW?? DELETE?? VERIFY TO DELETE!  
 					queryReply = new QueryReply(topicQuery.getGUID(),QueryReply.TYPE_INIT);
 					topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);	
 					//positiveResult = localRegistry.searchExpertiseOntology(mOyster2.getLocalHostOntology(),topicQuery,manualSelected);
@@ -170,7 +193,7 @@ public class Searcher implements Runnable {
 				else if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){ //THIS IS NORMAL QUERY WITH CONDITIONS
 					typeQuery.setStatus(Oyster2Query.STATUS_RUNNING);
 					//queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
-					distributedQuery(1,typeQuery.getScope());
+					distributedConcurrentQuery(1,typeQuery.getScope());
 					typeQuery.setStatus(Oyster2Query.STATUS_FINISHED);
 					return;
 				}
@@ -178,20 +201,20 @@ public class Searcher implements Runnable {
 			else{ //THIS IS QUERY WITH KEYWORDS AND/OR CONDITIONS
 				topicQuery.setStatus(Oyster2Query.STATUS_RUNNING);
 				//queryReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),topicQuery,typeQuery,Resource.DataResource);
-				distributedQuery(2,topicQuery.getScope());
+				distributedConcurrentQuery(2,topicQuery.getScope());
 				topicQuery.setStatus(Oyster2Query.STATUS_FINISHED);
 				return;
 			}
 			//returnResult(queryReply);
 		}
-		else{ //QUERY OTHER OMV OBJECTS RATHER THAN ONTOLOGIES
-			if (!keywordSearch){
+		else{ 
+			if (!keywordSearch){ //QUERY OTHER OMV OBJECTS RATHER THAN ONTOLOGIES. USED ONLY ON THE API
 				typeQuery.setStatus(Oyster2Query.STATUS_RUNNING);
-				distributedQueryGeneral(1,typeQuery.getScope());
+				distributedConcurrentQueryGeneral(1,typeQuery.getScope());
 				typeQuery.setStatus(Oyster2Query.STATUS_FINISHED);
 				return;
 			}
-			else{ //THIS IS QUERY IN REGISTRY VIEW WHEN SELECTING PEERS?? DELETE??
+			else{ //THIS IS QUERY IN GUI REGISTRY VIEW WHEN SELECTING PEERS?? DELETE??
 				Iterator it = peerSet.iterator();
 				List ontologyDocSet = new ArrayList();
 				while(it.hasNext()){
@@ -243,7 +266,7 @@ public class Searcher implements Runnable {
 				Individual peerIndiv = (Individual)it.next();
 				if((peerIndiv!=localInformer.getLocalPeerIndiv(localOntology) || scope==Oyster2Query.Selected_Scope) && !mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					String IP = localInformer.getPeerIP(localOntology,peerIndiv);
-					System.out.println("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
+					mOyster2.getLogger().info("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
 					Ontology Registry = localInformer.openRemoteRegistry(IP);
 					if (Registry!=null){
 						//System.out.println("available, now will query: "+peerIndiv.getURI().toString());
@@ -291,7 +314,7 @@ public class Searcher implements Runnable {
 				Individual peerIndiv = (Individual)it.next();
 				if((peerIndiv!=localInformer.getLocalPeerIndiv(localOntology) || scope==Oyster2Query.Selected_Scope) && !mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					String IP = localInformer.getPeerIP(localOntology,peerIndiv);
-					System.out.println("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
+					mOyster2.getLogger().info("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
 					Ontology Registry = localInformer.openRemoteRegistry(IP);
 					if (Registry!=null){
 						//System.out.println("available, now will query: "+peerIndiv.getURI().toString());
@@ -308,6 +331,141 @@ public class Searcher implements Runnable {
 		returnResult(new QueryReply());
 	}
 
+	public void distributedConcurrentQuery(int which, int scope){
+		
+		
+		AdvertInformer localInformer = mOyster2.getLocalAdvertInformer();
+		Ontology localOntology = localInformer.getLocalRegistry();
+		/*
+		System.out.println("starting distributedquery method...");
+		System.out.println("which: "+which);
+		System.out.println("scope: "+scope);
+		if (topicQuery!=null) System.out.println("topicquery: "+topicQuery.getQueryString());
+		if (typeQuery!=null) System.out.println("typequery: "+typeQuery.getQueryString());
+		*/
+		
+		if (mShutdownFlag) return;
+		if (scope==Oyster2Query.Local_Scope || scope ==Oyster2Query.Auto_Scope){
+			//Query first local peer			
+			if (which==1) {
+				ConcurrentSearcher t = new ConcurrentSearcher(mOyster2.getLocalHostOntology(),null , typeQuery, Resource.DataResource, which, false);
+				threadPool.execute(t);
+			}
+			else if (which==2) {
+				ConcurrentSearcher t = new ConcurrentSearcher(mOyster2.getLocalHostOntology(),topicQuery , typeQuery, Resource.DataResource, which, false);
+				threadPool.execute(t);
+			}
+		}
+		if (mShutdownFlag) return;
+		if (scope==Oyster2Query.Auto_Scope || scope==Oyster2Query.Selected_Scope){
+			//Query known peers
+			Iterator it=null;
+			if (scope==Oyster2Query.Selected_Scope){
+				it = peerSet.iterator();
+			}
+			else{//it should be expertise based-selection of peer, for now all of them
+				Collection peerList=null;
+				peerList = localInformer.getPeerList(localInformer.getLocalRegistry());
+				it = peerList.iterator();
+			} 
+			while(it.hasNext()){
+				if (mShutdownFlag) return;
+				Individual peerIndiv = (Individual)it.next();
+				if((peerIndiv!=localInformer.getLocalPeerIndiv(localOntology) || scope==Oyster2Query.Selected_Scope) && !mOyster2.isOfflinePeer(peerIndiv.getURI())){
+					String IP = localInformer.getPeerIP(localOntology,peerIndiv);
+					mOyster2.getLogger().info("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
+					Ontology Registry = localInformer.openRemoteRegistry(IP);
+					if (Registry!=null){
+						//System.out.println("available, now will query: "+peerIndiv.getURI().toString());
+						if (which ==1) {
+							ConcurrentSearcher t = new ConcurrentSearcher(Registry,null , typeQuery, Resource.DataResource, which, false);
+							threadPool.execute(t);
+						}
+						else if (which==2) {
+							ConcurrentSearcher t = new ConcurrentSearcher(Registry,topicQuery , typeQuery, Resource.DataResource, which, false);
+							threadPool.execute(t);
+						}
+					}else{
+						mOyster2.addOfflinePeer(peerIndiv.getURI());
+					}
+				}
+			}
+		}
+		threadPool.shutdown();
+		try {
+			threadPool.awaitTermination(timeout, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			mOyster2.getLogger().info("searcher interrupted...");
+		}
+		returnResult(new QueryReply());
+		shutdownPool();
+	}
+	
+	public void distributedConcurrentQueryGeneral(int which, int scope){
+		
+		
+		AdvertInformer localInformer = mOyster2.getLocalAdvertInformer();
+		Ontology localOntology = localInformer.getLocalRegistry();
+		
+		if (mShutdownFlag) return;
+		if (scope==Oyster2Query.Local_Scope || scope ==Oyster2Query.Auto_Scope){
+			//Query first local peer
+			if (which==1){
+				ConcurrentSearcher t = new ConcurrentSearcher(mOyster2.getLocalHostOntology(),null , typeQuery, Resource.DataResource, which, true);
+				threadPool.execute(t);
+			}
+		}
+		if (mShutdownFlag) return;
+		if (scope==Oyster2Query.Auto_Scope || scope==Oyster2Query.Selected_Scope){
+			//Query known peers
+			Iterator it=null;
+			if (scope==Oyster2Query.Selected_Scope){
+				it = peerSet.iterator();
+			}
+			else{//it should be expertise based-selection of peer, for now all of them
+				Collection peerList=null;
+				peerList = localInformer.getPeerList(localInformer.getLocalRegistry());
+				it = peerList.iterator();
+			} 
+			while(it.hasNext()){
+				if (mShutdownFlag) return;
+				Individual peerIndiv = (Individual)it.next();
+				if((peerIndiv!=localInformer.getLocalPeerIndiv(localOntology) || scope==Oyster2Query.Selected_Scope) && !mOyster2.isOfflinePeer(peerIndiv.getURI())){
+					String IP = localInformer.getPeerIP(localOntology,peerIndiv);
+					mOyster2.getLogger().info("Attempt to connect to peer: "+peerIndiv.getURI().toString()+" from Searcher");
+					Ontology Registry = localInformer.openRemoteRegistry(IP);
+					if (Registry!=null){
+						//System.out.println("available, now will query: "+peerIndiv.getURI().toString());
+						if (which ==1){
+							ConcurrentSearcher t = new ConcurrentSearcher(Registry,null , typeQuery, Resource.DataResource, which, true);
+							threadPool.execute(t);
+						}
+					}else{
+						mOyster2.addOfflinePeer(peerIndiv.getURI());
+					}
+				}
+			}
+		}
+		threadPool.shutdown();
+		try {
+			threadPool.awaitTermination(timeout, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			mOyster2.getLogger().info("searcher interrupted...");
+		}
+		returnResult(new QueryReply());
+		shutdownPool();
+	}
+	
+	private void shutdownPool(){
+		List<Runnable> running=threadPool.shutdownNow();
+		Iterator it = running.iterator();
+		while(it.hasNext()){
+			ConcurrentSearcher t = (ConcurrentSearcher)it.next();
+			t.shutdown();
+		}
+	}
 }
 
 /*

@@ -45,7 +45,7 @@ public class SearchManager {
 	 * Notify when a new Query Reply was received and invokes the methode in Result->update UI.
  	* @return void
  	*/
-	public void notifyReplyListener(QueryReply queryReply){
+	public synchronized void notifyReplyListener(QueryReply queryReply){
 		if (replyListener!=null)
 			replyListener.newReplyReceived(queryReply);
 		/*
@@ -60,7 +60,7 @@ public class SearchManager {
 	 * notify the queryReplyListener when a set of ontology found for certain peers.
 	 * @param ontologyDocList
 	 */
-	public void notifyReplyListener(List ontologyDocList){
+	public synchronized void notifyReplyListener(List ontologyDocList){
 		if (replyListener!=null)
 			replyListener.entryReceived(ontologyDocList);
 		/*

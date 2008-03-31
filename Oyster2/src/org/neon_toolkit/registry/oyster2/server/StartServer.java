@@ -15,7 +15,7 @@ import org.neon_toolkit.registry.util.EntryDetailSerializer;
  * The class StartServer allows to 
  * start Oyster in server mode   
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class StartServer {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -30,11 +30,31 @@ public class StartServer {
 
 	public static void main(String[] args)throws Exception{
 		Options opt = new Options(args);
+		opt.getSet().addOption("isSimple", Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("caching", Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("workflowSupport", Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("debug", Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("startKAON2", Multiplicity.ZERO_OR_ONE).addOption("KAON2Path", Separator.EQUALS, Multiplicity.ZERO_OR_ONE).addOption("serverRootPath", Separator.EQUALS, Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("preferenceFile", Separator.EQUALS, Multiplicity.ZERO_OR_ONE);
 		if (args.length>0 && !opt.check(false, false))  {
 			System.out.println(opt.getCheckErrors());
 			help();
+		}
+		if (opt.getSet().isSet("isSimple")) {
+			  // React to option -isSimple
+			  mOyster2.setIsSimple(true);
+		}
+		if (opt.getSet().isSet("caching")) {
+			  // React to option -caching
+			  mOyster2.setCaching(true);
+		}
+		if (opt.getSet().isSet("workflowSupport")) {
+			  // React to option -workflowSupport
+			  mOyster2.setWorkflowSupport(true);
+		}
+		if (opt.getSet().isSet("debug")) {
+			  // React to option -debug
+			  mOyster2.setLogEnabled(true);
 		}
 		if (opt.getSet().isSet("startKAON2")) {
 			  // React to option -startKAON2
@@ -66,7 +86,7 @@ public class StartServer {
     }
 	
 	private static void help(){
-		System.out.println("Usage: StartServer [-startKAON2 [-KAON2Path=<kaon2path> -serverRootPath=<serverpath>]] [-preferenceFile=<prefFile>]");
+		System.out.println("Usage: StartServer [-isSimple ][-caching ][-workflowSupport ][-debug ][-startKAON2 [-KAON2Path=<kaon2path> -serverRootPath=<serverpath>]] [-preferenceFile=<prefFile>]");
 		System.exit(1);
 	}
 	

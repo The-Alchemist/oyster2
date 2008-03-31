@@ -44,6 +44,7 @@ import org.neon_toolkit.registry.api.properties.AxiomProperties;
 import org.neon_toolkit.registry.api.properties.ChangeProperties;
 import org.neon_toolkit.registry.api.properties.ChangeSpecificationProperties;
 import org.neon_toolkit.registry.api.properties.LogProperties;
+import org.neon_toolkit.registry.api.properties.OMVProperties;
 import org.neon_toolkit.registry.api.workflow.WorkflowManagement;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.ImportOntology;
@@ -54,14 +55,16 @@ import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent;
 import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
+import org.semanticweb.kaon2.api.owl.elements.Description;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
 import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 
 /**
- * The class Oyster2Connection provides the API access methods to Oyster2 registry.
+ * The class ChangeManager provides the methods to support the
+ * change support 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class ChangeManagement {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -77,47 +80,80 @@ public class ChangeManagement {
 	/**
 	 * Register a new change into Oyster2 registry.
 	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * change that will be registered. This method creates the
+	 * whole trace, update the log and change specification
+	 * and the corresponding workflow actions if workflow is enabled.
 	 */
 	@SuppressWarnings("unchecked")
 	public String register(OMVChange o)
 	{
 		List pList = new LinkedList();
 		if (o.getAppliedToOntology()!=null){
+			if (!isTracked(o.getAppliedToOntology())){System.out.println("To register changes the ontology tracking of this ontology should be activated, use method startTracking...");return null;}
 			if (o instanceof OMVAtomicChange){
 				OMVAtomicChange t = (OMVAtomicChange)o;
 				if (t.getAppliedAxiom()==null) return null;
 			}
 			else if (o instanceof OMVEntityChange){
+				Set<String> remainingChanges = getChangesIds(o.getAppliedToOntology(),null);				
 				OMVEntityChange t = (OMVEntityChange)o;
-				if (t.getConsistsOfAtomicOperation()==null || t.getConsistsOfAtomicOperation().size()<=0) return null;
-				else{
+				if (t.getConsistsOfAtomicOperation()!=null && t.getConsistsOfAtomicOperation().size()>0) {
 					Iterator it = t.getConsistsOfAtomicOperation().iterator();
 					while (it.hasNext()){
 						String str = (String)it.next();
 						if (str==null) return null;
+						else{
+							boolean goodToGo=false;
+							Iterator rem=remainingChanges.iterator();
+							while (rem.hasNext()){
+								String remChange=(String)rem.next();
+								if (remChange.equalsIgnoreCase(str)) goodToGo=true;
+							}
+							if (!goodToGo) {
+								System.out.println("Before registering an entity change with atomic changes, its atomic changes should be registered in the log");
+								return null;
+							}
+						}
 					}
 				}
 			}
 			else if (o instanceof OMVCompositeChange){
+				Set<String> remainingChanges = getChangesIds(o.getAppliedToOntology(),null);
 				OMVCompositeChange t = (OMVCompositeChange)o;
-				if (t.getConsistsOf()==null || t.getConsistsOf().size()<=0) return null;
-				else{
+				if (t.getConsistsOf()!=null && t.getConsistsOf().size()>0) {
 					Iterator it = t.getConsistsOf().iterator();
 					while (it.hasNext()){
 						String str = (String)it.next();
 						if (str==null) return null;
+						else{
+							boolean goodToGo=false;
+							Iterator rem=remainingChanges.iterator();
+							while (rem.hasNext()){
+								String remChange=(String)rem.next();
+								if (remChange.equalsIgnoreCase(str)) goodToGo=true;
+							}
+							if (!goodToGo) {
+								System.out.println("Before registering a composite change with related changes, its related changes should be registered in the log");
+								return null;
+							}
+						}
 					}
 				}
 			}
 			pList.clear();
 			pList=ChangeProperties.getChangeProperties(o);
 			//Generate trace
-			String previousChange=generateTrace(o.getAppliedToOntology());
+			String previousChange="";
 			boolean first=true;
-			if (previousChange!=null){
-				OntologyProperty prop = new OntologyProperty(Constants.hasPreviousChange, previousChange);
-				pList.add(prop);
+			if (o.getHasPreviousChange()==null || o.getHasPreviousChange().equalsIgnoreCase("")){
+				previousChange=generateTrace(o.getAppliedToOntology());
+				if (previousChange!=null){
+					OntologyProperty prop = new OntologyProperty(Constants.hasPreviousChange, previousChange);
+					pList.add(prop);
+					first=false;
+				}
+			}else{
+				previousChange=o.getHasPreviousChange();
 				first=false;
 			}
 			//Specify class name to add
@@ -136,7 +172,7 @@ public class ChangeManagement {
 			}
 			
 			//register change
-			IOntology.addConceptToRegistry(1,pList,30);
+			IOntology.addConceptToRegistry(1,pList,30, null);
 			
 			//Workflow info
 			if (mOyster2.getWorkflowSupport()){
@@ -162,56 +198,82 @@ public class ChangeManagement {
 						OMVEntityChange oriChange = (OMVEntityChange)o;
 						oriChange.setURI(tURN);
 						Set<OMVAtomicChange> changesIn=getAtomicChanges(oriChange);
+						if (changesIn!=null && changesIn.size()>0) {
 						
-						//sort atomic changes
-						List<OMVAtomicChange> changesList=new LinkedList<OMVAtomicChange>();
-						Iterator s = changesIn.iterator();
-						while (s.hasNext()){
-							OMVAtomicChange t = (OMVAtomicChange)s.next();
-							if (t.getURI().equalsIgnoreCase(previousChange)){
-								changesList.add(t);
-								break;
-							}
-						}
-						OMVChange ct = changesList.get(0);
-						if (ct !=null){
-							boolean keepGoing=true;
-							while (ct.getHasPreviousChange()!=null && keepGoing){
-								boolean found=false;
-								Iterator sort = changesIn.iterator();
-								while (sort.hasNext()){
-									OMVAtomicChange t = (OMVAtomicChange)sort.next();
-									if (t.getURI().equalsIgnoreCase(ct.getHasPreviousChange())){
-										changesList.add(t);
-										ct=t;
-										found=true;
-										break;
-									}
+							//sort atomic changes
+							List<OMVAtomicChange> changesList=new LinkedList<OMVAtomicChange>();
+							Iterator s = changesIn.iterator();
+							while (s.hasNext()){
+								OMVAtomicChange t = (OMVAtomicChange)s.next();
+								if (t.getURI().equalsIgnoreCase(previousChange)){
+									changesList.add(t);
+									break;
 								}
-								if (!found) keepGoing=false;//ct.setHasPreviousChange(null);
+							}
+							OMVChange ct = changesList.get(0);
+							if (ct !=null){
+								boolean keepGoing=true;
+								while (ct.getHasPreviousChange()!=null && keepGoing){
+									boolean found=false;
+									Iterator sort = changesIn.iterator();
+									while (sort.hasNext()){
+										OMVAtomicChange t = (OMVAtomicChange)sort.next();
+										if (t.getURI().equalsIgnoreCase(ct.getHasPreviousChange())){
+											changesList.add(t);
+											ct=t;
+											found=true;
+											break;
+										}
+									}
+									if (!found) keepGoing=false;//ct.setHasPreviousChange(null);
+								}
+							}
+						
+							//remove atomic changes & references in change specification	
+							Iterator iTemp=changesIn.iterator();
+							while (iTemp.hasNext()){
+								OMVAtomicChange at = (OMVAtomicChange)iTemp.next();
+								remove (at);
+							
+								ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
+								removeProperty(getCSID(o.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, at.getURI());
+							}
+							//update log & change specification if necessary
+							Set<String> remainingChanges = getChangesIds(oriChange.getAppliedToOntology(),null);
+							if (remainingChanges==null || remainingChanges.size()<=0){
+								removeRelatedLog(o.getAppliedToOntology());
+								removeChangeSpecification(o.getAppliedToOntology());
+							}
+							else{ 
+								if (changesList.get(changesList.size()-1).getHasPreviousChange()!=null){ 
+									List pListTemp = new LinkedList();
+									OntologyProperty tPropTemp = new OntologyProperty(Constants.URI, changesList.get(changesList.size()-1).getHasPreviousChange());
+									pListTemp.add(tPropTemp);
+									updateLog(o.getAppliedToOntology(),pListTemp,false);
+								}else{						
+									removeRelatedLog(o.getAppliedToOntology());
+									removeChangeSpecification(o.getAppliedToOntology());
+								}
+							}
+						}else{
+							//update log & change specification if necessary
+							Set<String> remainingChanges = getChangesIds(oriChange.getAppliedToOntology(),null);
+							if (remainingChanges==null || remainingChanges.size()<=0){
+								removeRelatedLog(o.getAppliedToOntology());
+								removeChangeSpecification(o.getAppliedToOntology());
+							}
+							else{
+								if (oriChange.getHasPreviousChange()!=null){
+									List pListTemp = new LinkedList();
+									OntologyProperty tPropTemp = new OntologyProperty(Constants.URI, oriChange.getHasPreviousChange());
+									pListTemp.add(tPropTemp);
+									updateLog(o.getAppliedToOntology(),pListTemp,false);
+								}else{
+									removeRelatedLog(o.getAppliedToOntology());
+									removeChangeSpecification(o.getAppliedToOntology());
+								}
 							}
 						}
-						
-						//remove atomic changes & references in change specification	
-						Iterator iTemp=changesIn.iterator();
-						while (iTemp.hasNext()){
-							OMVAtomicChange at = (OMVAtomicChange)iTemp.next();
-							remove (at);
-							
-							ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
-							removeProperty(getCSID(o.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, at.getURI());
-						}
-						//update log & change specification if necessary
-						if (changesList.get(changesList.size()-1).getHasPreviousChange()!=null){ //NOT FULLY TESTED THE LOG UPDATE IN THIS SCENARIO
-							List pListTemp = new LinkedList();
-							OntologyProperty tPropTemp = new OntologyProperty(Constants.URI, changesList.get(changesList.size()-1).getHasPreviousChange());
-							pListTemp.add(tPropTemp);
-							updateLog(o.getAppliedToOntology(),pListTemp,false);
-						}else{						
-							removeRelatedLog(o.getAppliedToOntology());
-							removeChangeSpecification(o.getAppliedToOntology());
-						}
-						
 						//remove this entity change
 						remove (oriChange);
 						return null;
@@ -227,43 +289,50 @@ public class ChangeManagement {
 		return null;
 	}
 	
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
-	 * This method is called within the change management 
+	 * Register a new change log into Oyster2 registry.
+	 * @param o is the OMVLog object representing the
+	 * log that will be registered.
+	 * NOTE: This method is called within the change management 
 	 * implementation, it should not be called directly. 
 	 */
 	public void register(OMVLog o)
 	{
 		List pList = new LinkedList();
 		if (o.getHasRelatedOntology()!=null){
+			if (!isTracked(o.getHasRelatedOntology())){System.out.println("To register changes the ontology tracking of this ontology should be activated, use method startTracking...");return;}
 			pList.clear();
 			pList=LogProperties.getLogProperties(o);
-			IOntology.addConceptToRegistry(1,pList,31);
+			IOntology.addConceptToRegistry(1,pList,31, null);
 		}
 	}
 	
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * Register a new change specification into Oyster2 
+	 * registry.
+	 * @param o is the OMVChangeSpecification object 
+	 * that will be registered.
 	 */
 	public void register(OMVChangeSpecification o)
 	{
 		List pList = new LinkedList();
 		if (o.getChangeFromVersion()!=null){
+			if (!isTracked(o.getChangeFromVersion())){System.out.println("To register changes the ontology tracking of this ontology should be activated, use method startTracking...");return;}
 			pList.clear();
 			pList=ChangeSpecificationProperties.getChangeSpecificationProperties(o);
-			IOntology.addConceptToRegistry(1,pList,32);
+			IOntology.addConceptToRegistry(1,pList,32, null);
 		}
 	}
 		
+	
 	/**
-	 * Register a new change into Oyster2 registry.
+	 * Replaces a new change into Oyster2 registry.
 	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
-	 * This method could be called within the change management 
+	 * change that will be replaced (i.e. this method is 
+	 * implemented as a merge)
+	 * NOTE: This method should be called within the change management 
 	 * implementation, it should not be called directly.
 	 */
 	@SuppressWarnings("unchecked")
@@ -285,14 +354,15 @@ public class ChangeManagement {
 		if (o instanceof OMVAtomicChange){
 			removeRelatedAxioms((OMVAtomicChange)o);
 		}
-		IOntology.addConceptToRegistry(0,pList,30); //MERGE
+		IOntology.addConceptToRegistry(0,pList,30, null); //MERGE
 	}
 	
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
-	 * This method is called within the change management 
+	 * Replaces the log into Oyster2 registry.
+	 * @param o is the OMVLog object representing the
+	 * log that will be replaced
+	 * NOTE: This method is called within the change management 
 	 * implementation, it should not be called directly.
 	 */
 	public void replace(OMVLog o)
@@ -301,30 +371,33 @@ public class ChangeManagement {
 		if (o.getHasRelatedOntology()!=null){
 			pList.clear();
 			pList=LogProperties.getLogProperties(o);
-			IOntology.addConceptToRegistry(2,pList,31); //really replace
+			IOntology.addConceptToRegistry(2,pList,31, null); //really replace
 		}
 	}
 	
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * Replaces the change specification object in Oyster
+	 * @param o is the OMVChangeSpecification object 
+	 * that will be replaced. This method is implemented as
+	 * a merge
 	 */
 	public void replace(OMVChangeSpecification o)
 	{
 		List pList = new LinkedList();
 		if (o.getChangeFromVersion()!=null){
+			if (!isTracked(o.getChangeFromVersion())){System.out.println("To register changes the ontology tracking of this ontology should be activated, use method startTracking...");return;}
 			pList.clear();
 			pList=ChangeSpecificationProperties.getChangeSpecificationProperties(o);
-			IOntology.addConceptToRegistry(0,pList,32); //merge
+			IOntology.addConceptToRegistry(0,pList,32, null); //merge
 		}
 	}
 		
 	/**
-	 * Register a new change into Oyster2 registry.
+	 * Removes a change from Oyster2 registry.
 	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
-	 * This method is called within the change management 
+	 * change that will be removed.
+	 * NOTE: This method is called within the change management 
 	 * implementation, it should not be called directly.
 	 */
 	@SuppressWarnings("unchecked")
@@ -346,14 +419,14 @@ public class ChangeManagement {
 		if (o instanceof OMVAtomicChange){
 			removeRelatedAxioms((OMVAtomicChange)o);
 		}
-		IOntology.addConceptToRegistry(4,pList,30);
+		IOntology.addConceptToRegistry(4,pList,30, null);
 	}
 	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
-	 * This method is called within the change management 
+	 * Removes a Log from Oyster2 registry.
+	 * @param o is the OMVLog object representing the
+	 * log that will be removed.
+	 * NOTE: This method is called within the change management 
 	 * implementation, it should not be called directly.
 	 */
 	public void remove(OMVLog o)
@@ -362,14 +435,17 @@ public class ChangeManagement {
 		if (o.getHasRelatedOntology()!=null){
 			pList.clear();
 			pList=LogProperties.getLogProperties(o);
-			IOntology.addConceptToRegistry(4,pList,31);
+			IOntology.addConceptToRegistry(4,pList,31, null);
 		}
 	}
 	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * Removes a changeSpecification from Oyster2 registry and all
+	 * its related changes, log, and if available workflow
+	 * information i.e. removes all change information from the ontology
+	 * specified by the change specification
+	 * @param o is the OMVChangeSpecification object 
+	 * 
 	 */
 	public void remove(OMVChangeSpecification o)
 	{
@@ -383,14 +459,17 @@ public class ChangeManagement {
 			removeChangeSpecification(o.getChangeFromVersion());
 		}
 	}
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * Gets the entity state
+	 * @param o is the ontology for which we want to get the 
+	 * entity state
+	 * @param entityURI is the URI of the target entity
+	 * @return the entity state.
 	 */
 	public String getEntityState(OMVOntology o, String entityURI){
 		OMVEntityChange target= new OMVEntityChange();
-		Set<OMVChange> entityChanges = getTrackedChanges(o, new OMVEntityChange());
+		Set<OMVChange> entityChanges = getTrackedChanges(o, new OMVEntityChange(), null, null);
 		Iterator it = entityChanges.iterator();
 		boolean found=false;
 		while (it.hasNext()){
@@ -413,10 +492,12 @@ public class ChangeManagement {
 		if (found) return target.getHasEntityState();
 		else return "";
 	}
+	
 	/**
-	 * Register a new change into Oyster2 registry.
-	 * @param o is the OMVChange object representing the
-	 * change that will be registered.
+	 * Gets the entity associated to a specific change
+	 * @param changeURI is the uri of the change for which for which we
+	 * want to search the related entity
+	 * @return The uri of the related entity 
 	 */
 	public String getRelatedEntity(String changeURI){
 		//try get change concept
@@ -429,11 +510,79 @@ public class ChangeManagement {
 			e.printStackTrace();
 		}
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasRelatedEntity);
-		Individual t = getPropertyValue(changeURI, ontologyObjectProperty,conceptChange);
+		Individual t = getPropertyValue(changeURI, ontologyObjectProperty,conceptChange, null);
 		if (t!=null) return t.getURI();
 		else return "";
 	}
 	
+	/**
+	 * Specify that the changes of the specified ontology
+	 * should be logged
+	 * @param o is the OMVOntology to track
+	 */
+	public void startTracking(OMVOntology o){
+		if (o!=null && o.getURI()!=null && o.getResourceLocator()!=null){
+			//just to make sure the ontology core information is available
+			List pList = new LinkedList();
+			pList=OMVProperties.getProperties(o);
+			IOntology.addImportOntologyToRegistry(pList,0, null);
+			
+			String tURN=getOntologyID(o);
+			Individual localPeer=mOyster2.getLocalAdvertInformer().getLocalPeer();
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.POMVURI + Constants.trackOntology);
+			addProperty(localPeer.getURI(), ontologyObjectProperty, Constants.POMVURI+Constants.peerConcept, tURN);
+		}else System.out.println("The ontology requires at least URI and resourceLocator to identifiy it");
+	}
+	
+	/**
+	 * Stops logging the changes of the specified ontology
+	 * @param o is the OMVOntology to stop tracking
+	 */
+	public void stopTracking(OMVOntology o){
+		if (o!=null && o.getURI()!=null && o.getResourceLocator()!=null){
+			String tURN=getOntologyID(o);
+			Individual localPeer=mOyster2.getLocalAdvertInformer().getLocalPeer();
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.POMVURI + Constants.trackOntology);
+			removeProperty(localPeer.getURI(), ontologyObjectProperty, Constants.POMVURI+Constants.peerConcept, tURN);
+		}else System.out.println("The ontology requires at least URI and resourceLocator to identifiy it");
+	}
+	
+	/**
+	 * Get the ontologies that are being tracked by the
+	 * local peer independently if changes are already available
+	 * @return The set of the ontologies 
+	 */
+	public Set<OMVOntology> getOntologiesTrackedByPeer(){
+		Set<OMVOntology> OMVSet = new HashSet<OMVOntology>();
+		Individual localPeer=mOyster2.getLocalAdvertInformer().getLocalPeer();
+		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.POMVURI + Constants.trackOntology);
+		Set<Individual> ontos = getPropertyValues(localPeer.getURI(), ontologyObjectProperty, Constants.POMVURI+Constants.peerConcept, null);
+		Iterator it = ontos.iterator();
+		while (it.hasNext()){
+			Individual t = (Individual)it.next();
+			OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(t, "ontology",localRegistry);
+			OMVSet.add(mainOntoReply);
+		}
+		return OMVSet;
+	}
+	
+	/**
+	 * Verify if an ontology has been registered to track
+	 * its changes
+	 * @param o is the OMVOntology to check
+	 */
+	public boolean isTracked(OMVOntology o){
+		String tURN=getOntologyID(o);
+		Individual localPeer=mOyster2.getLocalAdvertInformer().getLocalPeer();
+		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.POMVURI + Constants.trackOntology);
+		Set<Individual> ontos = getPropertyValues(localPeer.getURI(), ontologyObjectProperty, Constants.POMVURI+Constants.peerConcept, null);
+		Iterator it = ontos.iterator();
+		while (it.hasNext()){
+			Individual t = (Individual)it.next();
+			if (t.getURI().equalsIgnoreCase(tURN)) return true;
+		}
+		return false;
+	}
 	
 	//METHODS TO DELETE THE WHOLE HISTORY OF CHANGESPECIFICATION
 	//PRIVATE IMPLEMENTATIONS
@@ -449,12 +598,12 @@ public class ChangeManagement {
 		String concept=ChangeProperties.getAxiomConcept(o);
 		tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(4,pList,50);
+		IOntology.addConceptToRegistry(4,pList,50, null);
 		
 	}
 	
 	private void removeRelatedChanges(OMVOntology o){
-		List<OMVChange> changes=getTrackedChanges(o,false);
+		List<OMVChange> changes=getTrackedChanges(o, null, null);
 		Iterator it2 = changes.iterator();
 		while (it2.hasNext()){
 			OMVChange t = (OMVChange)it2.next();			
@@ -506,56 +655,60 @@ public class ChangeManagement {
 			List pList = new LinkedList();
 			pList.clear();
 			pList=ChangeSpecificationProperties.getChangeSpecificationProperties(cs);
-			IOntology.addConceptToRegistry(4,pList,32);
+			IOntology.addConceptToRegistry(4,pList,32, null);
 		}
 	}
 	
+	/**
+	 * Search Oyster2 registry to retrieve all available changes
+	 * for a specific ontology in historical order, starting
+	 * with the specified change. 
+	 * @param o is the specified ontology 
+	 * @param fromChange is the starting point in the change history.
+	 * If not specified (i.e. fromChange=null) this method returns the
+	 * complete history
+	 * @return The list of OMVChanges objects representing the
+	 * ontology changes.
+	 */
 	//SEARCH METHODS
-	public List<OMVChange> getTrackedChanges(OMVOntology o, boolean unsort){
+	public List<OMVChange> getTrackedChanges(OMVOntology o, Ontology registry, String fromChange){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
 		
+		mOyster2.getLogger().info("getting changes from ..."+targetRegistry.getPhysicalURI());
 		List<OMVChange> OMVRet = new LinkedList<OMVChange>();
+		List<OMVChange> OMVRetFinal = new LinkedList<OMVChange>();
 		Set<OMVChange> OMVSet = new HashSet<OMVChange>();
 		Map propertyMap = new HashMap();
 		Collection hasChangeSet = new LinkedList();
 		String tURN;
-		String lastURN;
 		String lastChangeURI="";
 		
-		
+		if (o==null) return OMVRetFinal;
 		if (o.getURI()!=null){
-			tURN=o.getURI();
-			boolean hasVersion=false;
-			if (o.getVersion()!=null){
-				tURN=tURN+"?version="+o.getVersion();//+";";
-				hasVersion=true;
-			}
-			if (o.getResourceLocator()!=null){
-				if (!hasVersion) tURN=tURN+"?";
-				else tURN=tURN+";";
-				tURN=tURN+"location="+o.getResourceLocator();
-			}
-			tURN=tURN.replace(" ", "_");
-			
+			tURN=getOntologyID(o);
 			if (tURN.indexOf("?")>0){
 				tURN=tURN+";";
 			}else{
 				tURN=tURN+"?";
 			}
-			lastURN=tURN+"log";
 			tURN=tURN+"changeSpecification";
 			//GET ALL CHANGES FOR THE SPECIFIED ONTOLOGY
 			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.CHANGEURI+Constants.changeSpecificationConcept);
 			Individual oIndividual = KAON2Manager.factory().individual(tURN);
 			try {
-				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+				if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+			
 					ObjectProperty hasChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasChange);
-					propertyMap = oIndividual.getObjectPropertyValues(localRegistry);
+					propertyMap = oIndividual.getObjectPropertyValues(targetRegistry);
 					hasChangeSet = (Collection)propertyMap.get(hasChange);
+					mOyster2.getLogger().info("hasChange size..."+hasChangeSet.size());
 					Iterator i = hasChangeSet.iterator();
 					while (i.hasNext()){
 						Individual change = (Individual)i.next();
-						//System.out.println("change: "+change.getURI().toString() +" description: "+change.getDescriptionsMemberOf(localRegistry).iterator().next());
-						OMVChange c=ProcessChangeIndividuals.processChangeIndividual(change, change.getDescriptionsMemberOf(localRegistry).iterator().next().toString(), localRegistry);
+						//System.out.println("change: "+change.getURI().toString() +" description: "+change.getDescriptionsMemberOf(targetRegistry).iterator().next());
+						OMVChange c=ProcessChangeIndividuals.processChangeIndividual(change, change.getDescriptionsMemberOf(targetRegistry).iterator().next().toString(), targetRegistry);
 						OMVSet.add(c);			
 					}
 				}
@@ -564,56 +717,64 @@ public class ChangeManagement {
 				e.printStackTrace();
 			}
 			//SET THE LAST CHANGE URI TO RETURN SORTED LIST OF CHANGES
-			oConcept = KAON2Manager.factory().owlClass(Constants.CHANGEURI+Constants.LogConcept);
-			oIndividual = KAON2Manager.factory().individual(lastURN);
-			try {
-				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
-					ObjectProperty hasLastChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasLastChange);
-					Individual lc = oIndividual.getObjectPropertyValue(localRegistry, hasLastChange);
-					lastChangeURI = lc.getURI();
+			lastChangeURI=getLastChangeIdFromLog(o, targetRegistry);
+		}
+		
+		//SORT LIST
+		if (lastChangeURI!=""){
+			Iterator s = OMVSet.iterator();
+			while (s.hasNext()){
+				OMVChange t = (OMVChange)s.next();
+				if (t.getURI().equalsIgnoreCase(lastChangeURI)){
+					OMVRet.add(t);
+					break;
 				}
-			} catch (KAON2Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			}
+			OMVChange ct = OMVRet.get(0);
+			if (ct !=null){
+				while (ct.getHasPreviousChange()!=null){
+					boolean found=false;
+					Iterator sort = OMVSet.iterator();
+					while (sort.hasNext()){
+						OMVChange t = (OMVChange)sort.next();
+						if (t.getURI().equalsIgnoreCase(ct.getHasPreviousChange())){
+							OMVRet.add(t);
+							ct=t;
+							found=true;
+							break;
+						}
+					}
+					if (!found) ct.setHasPreviousChange(null);
+				}
 			}
 		}
-		if (!unsort){
-			//SORT LIST
-			if (lastChangeURI!=""){
-				Iterator s = OMVSet.iterator();
-				while (s.hasNext()){
-					OMVChange t = (OMVChange)s.next();
-					if (t.getURI().equalsIgnoreCase(lastChangeURI)){
-						OMVRet.add(t);
-						break;
-					}
-				}
-				OMVChange ct = OMVRet.get(0);
-				if (ct !=null){
-					while (ct.getHasPreviousChange()!=null){
-						boolean found=false;
-						Iterator sort = OMVSet.iterator();
-						while (sort.hasNext()){
-							OMVChange t = (OMVChange)sort.next();
-							if (t.getURI().equalsIgnoreCase(ct.getHasPreviousChange())){
-								OMVRet.add(t);
-								ct=t;
-								found=true;
-								break;
-							}
-						}
-						if (!found) ct.setHasPreviousChange(null);
-					}
-				}
+		//else if (OMVSet.size()>0) OMVRet.addAll(OMVSet); //IN CASE THE HISTORY IS BROKEN JUST RETURN ALL CHANGES FOUND. SHOULDNT HAPPEN!
+		if (fromChange!=null){
+			Iterator it = OMVRet.iterator();
+			while (it.hasNext()){
+				OMVChange t = (OMVChange)it.next();
+				if (!t.getURI().equalsIgnoreCase(fromChange)){
+					OMVRetFinal.add(t);
+				}else break;		
 			}
-			else if (OMVSet.size()>0) OMVRet.addAll(OMVSet); //IN CASE THE HISTORY IS BROKEN JUST RETURN ALL CHANGES FOUND. SHOULDNT HAPPEN!
-		}else if (OMVSet.size()>0) OMVRet.addAll(OMVSet); 
-		return OMVRet;
+		}else return OMVRet;
+		return OMVRetFinal;
 	}
-	
-	public Set<OMVChange> getTrackedChanges(OMVOntology o, OMVChange c){
+	/**
+	 * Search Oyster2 registry to retrieve changes
+	 * of specific kind for a specific ontology. 
+	 * @param o is the specified ontology. 
+	 * @param c is the kind of ontology change Use predefined classes of the 
+	 * API i.e. new OMVEntityChange().
+	 * @param fromChange is the starting point in the change history.
+	 * If not specified (i.e. fromChange=null) this method returns the
+	 * complete history
+	 * @return The set of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public Set<OMVChange> getTrackedChanges(OMVOntology o, OMVChange c, Ontology registry, String fromChange){
 		Set<OMVChange> replySet = new HashSet<OMVChange>();
-		List<OMVChange> reply = getTrackedChanges(o,false);
+		List<OMVChange> reply = getTrackedChanges(o, registry, fromChange);
 		Iterator s = reply.iterator();
 		while (s.hasNext()){
 			OMVChange t = (OMVChange)s.next();
@@ -628,7 +789,60 @@ public class ChangeManagement {
 		}
 		return replySet;
 	}
-	
+	/**
+	 * Search Oyster2 registry to retrieve all available changes
+	 * for a specific ontology without any order 
+	 * @param o is the specified ontology 
+	 * @return The set of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public Set<OMVChange> getTrackedChangesSet(OMVOntology o, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		Set<OMVChange> OMVSet = new HashSet<OMVChange>();
+		Map propertyMap = new HashMap();
+		Collection hasChangeSet = new LinkedList();
+		String tURN;
+		
+		if (o==null) return OMVSet;
+		if (o.getURI()!=null){
+			tURN=getOntologyID(o);
+			if (tURN.indexOf("?")>0){
+				tURN=tURN+";";
+			}else{
+				tURN=tURN+"?";
+			}
+			tURN=tURN+"changeSpecification";
+			//GET ALL CHANGES FOR THE SPECIFIED ONTOLOGY
+			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.CHANGEURI+Constants.changeSpecificationConcept);
+			Individual oIndividual = KAON2Manager.factory().individual(tURN);
+			try {
+				if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+					ObjectProperty hasChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasChange);
+					propertyMap = oIndividual.getObjectPropertyValues(targetRegistry);
+					hasChangeSet = (Collection)propertyMap.get(hasChange);
+					Iterator i = hasChangeSet.iterator();
+					while (i.hasNext()){
+						Individual change = (Individual)i.next();
+						//System.out.println("change: "+change.getURI().toString() +" description: "+change.getDescriptionsMemberOf(targetRegistry).iterator().next());
+						OMVChange c=ProcessChangeIndividuals.processChangeIndividual(change, change.getDescriptionsMemberOf(targetRegistry).iterator().next().toString(), targetRegistry);
+						OMVSet.add(c);			
+					}
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return OMVSet;
+	}
+	/**
+	 * Search Oyster2 registry to retrieve all ontologies with
+	 * change history. 
+	 * @return The set of OMVOntology objects
+	 */
 	public Set<OMVOntology> getTrackedOntologies(){
 		OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.CHANGEURI+Constants.changeSpecificationConcept);
 		ObjectProperty changeFromVersion = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.changeFromVersion);
@@ -649,6 +863,13 @@ public class ChangeManagement {
     	}
 		return OMVSet;
 	}
+	/**
+	 * Gets the set of atomic changes for a specific entity
+	 * change
+	 * @param c is the entity change for which for which we
+	 * want to search atomic changes
+	 * @return The set of atomic changes 
+	 */
 
 	public Set<OMVAtomicChange> getAtomicChanges(OMVEntityChange c){
 		Set<OMVAtomicChange> replySet = new HashSet<OMVAtomicChange>();
@@ -665,7 +886,12 @@ public class ChangeManagement {
 				Iterator i = hasChangeSet.iterator();
 				while (i.hasNext()){
 					Individual atomic = (Individual)i.next();
-					OMVAtomicChange tc = (OMVAtomicChange)ProcessChangeIndividuals.processChangeIndividual(atomic, atomic.getDescriptionsMemberOf(localRegistry).iterator().next().toString(), localRegistry);
+					String atomicClass="";
+					Set<Description> className= atomic.getDescriptionsMemberOf(localRegistry);
+					if (className!=null && className.size()>0)
+						atomicClass = className.iterator().next().toString();
+					else return null;
+					OMVAtomicChange tc = (OMVAtomicChange)ProcessChangeIndividuals.processChangeIndividual(atomic, atomicClass, localRegistry);
 					replySet.add(tc);
 				}
 			}
@@ -675,6 +901,89 @@ public class ChangeManagement {
 		}		
 		return replySet;
 	}
+	/**
+	 * Gets the URI of the last change registered
+	 * for this ontology in the log
+	 * @param o is the ontology from which we want to
+	 * get the last change URI. 
+	 * @return The string of the last change registered
+	 */
+	
+	public String getLastChangeIdFromLog(OMVOntology o, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		if (o==null || o.getURI()==null) return "";
+		String tURN=getOntologyID(o);
+		if (tURN.indexOf("?")>0){
+			tURN=tURN+";";
+		}else{
+			tURN=tURN+"?";
+		}
+		tURN=tURN+"log";
+		ObjectProperty hasLastChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasLastChange);
+		Individual lastChange = getPropertyValue(tURN,hasLastChange,Constants.CHANGEURI+Constants.LogConcept, targetRegistry);
+		if (lastChange!=null) return lastChange.getURI();
+		else return "";
+	}
+	/**
+	 * Gets the URI of all registered changes
+	 * @param o is the ontology from which we want to
+	 * get all changes URI. 
+	 * @return The set of strings of the changes URIs
+	 */
+	public Set<String> getChangesIds(OMVOntology o, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		Set<String> reply = new HashSet<String>();
+		
+		String tURN=getOntologyID(o);
+		if (tURN.indexOf("?")>0){
+			tURN=tURN+";";
+		}else{
+			tURN=tURN+"?";
+		}
+		tURN=tURN+"changeSpecification";
+		ObjectProperty hasChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasChange);
+		Set<Individual> changes = getPropertyValues(tURN,hasChange,Constants.CHANGEURI+Constants.changeSpecificationConcept, targetRegistry);
+		Iterator it = changes.iterator();
+		while (it.hasNext()){
+			Individual t = (Individual)it.next();
+			if (t!=null) reply.add(t.getURI());
+		}
+		return reply;
+	}
+	/**
+	 * Compares if change history in registry is older than in registry2
+	 * @param o is the ontology from which we want to compare change history
+	 * @param registry1 is the registry that will be compared
+	 * @param registry2 is the registry that will be used as reference
+	 * @return true/false
+	 */
+	public boolean isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2){
+		if (registry1==null || registry2 ==null) return false;
+		
+		String lastChange1 = getLastChangeIdFromLog(o, registry1);
+		String lastChange2 = getLastChangeIdFromLog(o, registry2);
+		mOyster2.getLogger().info("comparing ..."+lastChange1+" with..."+lastChange2);
+		
+		if ((lastChange1==null || lastChange1.equalsIgnoreCase("")) && (lastChange2!=null && !lastChange2.equalsIgnoreCase(""))) return true;
+		else if ((lastChange2==null || lastChange2.equalsIgnoreCase("")) && (lastChange1!=null && !lastChange1.equalsIgnoreCase(""))) return false;
+		else if (lastChange1.equalsIgnoreCase(lastChange2)) return false;
+		
+		Set<String> changes2 = getChangesIds(o, registry2);
+		Iterator it = changes2.iterator();
+		while(it.hasNext()){
+			String t = (String)it.next();
+			if (t.equalsIgnoreCase(lastChange1)) return true;
+		}
+		return false;
+		
+	}
+	
+	//HISTORY && TRACKING METHODS
 	private Set<Axiom> getAxioms(OMVAtomicChange c){
 		Set<Axiom> replySet = new HashSet<Axiom>();
 		ObjectProperty appliedAxiom = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.appliedAxiom);
@@ -691,8 +1000,9 @@ public class ChangeManagement {
 			e.printStackTrace();
 		}		
 		return replySet;
-	}	
-	//HISTORY && TRACKING METHODS
+	}
+	
+	
 	private void updateLog(OMVOntology o, List properties, boolean first){
 		String tURN="";
 		Iterator it1 = properties.iterator();
@@ -774,17 +1084,23 @@ public class ChangeManagement {
 		}
 		return null;
 	}
+	
+	//UTILS	
 	private static String getChangeConcept(OMVChange a){
 		if (a.getClass().getSimpleName()!=null && a.getClass().getSimpleName()!="") return a.getClass().getSimpleName();
 		else return ""; 
 	}
 	
-	private Individual getPropertyValue(String URI, ObjectProperty oP, String Concept){
-		OWLClass oConcept = KAON2Manager.factory().owlClass(Concept);
-		Individual oIndividual = KAON2Manager.factory().individual(URI);
+	private Individual getPropertyValue(String uri, ObjectProperty oP, String concept, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		OWLClass oConcept = KAON2Manager.factory().owlClass(concept);
+		Individual oIndividual = KAON2Manager.factory().individual(uri);
 		try {
-			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
-				Individual targetIndividual = oIndividual.getObjectPropertyValue(localRegistry,oP);
+			if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+				Individual targetIndividual = oIndividual.getObjectPropertyValue(targetRegistry,oP);
 				if (targetIndividual!=null) return targetIndividual;
 				else return null;
 			}
@@ -794,7 +1110,7 @@ public class ChangeManagement {
 		}
 		return null;
 	}
-	//UTILS
+	
 	private void removeProperty(String URI, ObjectProperty oP, String Concept, String targetValue){
 		Map propertyMap = new HashMap();
 		File localRegistryFile = mOyster2.getLocalRegistryFile();
@@ -835,8 +1151,74 @@ public class ChangeManagement {
 		}
 		
 	}
+	
+	private void addProperty(String URI, ObjectProperty oP, String Concept, String targetURI){
+		File localRegistryFile = mOyster2.getLocalRegistryFile();
+		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
+
+		OWLClass oConcept = KAON2Manager.factory().owlClass(Concept);
+		Individual oIndividual = KAON2Manager.factory().individual(URI);
+		Individual targetIndividual = KAON2Manager.factory().individual(targetURI);
+		try {
+			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+				Map<ObjectProperty,Set<Individual>> check=oIndividual.getObjectPropertyValues(localRegistry);
+				Set<Individual>checkValues=check.get(oP);
+				if (checkValues==null || !checkValues.contains(targetIndividual))
+					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(oP,oIndividual,targetIndividual),OntologyChangeEvent.ChangeType.ADD));
+			}
+			if (changes.size()>0){ 
+				localRegistry.applyChanges(changes);
+				localRegistry.persist();
+				try {
+					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			changes.clear();
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private Set<Individual> getPropertyValues(String uri, ObjectProperty oP, String concept, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		Map propertyMap = new HashMap();
+		Collection hasSet = new LinkedList();
+		Set<Individual> reply = new HashSet<Individual>();
+		OWLClass oConcept = KAON2Manager.factory().owlClass(concept);
+		Individual oIndividual = KAON2Manager.factory().individual(uri);
+		try {
+			if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+				propertyMap = oIndividual.getObjectPropertyValues(targetRegistry);
+				hasSet = (Collection)propertyMap.get(oP);
+				if (hasSet==null) return reply;
+				Iterator i = hasSet.iterator();
+				while (i.hasNext()){
+					Individual indiv = (Individual)i.next();
+					reply.add(indiv);
+				}
+			}
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return reply;
+	}
+
+	
 	private String getOntologyID(OMVOntology o){
 		String tURN="";
+		if (o==null) return "";
 		if (o.getURI()!=null){
 			tURN=o.getURI();
 			boolean hasVersion=false;
@@ -853,6 +1235,7 @@ public class ChangeManagement {
 		}
 		return tURN;
 	}
+	
 	private String getCSID(OMVOntology o){
 		String tURN=getOntologyID(o);
 		if (tURN.indexOf("?")>0){
@@ -867,30 +1250,7 @@ public class ChangeManagement {
 }
 
 
-/*
-private Set<Individual> getPropertyValues(String URI, ObjectProperty oP, String Concept){
-Map propertyMap = new HashMap();
-Collection hasSet = new LinkedList();
-Set<Individual> reply = new HashSet<Individual>();
-OWLClass oConcept = KAON2Manager.factory().owlClass(Concept);
-Individual oIndividual = KAON2Manager.factory().individual(URI);
-try {
-	if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
-		propertyMap = oIndividual.getObjectPropertyValues(localRegistry);
-		hasSet = (Collection)propertyMap.get(oP);
-		if (hasSet==null) return reply;
-		Iterator i = hasSet.iterator();
-		while (i.hasNext()){
-			Individual indiv = (Individual)i.next();
-			reply.add(indiv);
-		}
-	}
-} catch (KAON2Exception e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-}
-return reply;
-}*/
+
 
 /*
 public Set<String> getRelatedEntities(String changeURI){
@@ -914,4 +1274,19 @@ while (it.hasNext()){
 }
 return reply;
 }
+*/
+
+/*
+ oConcept = KAON2Manager.factory().owlClass(Constants.CHANGEURI+Constants.LogConcept);
+			oIndividual = KAON2Manager.factory().individual(lastURN);
+			try {
+				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+					ObjectProperty hasLastChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasLastChange);
+					Individual lc = oIndividual.getObjectPropertyValue(localRegistry, hasLastChange);
+					lastChangeURI = lc.getURI();
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 */

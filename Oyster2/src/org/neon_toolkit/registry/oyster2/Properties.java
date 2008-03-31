@@ -1,7 +1,7 @@
 package org.neon_toolkit.registry.oyster2;
 
 /**
- * $Id: Properties.java,v 1.2 2008-03-06 22:40:07 rpa Exp $
+ * $Id: Properties.java,v 1.3 2008-03-31 14:27:50 rpa Exp $
  *
  * Copyright (c) 2002 The P-Grid Team,
  *                    All Rights Reserved.
@@ -35,8 +35,6 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map.Entry;
-//import java.util.logging.Level;
-//import java.util.zip.Deflater;
 
 import org.neon_toolkit.registry.util.Tokenizer;
 
@@ -47,6 +45,7 @@ import org.neon_toolkit.registry.util.Tokenizer;
  * @version 1.0.0
  */
 public class Properties {
+
 
 	/**
 	 * Property "Locale", the used locale.
@@ -129,7 +128,7 @@ public class Properties {
 																						owlChangeOntology,"O2serverfiles/OWLChanges.owl",
 																						topicOntology,"O2serverfiles/dmozT.rdf",
 																						changeOntology,"O2serverfiles/changes.owl",
-																						owlodmOntology,"O2serverfiles/owl11v1.3.owl",
+																						owlodmOntology,"O2serverfiles/owl11v1.5.owl",
 																						workflowOntology,"O2serverfiles/workflow.owl",
 																						image, "O2serverfiles/o1.GIF",
 																						typeOntologyRoot, "#Ontology",
@@ -266,6 +265,7 @@ public class Properties {
 				setString(localPeerName,host);
 				storeOn();
 			} else {
+				
 				System.out.println("file existed, loading...");
 				mProperties.clear();
 				load();

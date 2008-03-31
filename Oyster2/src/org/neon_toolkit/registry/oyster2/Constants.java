@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.3 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-25 22:23:28 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.4 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-31 14:27:50 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -40,9 +40,11 @@ public class Constants {
 	public static final String VERSIONINFO ="http://www.w3.org/2002/07/owl#versionInfo";
 	public static final String IMPORT ="imports";
 	public static final String OMVIMPORT = OMVURI + IMPORT;
+	public static final String peerConcept = "Peer";
 	public static final String omvCondition = "omv:";
 	public static final String momvCondition = "momv:";
 	public static final String pomvCondition = "pomv:";
+	public static final String workflowCondition = "workflow:";
 	public static final String ontologyConcept = "Ontology";
 	public static final String mappingConcept = "Mapping";
 	public static final String propertyConcept = "Property";
@@ -140,6 +142,7 @@ public class Constants {
 	public static final String contextOntology="contextOntology";
 	public static final String ontologyOMVLocation="ontologyOMVLocation";
 	public static final String provideOntology="provideOntology";
+	public static final String trackOntology = "trackOntology";
 	public static final String isSubDomainOf="isSubDomainOf";
 	public static final String acquaintedWith="acquaintedWith";
 	public static final String hasExpertise="hasExpertise";
@@ -316,6 +319,7 @@ public class Constants {
 	public static final String SymmetricObjectPropertyConcept = "SymmetricObjectProperty";
 	public static final String TransitiveObjectPropertyConcept = "TransitiveObjectProperty";
 	
+	
 	public static final String OWLEntityConcept = "OWLEntity";
 	public static final String DataPropertyConcept = "DataProperty";
 	public static final String DatatypeConcept = "Datatype";
@@ -375,10 +379,16 @@ public class Constants {
 	public static final String relatedChange="relatedChange";
 	public static final String relatedOntology="relatedOntology";
 	public static final String ActionConcept="Action";
-	public static final String SubjectExpert="SubjectExpert";
-	public static final String Validator="Validator";
-	public static final String Viewer="Viewer";
-	
+	public static final String SubjectExpert="http://omv.ontoware.org/2007/07/workflow#SubjectExpert";
+	public static final String Validator="http://omv.ontoware.org/2007/07/workflow#Validator";
+	public static final String Viewer="http://omv.ontoware.org/2007/07/workflow#Viewer";
+	public static final String fromPublicVersion="fromPublicVersion";
+	public static final String toPublicVersion="toPublicVersion";
+	//NOT USING THIS NOW, USING STATES ABOVE... IS NICER. MAYBE CHANGE ONTOLOGY
+	public static final String DraftOntologyState = "http://omv.ontoware.org/2007/07/workflow#DraftOntology";
+	public static final String ApprovedOntologyState = "http://omv.ontoware.org/2007/07/workflow#ApprovedOntology";
+	public static final String PublishedOntologyState = "http://omv.ontoware.org/2007/07/workflow#PublishedOntology";
+	public static final String ToBeApprovedOntologyState = "http://omv.ontoware.org/2007/07/workflow#ToBeApprovedOntology";
 	
 	/*RDFS Parameters
 	 * 
@@ -424,7 +434,7 @@ public class Constants {
 	public static final String DefaultTopicOntology = "O2serverfiles/dmozT.rdf";
 	public static final String DefaultOWLChangeOntology = "O2serverfiles/OWLChanges.owl";
 	public static final String DefaultChangeOntology = "O2serverfiles/changes.owl";
-	public static final String DefaultOWLODMOntology = "O2serverfiles/owl11v1.3.owl";
+	public static final String DefaultOWLODMOntology = "O2serverfiles/owl11v1.5.owl";
 	public static final String DefaultWorkflowOntology = "O2serverfiles/workflow.owl";
 	public static final String DefaultImage = "O2serverfiles/o1.GIF"; 
 	//public static final String DefaultImage = "file:///O2serverfiles/oyster.jpg";

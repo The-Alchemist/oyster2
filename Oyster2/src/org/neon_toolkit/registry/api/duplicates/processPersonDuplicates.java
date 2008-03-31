@@ -7,11 +7,11 @@ import org.neon_toolkit.omv.api.core.OMVPerson;
 
 
 /**
- * The class processMappingDuplicates provides the methods to
- * process duplicates in OMV Mapping objects  
+ * The class processPersonDuplicates provides the methods to
+ * process duplicates in OMV Person objects  
  * representing the result of a query 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class processPersonDuplicates{
 	

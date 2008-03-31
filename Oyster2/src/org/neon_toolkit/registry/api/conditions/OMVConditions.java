@@ -32,7 +32,7 @@ import org.semanticweb.kaon2.api.owl.elements.OWLClass;
  * retrieve the conditions from OMV objects 
  * representing the conditions of a search
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class OMVConditions{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -89,7 +89,12 @@ public class OMVConditions{
 				searchConditions.addAll(conditionTemp);
 			}
 		}
-		
+		if (o.getHasRole()!=null) {
+			Condition condition;
+			if (which=="") condition = new Condition(Constants.workflowCondition+Constants.hasRole, o.getHasRole(), true);
+			else condition = new Condition(Constants.workflowCondition+Constants.hasRole, o.getHasRole(), which); 
+			searchConditions.addFirst(condition);
+		}
 		return searchConditions;
 	}
 	

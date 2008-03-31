@@ -80,7 +80,7 @@ public class ExchangeInitiator implements Runnable{
 			while(it.hasNext()){
 				if (mShutdownFlag) return;
 				String IP = it.next().toString();
-				System.out.println("rendezvous peers IP: "+IP);
+				mOyster2.getLogger().info("rendezvous peers IP: "+IP);
 				remoteRegistry = localInformer.openRemoteRegistry(IP);
 				if (remoteRegistry!=null){
 					//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
@@ -100,11 +100,11 @@ public class ExchangeInitiator implements Runnable{
 		//long lastTime = System.currentTimeMillis();
 		boolean keepGoing=true;
 		while(keepGoing){
-			System.out.println("informer process starts..."+System.currentTimeMillis());
+			mOyster2.getLogger().info("informer process starts..."+System.currentTimeMillis());
 			exchange();
 			if (mShutdownFlag)
 				return;
-			System.out.println("informer process finish, now to sleep..."+System.currentTimeMillis());
+			mOyster2.getLogger().info("informer process finish, now to sleep..."+System.currentTimeMillis());
 			keepGoing=this.sleep(sleepTime());
 		}
 	}
@@ -129,7 +129,7 @@ public class ExchangeInitiator implements Runnable{
 				Individual peerIndiv = (Individual)it.next();
 				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry) &&	!mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					IP = localInformer.getPeerIP(localRegistry,peerIndiv);
-					System.out.println("Attempt to connect with peer: "+IP+" from exchange process");
+					mOyster2.getLogger().info("Attempt to connect with peer: "+IP+" from exchange process");
 					remoteRegistry = localInformer.openRemoteRegistry(IP);
 					if (remoteRegistry!=null){
 						//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
@@ -191,12 +191,12 @@ public class ExchangeInitiator implements Runnable{
 	 * Starts the Exchanger.
 	 */
 	public void run(){
-			System.out.println("ExchangeInitiator starting..."+System.currentTimeMillis());
+			mOyster2.getLogger().info("ExchangeInitiator starting..."+System.currentTimeMillis());
 			if (mShutdownFlag)
 				return;
-			System.out.println("Rendezvouz exchange starting..."+System.currentTimeMillis());
+			mOyster2.getLogger().info("Rendezvouz exchange starting..."+System.currentTimeMillis());
 			randomExchange();
-			System.out.println("Rendezvouz exchange finished..."+System.currentTimeMillis());
+			mOyster2.getLogger().info("Rendezvouz exchange finished..."+System.currentTimeMillis());
 			expertiseExchange();
 			
 			

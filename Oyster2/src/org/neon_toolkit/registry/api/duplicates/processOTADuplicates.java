@@ -7,11 +7,11 @@ import org.neon_toolkit.omv.api.core.OMVOntologyTask;
 
 
 /**
- * The class processMappingDuplicates provides the methods to
- * process duplicates in OMV Mapping objects  
+ * The class processOTADuplicates provides the methods to
+ * process duplicates in OMV Ontology task objects  
  * representing the result of a query 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class processOTADuplicates{
 	

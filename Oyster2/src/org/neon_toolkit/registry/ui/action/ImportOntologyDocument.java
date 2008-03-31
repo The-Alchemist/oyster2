@@ -77,7 +77,7 @@ public class ImportOntologyDocument extends Action implements IRunnableWithProgr
 				if (editor.getReturnCode() == IDialogConstants.OK_ID) {
 					propertyList.clear();
 					propertyList = editor.getPropertyList();
-					IOntology.addImportOntologyToRegistry(propertyList,0);
+					IOntology.addImportOntologyToRegistry(propertyList,0, null);
 				}
 			}
 		} catch (InvocationTargetException e) {
