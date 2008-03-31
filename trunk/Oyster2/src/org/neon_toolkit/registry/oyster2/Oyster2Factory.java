@@ -5,6 +5,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.*;
 import org.neon_toolkit.registry.core.AdvertInformer;
 import org.neon_toolkit.registry.core.ExchangeInitiator;
@@ -231,9 +234,16 @@ public class Oyster2Factory {
 	
 	private boolean isSimple=false;
 	
-	private boolean caching=true;
+	private boolean caching=false;
 	
 	private boolean workflowSupport=false;
+	
+	//LOGGER
+	//Create a console handler
+    private ConsoleHandler handler = new ConsoleHandler();
+	private Logger logger = Logger.getLogger("org.neon_toolkit.registry.Logging");
+	private boolean logEnabled=false;
+
 
 	/**
 	 * This creates the only instance of this class. This differs from the C++
@@ -265,7 +275,14 @@ public class Oyster2Factory {
 		String typeOntologyURI = null;
 		String topicOntologyURI = null;
 	
+		if (getLogEnabled()) {
+			logger.addHandler(handler);
+			logger.setUseParentHandlers(false);
+		}else {
+			logger.setLevel(Level.OFF);
+		}
 		
+
 		//0//
 		
 		if (connection == null)  //new version of kaon2 (01/2007)
@@ -497,6 +514,8 @@ public class Oyster2Factory {
 			mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
 			mExchangeInitiatorThread.setDaemon(true);
 			mExchangeInitiatorThread.start();
+		}else{
+			mInformer.updateLocalIP();
 		}
 	}
 	
@@ -863,6 +882,18 @@ public class Oyster2Factory {
 	
 	public boolean getWorkflowSupport() {
 		return this.workflowSupport;
+	}
+	
+	public void setLogEnabled(boolean value) {
+		this.logEnabled=value;
+	}
+	
+	public boolean getLogEnabled() {
+		return this.logEnabled;
+	}
+	
+	public Logger getLogger() {
+		return this.logger;
 	}
 }
 

@@ -49,7 +49,7 @@ public class Result implements QueryReplyListener{
 	/**
 	 * invoked when a new query reply received.
 	 */
-	public void newReplyReceived(QueryReply reply) {
+	public synchronized void newReplyReceived(QueryReply reply) { //NORMAL OPERATION
 		int type = reply.getType();
 		if (type==-1){
 			StartGUI.getMainWindow().operationFinished();
@@ -92,7 +92,7 @@ public class Result implements QueryReplyListener{
 		//entries.clear();
 	}
 	
-	public void entryReceived(final List entryList){
+	public synchronized void entryReceived(final List entryList){ //ONLY CALLED FROM GUI REGISTRY VIEW WHEN SELECTING PEERS?? DELETE??
 		if(entryList!=null){
 		Iterator it = entryList.iterator(); 
 		while(it.hasNext()){
@@ -119,7 +119,7 @@ public class Result implements QueryReplyListener{
 		//entries.clear();
 	}
 	
-	public void entryReceived(final Ontology virtualOntology){
+	public synchronized void entryReceived(final Ontology virtualOntology){ //NOT USED SO FAR...
 		entries.add(virtualOntology);
 		viewer.getControl().getDisplay().syncExec(new Runnable(){
 			public void run(){

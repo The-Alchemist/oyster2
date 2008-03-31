@@ -7,11 +7,11 @@ import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
 
 
 /**
- * The class processMappingDuplicates provides the methods to
- * process duplicates in OMV Mapping objects  
+ * The class processOSDuplicates provides the methods to
+ * process duplicates in OMV Ontology Syntax objects  
  * representing the result of a query 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class processOSDuplicates{
 	

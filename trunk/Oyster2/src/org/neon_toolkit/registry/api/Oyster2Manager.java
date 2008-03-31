@@ -72,6 +72,10 @@ import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.util.EntryDetailSerializer;
+import org.neon_toolkit.workflow.api.Action;
+import org.neon_toolkit.workflow.api.Action.EntityAction;
+import org.neon_toolkit.workflow.api.Action.OntologyAction;
+import org.neon_toolkit.workflow.api.Action.OntologyAction.Publish;
 import org.semanticweb.kaon2.api.DefaultOntologyResolver;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
@@ -87,9 +91,10 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 
 /**
  * The class Oyster2Manager provides the initial connection to Oyster2
- * registry, and the means to display results
+ * registry. It allows to configure the peer behaviour and provides the 
+ * means to display results
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class Oyster2Manager{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -108,8 +113,10 @@ public class Oyster2Manager{
 	    }
 
 	/**
-	 * Set the Peer to not start the exchange process
-	 * i.e. when oyster will be open and close quick 
+	 * Specify if the local peer will start the discovery process that
+	 * runs periodically. This method is particulary useful when oyster 
+	 * will start and stop quickly (i.e. web service invocation, plugin,
+	 * etc.). DEFAULT=false  
 	 * @param simplePeer specifies if Oyster2 should be simple
 	 */
 	public static void setSimplePeer(boolean simplePeer)
@@ -118,10 +125,10 @@ public class Oyster2Manager{
     }
 
 	/**
-	 * Set the Peer to cache information during the exchange process
-	 * i.e. save locally remote objects. 
+	 * Specify if the local peer will cache locally information of
+	 * remote objects i.e. save locally remote objects. 
 	 * Note: This property has effect only if the peer is not set
-	 * as a simple peer.
+	 * as a simple peer. DEFAULT=false
 	 * @param caching specifies if Oyster2 should cache information
 	 */
 	public static void setCachingPeer(boolean caching)
@@ -130,12 +137,23 @@ public class Oyster2Manager{
     }
 
 	/**
-	 * Specify if workflow support is enabled
-	 * @param workflowSupport
+	 * Specify if workflow support is enabled. DEFAULT=false
+	 * @param workflowSupport specify if peer supports workflow.
 	 */
 	public static void setWorkflowSupport(boolean workflowSupport)
     {
 		mOyster2.setWorkflowSupport(workflowSupport);
+    }
+	
+	/**
+	 * Specify if debug should be started i.e. log messages will
+	 * be displayed on the screen. DEFAULT=false
+	 * @param logEnabled specify if consolo will display debug
+	 * information
+	 */
+	public static void setLogEnabled(boolean logEnabled)
+    {
+		mOyster2.setLogEnabled(logEnabled);
     }
 	
 	/**
@@ -209,7 +227,8 @@ public class Oyster2Manager{
     }
 	
 	/**
-	 * Closes the connection to Oyster2 registry. Destroys Kaon2 instance.
+	 * Closes the connection to Oyster2 registry. Destroys Kaon2 
+	 * instance if started withing Oyster.
 	 */
 	public static void closeConnection(){
 		mOyster2.shutdown();
@@ -331,6 +350,7 @@ public class Oyster2Manager{
 			serial=serial+getDataSetString(omvPeer.getProvideOntology(),"provideOntology",0);
 			serial=serial+getDataSetString(omvPeer.getProvideMapping(),"provideMapping",7);
 			serial=serial+getDataSetString(omvPeer.getHasExpertise(),"hasExpertise",5);
+			serial=serial+getDataSetString(omvPeer.getTrackOntology(),"trackOntology",0);
 			serial = serial + "}\n\n";
 		}
 		}catch(Exception ignore){
@@ -372,9 +392,9 @@ public class Oyster2Manager{
 	}
 	
 	/**
-	 * Return the string representation of a set of OMVMapping objects.
-	 * @param OMVSet the set of OMVMapping objects.
-	 * @return the string representation of the set of OMVMapping objects.
+	 * Return the string representation of a set of OMVChange objects.
+	 * @param OMVSet the set of OMVChange objects.
+	 * @return the string representation of the set of OMVChange objects.
 	 */
 	public static String serializeOMVChanges(List<OMVChange> OMVSet){
 		String serial="";
@@ -448,6 +468,43 @@ public class Oyster2Manager{
 		else if (a instanceof TransitiveObjectProperty) return "\t"+getData(((TransitiveObjectProperty)a).getObjectProperty(),"objectProperty");
 		else if (a instanceof SubObjectPropertyOf) return "\t"+getData(((SubObjectPropertyOf)a).getSuperObjectProperty(),"superObjectProperty")+"\t"+getDataSetString(((SubObjectPropertyOf)a).getSubObjectProperties(),"subObjectProperties",100);		
 		return null;
+	}
+	
+	/**
+	 * Return the string representation of a set of Action objects.
+	 * @param OMVSet the set of Action objects.
+	 * @return the string representation of the set of Action objects.
+	 */
+	public static String serializeActions(List<Action> OMVSet){
+		String serial="";
+		
+		Iterator it = OMVSet.iterator();
+		try{
+		while(it.hasNext()){
+			Action omv = (Action)it.next();
+			//System.out.println("processing change: "+omv.getURI());
+			serial=serial+"Action {\n"+"\t"+"type:"+omv.getClass().getSimpleName()+"\n"+
+			getData(omv.getURI(),"URI")+
+			getData(omv.getTimestamp(),"timestamp");
+			if (omv.getPerformedBy()!=null && omv.getPerformedBy().getFirstName()!=null && omv.getPerformedBy().getLastName()!=null){
+				String temp=omv.getPerformedBy().getFirstName()+" "+omv.getPerformedBy().getLastName();
+				serial=serial+getData(temp,"performedBy");
+			}
+			if (omv instanceof EntityAction){
+				serial=serial+getData(((EntityAction)omv).getRelatedChange(),"relatedChange");
+			}else if (omv instanceof OntologyAction){
+				if (((OntologyAction)omv).getRelatedOntology()!=null) serial = serial + getData(((OntologyAction)omv).getRelatedOntology().getURI(),"relatedOntology");
+				if (omv instanceof Publish){
+					if (((Publish)omv).getFromPublicVersion()!=null) serial = serial + getData(((Publish)omv).getFromPublicVersion().getURI(),"fromPublicVersion");
+					if (((Publish)omv).getToPublicVersion()!=null) serial = serial + getData(((Publish)omv).getToPublicVersion().getURI(),"toPublicVersion");
+				}
+			}
+			serial = serial + "}\n\n";
+		}
+		}catch(Exception ignore){
+			//-- ignore
+		}
+		return serial;
 	}
 	
 	/**

@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.neon_toolkit.registry.oyster2.Condition;
 import org.neon_toolkit.registry.oyster2.Constants;
+import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
 import org.neon_toolkit.registry.util.GUID;
 //import org.semanticweb.kaon2.api.KAON2Manager;
@@ -12,7 +13,7 @@ import org.semanticweb.kaon2.api.Namespaces;
 
 
 public class QueryFormulator {
-	
+	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	//private static final String baseSubject = "<http://omv.ontoware.org/2005/05/ontology#hasDomain>";
 	private static final String OMVURI =  Constants.OMVURI;
 	private static final String MOMVURI =  Constants.MOMVURI;
@@ -134,7 +135,7 @@ public class QueryFormulator {
 		}
 		queryBuffer.append("}");
 		
-		System.out.println("ontology query is: "+queryBuffer.toString());
+		mOyster2.getLogger().info("ontology query is: "+queryBuffer.toString());
 		generateTopicQuery(queryBuffer,scope); 
 		
 	}
@@ -280,7 +281,7 @@ public class QueryFormulator {
 		this.topicQuery = query;
 		int bufferLength = queryBuffer.length();
 		queryBuffer.delete(0,bufferLength);
-		System.out.println("topicQuery: "+topicQuery.getQueryString());
+		mOyster2.getLogger().info("topicQuery: "+topicQuery.getQueryString());
 	}
 	
 	private void generateTypeQuery(StringBuffer queryBuffer, int scope){
@@ -288,7 +289,7 @@ public class QueryFormulator {
 		this.typeQuery = query;
 		int bufferLength = queryBuffer.length();
 		queryBuffer.delete(0,bufferLength);
-		System.out.println("typeQuery: "+typeQuery.getQueryString());
+		mOyster2.getLogger().info("typeQuery: "+typeQuery.getQueryString());
 	}
 
 	private void addTypeCondition(Condition c){

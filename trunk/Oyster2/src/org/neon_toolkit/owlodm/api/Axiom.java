@@ -7,7 +7,7 @@ import java.util.Set;
  * The class Axiom provides the object 
  * representation of the Axiom OWLODM Object  
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class Axiom {
 	String URI;

@@ -19,11 +19,11 @@ import org.neon_toolkit.registry.util.GUID;
 import org.neon_toolkit.registry.api.properties.OMVProperties;
 
 /**
- * The class MappingProperties provides the methods to
- * retrieve the properties from OMV Mapping objects 
+ * The class ChangeProperties provides the methods to
+ * retrieve the properties from OMV Change objects 
  * representing the object of the registry 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class ChangeProperties{
 	static private ImportOntology IOntology= new ImportOntology();
@@ -74,7 +74,7 @@ public class ChangeProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(1,tList,0);
+						IOntology.addConceptToRegistry(1,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasAuthor, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -112,7 +112,7 @@ public class ChangeProperties{
 				tURN=tURN.replace(" ", "_");
 				ontologyChangedURI=tURN;
 				//Pure Register Ontology i.e. what=1
-				IOntology.addImportOntologyToRegistry(tList,1);
+				IOntology.addImportOntologyToRegistry(tList,1, null);
 				OntologyProperty prop = new OntologyProperty(Constants.appliedToOntology, ontologyChangedURI);
 				tProperties.addFirst(prop);
 				
@@ -140,7 +140,7 @@ public class ChangeProperties{
 				String concept=getAxiomConcept(ot);
 				tProp = new OntologyProperty(Constants.name, concept);
 				tList.add(tProp);
-				IOntology.addConceptToRegistry(1,tList,50);
+				IOntology.addConceptToRegistry(1,tList,50, null);
 				OntologyProperty prop = new OntologyProperty(Constants.appliedAxiom, tURN);
 				tProperties.addFirst(prop);
 			}

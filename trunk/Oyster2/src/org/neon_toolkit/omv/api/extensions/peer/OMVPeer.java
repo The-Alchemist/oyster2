@@ -28,6 +28,7 @@ public class OMVPeer {
 	private Set <OMVPeer> acquaintedWith = new HashSet <OMVPeer>();
 	private Set <OMVOntologyDomain> hasExpertise = new HashSet <OMVOntologyDomain>();
 	private Set <OMVMapping> provideMapping = new HashSet <OMVMapping>();
+	private Set <OMVOntology> trackOntology = new HashSet <OMVOntology>();
 	private OMVPeer mappingOMVLocation;
 	
 	
@@ -49,6 +50,7 @@ public class OMVPeer {
 		if (element.getHasExpertise().size()>0) {this.hasExpertise.addAll(element.getHasExpertise());return;}
 		if (element.getProvideMapping().size()>0) {this.provideMapping.addAll(element.getProvideMapping());return;}
 		if (this.getMappingOMVLocation()==null && element.getMappingOMVLocation()!=null) {this.setMappingOMVLocation(element.getMappingOMVLocation());return;}
+		if (element.getTrackOntology().size()>0) {this.trackOntology.addAll(element.getTrackOntology());return;}
     }
 	
 	public void setGUID(String newGUID)
@@ -179,5 +181,20 @@ public class OMVPeer {
 	public OMVPeer getMappingOMVLocation()
 	{
 		return this.mappingOMVLocation;
+	}
+	
+	public void addTrackOntology(OMVOntology newTrackOntology)
+	{
+		this.trackOntology.add(newTrackOntology);
+	}
+	
+	public void removeTrackOntology(OMVOntology oldTrackOntology)
+	{
+		this.trackOntology.remove(oldTrackOntology);
+	}
+	
+	public Set <OMVOntology> getTrackOntology()
+	{
+		return this.trackOntology;
 	}
 }

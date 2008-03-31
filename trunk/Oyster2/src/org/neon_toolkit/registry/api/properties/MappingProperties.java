@@ -48,7 +48,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -59,7 +59,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -75,7 +75,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPR(e);
-					IOntology.addConceptToRegistry(0,tList,14);
+					IOntology.addConceptToRegistry(0,tList,14, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasProperty, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -89,23 +89,23 @@ public class MappingProperties{
 				tList.clear();
 				if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm){
 					tList=getPropertiesMA((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm)t);
-					IOntology.addConceptToRegistry(0,tList,15);
+					IOntology.addConceptToRegistry(0,tList,15, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod){
 					tList=getPropertiesMM((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod)t);
-					IOntology.addConceptToRegistry(0,tList,16);
+					IOntology.addConceptToRegistry(0,tList,16, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter){
 					tList=getPropertiesMF((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter)t);
-					IOntology.addConceptToRegistry(0,tList,17);
+					IOntology.addConceptToRegistry(0,tList,17, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel){
 					tList=getPropertiesMP((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel)t);
-					IOntology.addConceptToRegistry(0,tList,18);
+					IOntology.addConceptToRegistry(0,tList,18, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence){
 					tList=getPropertiesMS((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence)t);
-					IOntology.addConceptToRegistry(0,tList,19);
+					IOntology.addConceptToRegistry(0,tList,19, null);
 				}
 				OntologyProperty prop = new OntologyProperty(Constants.usedMethod, tURN);
 				tProperties.addFirst(prop);
@@ -119,10 +119,11 @@ public class MappingProperties{
 				tList.clear();
 				tList=OMVProperties.getProperties(otemp);
 				if (otemp.getResourceLocator()!=null){
-					IOntology.addImportOntologyToRegistry(tList,0);
+					IOntology.addImportOntologyToRegistry(tList,0, null);
+					tURN=IOntology.getOntologyID(otemp);
 				}
 				else{
-					IOntology.addImportOntologyToRegistry(tList,3);
+					IOntology.addImportOntologyToRegistry(tList,3, null);
 				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasSourceOntology, tURN);
 				tProperties.addFirst(prop);
@@ -136,10 +137,11 @@ public class MappingProperties{
 				tList.clear();
 				tList=OMVProperties.getProperties(otemp);
 				if (otemp.getResourceLocator()!=null){
-					IOntology.addImportOntologyToRegistry(tList,0);
+					IOntology.addImportOntologyToRegistry(tList,0, null);
+					tURN=IOntology.getOntologyID(otemp);
 				}
 				else{
-					IOntology.addImportOntologyToRegistry(tList,3);
+					IOntology.addImportOntologyToRegistry(tList,3, null);
 				}
 				OntologyProperty prop = new OntologyProperty(Constants.hasTargetOntology, tURN);
 				tProperties.addFirst(prop);
@@ -181,15 +183,15 @@ public class MappingProperties{
 					tList.clear();
 					if (t instanceof OMVMappingEvidence.OMVMappingArgument){
 						tList=getPropertiesEA((OMVMappingEvidence.OMVMappingArgument)t);
-						IOntology.addConceptToRegistry(0,tList,20);
+						IOntology.addConceptToRegistry(0,tList,20, null);
 					}
 					else if (t instanceof OMVMappingEvidence.OMVMappingCertificate){
 						tList=getPropertiesEC((OMVMappingEvidence.OMVMappingCertificate)t);
-						IOntology.addConceptToRegistry(0,tList,21);
+						IOntology.addConceptToRegistry(0,tList,21, null);
 					}
 					else if (t instanceof OMVMappingEvidence.OMVMappingProof){
 						tList=getPropertiesEP((OMVMappingEvidence.OMVMappingProof)t);
-						IOntology.addConceptToRegistry(0,tList,22);
+						IOntology.addConceptToRegistry(0,tList,22, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.hasEvidence, tURN);
 					tProperties.addFirst(prop);
@@ -217,7 +219,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -228,7 +230,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -244,7 +246,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPA(e);
-					IOntology.addConceptToRegistry(0,tList,23);
+					IOntology.addConceptToRegistry(0,tList,23, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasParameter, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -283,7 +285,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -294,7 +296,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -310,7 +312,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPA(e);
-					IOntology.addConceptToRegistry(0,tList,23);
+					IOntology.addConceptToRegistry(0,tList,23, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasParameter, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -337,7 +339,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -348,7 +350,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -364,7 +366,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPA(e);
-					IOntology.addConceptToRegistry(0,tList,23);
+					IOntology.addConceptToRegistry(0,tList,23, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasParameter, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -386,23 +388,23 @@ public class MappingProperties{
 				tList.clear();
 				if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm){
 					tList=getPropertiesMA((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm)t);
-					IOntology.addConceptToRegistry(0,tList,15);
+					IOntology.addConceptToRegistry(0,tList,15, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod){
 					tList=getPropertiesMM((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod)t);
-					IOntology.addConceptToRegistry(0,tList,16);
+					IOntology.addConceptToRegistry(0,tList,16, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter){
 					tList=getPropertiesMF((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter)t);
-					IOntology.addConceptToRegistry(0,tList,17);
+					IOntology.addConceptToRegistry(0,tList,17, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel){
 					tList=getPropertiesMP((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel)t);
-					IOntology.addConceptToRegistry(0,tList,18);
+					IOntology.addConceptToRegistry(0,tList,18, null);
 				}
 				else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence){
 					tList=getPropertiesMS((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence)t);
-					IOntology.addConceptToRegistry(0,tList,19);
+					IOntology.addConceptToRegistry(0,tList,19, null);
 				}
 				OntologyProperty prop = new OntologyProperty(Constants.filtersMethod, tURN);
 				tProperties.addFirst(prop);
@@ -429,7 +431,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -440,7 +442,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -456,7 +458,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPA(e);
-					IOntology.addConceptToRegistry(0,tList,23);
+					IOntology.addConceptToRegistry(0,tList,23, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasParameter, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -472,23 +474,23 @@ public class MappingProperties{
 					tList.clear();
 					if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm){
 						tList=getPropertiesMA((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm)t);
-						IOntology.addConceptToRegistry(0,tList,15);
+						IOntology.addConceptToRegistry(0,tList,15, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod){
 						tList=getPropertiesMM((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod)t);
-						IOntology.addConceptToRegistry(0,tList,16);
+						IOntology.addConceptToRegistry(0,tList,16, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter){
 						tList=getPropertiesMF((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter)t);
-						IOntology.addConceptToRegistry(0,tList,17);
+						IOntology.addConceptToRegistry(0,tList,17, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel){
 						tList=getPropertiesMP((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel)t);
-						IOntology.addConceptToRegistry(0,tList,18);
+						IOntology.addConceptToRegistry(0,tList,18, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence){
 						tList=getPropertiesMS((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence)t);
-						IOntology.addConceptToRegistry(0,tList,19);
+						IOntology.addConceptToRegistry(0,tList,19, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.aggregatesMethod, tURN);
 					tProperties.addFirst(prop);
@@ -505,23 +507,23 @@ public class MappingProperties{
 					tList.clear();
 					if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm){
 						tList=getPropertiesMA((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm)t);
-						IOntology.addConceptToRegistry(0,tList,15);
+						IOntology.addConceptToRegistry(0,tList,15, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod){
 						tList=getPropertiesMM((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod)t);
-						IOntology.addConceptToRegistry(0,tList,16);
+						IOntology.addConceptToRegistry(0,tList,16, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter){
 						tList=getPropertiesMF((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter)t);
-						IOntology.addConceptToRegistry(0,tList,17);
+						IOntology.addConceptToRegistry(0,tList,17, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel){
 						tList=getPropertiesMP((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel)t);
-						IOntology.addConceptToRegistry(0,tList,18);
+						IOntology.addConceptToRegistry(0,tList,18, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence){
 						tList=getPropertiesMS((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence)t);
-						IOntology.addConceptToRegistry(0,tList,19);
+						IOntology.addConceptToRegistry(0,tList,19, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.composesMethod, tURN);
 					tProperties.addFirst(prop);
@@ -549,7 +551,7 @@ public class MappingProperties{
 						tURN=per.getFirstName()+per.getLastName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesPerson(per);
-						IOntology.addConceptToRegistry(0,tList,0);
+						IOntology.addConceptToRegistry(0,tList,0, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -560,7 +562,7 @@ public class MappingProperties{
 						tURN=org.getName();
 						tList.clear();
 						tList=OMVProperties.getPropertiesOrganisation(org);
-						IOntology.addConceptToRegistry(0,tList,1);
+						IOntology.addConceptToRegistry(0,tList,1, null);
 						OntologyProperty prop = new OntologyProperty(Constants.hasCreator, tURN);
 						tProperties.addFirst(prop);
 					}
@@ -576,7 +578,7 @@ public class MappingProperties{
 					tURN=e.getID();
 					tList.clear();
 					tList=getPropertiesMPA(e);
-					IOntology.addConceptToRegistry(0,tList,23);
+					IOntology.addConceptToRegistry(0,tList,23, null);
 					OntologyProperty prop = new OntologyProperty(Constants.hasParameter, tURN);
 					tProperties.addFirst(prop);
 				}
@@ -592,23 +594,23 @@ public class MappingProperties{
 					tList.clear();
 					if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm){
 						tList=getPropertiesMA((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingAlgorithm)t);
-						IOntology.addConceptToRegistry(0,tList,15);
+						IOntology.addConceptToRegistry(0,tList,15, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod){
 						tList=getPropertiesMM((OMVMappingMethod.OMVMappingBasicMethod.OMVMappingManualMethod)t);
-						IOntology.addConceptToRegistry(0,tList,16);
+						IOntology.addConceptToRegistry(0,tList,16, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter){
 						tList=getPropertiesMF((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter)t);
-						IOntology.addConceptToRegistry(0,tList,17);
+						IOntology.addConceptToRegistry(0,tList,17, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel){
 						tList=getPropertiesMP((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingParallel)t);
-						IOntology.addConceptToRegistry(0,tList,18);
+						IOntology.addConceptToRegistry(0,tList,18, null);
 					}
 					else if (t instanceof OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence){
 						tList=getPropertiesMS((OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingSequence)t);
-						IOntology.addConceptToRegistry(0,tList,19);
+						IOntology.addConceptToRegistry(0,tList,19, null);
 					}
 					OntologyProperty prop = new OntologyProperty(Constants.composesMethod, tURN);
 					tProperties.addFirst(prop);

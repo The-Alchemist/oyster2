@@ -148,6 +148,17 @@ public class ProcessPeerIndividuals{
 				oDomainReply = null;
 				return peerReply;
 			}
+			if (URI.equalsIgnoreCase(Constants.POMVURI+Constants.trackOntology)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				OMVOntology oReferencesReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(oIndividual, "ontology", ontologySearch);  //oReferences
+				if (oReferencesReply==null) {
+					oReferencesReply = new OMVOntology();
+					oReferencesReply.setURI(value);
+				}
+				peerReply.addTrackOntology(oReferencesReply);
+				oReferencesReply = null;
+				return peerReply;
+			}
 			return peerReply;
 		}
 		

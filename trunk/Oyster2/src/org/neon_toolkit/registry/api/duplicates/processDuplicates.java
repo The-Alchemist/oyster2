@@ -24,10 +24,10 @@ import org.neon_toolkit.omv.api.core.OMVPerson;
 
 /**
  * The class processDuplicates provides the methods to
- * process duplicates in OMV objects  
+ * process duplicates in OMV Ontology objects  
  * representing the result of a query 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class processDuplicates{
 	

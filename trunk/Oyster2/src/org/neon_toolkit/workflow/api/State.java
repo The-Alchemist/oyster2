@@ -4,11 +4,10 @@ package org.neon_toolkit.workflow.api;
 
 
 /**
- * The class OMVMapping provides the object 
- * representation of the Mapping  
- * OMV ontology extension.
+ * The class State provides the object 
+ * representation of the Workflow Ontology.
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class State {
 	

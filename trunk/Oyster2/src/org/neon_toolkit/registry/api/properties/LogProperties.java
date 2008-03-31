@@ -12,11 +12,11 @@ import org.neon_toolkit.registry.oyster2.ImportOntology;
 import org.neon_toolkit.registry.oyster2.OntologyProperty;
 
 /**
- * The class MappingProperties provides the methods to
- * retrieve the properties from OMV Mapping objects 
+ * The class LogProperties provides the methods to
+ * retrieve the properties from OMV Log objects 
  * representing the object of the registry 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class LogProperties{
 	static private ImportOntology IOntology= new ImportOntology();
@@ -53,7 +53,7 @@ public class LogProperties{
 				tURN=tURN.replace(" ", "_");
 				ontologyChangedURI=tURN;
 				//Pure Register Ontology i.e. what=1
-				IOntology.addImportOntologyToRegistry(tList,1);
+				IOntology.addImportOntologyToRegistry(tList,1, null);
 				OntologyProperty prop = new OntologyProperty(Constants.hasRelatedOntology, ontologyChangedURI);
 				tProperties.addFirst(prop);
 				

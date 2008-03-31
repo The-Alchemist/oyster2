@@ -50,6 +50,11 @@ public class StartGUI {
 
 	
 	public static void main(String[] args)throws Exception{
+
+		mOyster2.setIsSimple(false);
+		mOyster2.setCaching(false);
+		mOyster2.setLogEnabled(false);
+		mOyster2.setWorkflowSupport(false);
 		
 		if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;
 		if (startKAON2){			

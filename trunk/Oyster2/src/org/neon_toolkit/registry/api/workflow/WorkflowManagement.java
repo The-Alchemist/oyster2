@@ -19,6 +19,7 @@ import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
 import org.neon_toolkit.registry.api.change.ChangeManagement;
+import org.neon_toolkit.registry.api.individuals.ProcessActionIndividuals;
 import org.neon_toolkit.registry.api.individuals.ProcessOMVIndividuals;
 import org.neon_toolkit.registry.api.properties.WorkflowProperties;
 import org.neon_toolkit.registry.oyster2.Constants;
@@ -50,9 +51,10 @@ import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 
 /**
- * The class Oyster2Connection provides the API access methods to Oyster2 registry.
+ * The class WorkflowManager provides the methods to support the
+ * editorial workflow 
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class WorkflowManagement {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -64,7 +66,8 @@ public class WorkflowManagement {
     {
 	
     }
-	
+
+	//ADDING ACTIONS
 	@SuppressWarnings("unchecked")
 	public boolean insert(String changeURI, OMVPerson p){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;} 
@@ -107,7 +110,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		List pList = new LinkedList();
 		pList.clear();
 		pList=WorkflowProperties.getActionProperties(obj);
@@ -115,7 +118,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state 
 		//set draft state to ontology
@@ -177,7 +180,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -186,7 +189,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -262,7 +265,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -271,7 +274,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if neccesary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -323,7 +326,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -332,7 +335,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -383,7 +386,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -392,7 +395,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);	
@@ -461,7 +464,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -470,7 +473,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -527,7 +530,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);	
+		obj.setTimestamp(sNow);	
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -536,7 +539,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -589,7 +592,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -598,7 +601,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -651,7 +654,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -660,7 +663,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -681,7 +684,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -691,7 +694,7 @@ public class WorkflowManagement {
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
 		
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 	}
 	@SuppressWarnings("unchecked")
 	public void moveToBeApproved(OMVOntology o, OMVPerson p){
@@ -699,7 +702,7 @@ public class WorkflowManagement {
 		//update ontology state if necessary
 		//get all changes of that ontology
 		ChangeManagement cMgmt= new ChangeManagement();
-		Set<OMVChange> changes= cMgmt.getTrackedChanges(o,new OMVEntityChange());
+		Set<OMVChange> changes= cMgmt.getTrackedChanges(o,new OMVEntityChange(), null, null);
 		//check every change State
 		boolean changeOntoState=true;
 		Iterator cIt=changes.iterator();
@@ -727,7 +730,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -736,7 +739,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 	}
 	@SuppressWarnings("unchecked")
 	public void approval(OMVOntology o, OMVPerson p){
@@ -744,7 +747,7 @@ public class WorkflowManagement {
 		//update ontology state if necessary
 		//get all changes of that ontology
 		ChangeManagement cMgmt= new ChangeManagement();
-		Set<OMVChange> changes= cMgmt.getTrackedChanges(o,new OMVEntityChange());
+		Set<OMVChange> changes= cMgmt.getTrackedChanges(o,new OMVEntityChange(), null, null);
 		//check every change State
 		boolean changeOntoState=true;
 		Iterator cIt=changes.iterator();
@@ -772,7 +775,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -781,7 +784,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 	}
 	@SuppressWarnings("unchecked")
 	public void publish(OMVOntology fromPublicVersion, OMVOntology toPublicVersion, OMVPerson p){
@@ -805,7 +808,7 @@ public class WorkflowManagement {
 		if (p!=null) obj.setPerformedBy(p);
 		Date now = new Date();
 		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimeStamp(sNow);
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -814,32 +817,94 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60);
+		IOntology.addConceptToRegistry(1,pList,60, null);
 	}
 
-	
-	//UTILITIES
-	@SuppressWarnings("unchecked")
-	public void removeAction(Action a)
-	{
-		List pList = new LinkedList();
-		if (a.getURI()!=null){
-			pList.clear();
-			pList=WorkflowProperties.getActionProperties(a);
-			//Specify class name to add
-			String concept=getActionConcept(a);
-			OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
-			pList.add(tProp);
-			IOntology.addConceptToRegistry(4,pList,60);
+	//GET INFORMATION
+	public List<Action> getEntityActionsHistory(OMVOntology o, Ontology registry, String fromChange){
+		String [] actions = {"Delete", "Insert", "Update", "RejectToApproved", "RejectToBeApproved", "RejectToDraft", "SendToApproved", "SendToBeApproved", "SendToBeDeleted"};
+		List<Action> replyActions = new LinkedList<Action>();
+		List<OMVChange> workList = new LinkedList<OMVChange>(); 
+		ChangeManagement cMgmt= new ChangeManagement();
+		List<OMVChange> changes = cMgmt.getTrackedChanges(o, registry, fromChange);
+		Iterator it = changes.iterator();
+		while (it.hasNext()){
+			OMVChange t = (OMVChange)it.next();
+			if (t instanceof OMVEntityChange){
+				workList.add(t);
+			}
 		}
+		it = workList.iterator();
+		while (it.hasNext()){
+		  OMVChange c = (OMVChange)it.next();
+		  for (int i=0; i<actions.length;i++){
+			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
+			Individual oIndividual = KAON2Manager.factory().individual(c.getURI()+";action="+actions[i]);
+			try {
+				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], localRegistry);
+					replyActions.add(reply);
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		  }
+		}
+		return replyActions;
+	}
+	public Action getOntologyAction(OMVOntology o){
+		String [] actions = {"MoveToDraft", "MoveToBeApproved", "Approval", "Publish"};
+		Action replyAction = null;
+		String tURN=getOntologyID(o);
+		
+		
+		for (int i=0; i<actions.length;i++){
+			//System.out.println("trying with action: "+actions[i]);
+			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
+			Individual oIndividual = KAON2Manager.factory().individual(tURN+";action="+actions[i]);
+			try {
+				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], localRegistry);
+					replyAction=reply;
+					break;
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return replyAction;
+	}
+	public String getOntologyState(OMVOntology o){
+		String replyAction = "";
+		String tURN=getOntologyID(o);
+		
+		OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
+		Individual oIndividual = KAON2Manager.factory().individual(tURN);
+		try {
+			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+				ObjectProperty changeObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasOntologyState);
+				Individual entityValue=getPropertyValue(oIndividual.getURI(),changeObjectProperty,Constants.OMVURI+Constants.ontologyConcept);
+				if (entityValue!=null)
+					replyAction=entityValue.getURI();
+				else return "";
+			}
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+		
+		return replyAction;
 	}
 	
+	//WORKFLOW INFO MGMT
 	public void addEntityChangeState(String c, String concept, String targetURI){
 		//add hastEntityState property
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasEntityState);
 		addProperty(c,ontologyObjectProperty, Constants.CHANGEURI+concept, targetURI );
 	}
-
 	public void removeEntityChangeState(String c, String concept){
 		//remove hastEntityState property
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasEntityState);
@@ -850,7 +915,6 @@ public class WorkflowManagement {
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasOntologyState);
 		addProperty(c,ontologyObjectProperty, Constants.OMVURI+Constants.ontologyConcept, targetURI );
 	}
-
 	public void removeOntologyState(String c){
 		//remove hastOntologyState property
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasOntologyState);
@@ -924,7 +988,7 @@ public class WorkflowManagement {
 		removeOntologyActions(o);
 		//remove entity actions
 		ChangeManagement cMgmt= new ChangeManagement();
-		List<OMVChange> changes= cMgmt.getTrackedChanges(o,false);
+		List<OMVChange> changes= cMgmt.getTrackedChanges(o, null, null);
 		Iterator it2 = changes.iterator();
 		while (it2.hasNext()){
 			OMVChange t = (OMVChange)it2.next();
@@ -935,6 +999,22 @@ public class WorkflowManagement {
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
+	public void removeAction(Action a)
+	{
+		List pList = new LinkedList();
+		if (a.getURI()!=null){
+			pList.clear();
+			pList=WorkflowProperties.getActionProperties(a);
+			//Specify class name to add
+			String concept=getActionConcept(a);
+			OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
+			pList.add(tProp);
+			IOntology.addConceptToRegistry(4,pList,60, null);
+		}
+	}
+	
+	//UTILITIES
 	private void removeProperty(String URI, ObjectProperty oP, String Concept){
 		Map propertyMap = new HashMap();
 		File localRegistryFile = mOyster2.getLocalRegistryFile();
@@ -1008,7 +1088,6 @@ public class WorkflowManagement {
 		}
 		
 	}
-
 	private Individual getPropertyValue(String URI, ObjectProperty oP, String Concept){
 		OWLClass oConcept = KAON2Manager.factory().owlClass(Concept);
 		Individual oIndividual = KAON2Manager.factory().individual(URI);

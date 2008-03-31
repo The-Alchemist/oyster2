@@ -33,6 +33,7 @@ import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
 import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
 import org.neon_toolkit.omv.api.extensions.peer.OMVPeer;
 import org.neon_toolkit.registry.api.change.ChangeManagement;
+import org.neon_toolkit.registry.api.change.RunnableSynchronization;
 import org.neon_toolkit.registry.api.conditions.MappingConditions;
 import org.neon_toolkit.registry.api.conditions.OMVConditions;
 import org.neon_toolkit.registry.api.duplicates.processDuplicates;
@@ -57,6 +58,7 @@ import org.neon_toolkit.registry.api.properties.MappingProperties;
 import org.neon_toolkit.registry.api.properties.OMVProperties;
 import org.neon_toolkit.registry.api.workflow.WorkflowManagement;
 import org.neon_toolkit.registry.core.AdvertInformer;
+import org.neon_toolkit.registry.core.ExchangeInitiator;
 import org.neon_toolkit.registry.core.LocalExpertiseRegistry;
 import org.neon_toolkit.registry.core.QueryFormulator;
 import org.neon_toolkit.registry.oyster2.Condition;
@@ -69,6 +71,7 @@ import org.neon_toolkit.registry.oyster2.QueryReply;
 import org.neon_toolkit.registry.oyster2.SearchManager;
 import org.neon_toolkit.registry.util.GUID;
 import org.neon_toolkit.registry.util.Resource;
+import org.neon_toolkit.workflow.api.Action;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
@@ -76,7 +79,7 @@ import org.semanticweb.kaon2.api.owl.elements.Individual;
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
  * @author Raul Palma
- * @version 1.0, March 2008
+ * @version 2.0, March 2008
  */
 public class Oyster2Connection {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -108,6 +111,8 @@ public class Oyster2Connection {
 	static private boolean waitMore=true;
 	static private int OMVObject;
 	private String lastChange;
+	ExchangeInitiator mExchangeInitiator;
+	Thread mExchangeInitiatorThread;
 	
 	public Oyster2Connection()
     {
@@ -163,8 +168,7 @@ public class Oyster2Connection {
 	 * Replaces an existing object in Oyster2 registry with
 	 * the new information provided. If the object
 	 * does not exists, it is registered.
-	 * @param o is the object
-	 * that will be replaced.
+	 * @param o is the object that will be replaced.
 	 */
 	public void replace(Object o)
 	{
@@ -241,11 +245,12 @@ public class Oyster2Connection {
 	 * @param o is an object that holds the conditions 
 	 * that will be used for searching the registry.
 	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
 	 * Auto_Scope, Selected_Scope)
 	 * @param peerSet is the map of pairs (URI,OMVPeer object)
 	 * representing the set of peers that will be included in the
-	 * search. 
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge
 	 * @return The set of objects representing the
 	 * metadata entries and that fulfill the conditions.
 	 */	
@@ -264,233 +269,6 @@ public class Oyster2Connection {
 		return OMVSet;
 	}
 
-	/**
-	 * Opens an ontology file, extracts the ontology metadata 
-	 * and import it into Oyster2 registry. If the ontology
-	 * does already exists, it is merged. 
-	 * It is not allowed to use blank spaces in the path 
-	 * of an ontology, since this string (the path of the ontology) 
-	 * should be a normal url (java.net.URI). But you can 
-	 * use %20 instead of a blank space
-	 * @param URL is the path or URL of the ontology file.
-	 */
-	public void importOntology(String URL)
-	{
-		pList.clear();
-		pList=IOntology.extractMetadata(URL);
-		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
-		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))// && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,0);
-	}
-
-	/**
-	 * Search Oyster2 local registry to retrieve all available ontology
-	 * metadata entries.
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries.
-	 */
-	public Set<OMVOntology> getOntologies()
-	{
-		QueryReply qReply =null;
-		LinkedList conditions = new LinkedList();
-	
-		QueryFormulator mFormulator = new QueryFormulator();
-		mFormulator.generateDataQuery(conditions, scope);
-		//Oyster2Query topicQuery = mFormulator.getTopicQuery();
-		Oyster2Query typeQuery = mFormulator.getTypeQuery();
-		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource);
-		Set<OMVOntology> OMVSet = processReply(qReply);
-		return OMVSet;
-	}
-
-	/**
-	 * Search Oyster2 registry to retrieve all available ontology
-	 * metadata entries within a certain scope and (if specified) 
-	 * a certain set of Peers.
-	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
-	 * Auto_Scope, Selected_Scope)
-	 * @param peerSet is the map of pairs (URI,OMVPeer object)
-	 * representing the set of peers that will be included in the
-	 * search. 
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries.
-	 */
-	public Set<OMVOntology> getOntologies(int scope,Map<String,OMVPeer> peerSet)
-	{ 
-		OMVObject=1;
-		OMVSetDistributed=new HashSet <OMVOntology>();
-		qReplyDistributedSet= new HashSet <QueryReply>();
-		Set peerList=null;
-		
-		LinkedList conditions = new LinkedList();	
-		QueryFormulator mFormulator = new QueryFormulator();
-		mFormulator.generateDataQuery(conditions,scope);
-		Oyster2Query typeQuery = mFormulator.getTypeQuery();
-		if (peerSet!=null) peerList= peerSet.keySet();
-		searchManager.addListener(resultAPI);
-		searchManager.startSearch(null,typeQuery,peerList, false);
-		waitReply(1);
-		return OMVSetDistributed;
-	}
-
-	/**
-	 * Search Oyster2 local registry to retrieve all available ontology
-	 * metadata entries that were registered after certain date.
-	 * @param fromDate is the date from which to start the search.
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries and that were registered after the 
-	 * date provided.
-	 */
-	
-	public Set<OMVOntology> getOntologies(Date fromDate)
-	{ 
-		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US);
-		//String fromFomat = format.format(fromDate);
-		Set<OMVOntology> OMVSetFiltered = new HashSet<OMVOntology>();
-		Set<OMVOntology> OMVSet = getOntologies();
-		Iterator it = OMVSet.iterator();
-		try{
-			while(it.hasNext()){
-				OMVOntology omv = (OMVOntology)it.next();
-				Date d = format.parse(omv.getTimeStamp());
-				if (d.after(fromDate)){
-					OMVSetFiltered.add(omv);
-				}
-			}
-		
-		}catch(Exception ignore){
-		//-- ignore
-		}
-		return OMVSetFiltered;
-	
-	}
-
-	/**
-	 * Search Oyster2 registry to retrieve all available ontology
-	 * metadata entries that were registered after certain date, 
-	 * within a certain scope and (if specified)a certain set of Peers.
-	 * @param fromDate is the date from which to start the search.
-	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
-	 * Auto_Scope, Selected_Scope)
-	 * @param peerSet is the map of pairs (URI,OMVPeer object)
-	 * representing the set of peers that will be included in the
-	 * search.
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries and that were registered after the 
-	 * date provided.
-	 */
-	
-	public Set<OMVOntology> getOntologies(Date fromDate, int scope,Map<String,OMVPeer> peerSet)
-	{ 
-		OMVObject=1;
-		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US);
-		//String fromFomat = format.format(fromDate);
-		Set<OMVOntology> OMVSetFiltered = new HashSet<OMVOntology>();
-		Set<OMVOntology> OMVSet = getOntologies(scope, peerSet);
-		Iterator it = OMVSet.iterator();
-		try{
-			while(it.hasNext()){
-				OMVOntology omv = (OMVOntology)it.next();
-				if (omv.getTimeStamp()!=null){
-					Date d = format.parse(omv.getTimeStamp());
-					if (d.after(fromDate)){
-						OMVSetFiltered.add(omv);
-					}
-				}
-			}
-		
-		}catch(Exception ignore){
-		//-- ignore
-		}
-		return OMVSetFiltered;
-	
-	}
-
-	/**
-	 * Search Oyster2 local registry to retrieve all available ontology
-	 * metadata entries that contains the input keyword in any part 
-	 * of any of their data properties. Implements a keword match search.
-	 * @param keyword is the keyword to search in the ontology properties.
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries that matched the keyword.
-	 */
-	
-	public Set<OMVOntology> getOntologies(String keyword){ 
-		QueryReply qReply =null;
-		Oyster2Query query = new Oyster2Query(new GUID(),Oyster2Query.Local_Scope,Oyster2Query.TOPIC_QUERY,keyword);
-		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),query,null,Resource.DataResource);
-		Set<OMVOntology> OMVSet = processReply(qReply);
-		return OMVSet;
-	}
-	
-	/**
-	 * Search Oyster2 registry to retrieve all available ontology
-	 * metadata entries that contains the input keyword in any part 
-	 * of any of their data properties. Implements a keword match search
-	 * within a certain scope and (if specified)a certain set of Peers.
-	 * @param keyword is the keyword to search in the ontology properties.
-	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
-	 * Auto_Scope, Selected_Scope)
-	 * @param peerSet is the map of pairs (URI,OMVPeer object)
-	 * representing the set of peers that will be included in the
-	 * search.  
-	 * @return The set of OMVOntology objects representing the
-	 * ontology metadata entries that matched the keyword.
-	 */
-	
-	public Set<OMVOntology> getOntologies(String keyword, int scope, Map<String,OMVPeer> peerSet){
-		OMVObject=1;
-		OMVSetDistributed=new HashSet <OMVOntology>();
-		qReplyDistributedSet= new HashSet <QueryReply>();
-		Set peerList=null;
-		Oyster2Query query = new Oyster2Query(new GUID(),scope,Oyster2Query.TOPIC_QUERY,keyword);
-		if (peerSet!=null) peerList= peerSet.keySet();
-		searchManager.addListener(resultAPI);
-		searchManager.startSearch(query,null,peerList, true);
-		waitReply(1);
-		return OMVSetDistributed;
-	}
-
-	/**
-	 * Search Oyster2 registry to retrieve all available changes
-	 * for a specific ontology in historical order. 
-	 * @param o is the specified ontology 
-	 * @return The list of OMVChanges objects representing the
-	 * ontology changes.
-	 */
-	public List<OMVChange> getChanges(OMVOntology o){
-		ChangeManagement cMgmt= new ChangeManagement();
-		return cMgmt.getTrackedChanges(o,false);
-	}
-	
-	/**
-	 * Search Oyster2 registry to retrieve changes
-	 * of specific kind for a specific ontology. 
-	 * @param o is the specified ontology 
-	 * @param c is the kind of ontology change
-	 * @return The set of OMVChanges objects representing the
-	 * ontology changes.
-	 */
-	public Set<OMVChange> getChanges(OMVOntology o, OMVChange c){
-		ChangeManagement cMgmt= new ChangeManagement();
-		return cMgmt.getTrackedChanges(o,c);
-	}
-	
-	/**
-	 * Search Oyster2 registry to retrieve all ontologies with
-	 * change history. 
-	 * @return The set of OMVOntology objects
-	 */
-	public Set<OMVOntology> getOntologiesWithChanges(){
-		ChangeManagement cMgmt= new ChangeManagement();
-		return cMgmt.getTrackedOntologies();
-	}
-		
 	/**
 	 * Send a SPARQL query to Oyster2 local registry and returns the 
 	 * metadata entries that are part of the result.
@@ -597,11 +375,12 @@ public class Oyster2Connection {
 	 * certain scope and (if specified)a certain set of Peers.
 	 * @param sparqlQuery is the SPARQL query as a string.
 	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
-	 * Auto_Scope, Selected_Scope)
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
+	 * Auto_Scope, Selected_Scope) 
 	 * @param peerSet is the map of pairs (URI,OMVPeer object)
 	 * representing the set of peers that will be included in the
-	 * search.  
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge
 	 * @return The set of OMVOntology objects representing the
 	 * ontology metadata entries that matched the query.
 	 */
@@ -890,6 +669,203 @@ public class Oyster2Connection {
 		return OMVRet;
 	}
 
+	//ONTOLOGY SPECIFIC METHODS
+	/**
+	 * Opens an ontology file, extracts the ontology metadata 
+	 * and import it into Oyster2 registry. If the ontology
+	 * does already exists, it is merged. 
+	 * It is not allowed to use blank spaces in the path 
+	 * of an ontology, since this string (the path of the ontology) 
+	 * should be a normal url (java.net.URI). But you can 
+	 * use %20 instead of a blank space
+	 * @param URL is the path or URL of the ontology file.
+	 */
+	public void importOntology(String URL)
+	{
+		pList.clear();
+		pList=IOntology.extractMetadata(URL);
+		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
+		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
+		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop1))// && isPropertyIn(prop2))
+			IOntology.addImportOntologyToRegistry(pList,0, null);
+	}
+
+	/**
+	 * Search Oyster2 local registry to retrieve all available ontology
+	 * metadata entries.
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries.
+	 */
+	public Set<OMVOntology> getOntologies()
+	{
+		QueryReply qReply =null;
+		LinkedList conditions = new LinkedList();
+	
+		QueryFormulator mFormulator = new QueryFormulator();
+		mFormulator.generateDataQuery(conditions, scope);
+		//Oyster2Query topicQuery = mFormulator.getTopicQuery();
+		Oyster2Query typeQuery = mFormulator.getTypeQuery();
+		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),typeQuery,Resource.DataResource);
+		Set<OMVOntology> OMVSet = processReply(qReply);
+		return OMVSet;
+	}
+
+	/**
+	 * Search Oyster2 registry to retrieve all available ontology
+	 * metadata entries within a certain scope and (if specified) 
+	 * a certain set of Peers.
+	 * @param scope integer that represents the scope of the search
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
+	 * Auto_Scope, Selected_Scope)
+	 * @param peerSet is the map of pairs (URI,OMVPeer object)
+	 * representing the set of peers that will be included in the
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge 
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries.
+	 */
+	public Set<OMVOntology> getOntologies(int scope,Map<String,OMVPeer> peerSet)
+	{ 
+		OMVObject=1;
+		OMVSetDistributed=new HashSet <OMVOntology>();
+		qReplyDistributedSet= new HashSet <QueryReply>();
+		Set peerList=null;
+		
+		LinkedList conditions = new LinkedList();	
+		QueryFormulator mFormulator = new QueryFormulator();
+		mFormulator.generateDataQuery(conditions,scope);
+		Oyster2Query typeQuery = mFormulator.getTypeQuery();
+		if (peerSet!=null) peerList= peerSet.keySet();
+		searchManager.addListener(resultAPI);
+		searchManager.startSearch(null,typeQuery,peerList, false);
+		waitReply(1);
+		return OMVSetDistributed;
+	}
+
+	/**
+	 * Search Oyster2 local registry to retrieve all available ontology
+	 * metadata entries that were registered after certain date.
+	 * @param fromDate is the date from which to start the search.
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries and that were registered after the 
+	 * date provided.
+	 */
+	
+	public Set<OMVOntology> getOntologies(Date fromDate)
+	{ 
+		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US);
+		//String fromFomat = format.format(fromDate);
+		Set<OMVOntology> OMVSetFiltered = new HashSet<OMVOntology>();
+		Set<OMVOntology> OMVSet = getOntologies();
+		Iterator it = OMVSet.iterator();
+		try{
+			while(it.hasNext()){
+				OMVOntology omv = (OMVOntology)it.next();
+				Date d = format.parse(omv.getTimeStamp());
+				if (d.after(fromDate)){
+					OMVSetFiltered.add(omv);
+				}
+			}
+		
+		}catch(Exception ignore){
+		//-- ignore
+		}
+		return OMVSetFiltered;
+	
+	}
+
+	/**
+	 * Search Oyster2 registry to retrieve all available ontology
+	 * metadata entries that were registered after certain date, 
+	 * within a certain scope and (if specified)a certain set of Peers.
+	 * @param fromDate is the date from which to start the search.
+	 * @param scope integer that represents the scope of the search
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
+	 * Auto_Scope, Selected_Scope)
+	 * @param peerSet is the map of pairs (URI,OMVPeer object)
+	 * representing the set of peers that will be included in the
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries and that were registered after the 
+	 * date provided.
+	 */
+	
+	public Set<OMVOntology> getOntologies(Date fromDate, int scope,Map<String,OMVPeer> peerSet)
+	{ 
+		OMVObject=1;
+		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US);
+		//String fromFomat = format.format(fromDate);
+		Set<OMVOntology> OMVSetFiltered = new HashSet<OMVOntology>();
+		Set<OMVOntology> OMVSet = getOntologies(scope, peerSet);
+		Iterator it = OMVSet.iterator();
+		try{
+			while(it.hasNext()){
+				OMVOntology omv = (OMVOntology)it.next();
+				if (omv.getTimeStamp()!=null){
+					Date d = format.parse(omv.getTimeStamp());
+					if (d.after(fromDate)){
+						OMVSetFiltered.add(omv);
+					}
+				}
+			}
+		
+		}catch(Exception ignore){
+		//-- ignore
+		}
+		return OMVSetFiltered;
+	
+	}
+
+	/**
+	 * Search Oyster2 local registry to retrieve all available ontology
+	 * metadata entries that contains the input keyword in any part 
+	 * of any of their data properties. Implements a keword match search.
+	 * @param keyword is the keyword to search in the ontology properties.
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries that matched the keyword.
+	 */
+	
+	public Set<OMVOntology> getOntologies(String keyword){ 
+		QueryReply qReply =null;
+		Oyster2Query query = new Oyster2Query(new GUID(),Oyster2Query.Local_Scope,Oyster2Query.TOPIC_QUERY,keyword);
+		qReply = localRegistry.returnQueryReply(mOyster2.getLocalHostOntology(),query,null,Resource.DataResource);
+		Set<OMVOntology> OMVSet = processReply(qReply);
+		return OMVSet;
+	}
+	
+	/**
+	 * Search Oyster2 registry to retrieve all available ontology
+	 * metadata entries that contains the input keyword in any part 
+	 * of any of their data properties. Implements a keword match search
+	 * within a certain scope and (if specified)a certain set of Peers.
+	 * @param keyword is the keyword to search in the ontology properties.
+	 * @param scope integer that represents the scope of the search
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
+	 * Auto_Scope, Selected_Scope)
+	 * @param peerSet is the map of pairs (URI,OMVPeer object)
+	 * representing the set of peers that will be included in the
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge 
+	 * @return The set of OMVOntology objects representing the
+	 * ontology metadata entries that matched the keyword.
+	 */
+	
+	public Set<OMVOntology> getOntologies(String keyword, int scope, Map<String,OMVPeer> peerSet){
+		OMVObject=1;
+		OMVSetDistributed=new HashSet <OMVOntology>();
+		qReplyDistributedSet= new HashSet <QueryReply>();
+		Set peerList=null;
+		Oyster2Query query = new Oyster2Query(new GUID(),scope,Oyster2Query.TOPIC_QUERY,keyword);
+		if (peerSet!=null) peerList= peerSet.keySet();
+		searchManager.addListener(resultAPI);
+		searchManager.startSearch(query,null,peerList, true);
+		waitReply(1);
+		return OMVSetDistributed;
+	}
+
+	//PEER SPECIFIC METHODS
 	/**
 	 * Retrieves the peers discovered in Oyster2 registry.
 	 * @return The set of OMVPeer objects representing the
@@ -945,6 +921,7 @@ public class Oyster2Connection {
 		return OMVSet;
 	}
 
+	//MAPPING SPECIFIC METHODS
 	/**
 	 * Search Oyster2 local registry to retrieve all available mappings
 	 * metadata entries.
@@ -971,11 +948,12 @@ public class Oyster2Connection {
 	 * metadata entries within a certain scope and (if specified )
 	 * a certain set of Peers.
 	 * @param scope integer that represents the scope of the search
-	 * (use predefined values in Oyster2Query e.g. Local_Scope, 
+	 * (use predefined values in Oyster2Query i.e. Local_Scope, 
 	 * Auto_Scope, Selected_Scope)
 	 * @param peerSet is the map of pairs (URI,OMVPeer object)
 	 * representing the set of peers that will be included in the
-	 * search. 
+	 * search. If not specified (i.e. peerSet=null) Oyster will 
+	 * decide which peers to query according to its knowledge
 	 * @return The set of OMVOntology objects representing the
 	 * ontology metadata entries.
 	 */
@@ -1000,18 +978,214 @@ public class Oyster2Connection {
 		return OMVMappingSetDistributed;
 	}
 
+	//CHANGE SPECIFIC METHODS
+	/**
+	 * Search Oyster2 registry to retrieve all available changes
+	 * for a specific ontology in historical order, starting
+	 * with the specified change. 
+	 * @param o is the specified ontology 
+	 * @param fromChange is the starting point in the change history.
+	 * If not specified (i.e. fromChange=null) this method returns the
+	 * complete history
+	 * @return The list of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public List<OMVChange> getChanges(OMVOntology o, String fromChange){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedChanges(o, null, fromChange);
+	}
+	
+	/**
+	 * Search Oyster2 registry to retrieve changes
+	 * of specific kind for a specific ontology. 
+	 * @param o is the specified ontology. 
+	 * @param c is the kind of ontology change Use predefined classes of the 
+	 * API i.e. new OMVEntityChange().
+	 * @param fromChange is the starting point in the change history.
+	 * If not specified (i.e. fromChange=null) this method returns the
+	 * complete history
+	 * @return The set of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public Set<OMVChange> getChanges(OMVOntology o, OMVChange c, String fromChange){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedChanges(o,c, null, fromChange);
+	}
+
+	/**
+	 * Search Oyster2 registry to retrieve all available changes
+	 * for a specific ontology without any order 
+	 * @param o is the specified ontology 
+	 * @return The set of OMVChanges objects representing the
+	 * ontology changes.
+	 */
+	public Set<OMVChange> getTrackedChangesSet(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedChangesSet(o, null);
+	}
+	
+	/**
+	 * Search Oyster2 registry to retrieve all ontologies with
+	 * change history. 
+	 * @return The set of OMVOntology objects
+	 */
+	public Set<OMVOntology> getOntologiesWithChanges(){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getTrackedOntologies();
+	}
+	
+	/**
+	 * Gets the URI of the last change succesfully
+	 * registered in Oyster. This URI is in memory, which is 
+	 * faster than the similar method getLastChangeIdFromLog,
+	 * but if Oyster is restarted or in another session this
+	 * information is lost
+	 * @return The string of the last change registered
+	 */
 	public String getLastChangeId(){
 		return lastChange;
 	}
 	
+	/**
+	 * Gets the set of atomic changes for a specific entity
+	 * change
+	 * @param c is the entity change for which for which we
+	 * want to search atomic changes
+	 * @return The set of atomic changes 
+	 */
 	public Set<OMVAtomicChange> getAtomicChanges(OMVEntityChange c){
 		ChangeManagement cMgmt= new ChangeManagement();
 		return cMgmt.getAtomicChanges(c);
 	}
 	
+	/**
+	 * Gets the entity associated to a specific change
+	 * @param changeURI is the uri of the change for which for which we
+	 * want to search the related entity
+	 * @return The uri of the related entity 
+	 */
+	public String getRelatedEntity(String changeURI){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getRelatedEntity(changeURI);
+	}
+
+	/**
+	 * Specify that the changes of the specified ontology
+	 * should be logged
+	 * @param o is the OMVOntology to track
+	 */
+	public void startTracking(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		cMgmt.startTracking(o);
+	}
+	
+	/**
+	 * Stops logging the changes of the specified ontology
+	 * @param o is the OMVOntology to stop tracking
+	 */
+	public void stopTracking(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		cMgmt.stopTracking(o);
+	}
+		
+	/**
+	 * Get the ontologies that are being tracked by the
+	 * local peer independently if changes are already available
+	 * @return The set of the ontologies 
+	 */
+	public Set<OMVOntology> getOntologiesTrackedByPeer(){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getOntologiesTrackedByPeer();
+	}
+	
+	/**
+	 * Verify if an ontology has been registered to track
+	 * its changes
+	 * @param o is the OMVOntology to check
+	 */
+	public boolean isTracked(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.isTracked(o);
+	}
+	
+	/**
+	 * Gets the URI of the last change registered
+	 * for this ontology in the log
+	 * @param o is the ontology from which we want to
+	 * get the last change URI. 
+	 * @return The string of the last change registered
+	 */
+	public String getLastChangeIdFromLog(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getLastChangeIdFromLog(o, null);
+	}
+	
+	/**
+	 * Gets the URI of all registered changes
+	 * @param o is the ontology from which we want to
+	 * get all changes URI. 
+	 * @return The set of strings of the changes URIs
+	 */
+	public Set<String> getChangesIds(OMVOntology o){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getChangesIds(o, null);
+	}
+	
+	/**
+	 * Force to start the syncrhonization of changes
+	 * with all known peers. A new thread is created to 
+	 * do the job
+	 */
+	public void syncrhonizeChangesWithKnownPeersNow(){
+		RunnableSynchronization sync = new RunnableSynchronization();
+		Thread syncThread = new Thread(sync,"ChangesSynchronizer");
+		syncThread.setDaemon(true);
+		syncThread.start();
+	}
+	
+	/**
+	 * If it this peer was configured as simple peer the discovery process
+	 * can be started/stoped later on. If this is a normal peer this call
+	 * is ignored
+	 */
+	public void startDiscoveryComponent(){
+		if (mOyster2.getIsSimple()){
+			mExchangeInitiator = new ExchangeInitiator();
+			mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
+			mExchangeInitiatorThread.setDaemon(true);
+			mExchangeInitiatorThread.start();
+		}
+	}
+	
+	/**
+	 * If it this peer was configured as simple peer the discovery process
+	 * can be started/stoped later on. If this is a normal peer this call
+	 * is ignored
+	 */
+	public void stopDiscoveryComponent(){
+		if (mOyster2.getIsSimple()){
+			System.out.println("Stopping Exchange Initiator...");
+			if (this.mExchangeInitiator!=null) {
+				this.mExchangeInitiator.shutdown();
+				this.mExchangeInitiator=null;
+			}
+			if (this.mExchangeInitiatorThread!=null) {
+				if (this.mExchangeInitiatorThread.isAlive()){
+					this.mExchangeInitiatorThread.interrupt();
+				}
+				this.mExchangeInitiatorThread=null;
+			}
+		}
+	}
 	
 	//WORKFLOW METHODS
 	
+	/**
+	 * Submit a change to be approved
+	 * @param changeURI is the URI of the change editor
+	 * sends to be approved
+	 * @param p is the editor submitting the change
+	 */
 	public void submitToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1019,6 +1193,11 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Approve a change.
+	 * @param changeURI is the URI of the approved change
+	 * @param p is the editor approving the change
+	 */
 	public void submitToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1026,6 +1205,12 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Submit a change to be deleted
+	 * @param changeURI is the URI of the change editor
+	 * sends to be deleted
+	 * @param p is the editor submitting the change
+	 */
 	public void submitToBeDeleted(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1033,6 +1218,12 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Rejects a change from approved state back to be approved
+	 * @param changeURI is the URI of the change editor
+	 * rejects
+	 * @param p is the editor rejecting the change
+	 */
 	public void rejectToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1040,6 +1231,13 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Reject a change from to be deleted state back to 
+	 * approved
+	 * @param changeURI is the URI of the change editor
+	 * rejects
+	 * @param p is the editor rejecting the change
+	 */
 	public void rejectToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1047,6 +1245,13 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Reject a change from to be approved state 
+	 * back to draft
+	 * @param changeURI is the URI of the change editor
+	 * rejects
+	 * @param p is the editor rejecting the change
+	 */
 	public void rejectToDraft(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1054,6 +1259,14 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Publish an ontology
+	 * @param fromPublicVersion is the URI of the previous version
+	 * of the ontology
+	 * @param toPublicVersion is the URI of the next version
+	 * of the ontology
+	 * @param p is the editor publising the ontology
+	 */
 	public void publish(OMVOntology fromPublicVersion, OMVOntology toPublicVersion, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1061,6 +1274,12 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Removes all the history of workflow in Oyster for the
+	 * specified ontology
+	 * @param o is the ontology for which we want to remove
+	 * workflow history
+	 */
 	public void removeWorkflowHistory(OMVOntology o){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
@@ -1068,6 +1287,64 @@ public class Oyster2Connection {
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
+	/**
+	 * Gets the history of entity actions applied to the ontology
+	 * @param o is the ontology for which we want to get the history
+	 * @param fromChange is the starting point in the change history.
+	 * If not specified (i.e. fromChange=null) this method returns the
+	 * complete history. 
+	 * @return the sorted list of entity actions.
+	 */
+	public List<Action> getEntityActionsHistory(OMVOntology o, String fromChange){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getEntityActionsHistory(o, null, fromChange);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	/**
+	 * Gets the last ontology action applied to the ontology
+	 * @param o is the ontology for which we want to get the last action
+	 * @return the ontology action.
+	 */
+	public Action getOntologyAction(OMVOntology o){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getOntologyAction(o);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	/**
+	 * Gets the ontology state
+	 * @param o is the ontology for which we want to get its state
+	 * @return the ontology state.
+	 */
+	public String getOntologyState(OMVOntology o){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getOntologyState(o);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	/**
+	 * Gets the entity state
+	 * @param o is the ontology for which we want to get the 
+	 * entity state
+	 * @param entityURI is the URI of the target entity
+	 * @return the entity state.
+	 */
+	public String getEntityState(OMVOntology o,String entityURI){
+		if (mOyster2.getWorkflowSupport()){
+			ChangeManagement cMgmt= new ChangeManagement();
+			return cMgmt.getEntityState(o,entityURI);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	
 	//REAL IMPLEMENTATIONS OF SOME PUBLIC METHODS
 	/**
 	 * Register a new ontology into Oyster2 registry.
@@ -1082,7 +1359,7 @@ public class Oyster2Connection {
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,1);
+			IOntology.addImportOntologyToRegistry(pList,1, null);
 	}
 	
 	/**
@@ -1096,7 +1373,7 @@ public class Oyster2Connection {
 		pList=MappingProperties.getMappingProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		if (isPropertyIn(prop))
-			IOntology.addConceptToRegistry(1,pList,13);
+			IOntology.addConceptToRegistry(1,pList,13, null);
 	}
 	
 	/**
@@ -1114,7 +1391,7 @@ public class Oyster2Connection {
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,2);
+			IOntology.addImportOntologyToRegistry(pList,2, null);
 	}
 	
 	/**
@@ -1130,7 +1407,7 @@ public class Oyster2Connection {
 		pList=MappingProperties.getMappingProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		if (isPropertyIn(prop))
-			IOntology.addConceptToRegistry(2,pList,13);
+			IOntology.addConceptToRegistry(2,pList,13, null);
 	}
 	
 	/**
@@ -1155,7 +1432,7 @@ public class Oyster2Connection {
 		else if (o instanceof OMVOntologyTask) {pList=OMVProperties.getPropertiesOntologyTask((OMVOntologyTask)o);concept=7;}
 		else if (o instanceof OMVOntologyType) {pList=OMVProperties.getPropertiesOntologyType((OMVOntologyType)o);concept=6;}
 		if (concept>=0)
-			IOntology.addConceptToRegistry(2,pList,concept);
+			IOntology.addConceptToRegistry(2,pList,concept, null);
 	}
 	
 	/**
@@ -1171,7 +1448,7 @@ public class Oyster2Connection {
 		//OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,4);
+			IOntology.addImportOntologyToRegistry(pList,4, null);
 	}
 		
 	/**
@@ -1185,7 +1462,7 @@ public class Oyster2Connection {
 		pList=MappingProperties.getMappingProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		if (isPropertyIn(prop))
-			IOntology.addConceptToRegistry(4,pList,13);
+			IOntology.addConceptToRegistry(4,pList,13, null);
 	}
 	
 	/**
@@ -1210,7 +1487,7 @@ public class Oyster2Connection {
 		else if (o instanceof OMVOntologyTask) {pList=OMVProperties.getPropertiesOntologyTask((OMVOntologyTask)o);concept=7;}
 		else if (o instanceof OMVOntologyType) {pList=OMVProperties.getPropertiesOntologyType((OMVOntologyType)o);concept=6;}
 		if (concept>=0)
-			IOntology.addConceptToRegistry(4,pList,concept);
+			IOntology.addConceptToRegistry(4,pList,concept, null);
 	}
 	
 	/**
@@ -1525,7 +1802,7 @@ public class Oyster2Connection {
 	
 	// MANAGE DISTRIBUTED QUERY
 	static public synchronized void addQueryReply(QueryReply qReplyDist){
-		System.out.println("recieving...");
+		mOyster2.getLogger().info("recieving answers...");
 		if (OMVObject<20)
 			qReplyDistributedSet.add(qReplyDist);
 	}
@@ -1538,20 +1815,20 @@ public class Oyster2Connection {
 		waitMore=true;
 		long initialTime=System.currentTimeMillis();
 		long currentTime=System.currentTimeMillis();
-		System.out.println("initTime: "+initialTime);
+		mOyster2.getLogger().info("initTime: "+initialTime);
 		while (waitMore){
 			try {
-				System.out.println("now will wait...");
+				mOyster2.getLogger().info("now will wait...");
 				Thread.sleep(TIMEOUT);
-				System.out.println("timeout..");
+				mOyster2.getLogger().info("timeout..");
 				waitMore=false;
 			} catch (InterruptedException e) {
-				System.out.println("interrupted (finished)...");
+				mOyster2.getLogger().info("interrupted (finished)...");
 				waitMore=false;
 			}
 		}
 		currentTime=System.currentTimeMillis();
-		System.out.println("currentTime: "+currentTime);
+		mOyster2.getLogger().info("currentTime: "+currentTime);
 		searchManager.stopSearch();
 		
 		if (which==1){
@@ -1660,7 +1937,6 @@ public class Oyster2Connection {
 		
 	}
 	
-
 	private synchronized void mergeDuplicates(int which){
 		if (which==1){
 			Set<OMVOntology> t = new HashSet<OMVOntology>();

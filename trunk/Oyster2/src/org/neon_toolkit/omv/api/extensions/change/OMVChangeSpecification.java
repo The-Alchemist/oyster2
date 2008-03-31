@@ -6,11 +6,11 @@ import java.util.Set;
 import org.neon_toolkit.omv.api.core.OMVOntology;
 
 /**
- * The class OMVMapping provides the object 
- * representation of the Mapping  
- * OMV ontology extension.
+ * The class OMVChangeSpecification provides the object 
+ * representation of the change specification class of 
+ * the change OMV ontology extension.
  * @author Raul Palma
- * @version 0.1, May 2007
+ * @version 2.0, March 2008
  */
 public class OMVChangeSpecification {
 	private String URI;

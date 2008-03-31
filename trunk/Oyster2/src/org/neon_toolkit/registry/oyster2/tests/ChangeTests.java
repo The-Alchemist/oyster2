@@ -20,6 +20,8 @@ import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVCompositeChange.M
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.ClassChange.SubClassOfChange.AddSubClassOf;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.ClassChange.SubClassOfChange.RemoveSubClassOf;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddClass;
+import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
+import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingMethod;
 import org.neon_toolkit.owlodm.api.Axiom.Declaration;
 import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.SubClassOf;
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyDomain;
@@ -27,6 +29,7 @@ import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyRange
 import org.neon_toolkit.registry.api.Oyster2Connection;
 import org.neon_toolkit.registry.api.Oyster2Manager;
 import org.neon_toolkit.registry.oyster2.Constants;
+import org.neon_toolkit.workflow.api.Action;
 
 
 public class ChangeTests {
@@ -37,6 +40,7 @@ public class ChangeTests {
 		//NEW CONNECTION
 		Oyster2Manager.setSimplePeer(true);
 		Oyster2Manager.setWorkflowSupport(true);
+		Oyster2Manager.setLogEnabled(true);
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		
 		//EXAMPLE ONTOLOGY
@@ -57,8 +61,79 @@ public class ChangeTests {
 		se.setHasRole(Constants.SubjectExpert);
 		
 		//SCENARIOS
+		if (args[0].equalsIgnoreCase("11")){
+			//ADD Other objects
+			OMVPerson t1= new OMVPerson();
+			t1.setFirstName("John");
+			t1.setLastName("becker");
+			t1.addEmail("jbecker@superhost.com");
+			t1.addEmail("jbeckersuper@thehost.com");
+			t1.addEmail("jbhost@temphost.com");
+			t1.setHasRole(Constants.SubjectExpert);
+			oyster2Conn.replace(t1);
+		}
+		
+		if (args[0].equalsIgnoreCase("10")){
+			oyster2Conn.importOntology("f:\\localRegistryWatson.owl");
+		}
+		if (args[0].equalsIgnoreCase("9")){
+			oyster2Conn.importOntology("http://owlodm.ontoware.org/OWL1.1");
+			oyster2Conn.importOntology("http://omv.ontoware.org/2007/07/workflow");
+			oyster2Conn.importOntology("http://omv.ontoware.org/2007/10/changes");
+			oyster2Conn.importOntology("http://oyster2.ontoware.org/dmozT.rdf");
+			oyster2Conn.importOntology("http://omv.ontoware.org/2007/07/OWLChanges");
+			oyster2Conn.importOntology("http://omv.ontoware.org/2005/05/ontology");
+			oyster2Conn.importOntology("http://omv.ontoware.org/2007/05/pomv");
+			oyster2Conn.importOntology("http://ontoware.org/frs/download.php/354/swrc_updated_v0.7.1.owl");
+			
+			OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter mMethod=new OMVMappingMethod.OMVMappingCompoundMethod.OMVMappingFilter();
+			mMethod.setID("superFilter");
+			
+			OMVOntology newOnto1 = new OMVOntology();
+			newOnto1.setURI("http://omv.ontoware.org/2007/07/OWLChanges");
+			OMVMapping nMapping = new OMVMapping();
+			nMapping.setURI("http://mydomain.com/map1.rdf");
+			nMapping.setCreationDate("20/3/2007");
+			nMapping.setLevel("draft");
+			nMapping.setProcessingTime(5.33);
+			nMapping.addHasCreator(se);
+			nMapping.setHasSourceOntology(faoOntology);
+			nMapping.setHasTargetOntology(newOnto1);
+			nMapping.setUsedMethod(mMethod);
+			oyster2Conn.replace(nMapping);
+			
+			OMVOntology oSource=new OMVOntology();
+			oSource.setURI("http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#");
+			OMVMapping nMapping1 = new OMVMapping();
+			nMapping1.setURI("http://mydomain.com/map2.rdf");
+			nMapping1.setCreationDate("25/11/2006");
+			nMapping1.setLevel("final");
+			nMapping1.setProcessingTime(2.95);
+			nMapping1.addHasCreator(va);
+			nMapping1.setHasSourceOntology(oSource);
+			nMapping1.setHasTargetOntology(faoOntology);
+			nMapping1.setUsedMethod(mMethod);
+			oyster2Conn.replace(nMapping1);
+
+		}
+		if (args[0].equalsIgnoreCase("8")){
+			System.out.println("ontologies that are being tracked");
+			System.out.println(Oyster2Manager.serializeOMVOntologies(oyster2Conn.getOntologiesTrackedByPeer()));
+			System.out.println("tracking faoOntology: "+oyster2Conn.isTracked(faoOntology));
+		}
+		
+		if (args[0].equalsIgnoreCase("7")){
+			oyster2Conn.stopTracking(faoOntology);
+		}
+		
+		if (args[0].equalsIgnoreCase("6")){
+			oyster2Conn.startTracking(faoOntology);
+			oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
+			Thread.sleep(60000);
+		}
+		
 		if (args[0].equalsIgnoreCase("5")){
-			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange());
+			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), null);
 			Iterator it = changes.iterator();
 			System.out.println("Atomic Changes: ");
 			while (it.hasNext()){
@@ -72,7 +147,7 @@ public class ChangeTests {
 		}
 		
 		if (args[0].equalsIgnoreCase("4")){
-			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange());
+			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), null);
 			Iterator it = changes.iterator();
 			while (it.hasNext()){
 				OMVChange t = (OMVChange)it.next();
@@ -88,21 +163,63 @@ public class ChangeTests {
 		
 		
 		if (args[0].equalsIgnoreCase("2")){
-			List<OMVChange> changes=oyster2Conn.getChanges(faoOntology);
+			System.out.println ("Last Change from Log: "+oyster2Conn.getLastChangeIdFromLog(faoOntology));
+			List<OMVChange> changes=oyster2Conn.getChanges(faoOntology, null);
+			System.out.println("Changes for the specified ontology: ");
+			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
+			
+			changes.clear();
+			changes.addAll(oyster2Conn.getChanges(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967"));
+			System.out.println("Changes for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
+			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
+			
+			changes.clear();
+			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange(),null));
 			System.out.println("Changes for the specified ontology: ");
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
 		
 			changes.clear();
-			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange()));
-			System.out.println("Changes for the specified ontology: ");
+			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967"));
+			System.out.println("Changes for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
-		
+			
 			Set<OMVOntology> trackedOntologies = oyster2Conn.getOntologiesWithChanges();
 			System.out.println("Tracked ontologies: ");
 			System.out.println(Oyster2Manager.serializeOMVOntologies(trackedOntologies));
+			
+			List<Action> actions=oyster2Conn.getEntityActionsHistory(faoOntology,null);
+			System.out.println("Entity actions for the specified ontology: ");
+			System.out.println(Oyster2Manager.serializeActions(actions));
+			
+			actions.clear();
+			actions=oyster2Conn.getEntityActionsHistory(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967");
+			System.out.println("Entity actions for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
+			System.out.println(Oyster2Manager.serializeActions(actions));
+			
+			Action ontologyAction=oyster2Conn.getOntologyAction(faoOntology);
+			System.out.println("Ontology action for the specified ontology: ");
+			actions.clear();
+			actions.add(ontologyAction);
+			System.out.println(Oyster2Manager.serializeActions(actions));
+			
+			System.out.println("faoOntlogy state: "+oyster2Conn.getOntologyState(faoOntology));
+			System.out.println("dog state: "+oyster2Conn.getEntityState(faoOntology,"http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog"));
+			System.out.println("pet state: "+oyster2Conn.getEntityState(faoOntology,"http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+			System.out.println("monster state: "+oyster2Conn.getEntityState(faoOntology,"http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster"));
+			System.out.println("fears state: "+oyster2Conn.getEntityState(faoOntology,"http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
+			
+			Set<String> ids = oyster2Conn.getChangesIds(faoOntology);
+			Iterator idT=ids.iterator();
+			while (idT.hasNext()){
+				System.out.println("change id: "+(String)idT.next());
+			}
+			//oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
+			//Thread.sleep(60000);
+
 		}
 		
 		if (args[0].equalsIgnoreCase("1")){
+			oyster2Conn.startTracking(faoOntology);
 		//Lets add a class
 		//First axiom change
 		System.out.println("registering example...");
@@ -117,7 +234,7 @@ public class ChangeTests {
 		newClassEntity.setAppliedToOntology(faoOntology);
 		newClassEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
 		newClassEntity.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster");
-		newClassEntity.addHasAuthor(va);
+		newClassEntity.addHasAuthor(se);
 		oyster2Conn.register(newClassEntity);
 		
 		//Lets add another class
@@ -136,6 +253,11 @@ public class ChangeTests {
 		newClassEntity1.addHasAuthor(se);
 		oyster2Conn.register(newClassEntity1);
 
+		
+		//CLOSE CONNECTION
+		Oyster2Manager.closeConnection();
+		shutdown();
+		
 		//Lets add a subclass
 		//First axiom changes
 		Declaration newClass2 = new Declaration();
@@ -199,7 +321,7 @@ public class ChangeTests {
 		newObjectPropertyChange.addConsistsOfAtomicOperation(c2);
 		newObjectPropertyChange.addConsistsOfAtomicOperation(c3);
 		newObjectPropertyChange.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears");
-		newObjectPropertyChange.addHasAuthor(va);
+		newObjectPropertyChange.addHasAuthor(se);
 		oyster2Conn.register(newObjectPropertyChange);
 
 		//Lets add a composite change (move class)
