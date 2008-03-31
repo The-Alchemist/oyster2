@@ -5,9 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.io.*;
 import java.util.*;
-
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.semanticweb.kaon2.api.*;                 // This package contains the basic classes of the API
 import org.semanticweb.kaon2.api.owl.elements.*;    // This package contains classes used to represent elements of OWL ontologies
@@ -15,9 +13,8 @@ import org.semanticweb.kaon2.api.owl.elements.*;    // This package contains cla
 
 
 public class OntoVocabulary {
-	private List vocabulary = new LinkedList();
+	private List<String> vocabulary = new LinkedList<String>();
 	private Ontology ontology;
-	private File file;
 	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	private Entity rootEntity;
@@ -32,7 +29,7 @@ public class OntoVocabulary {
 		this.ontology = mInformer.openRemoteRegistry(physicalURI);
 	}
 	
-	/*public List getVocabulary(){
+	public List getVocabulary(){
 	  try{
 	  Collection entitySet = getAllEntities();
 	  Collection classSet = getAllClasses(entitySet);
@@ -59,27 +56,27 @@ public class OntoVocabulary {
 	  }
 	  
 	  return vocabulary;   
- }*/
+ }
 	public List getAttributes(){
 		  try{
-		  Collection entitySet = getAllEntities();
+		  Collection<Entity> entitySet = getAllEntities();
 		  
 		  Iterator it = entitySet.iterator();
 		    while(it.hasNext()){
 		    	Entity entry =(Entity) it.next();
 		    	if(entry instanceof DataProperty){
-		    		/*System.err.println(entry.toString());
+		    		//System.err.println(entry.toString());
 		    	Set<Description> domainCol =	((DataProperty)entry).getDomainDescriptions(ontology);
 		    	if((domainCol.isEmpty()))
 		    			System.err.println("domainCol is empty!");
 		    	Iterator dom = domainCol.iterator();
 		    	while(dom.hasNext())
 		    		System.out.println(dom.next().toString());
-		    	if(domainCol.contains((OWLClass)rootEntity)){*/
+		    	if(domainCol.contains((OWLClass)rootEntity)){
 		    			String propertyURI = entry.getURI();
 		    			String propertyLocalName = Namespaces.guessLocalName(propertyURI);
 		    			vocabulary.add(propertyLocalName);
-		    		//}
+		    		}
 		    	}
 		    }
 		  }catch(KAON2Exception e){
@@ -88,9 +85,9 @@ public class OntoVocabulary {
 		  
 		  return vocabulary;   
 	 }
-	public Collection getAllEntities()throws KAON2Exception{
+	public Collection<Entity> getAllEntities()throws KAON2Exception{
 		  Cursor<Entity> entities=ontology.createEntityRequest().openCursor();
-		  Collection entityList = new LinkedList();
+		  Collection<Entity> entityList = new LinkedList<Entity>();
 		  while (entities.hasNext()){
 		      Entity entity = entities.next();
 			  entityList.add(entity);
@@ -98,8 +95,8 @@ public class OntoVocabulary {
 		  entities.close();
 		  return entityList;
 	}
-	public Collection getAllClasses(Collection entityList)throws KAON2Exception{
-		Collection classList = new LinkedList();
+	public Collection<OWLClass> getAllClasses(Collection entityList)throws KAON2Exception{
+		Collection<OWLClass> classList = new LinkedList<OWLClass>();
 		Iterator it = entityList.iterator();
 		while(it.hasNext()){
 			Entity entity =(Entity)it.next();

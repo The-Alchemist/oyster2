@@ -30,7 +30,7 @@ public class Tokenizer {
 	 * @return the delivered string splitted in an array of strings.
 	 */
 	public static String[] tokenize(String input, String separator) {
-		Vector vector = new Vector();
+		Vector<String> vector = new Vector<String>();
 		StringTokenizer strTokens = new StringTokenizer(input, separator);
 		String[] strings;
 
