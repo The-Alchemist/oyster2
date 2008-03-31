@@ -4,14 +4,7 @@ import java.util.*;
 
 import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.*;
-//import java.util.Hashtable;
-//import ui.provider.ResultViewerContentProvider;
-//import ui.provider.OntologyLabelProvider;
-//import org.eclipse.jface.viewers.TreeViewer;
-//import org.eclipse.swt.widgets.TreeItem;
-//import org.eclipse.swt.widgets.Tree;
-//import org.eclipse.swt.SWT;
-//import org.semanticweb.kaon2.api.owl.elements.*;
+
 
 public class Reply implements QueryReplyListener{
 	private List entries = new ArrayList();
@@ -22,6 +15,7 @@ public class Reply implements QueryReplyListener{
 	/**
 	 * invoked when a new query reply received.
 	 */
+	@SuppressWarnings("unchecked")
 	public void newReplyReceived(QueryReply reply) {
 		//Collection docSet =new LinkedList();
 		int type = reply.getType();
@@ -43,6 +37,7 @@ public class Reply implements QueryReplyListener{
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void entryReceived(final List entryList){
 		if(entryList!=null){
 		Iterator it = entryList.iterator(); 
