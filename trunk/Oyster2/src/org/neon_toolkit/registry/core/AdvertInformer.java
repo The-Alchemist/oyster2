@@ -202,7 +202,7 @@ public class AdvertInformer{
     		}
     		regOntology.applyChanges(changes);
     	}catch(Exception e){
-    		System.err.println(e + " Here on GetPeer");
+    		e.printStackTrace();
     	}
     	return guidTable;
     }
