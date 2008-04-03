@@ -1,6 +1,9 @@
 package org.neon_toolkit.registry.ui.provider;
 
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -8,10 +11,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.ui.ResultViewer;
 import org.neon_toolkit.registry.ui.ResultViewerColumnInfo;
+import org.neon_toolkit.registry.util.Property;
+import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.DataProperty;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
@@ -38,11 +42,18 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 	 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
 	 */
 	public String getColumnText(Object element, int columnIndex){
+		
 		//String columnType = viewer.getColumnType(columnIndex);
-		if(element instanceof Entity){
-			Entity entry = (Entity)element;
+		if(element instanceof Resource){
+			//USE ALREADY AVAILABLE INFORMATION INSTEAD OF GETTING IT AGAIN
+			Resource entry = (Resource)element;
+			ResultViewerColumnInfo info = viewer.getColumnInfo(columnIndex);
+			return serializeResourceProperty(entry, info.getColumnType()); 
+		}
+		else if(element instanceof Entity){
 			//if(columnType.equals("omv:Ontology")){
 			//}
+			Entity entry = (Entity)element;
 			ResultViewerColumnInfo info = viewer.getColumnInfo(columnIndex);
 			return serializeProperty(entry, info.getColumnType());
 		}
@@ -50,15 +61,46 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 		
 	}
 	
+	private String serializeResourceProperty(Resource entry, String property) {
+		try{
+			Boolean whatIs = checkDataProperty(Namespaces.guessLocalName(property));
+			if (whatIs){
+				Collection propertySet = entry.getPropertySet();
+				
+				Iterator a = propertySet.iterator();
+				while (a.hasNext()){
+					Property t=(Property)a.next();
+					if (t.getPred().equalsIgnoreCase(property)){
+						return t.getValue().toString();
+					}
+				}
+				return "";
+			}
+			else{
+				Collection propertySet = entry.getPropertySet();
+				
+				Iterator a = propertySet.iterator();
+				while (a.hasNext()){
+					Property t=(Property)a.next();
+					if (t.getPred().equalsIgnoreCase(property)){
+						return Namespaces.guessLocalName(t.getValue().toString());
+					}
+				}
+				return "";
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return "";
+	}
+	
 	private String serializeProperty(Entity entry, String property) {
 		Individual oIndividual = KAON2Manager.factory().individual(entry.getURI());
 		try{
-			
 			Boolean whatIs = checkDataProperty(Namespaces.guessLocalName(property));
 			if (whatIs){
 				DataProperty ontologyDataProperty = KAON2Manager.factory().dataProperty(property);
 				String oldValue = org.neon_toolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(localRegistry,ontologyDataProperty)); //(String)
-				
 				return oldValue;
 			}
 			else{
@@ -68,12 +110,13 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 					return Namespaces.guessLocalName(oldSIndiv.getURI());
 			}
 		}catch(Exception e){
-			System.out.println(e + " in serializeProperty!");
+			e.printStackTrace();
 		}
 		return "";
 	}
 	
 	public Boolean checkDataProperty(String propertyName)  {
+		
 		Ontology resourceTypeOntology = mOyster2.getTypeOntology();
 		try{
 	        Request<Entity> entityRequest=resourceTypeOntology.createEntityRequest();
@@ -85,7 +128,7 @@ public class ResultViewerLabelProvider implements ITableLabelProvider, IColorPro
 	        }
 		}
 	    catch (KAON2Exception e) {
-	    	System.err.println(e + " in checkdataproperty()");
+	    	e.printStackTrace();
 	    }	
 	    return false;
 	    //X

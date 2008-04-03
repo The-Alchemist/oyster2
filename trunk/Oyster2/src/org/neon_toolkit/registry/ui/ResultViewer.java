@@ -87,6 +87,7 @@ public class ResultViewer extends Composite {
 	 * Initialize context menu of this component.
 	 */
 	private void initContextMenu() throws Exception {
+		
 		MenuManager menuManager = new MenuManager();
 		Menu menu = menuManager.createContextMenu(wrapedViewer.getTree());
 		wrapedViewer.getTree().setMenu(menu);
@@ -164,6 +165,7 @@ public class ResultViewer extends Composite {
 	 * Initialize columns of this component.
 	 */
 	private void initColumns() throws Exception {
+		
 		Tree tree = wrapedViewer.getTree();
 		tree.setHeaderVisible(true);
 		
@@ -181,6 +183,7 @@ public class ResultViewer extends Composite {
 	}
 	
 	public synchronized void createTreeContent(QueryReply queryReply){
+		
 		Ontology ontology = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
 		Tree tree = wrapedViewer.getTree();
@@ -253,6 +256,7 @@ public class ResultViewer extends Composite {
 	 * @param columnInfo - column info.
 	 */
 	public void addColumn(ResultViewerColumnInfo columnInfo){
+		
 		Tree tree = wrapedViewer.getTree();
 		TreeColumn treeColumn = new TreeColumn(tree, SWT.LEFT);
 		treeColumn.setText(columnInfo.getColumnName());

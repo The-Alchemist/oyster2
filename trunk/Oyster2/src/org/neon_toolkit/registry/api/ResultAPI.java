@@ -35,7 +35,6 @@ public class ResultAPI implements QueryReplyListener{
 			Oyster2Connection.noWaitMore();
 			mOyster2.getLogger().info("waking up API no more replies (finished)...");
 			apiThread.interrupt();
-			//Thread.yield();
 		}else if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
 			Oyster2Connection.addQueryReply(reply);
 		}else if((type==QueryReply.TYPE_BAD_REQUEST)||(type==QueryReply.TYPE_INIT)){//||(reply.getResourceSet().size()<=0)){

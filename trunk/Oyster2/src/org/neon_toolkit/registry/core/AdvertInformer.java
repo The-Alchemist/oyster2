@@ -42,7 +42,7 @@ public class AdvertInformer{
     		remoteOntologyRegistry = mOyster2.getConnection().openOntology(remoteRMIURI,new HashMap<String,Object>());
     		mOyster2.getLogger().info("opened...: "+remoteHostPort);
     	}catch(Exception e){
-    		//System.out.println(e+":when openRemoteRegistry().The reason may be remote server doesn't be started yet.");
+    		mOyster2.getLogger().info("Couldnt open remote registry...: "+e.getMessage()); //The reason may be remote server doesn't be started yet;
     		remoteOntologyRegistry=null;
     	}
 	    return remoteOntologyRegistry;
@@ -69,7 +69,7 @@ public class AdvertInformer{
     	try{
     		 ontologyDocSet = OntologyDoc.getMemberIndividuals(regOntology);
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+" getOntologyDocument()in AdvertInformer");
+    		e.printStackTrace();
     	}
     	return ontologyDocSet;	
     }
@@ -80,7 +80,7 @@ public class AdvertInformer{
     	try{
     	 subjectIndiv = ontologyDoc.getObjectPropertyValue(regOntology,baseSubject); 
     	}catch(Exception e){
-    		System.err.println(e.toString()+"getOntologySubject()in advertInformer.");
+    		e.printStackTrace();
     	}
     	return subjectIndiv;
     }
@@ -94,7 +94,7 @@ public class AdvertInformer{
     		 hasDomain= KAON2Manager.factory().objectProperty(omv+Constants.hasDomain);
     		 domainSet =(Collection) propertyMap.get(hasDomain);
     	}catch(Exception e){
-    		System.err.println(e.toString()+" getOntologyDomain in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	if (domainSet==null) return new LinkedList();
     	return domainSet;
@@ -109,7 +109,7 @@ public class AdvertInformer{
     		 location= KAON2Manager.factory().objectProperty(pdURI+"#"+Constants.ontologyOMVLocation);
     		 peerSet =(Collection) propertyMap.get(location);
     	}catch(Exception e){
-    		System.err.println(e.toString()+" getOntologyProvider in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	if (peerSet==null) return new LinkedList();
     	return peerSet;
@@ -125,7 +125,7 @@ public class AdvertInformer{
     		 location= KAON2Manager.factory().objectProperty(pdURI+"#"+Constants.mappingOMVLocation);
     		 peerSet =(Collection) propertyMap.get(location);
     	}catch(Exception e){
-    		System.err.println(e.toString()+" getMappingProvider in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	if (peerSet==null) return new LinkedList();
     	return peerSet;
@@ -138,7 +138,7 @@ public class AdvertInformer{
     		Map propertyMap = peer.getObjectPropertyValues(regOntology);
     		ontologyDocSet = (Collection)propertyMap.get(provideOntology);
         }catch(Exception e){
-        	System.err.println(e.toString()+"getOntologyDoc()in AdvertInformer.");
+        	e.printStackTrace();
         }
         if(ontologyDocSet == null)ontologyDocSet = new ArrayList();
         return ontologyDocSet;
@@ -151,7 +151,7 @@ public class AdvertInformer{
     		Map propertyMap = peer.getObjectPropertyValues(regOntology);
     		mappingSet = (Collection)propertyMap.get(provideMapping);
         }catch(Exception e){
-        	System.err.println(e.toString()+"getMappings()in AdvertInformer.");
+        	e.printStackTrace();
         }
         if(mappingSet == null)mappingSet = new ArrayList();
         return mappingSet;
@@ -164,7 +164,7 @@ public class AdvertInformer{
     		Map propertyMap = peer.getObjectPropertyValues(regOntology);
     		domainSet = (Collection)propertyMap.get(hasExpertise);
         }catch(Exception e){
-        	System.err.println(e.toString()+"getExpertise()in AdvertInformer.");
+        	e.printStackTrace();
         }
         if(domainSet == null)domainSet = new ArrayList();
         return domainSet;
@@ -178,7 +178,7 @@ public class AdvertInformer{
     		propertyMap = ontologyDoc.getObjectPropertyValues(regOntology);
     	    importOntoSet = (Collection)propertyMap.get(importsOntology);
     	}catch(Exception e){
-    		System.err.println(e.toString()+"getImportOntology()in advertInformer.");
+    		e.printStackTrace();
     	}
     	return importOntoSet;
     }
@@ -218,7 +218,7 @@ public class AdvertInformer{
     			peerList.add(indiv);
     		}
     	}catch(Exception e){
-    		System.err.println(e.toString()+"getPeerList()in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	return peerList;
     }
@@ -229,7 +229,7 @@ public class AdvertInformer{
     	try{
         	IP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(regOntology,IPAddress)); //NEW VALIDATION
         	}catch(Exception e){
-        		System.err.println(e.toString()+" getMappingIP()in AdvertInformer.");
+        		e.printStackTrace();
         	}
     	return IP;
     }
@@ -254,7 +254,7 @@ public class AdvertInformer{
     				RPeerMap.put(guid,IP);	
     			}
     		}catch(Exception e){
-    			System.out.println(e+" when getRendezVousPeers().");
+    			e.printStackTrace();
     		}
     	}
     	return RPeerMap;
@@ -266,7 +266,7 @@ public class AdvertInformer{
     	try{
     	localName = Namespaces.guessLocalName(peerIndiv.getURI());
     	}catch(Exception e){
-    		System.err.println(e+" getLocalPeerName()");
+    		e.printStackTrace();
     	}
     	return localName;
     }
@@ -287,7 +287,7 @@ public class AdvertInformer{
     			break;
     		}
     		}catch(Exception e){
-    			System.err.print(e.toString()+" getLocalPeerIndiv()");
+    			e.printStackTrace();
     		}
     	}
     	if(!local){
@@ -326,7 +326,7 @@ public class AdvertInformer{
     			break;
     		}
     		}catch(Exception e){
-    			System.err.print(e.toString()+" getLocalPeerIndiv()");
+    			e.printStackTrace();
     		}
     	}
     	return peerIndiv;
@@ -364,7 +364,7 @@ public class AdvertInformer{
     			UID=(new GUID()).toString();
     		}
     	}catch(Exception e){
-    		System.err.println(e+" in AdvertInformer getLocalUID().");
+    		e.printStackTrace();
     	}
     	return UID;
     }
@@ -375,7 +375,7 @@ public class AdvertInformer{
     	try{
     	 mappingSet = Mapping.getMemberIndividuals(regOntology);
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+" getMappingSet() in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	return mappingSet;
     }
@@ -398,7 +398,7 @@ public class AdvertInformer{
     	try{
     	ontologyIndiv= peerIndiv.getObjectPropertyValue(regOntology,contextOntology);
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+" getContextOntology()in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	if(ontologyIndiv == null)System.out.println("contextOntology is null");
     	return ontologyIndiv;
@@ -422,7 +422,7 @@ public class AdvertInformer{
         	}
     	}
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+"getRelevantMapping() in AdvertInformer");
+    		e.printStackTrace();
     	}
     	return null;
     	
@@ -436,7 +436,7 @@ public class AdvertInformer{
     	Individual peerIndiv = mappingIndiv.getObjectPropertyValue(regOntology,mappingProvider);
     	mappingIP = org.neon_toolkit.registry.util.Utilities.getString(peerIndiv.getDataPropertyValue(regOntology,IPAddress)); //NEW VALIDATION
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+" getMappingIP()in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	return mappingIP;
     }
@@ -447,7 +447,7 @@ public class AdvertInformer{
     	try{
     		mappingURI = org.neon_toolkit.registry.util.Utilities.getString(mappingIndiv.getDataPropertyValue(regOntology,ontologyURL));
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+" getMappingURI()in AdvertInformer.");
+    		e.printStackTrace();
     	}
     	return mappingURI;
     }
@@ -463,7 +463,7 @@ public class AdvertInformer{
     	if((sourceIndivRemote == sourceIndivLocal)&&(targetIndivRemote == targetIndivLocal))
         	return true;
     	}catch(Exception e){
-    		System.err.println(e + "isEqualMapping()in AdvertInformer");
+    		e.printStackTrace();
     	}
     	return false;
     }
@@ -503,7 +503,7 @@ public class AdvertInformer{
     	    	changes.add(new OntologyChangeEvent(newRule,OntologyChangeEvent.ChangeType.ADD));
     	    ontology.applyChanges(changes);
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+"addRule()in AdvertInformer.");
+    		e.printStackTrace();
     	}
     } 
     
@@ -533,7 +533,7 @@ public class AdvertInformer{
     		targetOntology.persist();
     		updatePeerAttributes(remoteOntologyRegistry,newPeer,targetOntology);
     	}catch(Exception e){
-    		System.err.println(e+"in addExpertisePeer in AdvertInformer.");
+    		e.printStackTrace();
     	}
     }
     
@@ -574,7 +574,7 @@ public class AdvertInformer{
     		
     		}
     	}catch(Exception e){
-    		System.err.println(e.getMessage()+"in setLocalPeer().");
+    		e.printStackTrace();
     	}
     }
     
@@ -611,7 +611,7 @@ public class AdvertInformer{
     
     		}
     	}catch(Exception e){
-    		System.err.println(e.getMessage()+"in setBootPeer().");
+    		e.printStackTrace();
     	}
     }
     
@@ -641,7 +641,7 @@ public class AdvertInformer{
         changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(GUID,peerIndiv,KAON2Manager.factory().constant(newGUID)),OntologyChangeEvent.ChangeType.ADD));
         targetOntology.applyChanges(changes); 
     	}catch(KAON2Exception e){
-    		System.out.println(e.toString()+"updateIPAdress() in AdvertInformer.");
+    		e.printStackTrace();
     	}
     }
     
@@ -868,7 +868,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes);
     	updateOntologyAttributes(remoteOntologyRegistry,ontologyIndiv,targetOntology);
     	}catch(Exception e){
-    		System.err.println(e.toString()+": addExpertiseOntology()in AdvertInformer");
+    		e.printStackTrace();
     	}
     }
     
@@ -882,7 +882,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes);
     	updateMappingAttributes(remoteOntologyRegistry,mappingIndiv,targetOntology);
     	}catch(Exception e){
-    		System.err.println(e.toString()+": addMappingExpertise()in AdvertInformer");
+    		e.printStackTrace();
     	}
     }
     
@@ -895,7 +895,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes);
     	updateDomainAttributes(remoteOntologyRegistry,domainIndiv,targetOntology);
     	}catch(Exception e){
-    		System.err.println(e.toString()+": addMappingExpertise()in AdvertInformer");
+    		e.printStackTrace();
     	}
     }
     
@@ -921,7 +921,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes); 
 
     	}catch(Exception e){
-    		System.err.println(e.toString()+" updateDomainAttributes()in advertInformer.");
+    		e.printStackTrace();
     	}
     }
 
@@ -961,7 +961,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes); 
 
     	}catch(Exception e){
-    		System.err.println(e.toString()+" updateMappingAttributes()in advertInformer.");
+    		e.printStackTrace();
     	}
     }
     
@@ -1050,7 +1050,7 @@ public class AdvertInformer{
     		addImportOntology(remoteOntologyRegistry,ontologyIndiv,targetOntology);
     	*/
     	}catch(Exception e){
-    		System.err.println(e.toString()+" updateOntologyAttributes()in advertInformer.");
+    		e.printStackTrace();
     	}
     }
     /*
@@ -1074,7 +1074,7 @@ public class AdvertInformer{
     	targetOntology.applyChanges(changes); 
     	changes.clear();
     	}catch(Exception e){
-    		System.err.println(e.toString()+"addImportOntology()in advertInformer.");
+    		e.printStackTrace();
     	}
     }
     
@@ -1101,7 +1101,7 @@ public class AdvertInformer{
     	   
     	localOntologyRegistry.applyChanges(changes); 
     	}catch(KAON2Exception e){
-    		System.err.println(e.toString()+"updateMappingOntology()in advertInformer.");
+    		e.printStackTrace();
     	}
     }
     
@@ -1224,7 +1224,7 @@ public class AdvertInformer{
   		  localOntologyRegistry.persist();
   		  save(localOntologyRegistry);
   	  }catch(Exception e){
-  		  System.err.println(e+" when localOntologyRegistry is persisted in updateRegistry()of AdvertInformer.");
+  		  e.printStackTrace();
   	  }
     }
     
@@ -1234,7 +1234,7 @@ public class AdvertInformer{
     		localOntology.persist();
     		save(localOntology);
     	}catch(Exception e){
-    		System.err.println(e+" when updateLocalRegistry.");
+    		e.printStackTrace();
     	}
     }
     
@@ -1293,7 +1293,7 @@ public class AdvertInformer{
 	  
 		  }
 		  catch(Exception e){
-			  System.err.println(e);
+			  e.printStackTrace();
 		  }
 	  
 		  /* NOT NECESSARY */
@@ -1324,7 +1324,7 @@ public class AdvertInformer{
 		  //END
 		  remoteOntology.persist();
 	  }catch(Exception e){
-		  System.out.println(e+":when InformerIP().");
+		  e.printStackTrace();
 	  }
   }
     
@@ -1366,7 +1366,7 @@ public class AdvertInformer{
 	  try{
 	   versionSet = regOntology.getOntologyPropertyValues(versionInfo);
 	  }catch(Exception e){
-		  System.err.println(e+" in getRegistryVersion()in AdverInformer");
+		  e.printStackTrace();
 	  }
 	  Iterator it = versionSet.iterator();
 	  String version = it.next().toString();
@@ -1384,7 +1384,7 @@ public class AdvertInformer{
 		  regOntology.addOntologyProperty(versionInfo,version);
 		  //System.out.println("Version Number updated to: "+version);
 	  }catch(Exception e){
-		  System.err.println(e+ " updateRegistryVersion() in AdvertInformer.");
+		  e.printStackTrace();
 	  }
   }  
   
@@ -1395,7 +1395,7 @@ public class AdvertInformer{
   		Map propertyMap = peer.getObjectPropertyValues(registry);
   		ontologySet = (Collection)propertyMap.get(trackOntology);
       }catch(Exception e){
-      	System.err.println(e.toString()+"getOntology tracked ontologies in advertinfomer");
+      	e.printStackTrace();
       }
       if(ontologySet == null)ontologySet = new ArrayList();
       return ontologySet;

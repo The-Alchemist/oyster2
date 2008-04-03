@@ -3,6 +3,7 @@ package org.neon_toolkit.registry.ui;
 import java.util.*;
 
 import org.eclipse.jface.viewers.TreeViewer;
+import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.QueryReply;
 import org.neon_toolkit.registry.oyster2.QueryReplyListener;
 import org.neon_toolkit.registry.ui.provider.ResultViewerContentProvider;
@@ -10,16 +11,9 @@ import org.neon_toolkit.registry.ui.provider.ResultViewerLabelProvider;
 import org.neon_toolkit.registry.util.Property;
 import org.neon_toolkit.registry.util.Resource;
 import org.semanticweb.kaon2.api.*;
-//import ui.provider.OntologyLabelProvider;
-//import ui.provider.ResultViewerLabelProvider;
-//import org.eclipse.jface.viewers.TableTreeViewer;
-//import org.eclipse.swt.widgets.TreeItem;
-//import org.eclipse.swt.widgets.Tree;
-//import org.eclipse.swt.SWT;
-
 
 public class Result implements QueryReplyListener{
-	//private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
+	private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private TreeViewer viewer;
 	private List<Object> entries = new ArrayList<Object>();
 	private ResultViewerContentProvider contentProvider;
@@ -52,12 +46,13 @@ public class Result implements QueryReplyListener{
 	public synchronized void newReplyReceived(QueryReply reply) { //NORMAL OPERATION
 		int type = reply.getType();
 		if (type==-1){
+			mOyster2.getLogger().info("finished replies...");
 			StartGUI.getMainWindow().operationFinished();
 		}else if((type==QueryReply.TYPE_OK)&&(reply.getResourceSet().size()>0)){
+			mOyster2.getLogger().info("recieving replies...");
 			Iterator it = reply.getResourceSet().iterator();
 			while(it.hasNext()){
 				final Resource  entry =(Resource) it.next();
-				
 				Collection<Property> propertySet=mergeDuplicates(entry);
 				if (propertySet.size()>0 && todelete!=null) {
 					entry.setPropertySet(propertySet);

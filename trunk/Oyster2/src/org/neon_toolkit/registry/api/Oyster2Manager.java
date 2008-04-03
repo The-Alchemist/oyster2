@@ -113,6 +113,15 @@ public class Oyster2Manager{
 	    }
 
 	/**
+	 * Set the timeOut for queries.
+	 * @param t time in miliseconds 
+	 * default=120000 (2 minutes)
+	 */
+	public static void setQueryTimeOut(int t)
+    {
+		mOyster2.setQueryTimeOut(t);
+    }
+	/**
 	 * Specify if the local peer will start the discovery process that
 	 * runs periodically. This method is particulary useful when oyster 
 	 * will start and stop quickly (i.e. web service invocation, plugin,
@@ -1322,6 +1331,8 @@ public class Oyster2Manager{
 		if (sParameters!="" && sParameters!=null)
 			startParameters=sParameters;
 	}
+	
+	
 }	
 
 

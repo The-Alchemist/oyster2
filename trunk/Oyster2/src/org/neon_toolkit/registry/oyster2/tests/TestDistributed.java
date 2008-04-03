@@ -1,5 +1,6 @@
 package org.neon_toolkit.registry.oyster2.tests;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -13,6 +14,14 @@ import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
 import org.neon_toolkit.registry.api.Oyster2Connection;
 import org.neon_toolkit.registry.api.Oyster2Manager;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
+import org.semanticweb.kaon2.api.DefaultOntologyResolver;
+import org.semanticweb.kaon2.api.KAON2Connection;
+import org.semanticweb.kaon2.api.KAON2Manager;
+import org.semanticweb.kaon2.api.Namespaces;
+import org.semanticweb.kaon2.api.Ontology;
+import org.semanticweb.kaon2.api.owl.elements.Individual;
+import org.semanticweb.kaon2.api.reasoner.Query;
+import org.semanticweb.kaon2.api.reasoner.Reasoner;
 
 
 
@@ -23,7 +32,31 @@ public class TestDistributed {
 	
 	public static void main(String[] args)throws Exception{
         
-		
+
+		if (args[0].equalsIgnoreCase("0")){
+			KAON2Connection connection=KAON2Manager.newConnection();
+			DefaultOntologyResolver resolver=new DefaultOntologyResolver();
+	        resolver.registerReplacement("http://localhost/localRegistry","file:f://localRegistry.owl");
+	        resolver.registerReplacement("http://omv.ontoware.org/2007/05/mappingomv","http://omv.ontoware.org/2007/05/mappingomv");
+	        resolver.registerReplacement("http://omv.ontoware.org/2007/05/pomv","http://omv.ontoware.org/2007/05/pomv");
+	        resolver.registerReplacement("http://omv.ontoware.org/2007/07/OWLChanges","http://omv.ontoware.org/2007/07/OWLChanges");
+	        resolver.registerReplacement("http://omv.ontoware.org/2007/07/workflow","http://omv.ontoware.org/2007/07/workflow");
+	        resolver.registerReplacement("http://daml.umbc.edu/ontologies/topic-ont#","http://oyster2.ontoware.org/dmozT.rdf");
+	        connection.setOntologyResolver(resolver);
+	        Ontology ontology=connection.openOntology("http://localhost/localRegistry",new HashMap<String,Object>());
+	        
+			String queryStr="SELECT ?x WHERE  { ?x rdf:type <http://omv.ontoware.org/2005/05/ontology#Ontology> }";
+			Reasoner reasoner=ontology.createReasoner();
+			Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
+			query.open();
+			while (!query.afterLast()) {					
+				//System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
+				String docURI = query.tupleBuffer()[0].toString();
+				Individual indiv =KAON2Manager.factory().individual(docURI);
+				System.out.println(indiv.getURI());
+			}
+			System.exit(0);
+		}
 		//String[] arguments = new String[] {"-startKAON2", "-KAON2Path=\"O2ServerFiles\\kaon2.jar\"", "-serverRootPath=\"server\"","-preferenceFile=testingOyster"};
 		//StartServer.main(arguments);
 
@@ -33,6 +66,7 @@ public class TestDistributed {
 		kritem.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Reference/Knowledge_Management/Knowledge_Representation");
 		
 		//NEW CONNECTION
+		Oyster2Manager.setQueryTimeOut(350000);
 		Oyster2Manager.setSimplePeer(true);
 		Oyster2Manager.setWorkflowSupport(false);
 		Oyster2Manager.setLogEnabled(true);
@@ -42,6 +76,28 @@ public class TestDistributed {
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.96\\new store", "F:\\My Documents\\Oyster2APIv0.96\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.96\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		
+		if (args[0].equalsIgnoreCase("1")){
+			//HERE WE TEST SEARCH WITH KEYWORDS DISTRIBUTED
+			
+			Set<OMVOntology> OMVSet3Dist = oyster2Conn.getOntologies("resource",Oyster2Query.Auto_Scope,null);
+			String OMVSetSerial3Dist = Oyster2Manager.serializeOMVOntologies(OMVSet3Dist);
+			System.out.println("Search with keyword distributed: ");
+			System.out.println(OMVSetSerial3Dist);
+		}else if (args[0].equalsIgnoreCase("2")){
+			//HERE WE TEST SIMPLE SEARCH DISTRIBUTED
+			Set<OMVOntology> OMVSetDistGet = oyster2Conn.getOntologies(Oyster2Query.Auto_Scope,null);
+			String OMVSetSerialDistGet = Oyster2Manager.serializeOMVOntologies(OMVSetDistGet);
+			System.out.println("Search (get ontologies) distributed: ");
+			System.out.println(OMVSetSerialDistGet);
+		}
+		else if (args[0].equalsIgnoreCase("3")){
+			//HERE WE TEST SIMPLE SEARCH Local
+			Set<OMVOntology> OMVSetDistGet = oyster2Conn.getOntologies();
+			String OMVSetSerialDistGet = Oyster2Manager.serializeOMVOntologies(OMVSetDistGet);
+			System.out.println("Search (get ontologies) local: ");
+			System.out.println(OMVSetSerialDistGet);
+		}
+		else{
 		
 		//HERE WE TEST SIMPLE SEARCH DISTRIBUTED
 		/*Set<OMVOntology> OMVSetOntDist = new HashSet<OMVOntology>();
@@ -181,7 +237,7 @@ public class TestDistributed {
 		String OMVSetSerial5 = Oyster2Manager.serializeOMVMappings(OMVRet1);
 		System.out.println("Submit adhoc query distributed (mapping): ");
 		System.out.println(OMVSetSerial5);
-		
+		}
 		
 		//CLOSE CONNECTION
 		Oyster2Manager.closeConnection();
