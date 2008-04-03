@@ -80,7 +80,7 @@ public class Searcher implements Runnable {
 	
 	//CONCURRENT SEARCHES
 	
-	private long timeout=115; //A few sec less than the api timeout=120;
+	private long timeout=(mOyster2.getQueryTimeOut()/1000)-10; //A few sec less than the api timeout=120;
 	
 	private int poolSize = 5;
 	 
@@ -393,7 +393,9 @@ public class Searcher implements Runnable {
 		}
 		threadPool.shutdown();
 		try {
+			mOyster2.getLogger().info("awaitTermination will wait..."+timeout);
 			threadPool.awaitTermination(timeout, TimeUnit.SECONDS);
+			mOyster2.getLogger().info("awaitTermination finished...");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			mOyster2.getLogger().info("searcher interrupted...");
@@ -449,7 +451,9 @@ public class Searcher implements Runnable {
 		}
 		threadPool.shutdown();
 		try {
+			mOyster2.getLogger().info("awaitTermination will wait..."+timeout);
 			threadPool.awaitTermination(timeout, TimeUnit.SECONDS);
+			mOyster2.getLogger().info("awaitTermination finished...");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			mOyster2.getLogger().info("searcher interrupted...");

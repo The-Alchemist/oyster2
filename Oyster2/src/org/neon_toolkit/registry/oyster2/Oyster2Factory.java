@@ -238,6 +238,7 @@ public class Oyster2Factory {
 	
 	private boolean workflowSupport=false;
 	
+	private int TIMEOUT=120000;
 	//LOGGER
 	//Create a console handler
     private ConsoleHandler handler = new ConsoleHandler();
@@ -895,6 +896,15 @@ public class Oyster2Factory {
 	public Logger getLogger() {
 		return this.logger;
 	}
+	
+	public void setQueryTimeOut(int t)
+    {
+		this.TIMEOUT=t;
+    }
+	public int getQueryTimeOut()
+    {
+		return this.TIMEOUT;
+    }
 }
 
 /*

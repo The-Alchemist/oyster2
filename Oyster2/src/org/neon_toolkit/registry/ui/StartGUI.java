@@ -16,12 +16,6 @@ import org.neon_toolkit.registry.oyster2.Properties;
 import org.neon_toolkit.registry.ui.ConditionPreferencePage;
 import org.neon_toolkit.registry.ui.MainPreferencePage;
 import org.neon_toolkit.registry.ui.MainWindow;
-//import org.eclipse.jface.preference.PreferenceStore;
-//import org.semanticweb.kaon2.api.KAON2Exception;
-//import org.semanticweb.kaon2.api.*;
-//import org.semanticweb.kaon2.server.context.*;
-//import org.semanticweb.kaon2.server.rmi.*;
-//import org.neon_toolkit.registry.util.EntryDetailSerializer;
 
 public class StartGUI {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -53,7 +47,7 @@ public class StartGUI {
 
 		mOyster2.setIsSimple(false);
 		mOyster2.setCaching(false);
-		mOyster2.setLogEnabled(false);
+		mOyster2.setLogEnabled(true);
 		mOyster2.setWorkflowSupport(false);
 		
 		if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;

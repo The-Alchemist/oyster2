@@ -22,6 +22,7 @@ import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.formatting.*;
 import org.semanticweb.kaon2.api.owl.axioms.DataPropertyMember;
 import org.semanticweb.kaon2.api.owl.elements.DataProperty;
+import org.semanticweb.kaon2.api.owl.elements.Description;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
 import org.semanticweb.kaon2.api.owl.elements.OWLClass;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
@@ -52,7 +53,7 @@ public class LocalExpertiseRegistry {
 		private KAON2Connection connection;
 		//private DefaultOntologyResolver resolver;
 		private Reasoner reasoner;
-//		private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
+		//private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 		//private File virtualFile;
 		//private Ontology virtualOntology;
 		
@@ -67,7 +68,7 @@ public class LocalExpertiseRegistry {
 			try{
 				//this.reasoner = this.localRegistry.createReasoner();
 			}catch(Exception e){
-				System.err.println(e+ "in LocalExpertiseRegistry init()");
+				e.printStackTrace();
 			}
 		}
 		/**
@@ -108,7 +109,7 @@ public class LocalExpertiseRegistry {
 				query.dispose();
 				reasoner.dispose();
 			}catch(Exception e){
-				System.err.println(e.toString()+":LocalExpertiseRegistry searchExpertiseRegistry  "+e.getLocalizedMessage());
+				e.printStackTrace();
 			}
 			return positiveResult;
 		}
@@ -127,12 +128,15 @@ public class LocalExpertiseRegistry {
 			Resource replyResource;
 			String queryStr =newQuery.getQueryString();//queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> "hola" }"
 			try{
+				mOyster2.getLogger().info("Ready to Query..."+mOntology.getPhysicalURI());
 				Reasoner reasoner=mOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
-				if (mOntology!=mOyster2.getLocalHostOntology()) query.setLimit(100);
+				if (mOntology!=mOyster2.getLocalHostOntology()) 
+					query.setLimit(100);
 				query.open();
-				while (!query.afterLast()) {
-					//System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString());
+				mOyster2.getLogger().info("Query opened..."+mOntology.getPhysicalURI());
+				while (!query.afterLast()) {					
+					//System.out.println("ontologyURI Or Whatever: "+query.tupleBuffer()[0].toString()+ " "+mOntology.getPhysicalURI());
 					String docURI = query.tupleBuffer()[0].toString();
 					Individual indiv =KAON2Manager.factory().individual(docURI);
 					//Filter
@@ -142,20 +146,23 @@ public class LocalExpertiseRegistry {
 						 * Storing the whole information from reply i.e. get the property set
 						 * now that i know which peer has this information
 						 */
-						OWLClass typeClass = (OWLClass)indiv.getDescriptionsMemberOf(mOntology).toArray()[0];
-						Collection<Property> propertySet=getReplyPropertySet(mOntology,indiv);
-						int required=0;
-						Iterator a = propertySet.iterator();
-						while (a.hasNext()){
-							Property t=(Property)a.next();
-							if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
-									t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI).toString())){
-								required++;
+						Set<Description> descriptions=indiv.getDescriptionsMemberOf(mOntology);
+						if (descriptions!=null && descriptions.size()>0){
+							OWLClass typeClass = (OWLClass)descriptions.toArray()[0];
+							Collection<Property> propertySet=getReplyPropertySet(mOntology,indiv);
+							int required=0;
+							Iterator a = propertySet.iterator();
+							while (a.hasNext()){
+								Property t=(Property)a.next();
+								if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
+										t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI).toString())){
+									required++;
+								}
 							}
-						}
-						if (required>=2){
-							replyResource = new Resource(indiv.getURI(),indiv, propertySet, typeClass, resourceType);
-							resourceSet.add(replyResource);
+							if (required>=2){
+								replyResource = new Resource(indiv.getURI(),indiv, propertySet, typeClass, resourceType);
+								resourceSet.add(replyResource);
+							}
 						}
 						/* 
 						 * end of testing
@@ -172,14 +179,15 @@ public class LocalExpertiseRegistry {
 					}
 					query.next();
 				}
+				mOyster2.getLogger().info("closing query..."+mOntology.getPhysicalURI());
 				query.close();
 				query.dispose();
 				reasoner.dispose();
 			}catch(InterruptedException ie) {
-				System.err.println(ie.toString()+":LocalExpertiseRegistry,returnQueryReply() interrupted!");
+				ie.printStackTrace();
 				return null;
 			}catch(KAON2Exception e){
-				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
+				e.printStackTrace();
 				return null;	
 			}	
 			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
@@ -193,23 +201,29 @@ public class LocalExpertiseRegistry {
 			Resource replyResource;
 			String queryStr =newQuery.getQueryString();//queryStr ="SELECT ?x WHERE  { ?x <http://omv.ontoware.org/2005/05/ontology#keywords> "hola" }"
 			try{
+				mOyster2.getLogger().info("Ready to Query..."+mOntology.getPhysicalURI());
 				Reasoner reasoner=mOntology.createReasoner();
-				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr); 
+				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
+				if (mOntology!=mOyster2.getLocalHostOntology()) 
+					query.setLimit(100);
 				query.open();
+				mOyster2.getLogger().info("Query opened..."+mOntology.getPhysicalURI());
 				while (!query.afterLast()) {
 					//System.out.println("URI: "+query.tupleBuffer()[0].toString());
 					String docURI = query.tupleBuffer()[0].toString();
 					Individual indiv =KAON2Manager.factory().individual(docURI);
-					//Filter
 					/*
 					 * TESTING
 					 * Storing the whole information from reply i.e. get the property set
 					 * now that i know which peer has this information
 					 */
-					OWLClass typeClass = (OWLClass)indiv.getDescriptionsMemberOf(mOntology).toArray()[0];
-					Collection<Property> propertySet=getReplyPropertySet(mOntology,indiv);
-					replyResource = new Resource(indiv.getURI(),indiv, propertySet, typeClass, resourceType);
-					resourceSet.add(replyResource);
+					Set<Description> descriptions=indiv.getDescriptionsMemberOf(mOntology);
+					if (descriptions!=null && descriptions.size()>0){
+						OWLClass typeClass = (OWLClass)descriptions.toArray()[0];
+						Collection<Property> propertySet=getReplyPropertySet(mOntology,indiv);
+						replyResource = new Resource(indiv.getURI(),indiv, propertySet, typeClass, resourceType);
+						resourceSet.add(replyResource);
+					}
 					/* 
 					 * end of testing
 					 */
@@ -217,11 +231,12 @@ public class LocalExpertiseRegistry {
 					//resourceSet.add(replyResource);
 					query.next();
 				}
+				mOyster2.getLogger().info("closing query..."+mOntology.getPhysicalURI());
 				query.close();
 				query.dispose();
 				reasoner.dispose();
 			}catch(Exception e){
-				System.err.println(e.toString()+":LocalExpertiseRegistry,returnQueryReply()");
+				e.printStackTrace();
 				return null;	
 			}	
 			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
@@ -239,7 +254,6 @@ public class LocalExpertiseRegistry {
 					OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
 					for(DataPropertyMember dp : mOntology.createAxiomRequest (DataPropertyMember.class).getAll()){
 						String value = dp.getTargetValue().getValue().toString();
-						//System.out.println(dp.toString());
 						if(mOntology.containsAxiom(KAON2Manager.factory().classMember(oConcept,dp.getSourceIndividual()),true) && (!dp.getDataProperty().equals(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.timeStamp)))){
 							if(value.toLowerCase().contains(topicQuery.getQueryString().toLowerCase())){
 								Individual docIndiv=dp.getSourceIndividual();
@@ -249,27 +263,30 @@ public class LocalExpertiseRegistry {
 									 * Storing the whole information from reply i.e. get the property set
 									 * now that i know which peer has this information
 									 */
-									OWLClass typeClass = (OWLClass)docIndiv.getDescriptionsMemberOf(mOntology).toArray()[0];
-									Collection<Property> propertySet=getReplyPropertySet(mOntology,docIndiv);
-									int required=0;
-									Iterator a = propertySet.iterator();
-									while (a.hasNext()){
-										Property t=(Property)a.next();
-										if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
+									Set<Description> descriptions=docIndiv.getDescriptionsMemberOf(mOntology);
+									if (descriptions!=null && descriptions.size()>0){
+										OWLClass typeClass = (OWLClass)descriptions.toArray()[0];
+										Collection<Property> propertySet=getReplyPropertySet(mOntology,docIndiv);
+										int required=0;
+										Iterator a = propertySet.iterator();
+										while (a.hasNext()){
+											Property t=(Property)a.next();
+											if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
 												t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI).toString())){
-											required++;
+												required++;
+											}
 										}
-									}
-									if (required>=2){
-										Resource replyResource = new Resource(docIndiv.getURI(),docIndiv, propertySet, typeClass, resourceType);
+										if (required>=2){
+											Resource replyResource = new Resource(docIndiv.getURI(),docIndiv, propertySet, typeClass, resourceType);
 										
-										Iterator it = resourceSet.iterator();
-										boolean in=false;
-										while(it.hasNext()){
-											final Resource entry =(Resource) it.next();
-											if (entry.getEntity().equals(replyResource.getEntity())) in=true;
+											Iterator it = resourceSet.iterator();
+											boolean in=false;
+											while(it.hasNext()){
+												final Resource entry =(Resource) it.next();
+												if (entry.getEntity().equals(replyResource.getEntity())) in=true;
+											}
+											if (!in)resourceSet.add(replyResource);
 										}
-										if (!in)resourceSet.add(replyResource);
 									}
 									/* 
 									 * end of testing
@@ -313,7 +330,7 @@ public class LocalExpertiseRegistry {
 				else if (queryReply1!=null) queryReply=queryReply1;
 				else if (queryReply2!=null) queryReply=queryReply2;
 			}catch (Exception e) {
-				System.out.println("localExpertiseRegistry Keyword search problem: "+e);
+				e.printStackTrace();
 				return null;
 			}
 			return queryReply;
@@ -356,7 +373,7 @@ public class LocalExpertiseRegistry {
 				
 			}
 			}catch(Exception e){
-				System.err.println(e.toString()+" :getReplyPropertySet() in LocalRegistry");
+				e.printStackTrace();
 			}
 			return propertySet;
 		}

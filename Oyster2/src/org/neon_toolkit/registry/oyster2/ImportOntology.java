@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.*;
 import java.text.DateFormat;
 import java.util.Locale;
-
 import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.registry.util.DAML;
 import org.neon_toolkit.registry.util.DC;
@@ -14,9 +13,7 @@ import org.neon_toolkit.registry.util.RDFS;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.owl.elements.*;
 import org.semanticweb.kaon2.api.formatting.*; 
-//import org.semanticweb.kaon2.api.owl.axioms.*;
-//import org.semanticweb.kaon2.api.formatting.OntologyFormatting;
-//import org.semanticweb.kaon2.api.OntologyFileFormat; //OLD VERSION
+//import org.neon_toolkit.registry.core.AdvertInformer;
 
 public class ImportOntology {
 
@@ -29,7 +26,7 @@ public class ImportOntology {
 	private File localRegistryFile = mOyster2.getLocalRegistryFile();
 	private LinkedList<OntologyProperty> propertyList = new LinkedList<OntologyProperty>();
 	private String localURI = localRegistry.getOntologyURI();
-						
+	//private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
 	
 	public List extractMetadata(String filename){
 		String ontologyURI = "";
@@ -79,7 +76,7 @@ public class ImportOntology {
 				connection.closeOntologies(finish);
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage() + " in extractMetadata! " + e.getCause());
+			e.printStackTrace();
 		}
 		return propertyList;
 		
@@ -113,7 +110,7 @@ public class ImportOntology {
 			}
 	        
 		}catch(Exception e){
-				System.out.println("add format error when importing: "+e.getMessage());
+				e.printStackTrace();
 		}	
 	    	
 	}
@@ -127,7 +124,7 @@ public class ImportOntology {
 			propertyList.add(prop);
 			
 		}catch(Exception e){
-			System.out.println(e + " extractStatistics");
+			e.printStackTrace();
 		}	
 		
 	}
@@ -203,7 +200,7 @@ public class ImportOntology {
             			   addImportOntologyToRegistry(pTempList,3, null);
             		   }
             	   }catch(Exception e){
-            		   System.out.println("add ontology reference error when importing: "+e.getMessage());
+            		   e.printStackTrace();
             	   }
                }
                if ((predicate.equalsIgnoreCase(Constants.hasDomain))){
@@ -226,7 +223,7 @@ public class ImportOntology {
             			   addConceptToRegistry(0,pTempList,5, null);
             		   }
             	   }catch(Exception e){
-            		   System.out.println("add domain error when importing: "+e.getMessage());
+            		   e.printStackTrace();
             	   }
                }
             }
@@ -363,7 +360,7 @@ public class ImportOntology {
 	 * @param which specifies the type of object we want to add
 	 * @param registry the targetOntology to apply axioms. Null=localRegistry
 	 */
-	public void addConceptToRegistry(int how,List properties, int which, Ontology registry){
+	public boolean addConceptToRegistry(int how,List properties, int which, Ontology registry){
 		Ontology targetRegistry;
 		if (registry!=null) targetRegistry=registry;
 		else targetRegistry = localRegistry;
@@ -521,7 +518,7 @@ public class ImportOntology {
 					System.out.println("The concept "+ tURN +" already exist in the local expertise registry");
 				else if (how==1){
 					System.out.println("Please refer to the registry file! The registering concept already exist. Please use method Replace instead!");
-					return;
+					return false;
 				}
 				else if (how==2 || how==4){
 					Map dataPropertyMap = oIndividual.getDataPropertyValues(targetRegistry);
@@ -586,7 +583,7 @@ public class ImportOntology {
 					}
 					changes.clear();
 					if (how==4){
-						return;
+						return true;
 					}
 				}
 				
@@ -959,8 +956,11 @@ public class ImportOntology {
 			targetRegistry.applyChanges(changes);
 			targetRegistry.persist();
 			if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+			return true;
+			//mInformer.updateRegistryVersion(targetRegistry);
 		}catch(Exception e){
-			System.out.println("add concept to registry error: "+e.getMessage());
+			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -987,7 +987,7 @@ public class ImportOntology {
 	 * @param registry the targetOntology to apply axioms. Null=localRegistry
 	 * 
 	 */
-	public void addImportOntologyToRegistry(List properties, int what, Ontology registry){
+	public boolean addImportOntologyToRegistry(List properties, int what, Ontology registry){
 		Ontology targetRegistry;
 		if (registry!=null) targetRegistry=registry;
 		else targetRegistry = localRegistry;
@@ -1049,7 +1049,7 @@ public class ImportOntology {
 					System.out.println("The importing ontology already exist in the local expertise registry");
 				else if (what==1){
 					System.out.println("Please refer to the registry file! The registering ontology already exist. Please use method Replace instead!");
-					return;
+					return false;
 				}
 				else if (what==2 || what==4){
 					Map dataPropertyMap = ontologyIndividual.getDataPropertyValues(targetRegistry);
@@ -1113,7 +1113,7 @@ public class ImportOntology {
 					}
 					changes.clear();
 					if (what==4){
-						return;
+						return true;
 					}
 					//changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(ontologyConcept,ontologyIndividual),OntologyChangeEvent.ChangeType.ADD));
 				}
@@ -1284,9 +1284,11 @@ public class ImportOntology {
 			targetRegistry.applyChanges(changes);
 			targetRegistry.persist();
 			if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
-			
+			return true;
+			//mInformer.updateRegistryVersion(targetRegistry);
 		}catch(Exception e){
-			System.out.println("add ontology to registry error: "+e.getMessage());
+			e.printStackTrace();
+			return false;
 		}
 	}
 	
@@ -1396,6 +1398,7 @@ public class ImportOntology {
 		}
 		return tURN;
 	}
+	
 	
 
 }

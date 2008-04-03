@@ -90,8 +90,7 @@ public class Oyster2Connection {
 	private LocalExpertiseRegistry localRegistry = mOyster2.getLocalExpertiseRegistry();
 	private Ontology ontologySearch=null;
 	private int scope = Oyster2Query.Local_Scope;
-	private ResultAPI resultAPI;
-	static private int TIMEOUT=120000; 
+	private ResultAPI resultAPI; 
 	static private Set<OMVOntology> OMVSetDistributed=new HashSet <OMVOntology>();
 	static private Set<OMVMapping> OMVMappingSetDistributed=new HashSet <OMVMapping>();
 	static private Set<OMVPerson> OMVPersonSetDistributed=new HashSet <OMVPerson>();
@@ -679,16 +678,19 @@ public class Oyster2Connection {
 	 * should be a normal url (java.net.URI). But you can 
 	 * use %20 instead of a blank space
 	 * @param URL is the path or URL of the ontology file.
+	 * @return true/false if the import was successful
 	 */
-	public void importOntology(String URL)
+	public boolean importOntology(String URL)
 	{
+		boolean success=false;
 		pList.clear();
 		pList=IOntology.extractMetadata(URL);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1))// && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,0, null);
+			success=IOntology.addImportOntologyToRegistry(pList,0, null);
+		return success;
 	}
 
 	/**
@@ -916,7 +918,7 @@ public class Oyster2Connection {
 				}
 			}
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in getpeerExpertise");
+			e.printStackTrace();
 		}
 		return OMVSet;
 	}
@@ -1631,7 +1633,7 @@ public class Oyster2Connection {
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in processReply");
+			e.printStackTrace();
 		}
 		return OMVSet;
 	}
@@ -1655,7 +1657,7 @@ public class Oyster2Connection {
 				}
 			}
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in processPeer");
+			e.printStackTrace();
 		}
 		return OMVPeerMap;
 	}
@@ -1678,7 +1680,7 @@ public class Oyster2Connection {
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in processMappings");
+			e.printStackTrace();
 		}
 		return OMVSet;
 	}
@@ -1795,7 +1797,7 @@ public class Oyster2Connection {
 			}
 			
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in processReply");
+			e.printStackTrace();
 		}
 		return OMVSet;
 	}
@@ -1818,8 +1820,8 @@ public class Oyster2Connection {
 		mOyster2.getLogger().info("initTime: "+initialTime);
 		while (waitMore){
 			try {
-				mOyster2.getLogger().info("now will wait...");
-				Thread.sleep(TIMEOUT);
+				mOyster2.getLogger().info("now will wait..."+mOyster2.getQueryTimeOut());
+				Thread.sleep(mOyster2.getQueryTimeOut());
 				mOyster2.getLogger().info("timeout..");
 				waitMore=false;
 			} catch (InterruptedException e) {

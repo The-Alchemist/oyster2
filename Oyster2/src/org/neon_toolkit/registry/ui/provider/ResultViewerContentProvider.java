@@ -28,6 +28,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	}
 	
 	public Object[] getChildren(Object parentElement) {
+
 		if(parentElement instanceof Entity){
 			children = new ArrayList<Object>();
 			if(this.resourceType==Resource.OntologyResource){
@@ -111,6 +112,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	}
 	
 	private Collection getReplyPropertySet(Ontology virtualOntology,Individual docIndiv){
+
 		Collection<Property> propertySet = new ArrayList<Property>();
 		Property replyProperty;
 		try{
@@ -150,6 +152,7 @@ public class ResultViewerContentProvider implements ITreeContentProvider{
 	
 	@SuppressWarnings("unchecked")
 	private Collection<Object> getOntologyElements(Ontology ontology){
+
 		Collection<Object> elements = new ArrayList<Object>();
 		Collection importSet = new ArrayList();
 		if(!ontology.getOntologyURI().equals("http://localhost/virtualOntology")){

@@ -611,7 +611,7 @@ public class MainWindow extends ApplicationWindow {
 			mapping.setLayoutData(FormData);
 		}
 		if(ontologySearch){
-			System.out.println(" here in ontology search of peerselctionpanel");
+			//System.out.println(" here in ontology search of peerselctionpanel");
 			final PeerSelectionDialog dialog = new PeerSelectionDialog(new HashSet());
 			final Button localPeer = new Button(peerSelectionPanel, SWT.RADIO);
 			final Button localRegistry = new Button(peerSelectionPanel, SWT.RADIO);
@@ -1404,7 +1404,6 @@ public class MainWindow extends ApplicationWindow {
 		resultRegistry = new ResultRegistry(resultViewerRegistry,Resource.OntologyResource);
 		newEntryAction.setResult(resultRegistry);
 		editEntryAction.setResult(resultRegistry);
-		//mKaonP2P.getSearchManager().addReplyListener(result);
 		mOyster2.getSearchManager().addListener(resultRegistry);
 	}
 	
