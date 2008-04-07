@@ -66,6 +66,7 @@ public class ChangeSynchronization {
 		}catch(Exception e){
 			System.out.println(e+" "+e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" error! when connect to remote peers in synchonizing changes,some peer may not start the server!");
 		}
+		System.out.println("finished change synchronization...");
 		mOyster2.getLogger().info("finished change synchronization...");
 	}
 	

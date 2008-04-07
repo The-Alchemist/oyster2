@@ -703,7 +703,7 @@ public class ChangeManagement {
 					ObjectProperty hasChange = KAON2Manager.factory().objectProperty(Constants.CHANGEURI+Constants.hasChange);
 					propertyMap = oIndividual.getObjectPropertyValues(targetRegistry);
 					hasChangeSet = (Collection)propertyMap.get(hasChange);
-					mOyster2.getLogger().info("hasChange size..."+hasChangeSet.size());
+					//mOyster2.getLogger().info("hasChange size..."+hasChangeSet.size());
 					Iterator i = hasChangeSet.iterator();
 					while (i.hasNext()){
 						Individual change = (Individual)i.next();

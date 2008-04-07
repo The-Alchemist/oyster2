@@ -30,6 +30,8 @@ public class ResultAPI implements QueryReplyListener{
 	 * invoked when a new query reply received.
 	 */
 	public synchronized void newReplyReceived(QueryReply reply) {
+		if (reply==null) return;
+		
 		int type = reply.getType();
 		if (type==-1){ //Finished
 			Oyster2Connection.noWaitMore();

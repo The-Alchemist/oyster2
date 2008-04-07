@@ -44,6 +44,8 @@ public class Result implements QueryReplyListener{
 	 * invoked when a new query reply received.
 	 */
 	public synchronized void newReplyReceived(QueryReply reply) { //NORMAL OPERATION
+		if (reply==null) return;
+		
 		int type = reply.getType();
 		if (type==-1){
 			mOyster2.getLogger().info("finished replies...");
@@ -115,6 +117,8 @@ public class Result implements QueryReplyListener{
 	}
 	
 	public synchronized void entryReceived(final Ontology virtualOntology){ //NOT USED SO FAR...
+		if (virtualOntology==null) return;
+		
 		entries.add(virtualOntology);
 		viewer.getControl().getDisplay().syncExec(new Runnable(){
 			public void run(){
