@@ -30,6 +30,7 @@ import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.Regis
 import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_ebxml.ebXMLTranslator;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.RegistryObjectSubmit;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neon_toolkit.registry.oyster2.Oyster2Query;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.AdhocQueryResponse;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.RegistryObjectQueryType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.ResponseOptionReturnType;
@@ -112,7 +113,7 @@ public class NeOnRegistryOMVOysterSkeleton
 	       	//execute the query
 	       	
 	    
-			Set<Object> OMVSet4 = oyster2Conn.submitAdHocQuery(query_parsed.objectType+query_parsed.queryPredicate);
+			Set<Object> OMVSet4 = oyster2Conn.submitAdHocQuery(query_parsed.objectType+query_parsed.queryPredicate, Oyster2Query.Auto_Scope,null);
 			Iterator it4 = OMVSet4.iterator();
 			IdentifiableType[] result_array;
 			try{
@@ -320,7 +321,11 @@ public class NeOnRegistryOMVOysterSkeleton
     	}catch(Exception e){
     		
     	}
-    	oyster2Conn =  Oyster2Manager.newConnection(false);
+    	Oyster2Manager.setSimplePeer(true);
+    	if (oyster2Conn==null){
+    		System.out.println("new connection...");
+    		oyster2Conn =  Oyster2Manager.newConnection(false);
+    	}
     }
     
     private void closeManager (){
