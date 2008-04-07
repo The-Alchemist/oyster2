@@ -61,6 +61,20 @@ public class ChangeTests {
 		se.setHasRole(Constants.SubjectExpert);
 		
 		//SCENARIOS
+		if (args[0].equalsIgnoreCase("14")){
+			oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
+			Thread.sleep(60000);
+		}
+		if (args[0].equalsIgnoreCase("13")){
+			oyster2Conn.startTracking(faoOntology);
+			oyster2Conn.startDiscoveryComponent();
+			Thread.sleep(90000);
+			oyster2Conn.stopDiscoveryComponent();
+			Thread.sleep(90000);
+		}
+		if (args[0].equalsIgnoreCase("12")){
+			oyster2Conn.startTracking(faoOntology);
+		}
 		if (args[0].equalsIgnoreCase("11")){
 			//ADD Other objects
 			OMVPerson t1= new OMVPerson();

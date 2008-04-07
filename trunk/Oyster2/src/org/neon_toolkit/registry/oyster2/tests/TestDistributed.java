@@ -66,11 +66,10 @@ public class TestDistributed {
 		kritem.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Reference/Knowledge_Management/Knowledge_Representation");
 		
 		//NEW CONNECTION
-		Oyster2Manager.setQueryTimeOut(350000);
+		
 		Oyster2Manager.setSimplePeer(true);
 		Oyster2Manager.setWorkflowSupport(false);
 		Oyster2Manager.setLogEnabled(true);
-		//Oyster2Connection oyster2Conn = Oyster2Manager.getConnection();
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
@@ -78,7 +77,7 @@ public class TestDistributed {
 		
 		if (args[0].equalsIgnoreCase("1")){
 			//HERE WE TEST SEARCH WITH KEYWORDS DISTRIBUTED
-			
+			Oyster2Manager.setQueryTimeOut(350000);
 			Set<OMVOntology> OMVSet3Dist = oyster2Conn.getOntologies("resource",Oyster2Query.Auto_Scope,null);
 			String OMVSetSerial3Dist = Oyster2Manager.serializeOMVOntologies(OMVSet3Dist);
 			System.out.println("Search with keyword distributed: ");

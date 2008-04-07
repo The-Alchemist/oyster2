@@ -249,8 +249,8 @@ public class ImportOntologyEditor extends Dialog{
 		while(it.hasNext()){
 			TableItem item = new TableItem(table, SWT.NONE);
 			OntologyProperty op = (OntologyProperty)it.next();
-			if ((op.getPropertyName().equalsIgnoreCase(Constants.hasDomain)) || (op.getPropertyName().equalsIgnoreCase(Constants.URI)) 
-					|| (op.getPropertyName().equalsIgnoreCase(Constants.name))){
+			if ((op.getPropertyName().equalsIgnoreCase(Constants.URI)) //(op.getPropertyName().equalsIgnoreCase(Constants.hasDomain)) ||  
+					|| (op.getPropertyName().equalsIgnoreCase(Constants.resourceLocator))){ //name
 				Color color1=new Color (Display.getCurrent(), new RGB (0,0,200));
 				item.setForeground(color1);
 			}
@@ -401,8 +401,8 @@ public class ImportOntologyEditor extends Dialog{
 				propList.add(prop);
 			}
 			else {
-				if((updateProp[i].getText(0)==Constants.hasDomain) || (updateProp[i].getText(0)==Constants.name) || (updateProp[i].getText(0)==Constants.URI)){
-					errorDialog("update error","propertis hasDomain, name & URI should not be empty!");
+				if((updateProp[i].getText(0)==Constants.resourceLocator) || (updateProp[i].getText(0)==Constants.URI) ){//(updateProp[i].getText(0)==Constants.hasDomain) 
+					errorDialog("update error","propertis resourceLocator & URI should not be empty!");
 					propList.clear();
 					return false;
 				}

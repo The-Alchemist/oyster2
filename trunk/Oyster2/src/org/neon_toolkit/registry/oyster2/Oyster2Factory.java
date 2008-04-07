@@ -20,10 +20,6 @@ import org.neon_toolkit.registry.util.GUID;
 import org.semanticweb.kaon2.api.*;
 import org.semanticweb.kaon2.api.logic.*;
 
-//import org.eclipse.jface.preference.PreferenceStore;
-//import org.eclipse.jface.dialogs.MessageDialog;
-//import org.semanticweb.kaon2.api.rules.*;  //OLD VERSION
-
 /**
  * This class represents the Oyster2 facility. It is responsible for all
  * activities in the Oyster2 network (search, exchange). This class implements
@@ -390,16 +386,22 @@ public class Oyster2Factory {
 				localRegistryURI = Constants.LocalRegistryURI;				
 				connection.setOntologyResolver(resolver);
 				
+				
 				this.localRegistryOntology = connection.createOntology(
 						localRegistryURI, new HashMap<String, Object>());
+				
+				this.topicOntology = connection.openOntology(topicOntologyURI,
+						new HashMap<String, Object>());
+				
+				/*
+				 * NOT NECESSARY, AND PERFORMANCE INCREASES DRAMATICALLY!
+				 *
 				this.peerDescOntology = connection.openOntology(
 						peerDescOntologyURI, new HashMap<String, Object>());
 				this.mappingDescOntology = connection.openOntology(
 						mappingDescOntologyURI, new HashMap<String, Object>());
 				this.owlChangeOntology = connection.openOntology(
 						owlChangeOntologyURI, new HashMap<String, Object>());
-				this.topicOntology = connection.openOntology(topicOntologyURI,
-						new HashMap<String, Object>());
 				this.workflowOntology = connection.openOntology(
 						workflowOntologyURI, new HashMap<String, Object>());
 				this.localRegistryOntology.addToImports(peerDescOntology);
@@ -407,6 +409,7 @@ public class Oyster2Factory {
 				this.localRegistryOntology.addToImports(owlChangeOntology);
 				this.localRegistryOntology.addToImports(topicOntology);
 				this.localRegistryOntology.addToImports(workflowOntology);
+				*/
 				this.localRegistryOntology.addOntologyProperty(
 						Constants.VERSIONINFO, Integer.toString(1));
 				
@@ -455,16 +458,12 @@ public class Oyster2Factory {
 			//3//
 			
 		} catch (KAON2Exception e) {
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			System.err.println(e + " in Oyster2 init1()");
+			e.printStackTrace();
 			retInit=1;
 			return;
 			
 		} catch (InterruptedException e) {
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			System.err.println(e + " in Oyster2 init2()");
+			e.printStackTrace();
 			retInit=1;
 			return;
 			
@@ -482,10 +481,7 @@ public class Oyster2Factory {
 			mLocalHost = new XMLOyster2Host(localGUID, InetAddress
 					.getLocalHost(), 1099);
 		} catch (UnknownHostException e) {
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			System.err.println(e + " in Oyster2 init() creating Host");
-			
+			e.printStackTrace();	
 			retInit=1;
 			return;
 		}
@@ -529,9 +525,7 @@ public class Oyster2Factory {
 		searchDetails.add(mProperties.getString(Constants.SearchCondition_4));
 		searchDetails.add(mProperties.getString(Constants.SearchCondition_5));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			System.out.println(e.getCause());
-			System.err.println(e + " in Oyster2 initUI()");
+			e.printStackTrace();
 			retInit=1;
 			return;
 		}
@@ -551,7 +545,7 @@ public class Oyster2Factory {
 			if (this.localRegistryOntology!=null) this.localRegistryOntology.persist();			
 			if (this.mLocalRegistry!=null) this.mLocalRegistry.save();
 		} catch (Exception e) {
-			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + KAON2error");
+			e.printStackTrace();
 		}	
 		try {
 			if (!isSimple){
@@ -569,7 +563,7 @@ public class Oyster2Factory {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + ExchangeInitiator Thread");
+			e.printStackTrace();
 		}
 		try{
 			System.out.println(" Closing connection");
@@ -578,7 +572,7 @@ public class Oyster2Factory {
 				this.connection=null;
 			}
 		} catch (Exception e) {
-			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + closing connection");
+			e.printStackTrace();
 		}
 			int numThreads = Thread.activeCount();
 	        Thread[] threads = new Thread[numThreads*2];
@@ -594,7 +588,7 @@ public class Oyster2Factory {
 	            			thread.interrupt();
 	            			thread.join(2000);
 	            		} catch (Exception e) {
-	            			System.err.println(e.getMessage()+" "+e.getCause() + " when oyster2 shutdown! + Killing pending Threads");
+	            			e.printStackTrace();
 	            		}
 	            	}
 	            }
@@ -907,272 +901,3 @@ public class Oyster2Factory {
     }
 }
 
-/*
- * 0
- * 
- * String propFile = null; 
- * if (properties != null) 
- * 	propFile = properties.getProperty(INIT_PROPERTY_FILE); 
- * if (propFile == null)
- *  propFile = Constants.PROPERTY_FILE; 
- *  mProperties.init(propFile,properties);
- */
-
-/*
- * 1			 
-if ((store.getString(Constants.Basic_1) != null)
-		&& (store.getString(Constants.Basic_1).length() > 0))
-	resolver
-			.registerOntology("file:///"
-					+ serializeFileName(store
-							.getString(Constants.Basic_1)));
-if ((store.getString(Constants.Basic_2) != null)
-		&& (store.getString(Constants.Basic_2).length() > 0))
-	resolver
-			.registerOntology("file:///"
-					+ serializeFileName(store
-							.getString(Constants.Basic_2)));
-if ((store.getString(Constants.Basic_3) != null)
-		&& (store.getString(Constants.Basic_3).length() > 0))
-	resolver
-			.registerOntology("file:///"
-					+ serializeFileName(store
-							.getString(Constants.Basic_3)));
-if ((store.getString(Constants.Basic_4) != null)
-		&& (store.getString(Constants.Basic_4).length() > 0))
-	resolver
-			.registerOntology("file:///"
-					+ serializeFileName(store
-							.getString(Constants.Basic_4)));
-							
-*/
-
-/*
- * 2
-this.virtualOntologyFile = new File(serializeFileName(store
-		.getString(Constants.VirtualOntology)));
-if ((!virtualOntologyFile.exists())
-		|| (virtualOntologyFile.length() <= 0)) {
-	System.out.println("virtualOntologyFile doesn't exist!"
-			+ " "
-			+ serializeFileName(store
-					.getString(Constants.VirtualOntology))
-			+ " creating...");
-	virtualOntologyFile.createNewFile();
-	resolver.registerReplacement(
-			"http://localhost/virtualOntology", "file:///"
-					+ serializeFileName(store
-							.getString(Constants.VirtualOntology)));
-	virtualOntologyURI = "http://localhost/virtualOntology";
-} else
-	virtualOntologyURI = resolver.registerOntology("file:///"
-			+ serializeFileName(store
-					.getString(Constants.VirtualOntology)));
-					
-*/
-
-/*
-* 3
-this.virtualOntology = connection.createOntology(
-		virtualOntologyURI, new HashMap<String, Object>());
-this.virtualOntology.addToImports(localRegistryOntology);
-*/
-
-/*
-public void setVirtualOntology(Ontology ontology) {
-	this.virtualOntology = ontology;
-}
-
-public Ontology getVirtualOntology() {
-	return this.virtualOntology;
-}
-public File getVirtualOntologyFile() {
-		return this.virtualOntologyFile;
-}
- */
-
-
-/*GUI INFO TAKEN INTO STARTGUI*/
-
-/*
- * The main windows of Oyster2 GUI.
- */
-//private MainWindow mainWindow;
-
-//protected boolean appClosed = false;
-
-/*
- * If the window should be shown.
- */
-//protected boolean appWindowToBeShown = true;
-
-//private boolean isSystemTrayActive;
-
-
-/*
-public void run() {
-	//openWindowAndBlock();
-	while (!appClosed) {
-		if (appWindowToBeShown) {
-			openWindowAndBlock();
-			closeWindow();
-			appWindowToBeShown = false;
-			// bsc: did not work 
-			//ThreadPool.setThreadsPriority(Thread.MIN_PRIORITY);
-			if (!isSystemTrayActive) {
-				appClosed = true;
-			} else {
-				boolean result = MessageDialog.openQuestion(null, "Oyster", "Would you like to leave Oyster running in the background?");
-				if (!result) {
-					appClosed = true;
-				}
-			}
-		}
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-		}
-	}
-}
-
-private void closeWindow() {
-	if (mainWindow != null) {
-		mainWindow.close();
-	}
-	mainWindow = null;
-}
-
-private void openWindowAndBlock() {
-	createWindow();
-	mainWindow.setBlockOnOpen(true);
-	mainWindow.open();
-}
-
-private void createWindow() {
-	if (mainWindow == null) {
-		mainWindow = new MainWindow(null);
-	}
-}
-*/
-
-/*
- * return mainWindow instance of Oyster2
- */
-//public MainWindow getMainWindow() {
-//	return this.mainWindow;
-//}
-
-//1++
-/*
-Ontology localHostOntology = null;
-try {
-	//For the second file
-	localHostOntology = connection.openOntology("kaon2rmi://localhost?"
-			+ localRegistryOntology.getOntologyURI(),
-			new HashMap<String, Object>());
-	
-	// For 1 file only  
-	//localHostOntology = connection.openOntology(localRegistryOntology.getOntologyURI(),
-	//				new HashMap<String, Object>());
-
-} catch (Exception e) {
-	System.err.println(e + " getLocalHostOntology()in Oyster2.");
-}
-return localHostOntology;
-*/
-
-/*
-public PreferenceStore getPreferenceStore() {
-	return store;
-}
-
-public void setPreferenceStore(PreferenceStore store) {
-	this.store = store;
-}
-*/
-
-/*
- * Returns the default property value as boolean.
- * 
- * @param key
- *            the key of the property.
- * @return the default value of the property.
- */
-//public boolean defaultPropertyBoolean(String key) {
-//	return mProperties.getDefaultBoolean(key);
-//}
-
-/*
- * Returns the default property value as integer.
- * 
- * @param key
- *            the key of the property.
- * @return the default value of the property.
- */
-//public int defaultPropertyInteger(String key) {
-//	return mProperties.getDefaultInteger(key);
-//}
-
-/*
- * Returns the default property value as string.
- * 
- * @param key
- *            the key of the property.
- * @return the default value of the property.
- */
-//public String defaultPropertyString(String key) {
-//	return mProperties.getDefaultString(key);
-//}
-
-/*
- * Returns the property value as boolean.
- * 
- * @param key
- *            the key of the property.
- * @return the value of the property.
- */
-//public boolean propertyBoolean(String key) {
-//	return mProperties.getBoolean(key);
-//}
-
-/*
- * Returns the property value as integer.
- * 
- * @param key
- *            the key of the property.
- * @return the value of the property.
- */
-//public int propertyInteger(String key) {
-//	return mProperties.getInteger(key);
-//}
-
-/*
- * Returns the property value as string.
- * 
- * @param key
- *            the key of the property.
- * @return the value of the property.
- */
-//public String propertyString(String key) {
-//	return mProperties.getString(key);
-//}
-
-/*
- * Sets the property value by the delivered string.
- * 
- * @param key
- *            the key of the property.
- * @param value
- *            the value of the property.
- */
-//public void setProperty(String key, String value) {
-//	mProperties.setString(key, value);	
-//}
-
-/*
- * Store the properties in corresponding file.
- * 
- */
-//public void storeProperties(){
-//	mProperties.storeOn();
-//}

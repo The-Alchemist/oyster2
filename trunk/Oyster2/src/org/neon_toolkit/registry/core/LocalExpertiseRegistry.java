@@ -3,7 +3,6 @@ package org.neon_toolkit.registry.core;
 
 import java.io.*;
 import java.util.*;
-
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Oyster2Host;
@@ -12,7 +11,6 @@ import org.neon_toolkit.registry.oyster2.QueryReply;
 import org.neon_toolkit.registry.util.GUID;
 import org.neon_toolkit.registry.util.Property;
 import org.neon_toolkit.registry.util.Resource;
-//import org.semanticweb.kaon2.api.DefaultOntologyResolver;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Connection;
 import org.semanticweb.kaon2.api.KAON2Exception;
@@ -41,36 +39,20 @@ public class LocalExpertiseRegistry {
 
 		
 		protected Oyster2Host mLocalHost = null;
-		/**
-		 * If set, no more saves are allowed.
-		 */
-		//private int version = 0;
-		//private boolean mShutdownFlag = false;
 		private File localRegistryFile;
 		private String localURI;
 		private Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 		private Ontology localOntologyRegistry;
 		private KAON2Connection connection;
-		//private DefaultOntologyResolver resolver;
 		private Reasoner reasoner;
-		//private AdvertInformer mInformer = mOyster2.getLocalAdvertInformer();
-		//private File virtualFile;
-		//private Ontology virtualOntology;
 		
 		public void init(){
 			this.localOntologyRegistry = mOyster2.getLocalHostOntology();
 			this.localURI = this.localOntologyRegistry.getOntologyURI();
 			this.connection = mOyster2.getConnection();
-			//this.resolver = mOyster2.getResolver();
 			this.localRegistryFile = mOyster2.getLocalRegistryFile();
-			//this.virtualOntology = mOyster2.getVirtualOntology();
-			//this.virtualFile = mOyster2.getVirtualOntologyFile();
-			try{
-				//this.reasoner = this.localRegistry.createReasoner();
-			}catch(Exception e){
-				e.printStackTrace();
-			}
 		}
+
 		/**
 		 * search in localRegistry about all peers that provides the ontologies
 		 * that that satisfy the conditions of the original query
@@ -108,8 +90,10 @@ public class LocalExpertiseRegistry {
 				query.close();
 				query.dispose();
 				reasoner.dispose();
-			}catch(Exception e){
-				e.printStackTrace();
+			}catch(InterruptedException ie) {
+				ie.printStackTrace();
+			}catch(KAON2Exception e){
+				e.printStackTrace();	
 			}
 			return positiveResult;
 		}
@@ -132,7 +116,7 @@ public class LocalExpertiseRegistry {
 				Reasoner reasoner=mOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
 				if (mOntology!=mOyster2.getLocalHostOntology()) 
-					query.setLimit(100);
+					query.setLimit(50);
 				query.open();
 				mOyster2.getLogger().info("Query opened..."+mOntology.getPhysicalURI());
 				while (!query.afterLast()) {					
@@ -154,7 +138,7 @@ public class LocalExpertiseRegistry {
 							Iterator a = propertySet.iterator();
 							while (a.hasNext()){
 								Property t=(Property)a.next();
-								if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
+								if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.resourceLocator).toString()) || 
 										t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI).toString())){
 									required++;
 								}
@@ -175,7 +159,8 @@ public class LocalExpertiseRegistry {
 						//}
 						
 					}catch(KAON2Exception e){
-	
+						//ignore
+						mOyster2.getLogger().info(e.getMessage());
 					}
 					query.next();
 				}
@@ -187,7 +172,9 @@ public class LocalExpertiseRegistry {
 				ie.printStackTrace();
 				return null;
 			}catch(KAON2Exception e){
-				e.printStackTrace();
+				//ignore
+				//e.printStackTrace();
+				mOyster2.getLogger().info(e.getMessage());
 				return null;	
 			}	
 			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
@@ -205,7 +192,7 @@ public class LocalExpertiseRegistry {
 				Reasoner reasoner=mOntology.createReasoner();
 				Query query=reasoner.createQuery(Namespaces.INSTANCE,queryStr);
 				if (mOntology!=mOyster2.getLocalHostOntology()) 
-					query.setLimit(100);
+					query.setLimit(50);
 				query.open();
 				mOyster2.getLogger().info("Query opened..."+mOntology.getPhysicalURI());
 				while (!query.afterLast()) {
@@ -235,10 +222,15 @@ public class LocalExpertiseRegistry {
 				query.close();
 				query.dispose();
 				reasoner.dispose();
-			}catch(Exception e){
-				e.printStackTrace();
+			}catch(InterruptedException ie) {
+				ie.printStackTrace();
+				return null;
+			}catch(KAON2Exception e){
+				//ignore
+				//e.printStackTrace();
+				mOyster2.getLogger().info(e.getMessage());
 				return null;	
-			}	
+			}
 			QueryReply queryReply = new QueryReply(queryUID,resourceSet,mOntology);
 			return queryReply;			
 		}
@@ -251,8 +243,13 @@ public class LocalExpertiseRegistry {
 			Collection<Resource> rSet= new ArrayList<Resource>();
 			try{
 				if ((topicQuery!=null) && (topicQuery.getQueryString().length()>0)){
+					mOyster2.getLogger().info("Ready to Query Keyword..."+mOntology.getPhysicalURI());
+					boolean local=true;
+					if (mOntology!=mOyster2.getLocalHostOntology()) local=false;
+					long keyTO=System.currentTimeMillis()+((int)(mOyster2.getQueryTimeOut()*5/8));
+					
 					OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.OMVURI+Constants.ontologyConcept);
-					for(DataPropertyMember dp : mOntology.createAxiomRequest (DataPropertyMember.class).getAll()){
+					for(DataPropertyMember dp : mOntology.createAxiomRequest (DataPropertyMember.class).getAll()){						
 						String value = dp.getTargetValue().getValue().toString();
 						if(mOntology.containsAxiom(KAON2Manager.factory().classMember(oConcept,dp.getSourceIndividual()),true) && (!dp.getDataProperty().equals(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.timeStamp)))){
 							if(value.toLowerCase().contains(topicQuery.getQueryString().toLowerCase())){
@@ -271,7 +268,7 @@ public class LocalExpertiseRegistry {
 										Iterator a = propertySet.iterator();
 										while (a.hasNext()){
 											Property t=(Property)a.next();
-											if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.name).toString()) || 
+											if (t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.resourceLocator).toString()) || 
 												t.getPred().equalsIgnoreCase(KAON2Manager.factory().dataProperty(Constants.OMVURI + Constants.URI).toString())){
 												required++;
 											}
@@ -304,12 +301,16 @@ public class LocalExpertiseRegistry {
 									//	}
 									//	if (!in)resourceSet.add(replyResource);
 									//}
-								}catch(Exception e){	
+								}catch(KAON2Exception e){
+									//ignore
+									mOyster2.getLogger().info(e.getMessage());
 								}
 							}
 						}
+						if (!local && System.currentTimeMillis()>keyTO) {mOyster2.getLogger().info("Interrupting the Query Keyword...");break;}
 					}
 					queryReply1 = new QueryReply(topicQuery.getGUID(),resourceSet,mOntology);
+					mOyster2.getLogger().info("Finished to Query Keyword..."+mOntology.getPhysicalURI());
 				}
 				if((typeQuery != null) && (typeQuery.getQueryString().length()>0)){
 					queryReply2 = returnQueryReply(mOntology,typeQuery,Resource.DataResource); //mKaonP2P.getVirtualOntology()
@@ -329,8 +330,10 @@ public class LocalExpertiseRegistry {
 				}
 				else if (queryReply1!=null) queryReply=queryReply1;
 				else if (queryReply2!=null) queryReply=queryReply2;
-			}catch (Exception e) {
-				e.printStackTrace();
+			}catch (KAON2Exception e) {
+				//ignore
+				//e.printStackTrace();
+				mOyster2.getLogger().info(e.getMessage());
 				return null;
 			}
 			return queryReply;
@@ -386,11 +389,9 @@ public class LocalExpertiseRegistry {
 			save();
 		}
 		
-		public void save()throws Exception{
-		     
+		public void save()throws Exception{    
         		localOntologyRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
         		//localRegistry.persist();
-		     
         }
 		
 		public Ontology getLocalOntoRegister(){
@@ -403,8 +404,9 @@ public class LocalExpertiseRegistry {
 		}
 		
 		public void close()throws Exception{
-		connection.close();
+			connection.close();
 		}
 
 }
+
 

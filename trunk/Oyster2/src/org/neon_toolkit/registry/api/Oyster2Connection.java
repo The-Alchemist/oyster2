@@ -686,9 +686,9 @@ public class Oyster2Connection {
 		pList.clear();
 		pList=IOntology.extractMetadata(URL);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
-		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
-		//OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
-		if (isPropertyIn(prop) && isPropertyIn(prop1))// && isPropertyIn(prop2))
+		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		//OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
+		if (isPropertyIn(prop) && isPropertyIn(prop2))// && isPropertyIn(prop1))
 			success=IOntology.addImportOntologyToRegistry(pList,0, null);
 		return success;
 	}
@@ -1152,6 +1152,7 @@ public class Oyster2Connection {
 	 */
 	public void startDiscoveryComponent(){
 		if (mOyster2.getIsSimple()){
+			System.out.println("Starting Exchange Initiator...");
 			mExchangeInitiator = new ExchangeInitiator();
 			mExchangeInitiatorThread = new Thread(mExchangeInitiator,"ExchangeInitiator");
 			mExchangeInitiatorThread.setDaemon(true);
@@ -1362,6 +1363,8 @@ public class Oyster2Connection {
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,1, null);
+		else
+			System.out.println("URI, resourceLocator & name properties should not be empty");
 	}
 	
 	/**
@@ -1394,6 +1397,8 @@ public class Oyster2Connection {
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,2, null);
+		else
+			System.out.println("URI, resourceLocator & name properties should not be empty");
 	}
 	
 	/**
@@ -1447,10 +1452,12 @@ public class Oyster2Connection {
 		pList.clear();
 		pList=OMVProperties.getProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
-		//OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
+		//OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop2))
 			IOntology.addImportOntologyToRegistry(pList,4, null);
+		else
+			System.out.println("URI & resourceLocator properties should not be empty");
 	}
 		
 	/**
