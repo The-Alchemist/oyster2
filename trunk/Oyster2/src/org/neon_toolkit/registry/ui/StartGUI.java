@@ -47,7 +47,7 @@ public class StartGUI {
 
 		mOyster2.setIsSimple(false);
 		mOyster2.setCaching(false);
-		mOyster2.setLogEnabled(true);
+		mOyster2.setLogEnabled(false);
 		mOyster2.setWorkflowSupport(false);
 		
 		if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;
