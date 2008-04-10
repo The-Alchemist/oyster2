@@ -1,5 +1,8 @@
 package org.neon_toolkit.oyster.plugin.iwizard;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -35,6 +38,7 @@ import org.eclipse.swt.widgets.TableItem;
 //Class that store the conditions of OMV
 public class RegistryConditionPage extends WizardPage  {
 
+		static RegistryActivator conn = RegistryActivator.getDefault();
 		public static final String PAGE_NAME = "Conditions";
 		public static final String OMV_URI = "http://omv.ontoware.org/2005/05/ontology";
 		
@@ -48,6 +52,7 @@ public class RegistryConditionPage extends WizardPage  {
 		}
 
 		public boolean performFinish() {
+			//return this.getWizard().performCancel();
 			return true;
 		}
 
@@ -58,7 +63,7 @@ public class RegistryConditionPage extends WizardPage  {
 		
 		public void createControl(Composite parent) {
 			
-			
+			conn.setDistributed(false);
 		    Composite topLevel = new Composite(parent, SWT.NONE);
 		    topLevel.setLayout(new GridLayout(2, false));
 
@@ -137,7 +142,15 @@ public class RegistryConditionPage extends WizardPage  {
 		    gridData.horizontalSpan = 2;
 		    formatLabel.setLayoutData(gridData);
 
-	        
+		    BooleanFieldEditor behindRouter = new BooleanFieldEditor("DistributedQuery", "Submit a distributed query",
+					BooleanFieldEditor.SEPARATE_LABEL, topLevel);
+			behindRouter.setPropertyChangeListener(new IPropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent event) {
+					conn.setDistributed(!conn.getDistributed());
+				}
+			});
+			
+			
 	        //get OMV properties
 	        final String[] options = getOMVProperties();
 	        

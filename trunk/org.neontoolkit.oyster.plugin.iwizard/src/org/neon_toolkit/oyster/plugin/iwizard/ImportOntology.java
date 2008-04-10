@@ -86,7 +86,7 @@ public class ImportOntology extends Control {
         boolean isMerge = container.existsModule(getTerm(moduleToImport));        
         
         if(isMerge) {
-	        container.getConnection().getOntology(ontologyURI).importContentsFrom(physicalUri, listener);
+	        container.getConnection().getOntology(ontologyURI).importContentsFrom(physicalUri, listener, null); //container.getConnection().getOntology(ontologyURI).importContentsFrom(physicalUri, listener);
     		importedModules.add(moduleToImport);
         	ModuleControl.getDefault().addModuleToProject(moduleToImport, projectName);
         } else {
@@ -99,6 +99,7 @@ public class ImportOntology extends Control {
             		physicalUri = copyOntologyURLToProject(uri, ontologyURI, projectName).toString();
             	}
             }
+            
             Set<Ontology> ontos = OntologyImportHelper.importOntologies(connection, new String[] {physicalUri}, listener);
             if (!ontos.isEmpty()) {
         		Iterator ontosIter = ontos.iterator();
@@ -121,16 +122,12 @@ public class ImportOntology extends Control {
 	 */
 	public URI copyOntologyFileToProject(URI physicalUri, String ontologyURI, String projectName) {
 		try {	        
-	        IProject project = DatamodelPlugin.getDefault().getProject(projectName);
-	        URI projectUri = project.getLocationURI();
 	    	URI targetUri = physicalUri;
-	        if(!physicalUri.toString().startsWith(projectUri.toString())){
+	        if(!isFileInWorkspace(physicalUri.toString(), projectName)){
 	    		//ontology doesn't come from the project
 	    		//ontology has to be copied to the project workspace
 		        try {
-			        String fileName =  new File(physicalUri).getName();	
-			        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName);
-		        	IFile file = project.getFile(fileName);
+		        	IFile file = getNewOntologyFile(physicalUri, projectName, false);
 			        targetUri = file.getLocationURI();
 			        InputStream is = physicalUri.toURL().openStream();
 		        	file.create(is, true, null);
@@ -147,7 +144,7 @@ public class ImportOntology extends Control {
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-		return physicalUri;
+		return physicalUri;		
 	}
 	
 	/**
@@ -158,18 +155,13 @@ public class ImportOntology extends Control {
 	 */
 	public URI copyOntologyURLToProject(URI physicalUri, String ontologyURI, String projectName) {
 		try {	        
-	        IProject project = DatamodelPlugin.getDefault().getProject(projectName);
-	        URI projectUri = project.getLocationURI();
 	    	URI targetUri = physicalUri;
-	        if(!physicalUri.toString().startsWith(projectUri.toString())){
+	        if(!isFileInWorkspace(physicalUri.toString(), projectName)){
 	    		//ontology doesn't come from the project
 	    		//ontology has to be copied to the project workspace
 		        try {
-		        	String pUri = "file:////" + Namespaces.guessLocalName(physicalUri.toString());
-		        	
-			        String fileName =  new File(pUri).getName();	
-			        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName);
-		        	IFile file = project.getFile(fileName);
+		        	URI pUri = URI.create("file:////" + Namespaces.guessLocalName(physicalUri.toString()));
+		        	IFile file = getNewOntologyFile(pUri, projectName, false);
 			        targetUri = file.getLocationURI();
 			        InputStream is = physicalUri.toURL().openStream();
 		        	file.create(is, true, null);
@@ -187,8 +179,26 @@ public class ImportOntology extends Control {
 			e.printStackTrace();
 		}
 		return physicalUri;
+		
 	}
 	
+	
+	private boolean isFileInWorkspace(String physicalUri, String projectName) {
+        IProject project = DatamodelPlugin.getDefault().getProject(projectName);
+        URI projectUri = project.getLocationURI();
+        return physicalUri.startsWith(projectUri.toString());
+	}
+	
+	private IFile getNewOntologyFile(URI physicalUri, String projectName, boolean autoExtension) throws KAON2Exception, CoreException {
+        IProject project = DatamodelPlugin.getDefault().getProject(projectName);
+        String fileName =  new File(physicalUri).getName();
+        String extension = null;
+        if(!autoExtension && fileName.contains(".")) {
+        	extension = fileName.substring(fileName.lastIndexOf("."));
+        }
+        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName, extension);
+    	return project.getFile(fileName);    		
+	}
 	
 	/**
      * 
@@ -204,3 +214,67 @@ public class ImportOntology extends Control {
     }
     
 }
+
+/*
+try {	        
+    IProject project = DatamodelPlugin.getDefault().getProject(projectName);
+    URI projectUri = project.getLocationURI();
+	URI targetUri = physicalUri;
+    if(!physicalUri.toString().startsWith(projectUri.toString())){
+		//ontology doesn't come from the project
+		//ontology has to be copied to the project workspace
+        try {
+	        String fileName =  new File(physicalUri).getName();	
+	        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName, null);
+        	IFile file = project.getFile(fileName);
+	        targetUri = file.getLocationURI();
+	        InputStream is = physicalUri.toURL().openStream();
+        	file.create(is, true, null);
+        	is.close();
+		} catch (FileNotFoundException e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		} catch (IOException e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		} catch (KAON2Exception e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		}
+	}
+    return targetUri;
+} catch (CoreException e) {
+	e.printStackTrace();
+}
+return physicalUri;
+*/
+
+/*
+try {	        
+    IProject project = DatamodelPlugin.getDefault().getProject(projectName);
+    URI projectUri = project.getLocationURI();
+	URI targetUri = physicalUri;
+    if(!physicalUri.toString().startsWith(projectUri.toString())){
+		//ontology doesn't come from the project
+		//ontology has to be copied to the project workspace
+        try {
+        	String pUri = "file:////" + Namespaces.guessLocalName(physicalUri.toString());
+        	
+	        String fileName =  new File(pUri).getName();	
+	        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName,null);
+        	IFile file = project.getFile(fileName);
+	        targetUri = file.getLocationURI();
+	        InputStream is = physicalUri.toURL().openStream();
+        	file.create(is, true, null);
+        	is.close();
+		} catch (FileNotFoundException e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		} catch (IOException e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		} catch (KAON2Exception e) {
+			new OntoStudioExceptionHandler().handleException(e);
+		}
+	}
+    return targetUri;
+} catch (CoreException e) {
+	e.printStackTrace();
+}
+return physicalUri;
+*/

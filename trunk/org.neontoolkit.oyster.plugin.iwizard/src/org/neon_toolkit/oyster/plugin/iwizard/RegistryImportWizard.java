@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -14,39 +12,55 @@ import org.eclipse.jface.wizard.IWizardContainer;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.ProgressListener;
-
 import com.ontoprise.api.StringRepresentation;
 import com.ontoprise.extensionalDB.ModuleAlreadyExistsException;
-//import com.ontoprise.ontostudio.datamodel.util.IDTermUtil;
 import com.ontoprise.ontostudio.exception.OntoStudioExceptionHandler;
 import com.ontoprise.ontostudio.gui.navigator.IProjectElement;
-
-
-
-
 import com.ontoprise.ontostudio.io.Messages;
 import com.ontoprise.ontostudio.io.OntologyImportException;
 import com.ontoprise.ontostudio.io.wizard.AbstractImportSelectionPage;
 import com.ontoprise.ontostudio.io.wizard.AbstractImportWizard;
 import com.ontoprise.ontostudio.io.wizard.ImportProgressListener;
 import com.ontoprise.util.URIUtilities;
+import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
 
 
 
 
 public class RegistryImportWizard extends AbstractImportWizard {
-
+	static RegistryActivator conn = RegistryActivator.getDefault();
+	private RegistryConditionPage p1;
+	private RegistrySummaryPage p2;
 	//constructor
     public RegistryImportWizard() {
         super();
-        setWindowTitle("Oyster Import Wizard"); 
+        setWindowTitle("Oyster Import Wizard");
+        boolean success=false;
+        boolean restart=StartRegistry.getRestart();
+        boolean run=StartRegistry.getHasStarted();
+        if (conn.getOyster2Connection()==null || (run && restart)){
+        	if (conn.getStartOyster())
+        		conn.stopOyster();
+        	success=conn.startOyster();
+        	if (success) conn.setStartOyster(true);
+        	else {
+        		conn.setStartOyster(false);
+        		p1.getWizard().performCancel();
+        	}
+        }
     }
-
+    @Override
+    public boolean performCancel() {
+        return true;
+    }
     
     @Override
     public void addPages() {
-        addPage(new RegistryConditionPage());
-        addPage(new RegistrySummaryPage());
+    	p1= new RegistryConditionPage();
+    	p2 = new RegistrySummaryPage();
+    	
+        addPage(p1);
+        addPage(p2);
         addImportSelectionPage();
         if (_selection != null) {
             if (_selection instanceof IProject) {
@@ -80,7 +94,8 @@ public class RegistryImportWizard extends AbstractImportWizard {
     @Override
     public String[] doImport(String project, URL location, String defaultUri, IProgressMonitor monitor) throws OntologyImportException {
         //ImportExportControl control = new ImportExportControl();
-        ImportOntology control = new ImportOntology();
+    	
+    	ImportOntology control = new ImportOntology();
         ProgressListener pl = null;
         
         if(monitor != null) {
@@ -118,10 +133,14 @@ public class RegistryImportWizard extends AbstractImportWizard {
         //      final URL fileName = pageSelection.getSelectedURL();
         final URL[] urls = _pageSelection.getSelectedURLS();
         
+        if (urls.length==0) return false;
+        if (urls.length==1 && urls[0].getFile().equalsIgnoreCase("/F:/eclipse-SDK-3.2.1-win32/eclipse")) return false;
+        
         IRunnableWithProgress op = new IRunnableWithProgress() {
 
             public void run(IProgressMonitor monitor) throws InvocationTargetException {
                 try {
+                	
                     //_urls2ontologies = new HashMap();
                     final IProgressMonitor mon = monitor;
                     mon.beginTask(Messages.getString("FileSystemImportWizard.3"), -1); //$NON-NLS-1$
@@ -146,6 +165,8 @@ public class RegistryImportWizard extends AbstractImportWizard {
                 } catch (Exception e) {
                     throw new InvocationTargetException(e);
                 } finally {
+                	//Oyster2Manager.setSimplePeer(true);
+                	//Oyster2Manager.closeConnection();
 //                	monitor.done();
                 }
             }
