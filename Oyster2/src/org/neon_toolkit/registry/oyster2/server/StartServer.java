@@ -79,9 +79,8 @@ public class StartServer {
 		}else{
 			configureProperties("");
 		}
-
-		initialize();	
-		run();
+		boolean success=initialize();
+		if (success) run();
 		shutdown();
     }
 	
@@ -97,7 +96,7 @@ public class StartServer {
 			mprop.init();
 	}
 	
-	private static void initialize(){
+	private static boolean initialize(){
 		try{
 			if (startKAON2){
 				if (onlineKAON2){
@@ -125,10 +124,15 @@ public class StartServer {
 				}
 			}
 			mOyster2.init(null);
-			if (mOyster2.retInit!=0) closeConnection();
+			if (mOyster2.retInit!=0) {
+				closeConnection();
+				return false;
+			}
 	    } catch (Exception e) {
 	    	System.out.println("StartServer.Initialize error "+e);
+	    	return false;
 		}
+	    return true;
 	}
 
 	

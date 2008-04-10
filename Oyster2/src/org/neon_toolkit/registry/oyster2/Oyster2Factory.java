@@ -279,7 +279,9 @@ public class Oyster2Factory {
 			logger.setLevel(Level.OFF);
 		}
 		
-
+		//LAST FIX
+		retInit = 0;
+		
 		//0//
 		
 		if (connection == null)  //new version of kaon2 (01/2007)

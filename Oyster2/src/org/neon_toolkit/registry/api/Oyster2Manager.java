@@ -177,8 +177,9 @@ public class Oyster2Manager{
     {
 		startKAON2 = startKAON2Server; 
 		configureProperties("");		//setPreferencesFile("");
-		initialize();
-		return new Oyster2Connection();
+		boolean success=initialize();
+		if (success) return new Oyster2Connection();
+		else return null;
     }
 	
 	/**
@@ -194,8 +195,9 @@ public class Oyster2Manager{
     {
 		startKAON2 = startKAON2Server; 
 		configureProperties(preferencesFilename); //setPreferencesFile(preferencesFilename);
-		initialize();
-		return new Oyster2Connection();
+		boolean success=initialize();
+		if (success) return new Oyster2Connection();
+		else return null;
     }
 	
 	/**
@@ -219,8 +221,9 @@ public class Oyster2Manager{
 		setKaon2File(kaon2Filename);
 		setServerRoot(serverRootFolder);
 		setStartParameters(javaStartParameters);
-		initialize();
-		return new Oyster2Connection();
+		boolean success=initialize();
+		if (success) return new Oyster2Connection();
+		else return null;
     }
 	
 	/**
@@ -1275,7 +1278,7 @@ public class Oyster2Manager{
 		return local;
 	}
 	
-	private static void initialize(){
+	private static boolean initialize(){
 		try{
 			if (startKAON2){
 				if (onlineKAON2){
@@ -1304,10 +1307,15 @@ public class Oyster2Manager{
 				
 			}
 			mOyster2.init(null);
-			if (mOyster2.retInit!=0) closeConnection();
+			if (mOyster2.retInit!=0) {
+				closeConnection();
+				return false;
+			}
 	    } catch (Exception e) {
 	    	System.out.println("Oyster2Manager.newConnection error "+e);
+	    	return false;
 		}
+	    return true;
 	}
 	
 	public static void configureProperties(String file){

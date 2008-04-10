@@ -25,7 +25,7 @@ public class TestOtherObjects {
 		//NEW CONNECTION
 		
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
-						
+		if (oyster2Conn==null) shutdown();				
 				
 		//HERE WE TEST SUBMIT ADHOC QUERIES
 		Set<OMVOntology> OMVRet = new HashSet<OMVOntology>();
@@ -161,9 +161,3 @@ public class TestOtherObjects {
 	}
 }
 	
-/*
-Oyster2Connection oyster2Conn = Oyster2Manager.newConnection();
-Set<OMVOntology> OMVSet = oyster2Conn.search();
-String OMVSetSerial = Oyster2Manager.serializeOMV(OMVSet);
-System.out.println(OMVSetSerial);
-*/
