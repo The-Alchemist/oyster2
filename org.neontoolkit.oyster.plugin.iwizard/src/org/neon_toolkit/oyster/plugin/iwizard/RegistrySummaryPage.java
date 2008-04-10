@@ -1,11 +1,16 @@
 package org.neon_toolkit.oyster.plugin.iwizard;
 
 
+
+import java.lang.reflect.InvocationTargetException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -33,11 +38,17 @@ import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
 import org.neon_toolkit.omv.api.core.OMVOntologyTask;
 import org.neon_toolkit.omv.api.core.OMVOntologyType;
 import org.neon_toolkit.omv.api.core.OMVPerson;
-import org.neon_toolkit.registry.api.Oyster2Connection;
 import org.neon_toolkit.registry.api.Oyster2Manager;
+import org.neon_toolkit.registry.oyster2.Oyster2Query;
+
 
 
 public class RegistrySummaryPage extends WizardPage  {
+	
+	static RegistryActivator conn = RegistryActivator.getDefault();
+
+	
+	public static Process serverProcess = null;
 
 	//public static final String pathOyster = "C:\\Oyster2APIv0.98\\new store";
 	public static final String PAGE_NAME = "Summary";
@@ -46,7 +57,7 @@ public class RegistrySummaryPage extends WizardPage  {
 	private TableEditor[] senseEditors;
 	private Button[] senseButtons;
 	private int indexButton = 0;
-
+	public static Set<OMVOntology> OMVSet2 = new HashSet<OMVOntology>();
 	//table information
 	private Table table;
 	static String [] columnTitles	= {"", "URI", "Name"};
@@ -60,18 +71,24 @@ public class RegistrySummaryPage extends WizardPage  {
 	//path of the selected ontology
 	private String ontologyLocator = "";
 	
-	
+	private boolean query;
 	//constructor
 	public RegistrySummaryPage() {
 		super(PAGE_NAME, "Summary Page", null);		  
         super.setTitle("Ontology Metadata"); 
         super.setDescription("Show the ontologies that fulfill the conditions provided by the user"); 
+        query=true;
 	}
 
 
 	public IWizardPage getPreviousPage() {
 		
 		//get the conditions of the previous page
+		if (!query) {
+			query=true;
+			return super.getPreviousPage();
+		}
+		
 		RegistryConditionPage conditionPage = (RegistryConditionPage) super.getPreviousPage();
 		Table conditionsTable = conditionPage.getTable();
 		
@@ -191,7 +208,8 @@ public class RegistrySummaryPage extends WizardPage  {
 				conditions.put(key, value);
 			}
 		}
-
+		query=false;
+		
 		//show the table with the results
 		fillTable(conditions);
 		
@@ -219,6 +237,7 @@ public class RegistrySummaryPage extends WizardPage  {
     	table = new Table (topLevel, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
     	table.setLinesVisible (true);
     	table.setHeaderVisible (true);
+    	
     	
     	
 		//Fill the table with the header information
@@ -264,6 +283,22 @@ public class RegistrySummaryPage extends WizardPage  {
 	//Fill table with the ontologies that fulfill the conditions
 	private void fillTable (HashMap OntConditions) {
 		
+		indexButton = 0;
+		if (senseButtons!=null){
+			for (int i=0;i<senseButtons.length;i++){
+				senseEditors[i].dispose();
+				senseButtons[i].dispose();
+			}
+		
+			table.deselectAll();
+			table.removeAll();
+			table.clearAll();
+			table.update();
+			
+			text1.clearSelection();
+			text1.setText("");
+		}
+		
 		//search the ontologies
         Set<OMVOntology> ontologies = getOntologies(OntConditions);
         int numOntologies = ontologies.size();
@@ -284,18 +319,18 @@ public class RegistrySummaryPage extends WizardPage  {
         //Listener for radio button
         Listener listener1 = new Listener() {
             public void handleEvent (Event e) {
-                //System.out.println("Here"+((Table)e.widget).getSelectionIndex());
                 doSelection(senseButtons[((Table)e.widget).getSelectionIndex()]);
             }
         };
         table.addListener(SWT.CHECK, listener1);
         
+        
 	    // Fill the table with the ontology information
-        for(Iterator it = ontologies.iterator(); it.hasNext();) {
+        Iterator it = ontologies.iterator();
+        while(it.hasNext()) {
         	
         	//retrieve a sense
         	OMVOntology ontology = (OMVOntology) it.next();
-        	
         	String URI = ontology.getURI();
         	//String name = ontology.getName().toString()==null ? "": ontology.getName().toString();
         	String name;
@@ -357,7 +392,8 @@ public class RegistrySummaryPage extends WizardPage  {
 		//refresh layout
         Composite composite = table.getParent();
         
-        composite.layout();        
+        composite.layout();
+        table.update();
 	}
 	
 	//select one radio button 
@@ -463,35 +499,63 @@ public class RegistrySummaryPage extends WizardPage  {
 			
 		}
 		
+		
+		
 		return executeSearchInOyster(conditions);		
 	}
 	
 	//search ontologies using Oyster
-	private Set<OMVOntology> executeSearchInOyster(OMVOntology conditions) {
-
-		
-		//Oyster2Connection connection = Oyster2Manager.newConnection(false, pathOyster);
-		Oyster2Connection connection = Oyster2Manager.newConnection(false);
-		
+private Set<OMVOntology> executeSearchInOyster(OMVOntology conditionsf) {
+		OMVSet2.clear();
+		final OMVOntology conditions = conditionsf;
+			
 		
 		//execute the search
-		Set<OMVOntology> OMVSet2 = new HashSet<OMVOntology>();
-		Set<Object> OMVOb1 = connection.search(conditions);
-		
-		
-		if (OMVOb1.size()>0){
-			Iterator it = OMVOb1.iterator();
-			try{
-				while(it.hasNext()){
-					OMVOntology omv = (OMVOntology)it.next();
-					OMVSet2.add(omv);
-				}				
-			}catch(Exception ignore){
-				//	-- ignore
-			}
-		}		
+		IRunnableWithProgress exportJob = new IRunnableWithProgress(){
+			public void run(IProgressMonitor monitor){
+				Set<Object> OMVOb1=null;
+			    if (conn.getDistributed()){
+			    	monitor.beginTask("Querying distributed network...", 100);
+			    	monitor.worked(30);
+			    	OMVOb1 = conn.getOyster2Connection().search(conditions, Oyster2Query.Auto_Scope,null);//conn.getOyster2Connection().search(conditions, Oyster2Query.Auto_Scope,null);
+			    }else{
+			    	monitor.beginTask("Querying local registry...", 100);
+			    	monitor.worked(30);
+			    	OMVOb1 = conn.getOyster2Connection().search(conditions);//conn.getOyster2Connection().search(conditions);
+			    }
+			    	   	
+			    monitor.worked(60);
+			    if (OMVOb1!=null && OMVOb1.size()>0){
+			    	Iterator it = OMVOb1.iterator();
+			    	try{
+			    		while(it.hasNext()){
+			    			OMVOntology omv = (OMVOntology)it.next();
+			    			OMVSet2.add(omv);
+			    		}
+			    	}catch(Exception ignore){
+			    	//	-- ignore
+			    	}
+			    }
+				monitor.worked(10);
+				monitor.done();
+			}   
+		};
+		ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
+		progressDialog.setBlockOnOpen(false);
+		progressDialog.setCancelable(false);
+		progressDialog.open();
+		try{
+			exportJob.run(progressDialog.getProgressMonitor());
+		}catch (InvocationTargetException e){
+			e.printStackTrace();
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
+		progressDialog.close();
 		
 		return OMVSet2;
-	}
-	
+	}	
 }
+
+
+

@@ -7,12 +7,13 @@ Bundle-Activator: org.neon_toolkit.oyster.plugin.iwizard.RegistryActivator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ datamodel,
  com.ontoprise.ontostudio.datamodel,
  com.ontoprise.ontostudio.gui,
  com.ontoprise.ontostudio.io,
- datamodel,
  util,
  datamodelBase,
- org.eclipse.core.resources,
- OysterPlugin_v0.99
+ OysterPlugin_v2.0,
+ org.neon_toolkit.oyster.plugin.menu
 Eclipse-LazyStart: true
