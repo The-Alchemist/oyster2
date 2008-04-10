@@ -43,6 +43,8 @@ public class ChangeTests {
 		Oyster2Manager.setLogEnabled(true);
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		
+		if (oyster2Conn==null) shutdown();
+		
 		//EXAMPLE ONTOLOGY
 		//oyster2Conn.importOntology("http://www.fao.org/aims/aos/fi/species_v1.0.owl");
 		OMVOntology faoOntology = new OMVOntology();
