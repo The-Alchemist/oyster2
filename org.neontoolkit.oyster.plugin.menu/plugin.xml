@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Sample Action Set"
+            visible="true"
+            id="org.neon_toolkit.oyster.plugin.menu.actionSet">
+         <menu
+               label="Registry &amp;Menu"
+               id="registryMenu">
+            <separator
+                  name="sampleGroup">
+            </separator>
+         </menu>
+         <action
+               class="org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry"
+               icon="icons/o1.GIF"
+               id="org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry"
+               label="&amp;Start Registry"
+               menubarPath="registryMenu/sampleGroup"
+               style="push"
+               toolbarPath="sampleGroup"
+               tooltip="NeOn Registry">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>
