@@ -1622,6 +1622,7 @@ public class Oyster2Connection {
 	//PROCESS REPLIES
 	private Set<OMVOntology> processReply(QueryReply queryReply){
 		Set<OMVOntology> OMVSet= new HashSet <OMVOntology>();
+		if (queryReply==null) return OMVSet;
 		ontologySearch = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
 		try{
@@ -1671,6 +1672,7 @@ public class Oyster2Connection {
 	
 	private Set<OMVMapping> processMappingsReply(QueryReply queryReply){
 		Set<OMVMapping> OMVSet= new HashSet <OMVMapping>();
+		if (queryReply==null) return OMVSet;
 		ontologySearch = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
 		try{
@@ -1694,6 +1696,7 @@ public class Oyster2Connection {
 	
 	private Set<Object> processGeneralOMVReply(QueryReply queryReply, int which){
 		Set<Object> OMVSet= new HashSet <Object>();
+		if (queryReply==null) return OMVSet;
 		ontologySearch = queryReply.getOntology();
 		Collection entrySet = queryReply.getResourceSet();
 		try{
