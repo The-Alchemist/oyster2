@@ -49,8 +49,8 @@ public class StartGUI {
 		mOyster2.setCaching(false);
 		mOyster2.setLogEnabled(false);
 		mOyster2.setWorkflowSupport(false);
-		
-		if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;
+		if (args!=null && args.length>0)
+			if (args[0]!=null && args[0].equalsIgnoreCase("false"))	startKAON2=false;
 		if (startKAON2){			
 			try {
 				URLClassLoader cl = new URLClassLoader(new URL[] { new URL("http://ontoware.org/frs/download.php/455/kaon2.jar") });//new URLClassLoader(urls);
