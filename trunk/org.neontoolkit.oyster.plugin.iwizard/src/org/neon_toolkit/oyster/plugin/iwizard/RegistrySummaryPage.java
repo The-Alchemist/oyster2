@@ -38,6 +38,7 @@ import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
 import org.neon_toolkit.omv.api.core.OMVOntologyTask;
 import org.neon_toolkit.omv.api.core.OMVOntologyType;
 import org.neon_toolkit.omv.api.core.OMVPerson;
+import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neon_toolkit.registry.api.Oyster2Manager;
 import org.neon_toolkit.registry.oyster2.Oyster2Query;
 
@@ -49,8 +50,6 @@ public class RegistrySummaryPage extends WizardPage  {
 
 	
 	public static Process serverProcess = null;
-
-	//public static final String pathOyster = "C:\\Oyster2APIv0.98\\new store";
 	public static final String PAGE_NAME = "Summary";
 	
 	//control used in this wizard
@@ -238,8 +237,6 @@ public class RegistrySummaryPage extends WizardPage  {
     	table.setLinesVisible (true);
     	table.setHeaderVisible (true);
     	
-    	
-    	
 		//Fill the table with the header information
     	
 		for (int i = 0; i < columnTitles.length; i++) {		
@@ -324,11 +321,9 @@ public class RegistrySummaryPage extends WizardPage  {
         };
         table.addListener(SWT.CHECK, listener1);
         
-        
 	    // Fill the table with the ontology information
         Iterator it = ontologies.iterator();
         while(it.hasNext()) {
-        	
         	//retrieve a sense
         	OMVOntology ontology = (OMVOntology) it.next();
         	String URI = ontology.getURI();
@@ -340,8 +335,7 @@ public class RegistrySummaryPage extends WizardPage  {
         	}else{
         		name ="";
         	}
-        	
-        	
+        	    	
         	String locator = ontology.getResourceLocator()==null ? "" : ontology.getResourceLocator();
         	
         	//serialized information
@@ -498,18 +492,15 @@ public class RegistrySummaryPage extends WizardPage  {
 			else if (key.equals("isOfType")) conditions.setIsOfType((OMVOntologyType) OntConditions.get(key));
 			
 		}
-		
-		
-		
+	
 		return executeSearchInOyster(conditions);		
 	}
 	
 	//search ontologies using Oyster
-private Set<OMVOntology> executeSearchInOyster(OMVOntology conditionsf) {
+	private Set<OMVOntology> executeSearchInOyster(OMVOntology conditionsf) {
 		OMVSet2.clear();
 		final OMVOntology conditions = conditionsf;
-			
-		
+				
 		//execute the search
 		IRunnableWithProgress exportJob = new IRunnableWithProgress(){
 			public void run(IProgressMonitor monitor){
@@ -517,11 +508,11 @@ private Set<OMVOntology> executeSearchInOyster(OMVOntology conditionsf) {
 			    if (conn.getDistributed()){
 			    	monitor.beginTask("Querying distributed network...", 100);
 			    	monitor.worked(30);
-			    	OMVOb1 = conn.getOyster2Connection().search(conditions, Oyster2Query.Auto_Scope,null);//conn.getOyster2Connection().search(conditions, Oyster2Query.Auto_Scope,null);
+			    	OMVOb1 = StartRegistry.connection.search(conditions, Oyster2Query.Auto_Scope,null);//conn.getOyster2Connection().search(conditions, Oyster2Query.Auto_Scope,null);
 			    }else{
 			    	monitor.beginTask("Querying local registry...", 100);
 			    	monitor.worked(30);
-			    	OMVOb1 = conn.getOyster2Connection().search(conditions);//conn.getOyster2Connection().search(conditions);
+			    	OMVOb1 = StartRegistry.connection.search(conditions);//conn.getOyster2Connection().search(conditions);
 			    }
 			    	   	
 			    monitor.worked(60);

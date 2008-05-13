@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -22,8 +20,6 @@ import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.ProgressListener;
-
-
 import com.ontoprise.api.StringRepresentation;
 import com.ontoprise.collab.client.OntologyImportHelper;
 import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
@@ -38,36 +34,7 @@ public class ImportOntology extends Control {
 
 	public ImportOntology() {}
 	
-    public String[] importFileSystem(String projectName, URL location, String physicalUri, ProgressListener listener) throws Exception {
-
-    	/*
-        IOntologyContainer container = getContainer(projectName);
-        KAON2Connection connection = container.getConnection();
-        Ontology mod = null;
-        
-        
-    	if (location.getProtocol().equals("file")) {
-
-    		ProcedureCallLogger.log(getClass().getName(), "importFileSystem", 
-	        		new Class[] {String.class, String.class, String.class, Object.class}, 
-	        		new Object[] {projectName, location.getFile(), defaultUri, null});
-       
-    		String physicalURI = new File(location.getFile()).toURI().toString();
-    		mod = connection.openOntology(physicalURI, null, listener);
-    		
-    	} else {
-    		
-    		ProcedureCallLogger.log(getClass().getName(), "importURLSystem", 
-	        		new Class[] {String.class, String.class, String.class, Object.class}, 
-	        		new Object[] {projectName, location.toString(), defaultUri, null});
-    		
-    		mod = connection.openOntology(location.toString(), null, listener);
-    	}
-                
-        return new String[]{mod.getModule().toString()};
-        */
-    	
-    	
+    public String[] importFileSystem(String projectName, URL location, String physicalUri, ProgressListener listener) throws Exception {    	    	
     	ProcedureCallLogger.log(getClass().getName(), "importFileSystem",  //$NON-NLS-1$
                 new Class[] {String.class, String.class, Object.class}, 
                 new Object[] {projectName, physicalUri, null});
@@ -76,7 +43,6 @@ public class ImportOntology extends Control {
         IOntologyContainer container = getContainer(projectName);
         KAON2Connection connection = container.getConnection();
 
-        
     	//check which Ontology Format the file is
         //String ontologyFormat =KAON2Manager.getFormatName(physicalUri, null);
         
@@ -182,7 +148,6 @@ public class ImportOntology extends Control {
 		
 	}
 	
-	
 	private boolean isFileInWorkspace(String physicalUri, String projectName) {
         IProject project = DatamodelPlugin.getDefault().getProject(projectName);
         URI projectUri = project.getLocationURI();
@@ -214,67 +179,3 @@ public class ImportOntology extends Control {
     }
     
 }
-
-/*
-try {	        
-    IProject project = DatamodelPlugin.getDefault().getProject(projectName);
-    URI projectUri = project.getLocationURI();
-	URI targetUri = physicalUri;
-    if(!physicalUri.toString().startsWith(projectUri.toString())){
-		//ontology doesn't come from the project
-		//ontology has to be copied to the project workspace
-        try {
-	        String fileName =  new File(physicalUri).getName();	
-	        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName, null);
-        	IFile file = project.getFile(fileName);
-	        targetUri = file.getLocationURI();
-	        InputStream is = physicalUri.toURL().openStream();
-        	file.create(is, true, null);
-        	is.close();
-		} catch (FileNotFoundException e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		} catch (IOException e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		} catch (KAON2Exception e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		}
-	}
-    return targetUri;
-} catch (CoreException e) {
-	e.printStackTrace();
-}
-return physicalUri;
-*/
-
-/*
-try {	        
-    IProject project = DatamodelPlugin.getDefault().getProject(projectName);
-    URI projectUri = project.getLocationURI();
-	URI targetUri = physicalUri;
-    if(!physicalUri.toString().startsWith(projectUri.toString())){
-		//ontology doesn't come from the project
-		//ontology has to be copied to the project workspace
-        try {
-        	String pUri = "file:////" + Namespaces.guessLocalName(physicalUri.toString());
-        	
-	        String fileName =  new File(pUri).getName();	
-	        fileName = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, fileName,null);
-        	IFile file = project.getFile(fileName);
-	        targetUri = file.getLocationURI();
-	        InputStream is = physicalUri.toURL().openStream();
-        	file.create(is, true, null);
-        	is.close();
-		} catch (FileNotFoundException e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		} catch (IOException e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		} catch (KAON2Exception e) {
-			new OntoStudioExceptionHandler().handleException(e);
-		}
-	}
-    return targetUri;
-} catch (CoreException e) {
-	e.printStackTrace();
-}
-return physicalUri;
-*/
