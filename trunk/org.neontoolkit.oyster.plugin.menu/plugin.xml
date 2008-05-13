@@ -9,7 +9,7 @@
             visible="true"
             id="org.neon_toolkit.oyster.plugin.menu.actionSet">
          <menu
-               label="Registry &amp;Menu"
+               label="Registr&amp;y"
                id="registryMenu">
             <separator
                   name="sampleGroup">
