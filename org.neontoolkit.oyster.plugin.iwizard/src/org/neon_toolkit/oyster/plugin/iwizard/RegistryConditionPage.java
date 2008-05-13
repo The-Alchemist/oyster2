@@ -19,7 +19,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-//import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,9 +30,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-
-//import org.semanticweb.kaon2.api.*;                 // This package contains the basic classes of the API
-//import org.semanticweb.kaon2.api.owl.elements.*;    // This package contains classes used to represent elements of OWL ontologies
 
 //Class that store the conditions of OMV
 public class RegistryConditionPage extends WizardPage  {

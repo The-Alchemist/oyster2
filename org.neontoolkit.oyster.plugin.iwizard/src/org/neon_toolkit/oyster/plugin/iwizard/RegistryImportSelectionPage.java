@@ -3,7 +3,6 @@ package org.neon_toolkit.oyster.plugin.iwizard;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
@@ -24,7 +23,6 @@ import com.ontoprise.ontostudio.io.FileFilter;
 import com.ontoprise.ontostudio.io.IOPlugin;
 import com.ontoprise.ontostudio.io.Messages;
 import com.ontoprise.ontostudio.io.wizard.AbstractImportSelectionPage;
-
 
 public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
 

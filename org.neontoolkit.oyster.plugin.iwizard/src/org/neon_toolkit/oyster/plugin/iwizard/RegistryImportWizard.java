@@ -24,9 +24,6 @@ import com.ontoprise.ontostudio.io.wizard.ImportProgressListener;
 import com.ontoprise.util.URIUtilities;
 import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
 
-
-
-
 public class RegistryImportWizard extends AbstractImportWizard {
 	static RegistryActivator conn = RegistryActivator.getDefault();
 	private RegistryConditionPage p1;
@@ -35,18 +32,8 @@ public class RegistryImportWizard extends AbstractImportWizard {
     public RegistryImportWizard() {
         super();
         setWindowTitle("Oyster Import Wizard");
-        boolean success=false;
-        boolean restart=StartRegistry.getRestart();
-        boolean run=StartRegistry.getHasStarted();
-        if (conn.getOyster2Connection()==null || (run && restart)){
-        	if (conn.getStartOyster())
-        		conn.stopOyster();
-        	success=conn.startOyster();
-        	if (success) conn.setStartOyster(true);
-        	else {
-        		conn.setStartOyster(false);
-        		p1.getWizard().performCancel();
-        	}
+        if (!StartRegistry.success || !StartRegistry.getState()) {
+            p1.getWizard().performCancel();
         }
     }
     @Override
@@ -89,7 +76,6 @@ public class RegistryImportWizard extends AbstractImportWizard {
     public AbstractImportSelectionPage getImportSelectionPage() {
         return new RegistryImportSelectionPage(getFileFilter());
     }
-
     
     @Override
     public String[] doImport(String project, URL location, String defaultUri, IProgressMonitor monitor) throws OntologyImportException {
@@ -109,8 +95,7 @@ public class RegistryImportWizard extends AbstractImportWizard {
             	uri = "file:////" + uri.substring(7);
             }
 			//s = control.importFileSystem(project, uri, pl);
-        	
-        		s = control.importFileSystem(project, location, uri, pl);
+        	s = control.importFileSystem(project, location, uri, pl);
         } catch (IOException e) {
             throw new OntologyImportException(location.toString(), e);
         } catch (ModuleAlreadyExistsException e) {
@@ -124,9 +109,7 @@ public class RegistryImportWizard extends AbstractImportWizard {
         }
         return s;
     }
-    
-    
-
+        
     @Override
     public boolean performFinish() {
         final String projectName = _pageSelection.getSelectedProject();
@@ -139,8 +122,7 @@ public class RegistryImportWizard extends AbstractImportWizard {
         IRunnableWithProgress op = new IRunnableWithProgress() {
 
             public void run(IProgressMonitor monitor) throws InvocationTargetException {
-                try {
-                	
+                try {        	
                     //_urls2ontologies = new HashMap();
                     final IProgressMonitor mon = monitor;
                     mon.beginTask(Messages.getString("FileSystemImportWizard.3"), -1); //$NON-NLS-1$
@@ -158,16 +140,10 @@ public class RegistryImportWizard extends AbstractImportWizard {
                             }
                         }
                     }
-
-//                    if(mon != null) {
-//                    	mon.done();
-//                    }
                 } catch (Exception e) {
                     throw new InvocationTargetException(e);
                 } finally {
-                	//Oyster2Manager.setSimplePeer(true);
-                	//Oyster2Manager.closeConnection();
-//                	monitor.done();
+                	monitor.done();
                 }
             }
         };
@@ -184,24 +160,7 @@ public class RegistryImportWizard extends AbstractImportWizard {
         }
         return true;
     }
-    /*
-    @Override
-    public String getModule(URL location) throws KAON2Exception {
-
-    	String logicalURI = "";
-    	
-    	if (location.getProtocol().equals("file")) {
-    		String fileName = location.getFile();
-    		String physicalURI = new File(fileName).toURI().toString();
-    		logicalURI = KAON2Manager.getOntologyURI(physicalURI, null);
-    	} else {
-    		logicalURI = KAON2Manager.getOntologyURI(location.toString(), null); 
-    	}
-    	
-        return StringRepresentation.toString(IDTermUtil.uriToTerm(logicalURI));
-    }
-    */
-
+    
 
 	@Override
 	public String getModule(URL location, String projectName) throws KAON2Exception {
