@@ -1,18 +1,18 @@
 package org.neon_toolkit.oyster.plugin.menu.actions;
 
-
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.neon_toolkit.registry.api.Oyster2Connection;
+import org.neon_toolkit.registry.api.Oyster2Manager;
 import org.neon_toolkit.registry.util.EntryDetailSerializer;
-
 
 /**
  * Our sample action implements workbench action delegate.
@@ -27,10 +27,8 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	private static String startRegistryText="Start Registry";
 	private static String stopRegistryText="Stop Registry";
 	private static boolean start=true;
-	private static boolean restart=true;
-	
-	private static boolean run=false;
-	private static int first=0;
+	public static boolean success=false;
+	public static Oyster2Connection connection=null;
 	public static Process serverProcess = null;
 	/**
 	 * The constructor.
@@ -39,29 +37,10 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 		
 	}
 
-	public static boolean getHasStarted(){
-		return run;
+	public static boolean getState(){
+		return !start;
 	}
 	
-	public static boolean getRestart(){
-		if (first<=1) return false;
-		if (!start & !restart){ //RUNNNING (FIRST CALL) 
-			restart=true;
-			return true; 	
-		}
-		if (!start & restart){ //RUNNING
-			return false;
-		}
-		if (start & restart){  //NOT RUNNING WILL FAIL UNLESS STARTED OUTSIDE
-			restart=false;
-			return true;
-		}
-		if (start & !restart){  //NOT RUNNING WILL FAIL UNLESS STARTED OUTSIDE
-			return false;
-		}
-		
-		return false;
-	}
 	/**
 	 * The action has been activated. The argument of the
 	 * method represents the 'real' action sitting
@@ -69,17 +48,17 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#run
 	 */
 	public void run(IAction action) {
-		run=true;
-		if (start){
-			IRunnableWithProgress exportJob = new IRunnableWithProgress(){
-				public void run(IProgressMonitor monitor){					
-					monitor.beginTask("starting registry... (If first time running registry please wait few minutes)", 100);
+		if (start){			
+			Job exportJob = new Job("Starting registry...(The first time please wait few minutes)") {
+				protected IStatus run(IProgressMonitor monitor) {
+					monitor.beginTask("Starting registry...(The first time please wait few minutes)", 100);
 					try {
 						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"OysterUtil.jar";
-						
-						//System.out.println("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.server.StartServer -workflow -startKAON2");
-						monitor.worked(20);
-						serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
+						monitor.worked(10);
+						if(serverProcess==null) {
+							System.out.println("executing the server...");
+							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
+						}
 						if(serverProcess==null){
 							MessageDialog.openInformation(
 									window.getShell(),
@@ -87,11 +66,26 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 									"Registry couldn't start");
 						}
 						else{	
-							start = !start;
-							restart=false;
+							monitor.worked(20);
+							File tFile = new File("O2serverfiles/localRegistry.owl"); //FIXED FOR NOW...
+							if ((!tFile.exists())
+									|| (tFile.length() <= 0)) {
+								System.out.println("waiting 30S...");
+								Thread.sleep(30000);
+							}
+							else Thread.sleep(7000);
 							monitor.worked(30);
-							Thread.sleep(30000);
-							monitor.worked(40);
+							startOysterSilent();
+							if (!success) {
+								MessageDialog.openInformation(
+										window.getShell(),
+										"Menu Plug-in",
+										"Registry couldn't start");
+								
+							}else{
+								monitor.worked(40);
+								start = !start;
+							}
 						}
 					}catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -99,32 +93,27 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 								window.getShell(),
 								"Menu Plug-in",
 								"Registry couldn't start");
+						
 						e.printStackTrace();
+					}	
+					finally{
+						monitor.done();
 					}
+					return Status.OK_STATUS;
 				}   
 			};
-			ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getDefault().getActiveShell());
-			progressDialog.setBlockOnOpen(false);
-			progressDialog.setCancelable(false);
-			progressDialog.open();
-			try{
-				exportJob.run(progressDialog.getProgressMonitor());
-			}catch (InvocationTargetException e){
-				e.printStackTrace();
-			}catch (InterruptedException e){
-				e.printStackTrace();
-			}
-			progressDialog.close();
-			
+			exportJob.setUser(true);
+			exportJob.schedule();
 		}
 		else {
+			stopOyster();
 			serverProcess.destroy();
+			serverProcess = null;
 			MessageDialog.openInformation(
 				window.getShell(),
 				"Menu Plug-in",
 				"Registry stopping...");
 			start = !start;
-			restart=true;
 		}
 		
 		if (start) {
@@ -135,7 +124,6 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 			action.setText(stopRegistryText);
 			
 		}
-		first++;
 	}
 
 	/**
@@ -146,9 +134,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	 * @see IWorkbenchWindowActionDelegate#selectionChanged
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		
 		action.setEnabled(true);
-		
 	}
 
 	/**
@@ -169,26 +155,33 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	public void init(IWorkbenchWindow window) {
 		this.window = window;
 	}
+	
+	public boolean startOysterSilent(){
+		success=false;
+		Oyster2Manager.setSimplePeer(true);
+		Oyster2Manager.setWorkflowSupport(true);
+		Oyster2Manager.setLogEnabled(false);
+		connection = Oyster2Manager.newConnection(false);
+		if (connection!=null){
+			System.out.println("new connection...");
+			success=true;
+		}else{
+			//ignore here
+		}
+		return success;
+	}
+	
+	public void stopOyster(){
+		Job job = new Job("Closing import wizard session...") {
+			protected IStatus run(IProgressMonitor monitor) {
+					// Do some work
+					connection=null;
+					Oyster2Manager.closeConnection();
+					System.out.println("connection closed at the end..."); 
+					return Status.OK_STATUS;
+				}
+			};
+		job.setUser(true);
+		job.schedule();
+	}
 }
-
-/*
-String o2File="Oyster2.jar";
-try{
-	System.out.println("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.server.StartServer");
-	serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.StartServer");
-	if(serverProcess!=null) MessageDialog.openInformation(
-			window.getShell(),
-			"Menu Plug-in",
-			"Registry started");
-	else MessageDialog.openInformation(
-			window.getShell(),
-			"Menu Plug-in",
-			"Registry couldn't start");
-}catch(Exception e){
-	MessageDialog.openInformation(
-			window.getShell(),
-			"Menu Plug-in",
-			"Registry couldn't start");
-}
-*/
-
