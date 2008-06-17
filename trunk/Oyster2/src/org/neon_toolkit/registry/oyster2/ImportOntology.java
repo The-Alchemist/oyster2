@@ -354,7 +354,8 @@ public class ImportOntology {
 	 * 2=Replace: Same as remove and add object i.e. all existing 
 	 * properties are removed and the new set of properties are added
 	 * without deleting the object
-	 * 4=Remove: Remove the metadata entry 
+	 * 4=Remove: Remove the metadata entry
+	 * 5=1 (Pure Register) but diplays message 
 	 * @param properties is the set of properties (OMV properties)  
 	 * that has the ontology metadata entry we want to register.
 	 * @param which specifies the type of object we want to add
@@ -516,8 +517,8 @@ public class ImportOntology {
 			if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){		//if(targetRegistry.containsEntity(oIndividual,true))	
 				if (how==0)
 					System.out.println("The concept "+ tURN +" already exist in the local expertise registry");
-				else if (how==1){
-					System.out.println("Please refer to the registry file! The registering concept already exist. Please use method Replace instead!");
+				else if (how==1 || how==5){
+					if (how ==5) System.out.println("Please refer to the registry file! The registering concept already exist. Please use method Replace instead!");
 					return false;
 				}
 				else if (how==2 || how==4){
@@ -984,6 +985,7 @@ public class ImportOntology {
 	 * for which we do not have any additional information like when
 	 * importing and extracting metadata from an ontology.
 	 * 4=Remove: Remove the ontology metadata entry
+	 * 5=1 (Pure Register) but displays message 
 	 * @param registry the targetOntology to apply axioms. Null=localRegistry
 	 * 
 	 */
@@ -1047,8 +1049,8 @@ public class ImportOntology {
 			if (targetRegistry.containsAxiom(KAON2Manager.factory().classMember(ontologyConcept,ontologyIndividual),true)){      //(targetRegistry.containsEntity(ontologyIndividual,true)){
 				if (what==0)
 					System.out.println("The importing ontology already exist in the local expertise registry");
-				else if (what==1){
-					System.out.println("Please refer to the registry file! The registering ontology already exist. Please use method Replace instead!");
+				else if (what==1 || what==5){
+					if (what==5) System.out.println("Please refer to the registry file! The registering ontology already exist. Please use method Replace instead!");
 					return false;
 				}
 				else if (what==2 || what==4){

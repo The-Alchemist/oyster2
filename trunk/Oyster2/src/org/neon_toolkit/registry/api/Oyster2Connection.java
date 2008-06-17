@@ -1362,7 +1362,7 @@ public class Oyster2Connection {
 		OntologyProperty prop1 = new OntologyProperty(Constants.name, "");
 		OntologyProperty prop2 = new OntologyProperty(Constants.resourceLocator, "");
 		if (isPropertyIn(prop) && isPropertyIn(prop1) && isPropertyIn(prop2))
-			IOntology.addImportOntologyToRegistry(pList,1, null);
+			IOntology.addImportOntologyToRegistry(pList,5, null);
 		else
 			System.out.println("URI, resourceLocator & name properties should not be empty");
 	}
@@ -1378,7 +1378,7 @@ public class Oyster2Connection {
 		pList=MappingProperties.getMappingProperties(o);
 		OntologyProperty prop = new OntologyProperty(Constants.URI, "");
 		if (isPropertyIn(prop))
-			IOntology.addConceptToRegistry(1,pList,13, null);
+			IOntology.addConceptToRegistry(5,pList,13, null);
 	}
 	
 	/**
