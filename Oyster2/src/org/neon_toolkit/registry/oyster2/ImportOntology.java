@@ -516,7 +516,7 @@ public class ImportOntology {
 		try{
 			if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){		//if(targetRegistry.containsEntity(oIndividual,true))	
 				if (how==0)
-					System.out.println("The concept "+ tURN +" already exist in the local expertise registry");
+					mOyster2.getLogger().info("The concept "+ tURN +" already exist in the local expertise registry");
 				else if (how==1 || how==5){
 					if (how ==5) System.out.println("Please refer to the registry file! The registering concept already exist. Please use method Replace instead!");
 					return false;
@@ -1048,7 +1048,7 @@ public class ImportOntology {
 		try{	
 			if (targetRegistry.containsAxiom(KAON2Manager.factory().classMember(ontologyConcept,ontologyIndividual),true)){      //(targetRegistry.containsEntity(ontologyIndividual,true)){
 				if (what==0)
-					System.out.println("The importing ontology already exist in the local expertise registry");
+					mOyster2.getLogger().info("The importing ontology already exist in the local expertise registry");
 				else if (what==1 || what==5){
 					if (what==5) System.out.println("Please refer to the registry file! The registering ontology already exist. Please use method Replace instead!");
 					return false;
