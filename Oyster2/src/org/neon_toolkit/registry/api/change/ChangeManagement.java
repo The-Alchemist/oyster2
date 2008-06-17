@@ -29,6 +29,7 @@ import org.neon_toolkit.omv.api.extensions.change.OMVLog;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVCompositeChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
+import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.AnnotationPropertyChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.ClassChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.IndividualChange;
 import org.neon_toolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.PropertyChange;
@@ -187,7 +188,7 @@ public class ChangeManagement {
 					//Add entity action
 					//CHECK ROLES AND NEXT STATES
 					boolean success=false;
-					if (o instanceof ClassChange || o instanceof OWLClassChange || o instanceof IndividualChange || o instanceof OWLIndividualChange || o instanceof PropertyChange || o instanceof OWLObjectPropertyChange || o instanceof OWLDataPropertyChange){
+					if (o instanceof ClassChange || o instanceof OWLClassChange || o instanceof IndividualChange || o instanceof OWLIndividualChange || o instanceof PropertyChange || o instanceof OWLObjectPropertyChange || o instanceof OWLDataPropertyChange || o instanceof AnnotationPropertyChange){
 						success=wMgmt.update(tURN,editor);
 					}else if (o instanceof AddClass || o instanceof AddIndividual || o instanceof AddProperty || o instanceof AddDatatype ){
 						success=wMgmt.insert(tURN,editor);
