@@ -1,0 +1,10 @@
+<formalityLevels>
+<catalog>catalog</catalog>
+<glossary>glossary</glossary>
+<thesauri>thesauri</thesauri>
+<taxonomy>taxonomy</taxonomy>
+<frames_and_properties>frames and properties</frames_and_properties>
+<value_restrictions>value restrictions</value_restrictions>
+<disjointness>disjointness</disjointness>
+<general_logic_constraints>general logic constraints</general_logic_constraints>
+</formalityLevels>

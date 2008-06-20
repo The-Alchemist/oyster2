@@ -1,0 +1,234 @@
+<ontologyQueryAttributes>
+<!-- Why does every attribute has it's own local name instead of being
+elements with same name and different text? Because this way I can
+query the model using the element name -->
+<!-- if not specified:   required = false -->
+<attributesNamespace>http://omv.ontoware.org/2005/05/ontology#</attributesNamespace>
+<queryJavaClass>org.neon_toolkit.registry.omv.xsd.query.OntologyQueryType</queryJavaClass>
+<label>Ontology</label>
+
+<categories>
+	<item>general_attributes</item>
+	<item>provenance_attributes</item>
+	<item>applicability_attributes</item>
+	<item>format_attributes</item>
+	<item>availability_attributes</item>
+	<item>relationship_attributes</item>
+	<item>statistic_attributes</item>
+</categories>
+
+<general_attributes>General attributes
+	<item>URI</item>
+	<item>name</item>
+	<item>acronym</item>
+	<item>description</item>
+	<item>documentation</item>
+	<item>notes</item>
+	<item>keywords</item>
+	<item>keyClasses</item>
+	<item>status</item>
+	<item>creationDate</item>
+	<item>modificationDate</item>
+</general_attributes>
+
+<provenance_attributes>Provenance attributes
+	<item>hasContributorPerson</item>
+	<item>hasContributorOrg</item>
+	<item>hasCreatorPerson</item>
+	<item>hasCreatorOrg</item>
+	<item>usedOntologyEngineeringTool</item>
+	<item>usedOntologyEngineeringMethodology</item>
+	<item>usedKnowledgeRepresentationParadigm</item>
+	<item>endorsedByPerson</item>
+	<item>endorsedByOrg</item>
+</provenance_attributes>
+
+<applicability_attributes>Applicability attributes
+	<item>hasDomain</item>
+	<item>isOfType</item>
+	<item>naturalLanguage</item>
+	<item>designedForOntologyTask</item>
+	<item>hasFormalityLevel</item>
+	<item>knownUsage</item>
+</applicability_attributes>
+
+<format_attributes>Format attributes
+	<item>hasOntologyLanguage</item>
+	<item>hasOntologySyntax</item>
+	<item>isConsistentAccordingToReasoner</item>
+	<item>expressiveness</item>
+</format_attributes>
+
+
+<availability_attributes>Availability attributes
+	<item>resourceLocator</item>
+	<item>version</item>
+	<item>hasLicense</item>
+</availability_attributes>
+
+<relationship_attributes>Relationship attributes
+	<item>useImports</item>
+	<item>hasPriorVersion</item>
+	<item>isBackwardCompatibleWith</item>
+	<item>isIncompatibleWith</item>
+</relationship_attributes>
+
+<statistic_attributes>Statistic attributes
+	<item>containsTBox</item>
+	<item>containsRBox</item>
+	<item>containsABox</item>
+	<item>numberOfClasses</item>
+	<item>numberOfProperties</item>
+	<item>numberOfIndividuals</item>
+	<item>numberOfAxioms</item>
+</statistic_attributes>
+
+
+
+<URI label="URI"  filterType="StringFilterType" methodName="setURIFilter" multi="false">URI</URI>
+
+<name label="name" filterType="StringFilterType" methodName="setNameBranch" multi="true">name</name>
+
+<acronym label="acronym" filterType="StringFilterType" methodName="setAcronymFilter" multi="false">acronym</acronym>
+
+<description label="description"  filterType="StringFilterType" methodName="setDescriptionBranch" multi="true">description</description>
+
+<documentation label="documentation"  filterType="StringFilterType" methodName="setDocumentationFilter" multi="false">documentation</documentation>
+
+<notes label="notes" filterType="StringFilterType" methodName="setNotesFilter" multi="false">notes</notes>
+
+<keywords label="keywords" filterType="StringFilterType" methodName="setKeywordsBranch" multi="true">keywords</keywords>
+
+<keyClasses label="keyclasses"  filterType="StringFilterType" methodName="setKeyClassesFilter" multi="false">keyClasses</keyClasses>
+
+<status label="status"  filterType="StringFilterType" methodName="setOntologyStatusFilter" multi="false">status</status>
+
+<creationDate  label="creationDate"  filterType="DateTimeFilterType" methodName="setCreationDateFilter" multi="false">creationDate</creationDate>
+
+<modificationDate label="modificationDate"  filterType="DateTimeFilterType" methodName="setModificationDateFilter" multi="false">modificationDate</modificationDate>
+
+<hasContributorPerson label="hasContributorsPeople"  filterType="PersonFilterType" methodName="setHasContributorPersonQuery" multi="true">hasContributor</hasContributorPerson>
+
+<hasContributorOrg label="hasContributorsOrg"  filterType="StringFilterType" methodName="setHasContributorOrganizationQuery" multi="true">hasContributor</hasContributorOrg>
+
+
+<hasCreatorPerson label="hasCreatorPerson"  filterType="PersonFilterType" methodName="setHasCreatorPersonQuery" multi="true">hasCreator</hasCreatorPerson>
+
+<hasCreatorOrg label="hasCreatorOrg"  filterType="StringFilterType" methodName="setHasCreatorOrganizationQuery" multi="true">hasCreator</hasCreatorOrg>
+
+
+
+<usedOntologyEngineeringTool label="usedOntologyEngineeringTool"  filterType="StringFilterType" methodName="setUsedOntologyEngineeringToolQuery" multi="true">usedOntologyEngineeringTool</usedOntologyEngineeringTool>
+
+<usedOntologyEngineeringMethodology label="usedOntologyEngineeringMethodology"  filterType="StringFilterType" methodName="setUsedOntologyEngineeringMethodologyQuery" multi="true">usedOntologyEngineeringMethodology</usedOntologyEngineeringMethodology>
+
+
+
+<usedKnowledgeRepresentationParadigm label="usedKnowledgeRepresentationParadigm"  
+filterType="StringFilterType" methodName="setUsedKnowledgeRepresentationParadigmQuery" multi="true">
+  usedKnowledgeRepresentationParadigm</usedKnowledgeRepresentationParadigm>
+	
+	
+	
+<endorsedByPerson label="endorsedByPerson"  filterType="PersonFilterType" methodName="setEndorsedByPersonQuery" multi="true">endorsedBy</endorsedByPerson>
+
+
+<endorsedByOrg label="endorsedByOrg"  filterType="StringFilterType" methodName="setEndorsedByOrganizationQuery" multi="true">endorsedBy</endorsedByOrg>
+
+
+<hasDomain label="hasDomain"  filterType="StringFilterType" methodName="setHasDomainQuery" multi="true">hasDomain</hasDomain>
+
+
+<isOfType label="isOfType"  filterType="StringFilterType" methodName="setIsOfTypeQuery" multi="true">isOfType</isOfType>
+
+<naturalLanguage label="naturalLanguage"  filterType="StringFilterType" methodName="setNaturalLanguageBranch"
+multi="true">naturalLanguage</naturalLanguage>
+
+<designedForOntologyTask label="designedForOntologyTask"  filterType="StringFilterType" 
+methodName="setDesignedForOntologyTaskQuery" multi="true">designedForOntologyTask</designedForOntologyTask>
+	
+<hasFormalityLevel label="hasFormalityLevel"  filterType="StringFilterType" 
+methodName="setHasFormalityLevelQuery" multi="true">hasFormalityLevel</hasFormalityLevel>
+
+
+<knownUsage label="knownUsage"  filterType="StringFilterType" 
+methodName="setKnownUsageFilter" multi="false">knownUsage</knownUsage>
+
+
+<hasOntologyLanguage label="hasOntologyLanguage"  filterType="StringFilterType" 
+methodName="setHasOntologyLanguageQuery" multi="true">
+hasOntologyLanguage</hasOntologyLanguage>
+
+
+<hasOntologySyntax label="hasOntologySyntax"  filterType="StringFilterType" 
+methodName="setHasOntologySyntaxQuery" multi="true">hasOntologySyntax</hasOntologySyntax>
+
+
+<isConsistentAccordingToReasoner label="isConsistentAccordingToReasoner" 
+filterType="BooleanFilterType" 
+methodName="setIsConsistentAccordingToReasonerFilter" multi="false">
+isConsistentAccordingToReasoner</isConsistentAccordingToReasoner>
+	
+<expressiveness label="expressiveness" 
+filterType="StringFilterType" 
+methodName="setExpressivenessFilter" multi="false">expressiveness</expressiveness>
+
+<resourceLocator  label="resourceLocator" 
+filterType="StringFilterType" 
+methodName="setResourceLocatorFilter" multi="false">
+resourceLocator</resourceLocator>
+
+
+<version label="version" 
+filterType="StringFilterType" 
+methodName="setVersionFilter" multi="false">version</version>
+
+<hasLicense label="hasLicense" 
+filterType="StringFilterType" 
+methodName="setHasLicenseQuery" multi="true">hasLicense</hasLicense>
+
+<useImports label="useImports" 
+filterType="StringFilterType" 
+methodName="setUseImportsQuery" multi="true">useImports</useImports>
+
+<hasPriorVersion label="hasPriorVersion" 
+filterType="StringFilterType" 
+methodName="setHasPriorVersionQuery" multi="true">hasPriorVersion</hasPriorVersion>
+
+<isBackwardCompatibleWith label="isBackwardCompatibleWith" 
+filterType="StringFilterType" 
+methodName="setIsBackwardCompatibleWithQuery" multi="true">isBackwardCompatibleWith</isBackwardCompatibleWith>
+
+<isIncompatibleWith label="isIncompatibleWith" 
+filterType="StringFilterType" 
+methodName="setIsIncompatibleWithQuery" multi="true">isIncompatibleWith</isIncompatibleWith>
+
+<containsTBox label="containsTBox" 
+filterType="BooleanFilterType" 
+methodName="setContainsTBoxFilter" multi="false">containsTBox</containsTBox>
+
+<containsABox label="containsABox" 
+filterType="BooleanFilterType" 
+methodName="setContainsABoxFilter" multi="false">containsABox</containsABox>
+ 
+<containsRBox label="containsRBox" 
+filterType="BooleanFilterType" 
+methodName="setContainsRBoxFilter" multi="false">containsRBox</containsRBox>
+
+<numberOfClasses label="numberOfClasses" 
+filterType="IntegerFilterType" 
+methodName="setNumberOfClassesFilter" multi="false">numberOfClasses</numberOfClasses>
+
+<numberOfProperties label="numberOfProperties" 
+filterType="IntegerFilterType" 
+methodName="setNumberOfPropertiesFilter" multi="false">numberOfProperties</numberOfProperties>
+
+<numberOfIndividuals label="numberOfIndividuals" 
+filterType="IntegerFilterType" 
+methodName="setNumberOfIndividualsFilter" multi="false">numberOfIndividuals</numberOfIndividuals>
+
+<numberOfAxioms label="numberOfAxioms" 
+filterType="IntegerFilterType" 
+methodName="setNumberOfAxiomsFilter" multi="false">numberOfAxioms</numberOfAxioms>
+
+</ontologyQueryAttributes>

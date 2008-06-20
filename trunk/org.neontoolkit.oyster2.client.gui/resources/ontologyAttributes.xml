@@ -1,0 +1,177 @@
+<ontologyAttributes>
+<!-- Why does every attribute has it's own local name instead of being
+elements with same name and different text? Because this way I can
+query the model using the element name -->
+<!-- if not specified:   required = false -->
+<attributesNamespace>http://omv.ontoware.org/2005/05/ontology#</attributesNamespace>
+<categories>
+	<item>general_attributes</item>
+	<item>provenance_attributes</item>
+	<item>applicability_attributes</item>
+	<item>format_attributes</item>
+	<item>availability_attributes</item>
+	<item>relationship_attributes</item>
+	<item>statistic_attributes</item>
+</categories>
+
+<general_attributes>General attributes
+	<item>URI</item>
+	<item>name</item>
+	<item>acronym</item>
+	<item>description</item>
+	<item>documentation</item>
+	<item>notes</item>
+	<item>keywords</item>
+	<item>keyClasses</item>
+	<item>status</item>
+	<item>creationDate</item>
+	<item>modificationDate</item>
+</general_attributes>
+
+<provenance_attributes>Provenance attributes
+	<item>hasContributor</item>
+	<item>hasCreator</item>
+	<item>usedOntologyEngineeringTool</item>
+	<item>usedOntologyEngineeringMethodology</item>
+	<item>usedKnowledgeRepresentationParadigm</item>
+	<item>endorsedBy</item>
+</provenance_attributes>
+
+<applicability_attributes>Applicability attributes
+	<item>hasDomain</item>
+	<item>isOfType</item>
+	<item>naturalLanguage</item>
+	<item>designedForOntologyTask</item>
+	<item>hasFormalityLevel</item>
+	<item>knownUsage</item>
+</applicability_attributes>
+
+<format_attributes>Format attributes
+	<item>hasOntologyLanguage</item>
+	<item>hasOntologySyntax</item>
+	<item>isConsistentAccordingToReasoner</item>
+	<item>expressiveness</item>
+</format_attributes>
+
+
+<availability_attributes>Availability attributes
+	<item>resourceLocator</item>
+	<item>version</item>
+	<item>hasLicense</item>
+</availability_attributes>
+
+<relationship_attributes>Relationship attributes
+	<item>useImports</item>
+	<item>hasPriorVersion</item>
+	<item>isBackwardCompatibleWith</item>
+	<item>isIncompatibleWith</item>
+</relationship_attributes>
+
+<statistic_attributes>Statistic attributes
+	<item>containsTBox</item>
+	<item>containsRBox</item>
+	<item>containsABox</item>
+	<item>numberOfClasses</item>
+	<item>numberOfProperties</item>
+	<item>numberOfIndividuals</item>
+	<item>numberOfAxioms</item>
+</statistic_attributes>
+
+
+
+<URI type="COMBO_TYPE" label="URI" predefined="false" required="true">URI</URI>
+
+<name type="LIST_AND_TEXT_TYPE" label="Ontology name" predefined="false" required="true">name</name>
+
+<acronym type="COMBO_TYPE" label="Acronym" predefined="false">acronym</acronym>
+
+<description type="LONG_TEXT_TYPE" label="Description" predefined="false" required="true">description</description>
+
+<documentation type="COMBO_TYPE" label="Documentation URL" predefined="false">documentation</documentation>
+
+<notes type="LONG_TEXT_TYPE" label="Notes" predefined="false">notes</notes>
+
+<keywords type="LIST_AND_TEXT_TYPE" label="Keywords" predefined="false">keywords</keywords>
+
+<keyClasses type="LIST_AND_TEXT_TYPE" label="Key classes" predefined="false">keyClasses</keyClasses>
+
+<status type="COMBO_TYPE" label="Status" predefined="true" file="ontologyStatus.xml" editable="false">status</status>
+
+<creationDate type="CALENDAR_TYPE" label="Creation date" predefined="false" editable="true" required="true" validator="DateValidator">creationDate</creationDate>
+
+<modificationDate type="CALENDAR_TYPE" label="Modification date" predefined="false" editable="true" validator="DateValidator">modificationDate</modificationDate>
+
+<hasContributor type="LIST_PARTY_TYPE" label="Contributors" predefined="false">hasContributor</hasContributor>
+
+<hasCreator type="LIST_PARTY_TYPE" label="Creators" predefined="false" required="true">hasCreator</hasCreator>
+
+<usedOntologyEngineeringTool type="LIST_AND_TEXT_TYPE" label="Used engineering tool" predefined="false">usedOntologyEngineeringTool</usedOntologyEngineeringTool>
+
+<usedOntologyEngineeringMethodology type="LIST_AND_TEXT_TYPE" label="Used engineering methodology" predefined="false">usedOntologyEngineeringMethodology</usedOntologyEngineeringMethodology>
+
+<usedKnowledgeRepresentationParadigm type="LIST_AND_TEXT_TYPE" label="Used representation paradigm"
+ predefined="true" ontology="OMVOntology"
+  class="http://omv.ontoware.org/2005/05/ontology#KnowledgeRepresentationParadigm">
+  usedKnowledgeRepresentationParadigm</usedKnowledgeRepresentationParadigm>
+	
+<endorsedBy type="LIST_PARTY_TYPE" label="Endorsed by" predefined="false">endorsedBy</endorsedBy>
+
+<hasDomain type="LIST_DOMAIN_TYPE" label="Domain" predefined="false">hasDomain</hasDomain>
+
+<isOfType type="COMBO_TYPE" label="Ontology type" predefined="true" ontology="OMVOntology"
+ class="http://omv.ontoware.org/2005/05/ontology#OntologyType"
+required="true">isOfType</isOfType>
+
+<naturalLanguage type="LIST_TYPE" predefined="true" editable="false" label="Natural language" file="iso639.xml">naturalLanguage</naturalLanguage>
+
+<designedForOntologyTask type="LIST_AND_TEXT_TYPE" label="Designed for ontology task" predefined="true" ontology="OMVOntology"
+class="http://omv.ontoware.org/2005/05/ontology#OntologyTask">
+designedForOntologyTask</designedForOntologyTask>
+	
+<hasFormalityLevel type="COMBO_TYPE" label="Formality level" predefined="true"
+ ontology="OMVOntology" class="http://omv.ontoware.org/2005/05/ontology#FormalityLevel">hasFormalityLevel</hasFormalityLevel>
+
+<knownUsage type="LIST_AND_TEXT_TYPE" label="Known usage" predefined="false">knownUsage</knownUsage>
+
+<hasOntologyLanguage type="COMBO_TYPE" label="Ontology language" predefined="true"
+ontology="OMVOntology"
+class="http://omv.ontoware.org/2005/05/ontology#OntologyLanguage" required="true">
+hasOntologyLanguage</hasOntologyLanguage>
+
+<hasOntologySyntax type="COMBO_TYPE" label="Ontology syntax" predefined="true" ontology="OMVOntology"
+class="http://omv.ontoware.org/2005/05/ontology#OntologySyntax"
+required="true">hasOntologySyntax</hasOntologySyntax>
+
+<isConsistentAccordingToReasoner type="COMBO_TYPE" label="Consistent according to reasoner" editable="false" predefined="true" booleans="true">isConsistentAccordingToReasoner</isConsistentAccordingToReasoner>
+	
+<expressiveness type="COMBO_TYPE" label="Expressiveness" predefined="false">expressiveness</expressiveness>
+
+<resourceLocator type="COMBO_TYPE" label="Resource locator" predefined="false" required="true">resourceLocator</resourceLocator>
+
+<version type="COMBO_TYPE" label="Version" predefined="false" required="true">version</version>
+
+<hasLicense type="COMBO_TYPE" label="License" predefined="true" ontology="OMVOntology"
+class="http://omv.ontoware.org/2005/05/ontology#LicenseModel">hasLicense</hasLicense>
+
+<useImports type="LIST_AND_TEXT_TYPE" label="Imports metadata from" predefined="false">useImports</useImports>
+
+<hasPriorVersion type="COMBO_TYPE" label="Prior version" predefined="false" validator="OntologyValidator">hasPriorVersion</hasPriorVersion>
+
+<isBackwardCompatibleWith type="LIST_AND_TEXT_TYPE" label="Backward compatible with" predefined="false">isBackwardCompatibleWith</isBackwardCompatibleWith>
+
+<isIncompatibleWith type="LIST_AND_TEXT_TYPE" label="Not compatible with" predefined="false">isIncompatibleWith</isIncompatibleWith>
+
+<containsTBox type="COMBO_TYPE" label="Contains TBox" predefined="true" booleans="true" editable="false">containsTBox</containsTBox>
+ 
+<containsABox type="COMBO_TYPE" label="Contains ABox" predefined="true" booleans="true" editable="false">containsABox</containsABox>
+ 
+<containsRBox type="COMBO_TYPE" label="Contains RBox" predefined="true" booleans="true" editable="false">containsRBox</containsRBox>
+
+<numberOfClasses type="COMBO_TYPE" label="Number of classes" predefined="false" default="0" required="true">numberOfClasses</numberOfClasses>
+
+<numberOfProperties type="COMBO_TYPE" label="Number of properties" predefined="false" default="0" required="true">numberOfProperties</numberOfProperties>
+
+<numberOfIndividuals type="COMBO_TYPE" label="Number of individuals" predefined="false" default="0" required="true">numberOfIndividuals</numberOfIndividuals>
+
+<numberOfAxioms type="COMBO_TYPE" label="Number of axioms" predefined="false" default="0" required="true">numberOfAxioms</numberOfAxioms>
+</ontologyAttributes>
