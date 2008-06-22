@@ -12,6 +12,8 @@ import org.semanticweb.kaon2.api.owl.elements.DataProperty;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 import org.neon_toolkit.owlodm.api.Axiom;
+import org.neon_toolkit.owlodm.api.Description;
+import org.neon_toolkit.owlodm.api.OWLEntity;
 import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom;
 import org.neon_toolkit.owlodm.api.Axiom.DataPropertyAxiom;
 import org.neon_toolkit.owlodm.api.Axiom.Declaration;
@@ -48,6 +50,7 @@ import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ReflexiveObjectProp
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SubObjectPropertyOf;
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SymmetricObjectProperty;
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.TransitiveObjectProperty;
+import org.neon_toolkit.owlodm.api.OWLEntity.Datatype;
 import org.neon_toolkit.registry.oyster2.Constants;
 
 
@@ -235,246 +238,623 @@ public class ProcessAxiomIndividuals{
 
 	private static SubObjectPropertyOf createSubObjectPropertyOf(String URI, String value, Ontology ontologySearch) {
 		SubObjectPropertyOf axiomreply = new SubObjectPropertyOf();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superObjectProperty)) {axiomreply.setSuperObjectProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subObjectProperties)) { 		
-			axiomreply.addSubObjectProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superObjectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSuperObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subObjectProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addSubObjectProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static TransitiveObjectProperty createTransitiveObjectProperty(String URI, String value, Ontology ontologySearch) {
 		TransitiveObjectProperty axiomreply = new TransitiveObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static SymmetricObjectProperty createSymmetricObjectProperty(String URI, String value, Ontology ontologySearch) {
 		SymmetricObjectProperty axiomreply = new SymmetricObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static ReflexiveObjectProperty createReflexiveObjectProperty(String URI, String value, Ontology ontologySearch) {
 		ReflexiveObjectProperty axiomreply = new ReflexiveObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static ObjectPropertyRange createObjectPropertyRange(String URI, String value, Ontology ontologySearch) {
 		ObjectPropertyRange axiomreply = new ObjectPropertyRange();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.range)) {axiomreply.setRange(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.range)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setRange(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static ObjectPropertyDomain createObjectPropertyDomain(String URI, String value, Ontology ontologySearch) {
 		ObjectPropertyDomain axiomreply = new ObjectPropertyDomain();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.domain)) {axiomreply.setDomain(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.domain)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDomain(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;	
 	}
 
 	private static IrreflexiveObjectProperty createIrreflexiveObjectProperty(String URI, String value, Ontology ontologySearch) {
 		IrreflexiveObjectProperty axiomreply = new IrreflexiveObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static InverseObjectProperties createInverseObjectProperties(String URI, String value, Ontology ontologySearch) {
 		InverseObjectProperties axiomreply = new InverseObjectProperties();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.inverseObjectProperties)) { 		
-			axiomreply.addInverseObjectProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.inverseObjectProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addInverseObjectProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static InverseFunctionalObjectProperty createInverseFunctionalObjectProperty(String URI, String value, Ontology ontologySearch) {
 		InverseFunctionalObjectProperty axiomreply = new InverseFunctionalObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static FunctionalObjectProperty createFunctionalObjectProperty(String URI, String value, Ontology ontologySearch) {
 		FunctionalObjectProperty axiomreply = new FunctionalObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static EquivalentObjectProperties createEquivalentObjectProperties(String URI, String value, Ontology ontologySearch) {
 		EquivalentObjectProperties axiomreply = new EquivalentObjectProperties();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.equivalentObjectProperties)) { 		
-			axiomreply.addEquivalentObjectProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.equivalentObjectProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addEquivalentObjectProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DisjointObjectProperties createDisjointObjectProperties(String URI, String value, Ontology ontologySearch) {
 		DisjointObjectProperties axiomreply = new DisjointObjectProperties();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointObjectProperties)) { 		
-			axiomreply.addDisjointObjectProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointObjectProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDisjointObjectProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static AsymmetricObjectProperty createAsymmetricObjectProperty(String URI, String value, Ontology ontologySearch) {
 		AsymmetricObjectProperty axiomreply = new AsymmetricObjectProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static SameIndividual createSameIndividual(String URI, String value, Ontology ontologySearch) {
 		SameIndividual axiomreply = new SameIndividual();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sameIndividuals)) { 		
-			axiomreply.addSameIndividuals(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sameIndividuals)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addSameIndividuals(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static ObjectPropertyAssertion createObjectPropertyAssertion(String URI, String value, Ontology ontologySearch) {
 		ObjectPropertyAssertion axiomreply = new ObjectPropertyAssertion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {axiomreply.setSourceIndividual(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetIndividual)) {axiomreply.setTargetIndividual(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSourceIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setTargetIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static NegativeObjectPropertyAssertion createNegativeObjectPropertyAssertion(String URI, String value, Ontology ontologySearch) {
 		NegativeObjectPropertyAssertion axiomreply = new NegativeObjectPropertyAssertion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {axiomreply.setObjectProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {axiomreply.setSourceIndividual(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetIndividual)) {axiomreply.setTargetIndividual(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.objectProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setObjectProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSourceIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setTargetIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static NegativeDataPropertyAssertion createNegativeDataPropertyAssertion(String URI, String value, Ontology ontologySearch) {
 		NegativeDataPropertyAssertion axiomreply = new NegativeDataPropertyAssertion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {axiomreply.setDataProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {axiomreply.setSourceIndividual(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetValue)) {axiomreply.setTargetValue(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSourceIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetValue)) {axiomreply.setTargetValue(value);return axiomreply;}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static DifferentIndividuals createDifferentIndividuals(String URI, String value, Ontology ontologySearch) {
 		DifferentIndividuals axiomreply = new DifferentIndividuals();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.differentIndividuals)) { 		
-			axiomreply.addDifferentIndividuals(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.differentIndividuals)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDifferentIndividuals(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DataPropertyAssertion createDataPropertyAssertion(String URI, String value, Ontology ontologySearch) {
 		DataPropertyAssertion axiomreply = new DataPropertyAssertion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {axiomreply.setDataProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {axiomreply.setSourceIndividual(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetValue)) {axiomreply.setTargetValue(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.sourceIndividual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSourceIndividual(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.targetValue)) {axiomreply.setTargetValue(value);return axiomreply;}
+		}catch(Exception e){
+				e.printStackTrace();
+		}		
 		return axiomreply;
 	}
 
 	private static ClassAssertion createClassAssertion(String URI, String value, Ontology ontologySearch) {
 		ClassAssertion axiomreply = new ClassAssertion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.OWLClass)) {axiomreply.setOWLClass(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.individual)) {axiomreply.setIndividual(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.OWLClass)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setOWLClass(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.individual)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual descriptionReply=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setIndividual(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static EntityAnnotation createEntityAnnotation(String URI, String value, Ontology ontologySearch) {
 		EntityAnnotation axiomreply = new EntityAnnotation();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entity)) {axiomreply.setEntity(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entityAnnotation)) { 		
-			axiomreply.addEntityAnnotation(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entity)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				OWLEntity descriptionReply=(OWLEntity)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setEntity(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entityAnnotation)) { 		
+				axiomreply.addEntityAnnotation(value);
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static Declaration createDeclaration(String URI, String value, Ontology ontologySearch) {
 		Declaration axiomreply = new Declaration();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entity)) {axiomreply.setEntity(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.entity)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				OWLEntity descriptionReply=(OWLEntity)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setEntity(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static SubDataPropertyOf createSubDataPropertyOf(String URI, String value, Ontology ontologySearch) {
 		SubDataPropertyOf axiomreply = new SubDataPropertyOf();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subDataProperty)) {axiomreply.setSubDataProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superDataProperty)) {axiomreply.setSuperDataProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subDataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSubDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superDataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSuperDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static FunctionalDataProperty createFunctionalDataProperty(String URI, String value, Ontology ontologySearch) {
 		FunctionalDataProperty axiomreply = new FunctionalDataProperty();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {axiomreply.setDataProperty(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static EquivalentDataProperties createEquivalentDataProperties(String URI, String value, Ontology ontologySearch) {
 		EquivalentDataProperties axiomreply = new EquivalentDataProperties();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperties)) { 		
-			axiomreply.addDataProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDataProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DisjointDataProperties createDisjointDataProperties(String URI, String value, Ontology ontologySearch) {
 		DisjointDataProperties axiomreply = new DisjointDataProperties();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperties)) { 		
-			axiomreply.addDataProperties(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperties)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDataProperties(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DataPropertyRange createDataPropertyRange(String URI, String value, Ontology ontologySearch) {
 		DataPropertyRange axiomreply = new DataPropertyRange();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {axiomreply.setDataProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.range)) {axiomreply.setRange(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.range)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Datatype entityReply=(Datatype)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setRange(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static DataPropertyDomain createDataPropertyDomain(String URI, String value, Ontology ontologySearch) {
 		DataPropertyDomain axiomreply = new DataPropertyDomain();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {axiomreply.setDataProperty(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.domain)) {axiomreply.setDomain(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.dataProperty)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);				
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty entityReply=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)ProcessOWLEntityIndividuals.processOWLEntityIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDataProperty(entityReply);
+				entityReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.domain)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setDomain(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static SubClassOf createSubClassOf(String URI, String value, Ontology ontologySearch) {
 		SubClassOf axiomreply = new SubClassOf();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subClass)) {axiomreply.setSubClass(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superClass)) {axiomreply.setSuperClass(value);return axiomreply;}
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.subClass)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSubClass(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.superClass)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setSuperClass(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
+		}
 		return axiomreply;
 	}
 
 	private static EquivalentClasses createEquivalentClasses(String URI, String value, Ontology ontologySearch) {
 		EquivalentClasses axiomreply = new EquivalentClasses();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.equivalentClasses)) { 		
-			axiomreply.addEquivalentClasses(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.equivalentClasses)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addEquivalentClasses(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DisjointUnion createDisjointUnion(String URI, String value, Ontology ontologySearch) {
 		DisjointUnion axiomreply = new DisjointUnion();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.unionClass)) {axiomreply.setUnionClass(value);return axiomreply;}
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointClasses)) { 		
-			axiomreply.addDisjointClasses(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.unionClass)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.setUnionClass(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointClasses)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDisjointClasses(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}
 
 	private static DisjointClasses createDisjointClasses(String URI, String value, Ontology ontologySearch) {
 		DisjointClasses axiomreply = new DisjointClasses();
-		if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointClasses)) { 		
-			axiomreply.addDisjointClasses(value);
-			return axiomreply;
+		try{
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.disjointClasses)) {
+				Individual oIndividual =KAON2Manager.factory().individual(value);
+				Description descriptionReply=(Description)ProcessDescriptionIndividuals.processDescriptionIndividual(oIndividual, oIndividual.getDescriptionsMemberOf(ontologySearch).iterator().next().toString(), ontologySearch); //oReferences
+				axiomreply.addDisjointClasses(descriptionReply);
+				descriptionReply = null;
+				return axiomreply;
+			}
+		}catch(Exception e){
+				e.printStackTrace();
 		}
 		return axiomreply;
 	}

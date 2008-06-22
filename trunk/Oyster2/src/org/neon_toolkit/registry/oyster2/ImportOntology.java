@@ -359,6 +359,15 @@ public class ImportOntology {
 	 * @param properties is the set of properties (OMV properties)  
 	 * that has the ontology metadata entry we want to register.
 	 * @param which specifies the type of object we want to add
+	 * 0-12= OMV Core objects
+	 * 13-23= Mapping objects
+	 * 30=Change objects
+	 * 31=Log object
+	 * 32=Change specification object
+	 * 50=Axiom objects
+	 * 60=Workflow objects
+	 * 70=Description objects
+	 * 80=OWLEntity objects
 	 * @param registry the targetOntology to apply axioms. Null=localRegistry
 	 */
 	public boolean addConceptToRegistry(int how,List properties, int which, Ontology registry){
@@ -431,6 +440,28 @@ public class ImportOntology {
 				}
 			}
 		}
+		else if (which==70){
+			oConcept = KAON2Manager.factory().owlClass(Constants.OWLODMURI+Constants.DescriptionConcept);
+			Iterator itT = propList.iterator();
+			while(itT.hasNext()){
+				OntologyProperty prop = (OntologyProperty)itT.next();
+				if(prop.getPropertyName().equals(Constants.name)){
+					oConcept = KAON2Manager.factory().owlClass(Constants.OWLODMURI+prop.getPropertyValue());
+					break;
+				}
+			}
+		}
+		else if (which==80){
+			oConcept = KAON2Manager.factory().owlClass(Constants.OWLODMURI+Constants.OWLEntity);
+			Iterator itT = propList.iterator();
+			while(itT.hasNext()){
+				OntologyProperty prop = (OntologyProperty)itT.next();
+				if(prop.getPropertyName().equals(Constants.name)){
+					oConcept = KAON2Manager.factory().owlClass(Constants.OWLODMURI+prop.getPropertyValue());
+					break;
+				}
+			}
+		}
 		
 		if (which==0){
 			Iterator it1 = propList.iterator();
@@ -490,7 +521,7 @@ public class ImportOntology {
 				}
 			}
 		}
-		else if (which>=30){ //CHANGES & AXIOMS & WORKFLOW
+		else if (which>=30){ //CHANGES & AXIOMS & WORKFLOW & DECLARATIONS & OWLEntity
 			Iterator it1 = propList.iterator();
 			while(it1.hasNext()){
 				OntologyProperty prop = (OntologyProperty)it1.next();
@@ -543,8 +574,10 @@ public class ImportOntology {
 								if (which>12 && which<30) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getMappingOntology(),Constants.MOMVURI);
 								else if (which>=30 && which<50) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getChangeOntology(),Constants.CHANGEURI); //OWLChange ontology does not define properties...
 								else if (which>=50 && which<60) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getOWLODMOntology(),Constants.OWLODMURI); //OWLODM ontology
-								else if (which>=60) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getWorkflowOntology(),Constants.WORKFLOWURI); //OWLODM ontology
-								else dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getTypeOntology(),Constants.OMVURI);
+								else if (which>=60 && which<70) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getWorkflowOntology(),Constants.WORKFLOWURI); //OWLODM ontology
+								else if (which>=70 && which<80) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getOWLODMOntology(),Constants.OWLODMURI); //OWLODM ontology
+								else if (which>=80) dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getOWLODMOntology(),Constants.OWLODMURI); //OWLODM ontology
+								else dType = org.neon_toolkit.registry.util.Utilities.getDType(Namespaces.guessLocalName(property.getURI()),mOyster2.getTypeOntology(),Constants.OMVURI);								
 								if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE){						
 									changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(property,oIndividual,KAON2Manager.factory().constant(propertyValue)),OntologyChangeEvent.ChangeType.REMOVE)); //Deal with multiple string values
 								}
@@ -608,8 +641,14 @@ public class ImportOntology {
 			else if (which>=50 && which<60) {
 				resourceOWLODMOntology=mOyster2.getOWLODMOntology();
 			}
-			else if (which>=60) {
+			else if (which>=60 && which<70) {
 				resourceWorkflowOntology=mOyster2.getWorkflowOntology();
+			}
+			else if (which>=70 && which<80) {
+				resourceOWLODMOntology=mOyster2.getOWLODMOntology();
+			}
+			else if (which>=80) {
+				resourceOWLODMOntology=mOyster2.getOWLODMOntology();
 			}
 			Iterator it2 = propList.iterator();
 			while(it2.hasNext()){
@@ -622,19 +661,27 @@ public class ImportOntology {
 					else if (which<30) ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.MOMVURI + prop.getPropertyName());
 					else if (which<50) ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.CHANGEURI + prop.getPropertyName());
 					else if (which<60) ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.OWLODMURI + prop.getPropertyName());
-					else ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.WORKFLOWURI + prop.getPropertyName());
+					else if (which<70) ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.WORKFLOWURI + prop.getPropertyName());
+					else if (which<80) ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.OWLODMURI + prop.getPropertyName());
+					else ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.OWLODMURI + prop.getPropertyName());
 					
 					String pValue = prop.getPropertyValue();
 					int dType;
 					if (which>12 && which<30) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceMappingOntology,Constants.MOMVURI);
 					else if (which>=30 && which<50) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceChangeOntology,Constants.CHANGEURI); //DataProperties are only defined in generic change ontology
 					else if (which>=50 && which<60) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceOWLODMOntology,Constants.OWLODMURI);
-					else if (which>=60) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceWorkflowOntology,Constants.WORKFLOWURI);
+					else if (which>=60 && which<70) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceWorkflowOntology,Constants.WORKFLOWURI);
+					else if (which>=70 && which<80) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceOWLODMOntology,Constants.OWLODMURI);
+					else if (which>=80) dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceOWLODMOntology,Constants.OWLODMURI);
 					else dType = org.neon_toolkit.registry.util.Utilities.getDType(prop.getPropertyName(),resourceTypeOntology,Constants.OMVURI);
 					String oldValue = org.neon_toolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(targetRegistry,ontologyDataProperty)); //(String)
 					if (dType==org.neon_toolkit.registry.util.Utilities.STRING_TYPE ){
 					  //if (which<30 || (which>=30 && !prop.getPropertyName().equalsIgnoreCase("URI") && !prop.getPropertyName().equalsIgnoreCase("name"))){
-						if (org.neon_toolkit.registry.util.Utilities.multipleO(prop.getPropertyName())){ //Manage multiple string values for data properties
+						if (which>=70 && prop.getPropertyName().equalsIgnoreCase("cardinality")){  //ERROR CARDINALITY NOT DEFINED CORRECTLY IN OWLODM ONTOLOGY YET
+							if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(targetRegistry,ontologyDataProperty).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
+							changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(new Integer(pValue))),OntologyChangeEvent.ChangeType.ADD));
+						}
+						else if (org.neon_toolkit.registry.util.Utilities.multipleO(prop.getPropertyName())){ //Manage multiple string values for data properties
 							if(!targetRegistry.containsAxiom(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),true)){
 								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
 							}
@@ -656,7 +703,8 @@ public class ImportOntology {
 					else if (dType==org.neon_toolkit.registry.util.Utilities.BOOLEAN_TYPE){	
 						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(targetRegistry,ontologyDataProperty).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(new Boolean(pValue))),OntologyChangeEvent.ChangeType.ADD));
-					}else if (which>=30 && prop.getPropertyName().equalsIgnoreCase("URI")){ //URI NOT DEFINED FOR OWLCHANGES & AXIOMS & WORKFLOW IN ONTOLOGIES BUT NECESSARY FOR IDENTIFYING OBJECTS
+					}
+					else if (which>=30 && prop.getPropertyName().equalsIgnoreCase("URI")){ //URI NOT DEFINED FOR OWLCHANGES & AXIOMS & WORKFLOW & DECLARATIONS & OWLENTITY IN ONTOLOGIES BUT NECESSARY FOR IDENTIFYING OBJECTS
 						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
 					}
@@ -926,13 +974,53 @@ public class ImportOntology {
 					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
 				}
-				else {//workflow
+				else if (which<70){//workflow
 					String pOValue = prop.getPropertyValue();
 					ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + prop.getPropertyName());
 					Individual objectPropertyIndividual = KAON2Manager.factory().individual(pOValue);
 					/*ADD CONCEPT INSTANCE*/
 					
 					/*
+					String className=ontologyObjectProperty.getRangeDescriptions(resourceOWLODMOntology).iterator().next().toString();
+					if (className!=null){
+						OWLClass tempConcept = KAON2Manager.factory().owlClass(className);
+						if(!targetRegistry.containsAxiom(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),true))
+							changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));				
+					}
+					*/
+					/*ADD PROPERTY VALUE*/
+					Map<ObjectProperty,Set<Individual>> check=oIndividual.getObjectPropertyValues(targetRegistry);
+					Set<Individual>checkValues=check.get(ontologyObjectProperty);
+					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
+						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+				}
+				else if (which<80){//description
+					String pOValue = prop.getPropertyValue();
+					ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.OWLODMURI + prop.getPropertyName());
+					Individual objectPropertyIndividual = KAON2Manager.factory().individual(pOValue);
+					/*ADD CONCEPT INSTANCE*/
+					
+					/* OWLODM does not have the ranges defined
+					String className=ontologyObjectProperty.getRangeDescriptions(resourceOWLODMOntology).iterator().next().toString();
+					if (className!=null){
+						OWLClass tempConcept = KAON2Manager.factory().owlClass(className);
+						if(!targetRegistry.containsAxiom(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),true))
+							changes.add(new OntologyChangeEvent(KAON2Manager.factory().classMember(tempConcept,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));				
+					}
+					*/
+					/*ADD PROPERTY VALUE*/
+					Map<ObjectProperty,Set<Individual>> check=oIndividual.getObjectPropertyValues(targetRegistry);
+					Set<Individual>checkValues=check.get(ontologyObjectProperty);
+					if (checkValues==null || !checkValues.contains(objectPropertyIndividual))
+						changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(ontologyObjectProperty,oIndividual,objectPropertyIndividual),OntologyChangeEvent.ChangeType.ADD));
+				}
+				else {//OWLEntity
+					String pOValue = prop.getPropertyValue();
+					ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.OWLODMURI + prop.getPropertyName());
+					Individual objectPropertyIndividual = KAON2Manager.factory().individual(pOValue);
+					/*ADD CONCEPT INSTANCE*/
+					
+					/* OWLODM does not have the ranges defined
 					String className=ontologyObjectProperty.getRangeDescriptions(resourceOWLODMOntology).iterator().next().toString();
 					if (className!=null){
 						OWLClass tempConcept = KAON2Manager.factory().owlClass(className);

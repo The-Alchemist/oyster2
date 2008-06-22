@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.4 $".replace('$', ' ').trim() + " (" + "$Date: 2008-03-31 14:27:50 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.5 $".replace('$', ' ').trim() + " (" + "$Date: 2008-06-22 22:10:00 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -354,6 +354,13 @@ public class Constants {
 	public static final String subObjectProperties = "subObjectProperties";
 	public static final String superObjectProperty = "superObjectProperty";
 	public static final String OWLClass = "class";
+	public static final String dataRange = "dataRange";
+	public static final String cardinality = "cardinality";
+	public static final String constant = "constant";
+	public static final String individuals = "individuals";
+	public static final String OWLClasses = "classes";
+	public static final String DescriptionConcept = "Description";
+	public static final String OWLEntity = "OWLEntity";
 	
 	public static final String hasLastChange = "hasLastChange";
 	

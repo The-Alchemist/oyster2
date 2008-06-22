@@ -53,6 +53,7 @@ import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.ImportOntology;
 import org.neon_toolkit.registry.oyster2.OntologyProperty;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
+import org.neon_toolkit.workflow.api.Action;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
@@ -426,6 +427,224 @@ public class ChangeManagement {
 	}
 	
 	/**
+	 * Removes a change from Oyster2 registry.
+	 * @param o is the OMVChange object representing the
+	 * change that will be removed.
+	 * NOTE: This method is called within the change management 
+	 * implementation, it should not be called directly.
+	 */
+	@SuppressWarnings("unchecked")
+	public void safeRemove(OMVChange changeE)
+	{
+		Individual change = KAON2Manager.factory().individual(changeE.getURI());
+		Ontology targetRegistry=localRegistry;
+		//System.out.println("change: "+change.getURI().toString() +" description: "+change.getDescriptionsMemberOf(targetRegistry).iterator().next());
+		OMVChange oriChange = null;
+		try {
+			oriChange = ProcessChangeIndividuals.processChangeIndividual(change, change.getDescriptionsMemberOf(targetRegistry).iterator().next().toString(), targetRegistry);
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (oriChange==null) return;
+		
+		String concept=getChangeConcept(oriChange);
+		String previousChange=oriChange.getHasPreviousChange();
+		if (oriChange instanceof OMVEntityChange){
+			Set<OMVAtomicChange> changesIn=getAtomicChanges((OMVEntityChange)oriChange);
+			List<OMVAtomicChange> changesList=new LinkedList<OMVAtomicChange>();
+			if (changesIn!=null && changesIn.size()>0) {
+			
+				//sort atomic changes
+				Iterator s = changesIn.iterator();
+				while (s.hasNext()){
+					OMVAtomicChange t = (OMVAtomicChange)s.next();
+					if (t.getURI().equalsIgnoreCase(previousChange)){
+						changesList.add(t);
+						break;
+					}
+				}
+				OMVChange ct = changesList.get(0);
+				if (ct !=null){
+					boolean keepGoing=true;
+					while (ct.getHasPreviousChange()!=null && keepGoing){
+						boolean found=false;
+						Iterator sort = changesIn.iterator();
+						while (sort.hasNext()){
+							OMVAtomicChange t = (OMVAtomicChange)sort.next();
+							if (t.getURI().equalsIgnoreCase(ct.getHasPreviousChange())){
+								changesList.add(t);
+								ct=t;
+								found=true;
+								break;
+							}
+						}
+						if (!found) keepGoing=false;//ct.setHasPreviousChange(null);
+					}
+				}
+			
+				//update log & change specification if necessary
+				Set<String> remainingChanges = getChangesIds(oriChange.getAppliedToOntology(),null);
+				if (remainingChanges==null || remainingChanges.size()<=1){
+					removeRelatedLog(oriChange.getAppliedToOntology());
+					removeChangeSpecification(oriChange.getAppliedToOntology());
+				}
+				else{ 
+					if (changesList.get(changesList.size()-1).getHasPreviousChange()!=null){ 
+						List pListTemp = new LinkedList();
+						OntologyProperty tPropTemp = new OntologyProperty(Constants.URI, changesList.get(changesList.size()-1).getHasPreviousChange());
+						pListTemp.add(tPropTemp);
+						
+						if (getLastChangeIdFromLog(oriChange.getAppliedToOntology(), targetRegistry).equalsIgnoreCase(oriChange.getURI())) updateLog(oriChange.getAppliedToOntology(),pListTemp,false);
+						
+						String nextChange="";
+						String conceptU="";
+						Iterator it = remainingChanges.iterator();
+						while (it.hasNext()){
+							String id = (String)it.next();
+							Individual changeT = KAON2Manager.factory().individual(id);
+							
+							OMVChange changeTE = null;
+							try {
+								changeTE = ProcessChangeIndividuals.processChangeIndividual(changeT, changeT.getDescriptionsMemberOf(targetRegistry).iterator().next().toString(), targetRegistry);
+							} catch (KAON2Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							if (changeTE==null) return;
+							
+							String conceptT=getChangeConcept(changeTE);
+							//System.out.println("change: "+id +" description: "+conceptT);
+							ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+							Individual t = getPropertyValue(id, ontologyObjectProperty,Constants.CHANGEURI+conceptT, null);
+							if (t!=null ){
+								//System.out.println(t.getURI() );
+								if (t.getURI().equalsIgnoreCase(oriChange.getURI())){
+									nextChange=id;
+									conceptU=conceptT;
+									break;
+								}
+							}
+							
+						}
+						if (!nextChange.equalsIgnoreCase("")){
+							//updat history
+							//System.out.println("is going to update change: "+nextChange+"with the information: "+changesList.get(changesList.size()-1).getHasPreviousChange());
+							removePreviousChange(nextChange, conceptU);
+							addPreviousChange(nextChange, conceptU, changesList.get(changesList.size()-1).getHasPreviousChange());
+						}
+					}else{						
+						removeRelatedLog(oriChange.getAppliedToOntology());
+						removeChangeSpecification(oriChange.getAppliedToOntology());
+					}
+					//remove atomic changes & references in change specification	
+					Iterator iTemp=changesIn.iterator();
+					while (iTemp.hasNext()){
+						OMVAtomicChange at = (OMVAtomicChange)iTemp.next();
+						remove (at);
+					
+						ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
+						removeProperty(getCSID(oriChange.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, at.getURI());
+					}
+				}
+			}else{
+				//update log & change specification if necessary
+				Set<String> remainingChanges = getChangesIds(oriChange.getAppliedToOntology(),null);
+				if (remainingChanges==null || remainingChanges.size()<=0){
+					removeRelatedLog(oriChange.getAppliedToOntology());
+					removeChangeSpecification(oriChange.getAppliedToOntology());
+				}
+				else{
+					if (oriChange.getHasPreviousChange()!=null){
+						List pListTemp = new LinkedList();
+						OntologyProperty tPropTemp = new OntologyProperty(Constants.URI, oriChange.getHasPreviousChange());
+						pListTemp.add(tPropTemp);
+						if (getLastChangeIdFromLog(oriChange.getAppliedToOntology(), targetRegistry).equalsIgnoreCase(oriChange.getURI())) updateLog(oriChange.getAppliedToOntology(),pListTemp,false);
+						
+						String nextChange="";
+						String conceptU="";
+						Iterator it = remainingChanges.iterator();
+						while (it.hasNext()){
+							String id = (String)it.next();
+							Individual changeT = KAON2Manager.factory().individual(id);
+							//System.out.println("change: "+change.getURI().toString() +" description: "+change.getDescriptionsMemberOf(targetRegistry).iterator().next());
+							OMVChange changeTE = null;
+							try {
+								changeTE = ProcessChangeIndividuals.processChangeIndividual(changeT, changeT.getDescriptionsMemberOf(targetRegistry).iterator().next().toString(), targetRegistry);
+							} catch (KAON2Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							if (changeTE==null) return;
+							
+							String conceptT=getChangeConcept(changeTE);
+							ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+							Individual t = getPropertyValue(id, ontologyObjectProperty,Constants.CHANGEURI+conceptT, null);
+							if (t!=null ){
+								//System.out.println(t.getURI());
+								if (t.getURI().equalsIgnoreCase(oriChange.getURI())){
+									nextChange=id;
+									conceptU=conceptT;
+									break;
+								}
+							}
+						}
+						if (!nextChange.equalsIgnoreCase("")){
+							//update history		
+							//System.out.println("is going to update change: "+nextChange+"with the information: "+changesList.get(changesList.size()-1).getHasPreviousChange());
+							removePreviousChange(nextChange, conceptU);
+							addPreviousChange(nextChange, conceptU, changesList.get(changesList.size()-1).getHasPreviousChange());
+						}
+					}else{
+						removeRelatedLog(oriChange.getAppliedToOntology());
+						removeChangeSpecification(oriChange.getAppliedToOntology());
+					}
+					//remove atomic changes & references in change specification	
+					Iterator iTemp=changesIn.iterator();
+					while (iTemp.hasNext()){
+						OMVAtomicChange at = (OMVAtomicChange)iTemp.next();
+						remove (at);
+					
+						ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
+						removeProperty(getCSID(oriChange.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, at.getURI());
+					}
+				}
+			}
+			//remove this entity change
+			WorkflowManagement wmgmt = new WorkflowManagement();
+			Action a=wmgmt.getChangeAction(oriChange);
+			wmgmt.removeAction(a);
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
+			removeProperty(getCSID(oriChange.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, oriChange.getURI());
+			remove (oriChange);
+		}
+		
+		else if (oriChange instanceof OMVAtomicChange){
+			Set<String> remainingChanges = getChangesIds(oriChange.getAppliedToOntology(),null);
+			String nextChange="";
+			Iterator it = remainingChanges.iterator();
+			while (it.hasNext()){
+				String id = (String)it.next();
+				ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+				Individual t = getPropertyValue(id, ontologyObjectProperty,concept, null);
+				//System.out.println(t.getURI());
+				if (t.getURI().equalsIgnoreCase(oriChange.getURI())){
+					nextChange=t.getURI();
+					break;
+				}
+			}
+			if (!nextChange.equalsIgnoreCase("")){
+				//update history		
+				removePreviousChange(nextChange, concept);
+				addPreviousChange(nextChange, concept, oriChange.getURI());
+			}
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasChange);
+			removeProperty(getCSID(oriChange.getAppliedToOntology()),ontologyObjectProperty, Constants.CHANGEURI+Constants.changeSpecificationConcept, oriChange.getURI());
+			remove (oriChange);
+		}
+	}
+	
+	/**
 	 * Removes a Log from Oyster2 registry.
 	 * @param o is the OMVLog object representing the
 	 * log that will be removed.
@@ -464,14 +683,13 @@ public class ChangeManagement {
 	}
 	
 	/**
-	 * Gets the entity state
-	 * @param o is the ontology for which we want to get the 
-	 * entity state
-	 * @param entityURI is the URI of the target entity
-	 * @return the entity state.
+	 * Gets the entity associated to a specific change
+	 * @param changeURI is the uri of the change for which for which we
+	 * want to search the related entity
+	 * @return The uri of the related entity 
 	 */
 	public String getEntityState(OMVOntology o, String entityURI){
-		OMVEntityChange target= new OMVEntityChange();
+		Set<OMVEntityChange> target= new HashSet<OMVEntityChange>();
 		Set<OMVChange> entityChanges = getTrackedChanges(o, new OMVEntityChange(), null, null);
 		Iterator it = entityChanges.iterator();
 		boolean found=false;
@@ -485,15 +703,68 @@ public class ChangeManagement {
 					String checkURI= (String)it2.next();
 					if (checkURI.equalsIgnoreCase(entityURI)){
 						found=true;
-						target=t;
-						break;
+						target.add(t);
+						//break;
 					}
 				}
 			}
-			if (found) break;
+			//if (found) break;
 		}
-		if (found) return target.getHasEntityState();
+		int ApprovedState=0;
+		int DeletedState=0;
+		int DraftState=0;
+		int ToBeApprovedState=0;
+		int ToBeDeletedState=0;
+		int PublishState=0; 
+		if (found) {
+			Iterator itTarget =target.iterator();
+			while (itTarget.hasNext()){
+				OMVEntityChange cTemp= (OMVEntityChange)itTarget.next();
+				if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.ApprovedState)) ApprovedState++;
+				else if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.DeletedState)) DeletedState++;
+				else if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.DraftState)) DraftState++;
+				else if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.ToBeApprovedState)) ToBeApprovedState++;
+				else if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.ToBeDeletedState)) ToBeDeletedState++;
+				else if (cTemp.getHasEntityState().equalsIgnoreCase(Constants.PublishState)) PublishState++;
+			}
+			if (ApprovedState==target.size()) return Constants.ApprovedState;
+			else if (DeletedState==target.size()) return Constants.DeletedState;
+			else if (DraftState==target.size()) return Constants.DraftState;
+			else if (ToBeApprovedState==target.size()) return Constants.ToBeApprovedState;
+			else if (ToBeDeletedState==target.size()) return Constants.ToBeDeletedState;
+			else if (PublishState==target.size()) return Constants.PublishState;
+			else if (DraftState>0) return Constants.DraftState;
+			else if (ToBeApprovedState>0) return Constants.ToBeApprovedState;
+			else if (ToBeDeletedState>0) return Constants.ToBeDeletedState;
+			else if (DeletedState>0) return Constants.DeletedState;
+			else if (ApprovedState>0) return Constants.ApprovedState;
+			else if (PublishState>0) return Constants.PublishState;
+			else return "";
+		}
 		else return "";
+	}
+	
+	/** 
+	 * Gets the entity state
+	 * @param changeURI is the URI of the target entity
+	 * @return the entity state.
+	 */
+	public String getEntityStateFromChange(String changeURI){
+		//try get change concept
+		Individual oIndividual = KAON2Manager.factory().individual(changeURI);
+		String conceptChange=null;
+		try {
+			conceptChange = oIndividual.getDescriptionsMemberOf(localRegistry).iterator().next().toString();
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.WORKFLOWURI + Constants.hasEntityState);
+		Individual t = getPropertyValue(changeURI, ontologyObjectProperty,conceptChange, null);
+		if (t!=null) return t.getURI();
+		else return "";
+		
+		
 	}
 	
 	/**
@@ -1114,6 +1385,7 @@ public class ChangeManagement {
 		return null;
 	}
 	
+	
 	private void removeProperty(String URI, ObjectProperty oP, String Concept, String targetValue){
 		Map propertyMap = new HashMap();
 		File localRegistryFile = mOyster2.getLocalRegistryFile();
@@ -1168,6 +1440,46 @@ public class ChangeManagement {
 				Set<Individual>checkValues=check.get(oP);
 				if (checkValues==null || !checkValues.contains(targetIndividual))
 					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(oP,oIndividual,targetIndividual),OntologyChangeEvent.ChangeType.ADD));
+			}
+			if (changes.size()>0){ 
+				localRegistry.applyChanges(changes);
+				localRegistry.persist();
+				try {
+					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			changes.clear();
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void removeProperty(String URI, ObjectProperty oP, String Concept){
+		Map propertyMap = new HashMap();
+		File localRegistryFile = mOyster2.getLocalRegistryFile();
+		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
+		Collection hasSet = new LinkedList();
+		
+		OWLClass oConcept = KAON2Manager.factory().owlClass(Concept);
+		Individual oIndividual = KAON2Manager.factory().individual(URI);
+		try {
+			if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){	
+				propertyMap = oIndividual.getObjectPropertyValues(localRegistry);
+				hasSet = (Collection)propertyMap.get(oP);
+				if (hasSet==null) return;
+				Iterator i = hasSet.iterator();
+				while (i.hasNext()){
+					Individual indiv = (Individual)i.next();
+					changes.add(new OntologyChangeEvent(KAON2Manager.factory().objectPropertyMember(oP,oIndividual,indiv),OntologyChangeEvent.ChangeType.REMOVE));
+				}
 			}
 			if (changes.size()>0){ 
 				localRegistry.applyChanges(changes);
@@ -1248,6 +1560,16 @@ public class ChangeManagement {
 		}
 		tURN=tURN+"changeSpecification";
 		return tURN;
+	}
+	public void addPreviousChange(String c, String concept, String targetURI){
+		//add hastEntityState property
+		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+		addProperty(c,ontologyObjectProperty, Constants.CHANGEURI+concept, targetURI );
+	}
+	public void removePreviousChange(String c, String concept){
+		//remove hastEntityState property
+		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+		removeProperty(c,ontologyObjectProperty, Constants.CHANGEURI+concept);
 	}
 
 }

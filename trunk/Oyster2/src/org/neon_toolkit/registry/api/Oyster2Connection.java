@@ -206,6 +206,10 @@ public class Oyster2Connection {
 			ChangeManagement cMgmt= new ChangeManagement();
 			cMgmt.remove ((OMVChangeSpecification)o);
 		}
+		else if (o instanceof OMVChange){
+			ChangeManagement cMgmt= new ChangeManagement();
+			cMgmt.safeRemove ((OMVChange)o);
+		}
 		else if (o instanceof OMVCoreObject){ //FOR THE REST OF OBJECTS
 			remove ((OMVCoreObject)o);
 		}

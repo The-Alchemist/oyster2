@@ -3,6 +3,11 @@ package org.neon_toolkit.owlodm.api;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.neon_toolkit.owlodm.api.OWLEntity.DataProperty;
+import org.neon_toolkit.owlodm.api.OWLEntity.Datatype;
+import org.neon_toolkit.owlodm.api.OWLEntity.Individual;
+import org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty;
+
 /**
  * The class Axiom provides the object 
  * representation of the Axiom OWLODM Object  
@@ -33,7 +38,7 @@ public class Axiom {
 		public ClassAxiom(){
 	    }
 		public static class DisjointClasses extends ClassAxiom{
-			Set<String> disjointClasses = new HashSet<String>();
+			Set<Description> disjointClasses = new HashSet<Description>();
 			
 			public DisjointClasses(){
 		    }
@@ -42,25 +47,25 @@ public class Axiom {
 				if (element.getDisjointClasses().size()>0) {this.getDisjointClasses().addAll(element.getDisjointClasses());return;}
 		    }
 			
-			public Set<String> getDisjointClasses()
+			public Set<Description> getDisjointClasses()
 			{
 				return this.disjointClasses;
 			}
 			
-			public void addDisjointClasses(String newDisjointClasses)
+			public void addDisjointClasses(Description newDisjointClasses)
 			{
 				this.disjointClasses.add(newDisjointClasses);
 			}
 			
-			public void removeDisjointClasses(String oldDisjointClasses)
+			public void removeDisjointClasses(Description oldDisjointClasses)
 			{
 				this.disjointClasses.remove(oldDisjointClasses);
 			}
 
 		}
 		public static class DisjointUnion extends ClassAxiom{
-			String unionClass;
-			Set<String> disjointClasses = new HashSet<String>();
+			Description unionClass;
+			Set<Description> disjointClasses = new HashSet<Description>();
 			
 			public DisjointUnion(){
 		    }
@@ -70,34 +75,34 @@ public class Axiom {
 				if (element.getDisjointClasses().size()>0) {this.getDisjointClasses().addAll(element.getDisjointClasses());return;}
 		    }
 			
-			public void setUnionClass(String newUnionClass)
+			public void setUnionClass(Description newUnionClass)
 			{
 				this.unionClass=newUnionClass;
 			}
 			
-			public String getUnionClass()
+			public Description getUnionClass()
 			{
 				return this.unionClass;
 			}
 			
-			public Set<String> getDisjointClasses()
+			public Set<Description> getDisjointClasses()
 			{
 				return this.disjointClasses;
 			}
 			
-			public void addDisjointClasses(String newDisjointClasses)
+			public void addDisjointClasses(Description newDisjointClasses)
 			{
 				this.disjointClasses.add(newDisjointClasses);
 			}
 			
-			public void removeDisjointClasses(String oldDisjointClasses)
+			public void removeDisjointClasses(Description oldDisjointClasses)
 			{
 				this.disjointClasses.remove(oldDisjointClasses);
 			}
 
 		}
 		public static class EquivalentClasses extends ClassAxiom{
-			Set<String> equivalentClasses = new HashSet<String>();
+			Set<Description> equivalentClasses = new HashSet<Description>();
 			
 			public EquivalentClasses(){
 		    }
@@ -106,25 +111,25 @@ public class Axiom {
 				if (element.getEquivalentClasses().size()>0) {this.getEquivalentClasses().addAll(element.getEquivalentClasses());return;}
 		    }
 			
-			public Set<String> getEquivalentClasses()
+			public Set<Description> getEquivalentClasses()
 			{
 				return this.equivalentClasses;
 			}
 			
-			public void addEquivalentClasses(String newEquivalentClasses)
+			public void addEquivalentClasses(Description newEquivalentClasses)
 			{
 				this.equivalentClasses.add(newEquivalentClasses);
 			}
 			
-			public void removeEquivalentClasses(String oldEquivalentClasses)
+			public void removeEquivalentClasses(Description oldEquivalentClasses)
 			{
 				this.equivalentClasses.remove(oldEquivalentClasses);
 			}
 
 		}
 		public static class SubClassOf extends ClassAxiom{
-			String subClass;
-			String superClass;
+			Description subClass;
+			Description superClass;
 			
 			public SubClassOf(){
 		    }
@@ -134,22 +139,22 @@ public class Axiom {
 				if (this.getSuperClass()==null && element.getSuperClass()!=null) {this.setSuperClass(element.getSuperClass());return;}
 		    }
 			
-			public void setSubClass(String newSubClass)
+			public void setSubClass(Description newSubClass)
 			{
 				this.subClass=newSubClass;
 			}
 			
-			public String getSubClass()
+			public Description getSubClass()
 			{
 				return this.subClass;
 			}
 			
-			public void setSuperClass(String newSuperClass)
+			public void setSuperClass(Description newSuperClass)
 			{
 				this.superClass=newSuperClass;
 			}
 			
-			public String getSuperClass()
+			public Description getSuperClass()
 			{
 				return this.superClass;
 			}
@@ -161,8 +166,8 @@ public class Axiom {
 		public DataPropertyAxiom(){
 	    }
 		public static class DataPropertyDomain extends DataPropertyAxiom{
-			String domain;
-			String dataProperty;
+			Description domain;
+			DataProperty dataProperty;
 			
 			public DataPropertyDomain(){
 		    }
@@ -172,30 +177,30 @@ public class Axiom {
 				if (this.getDataProperty()==null && element.getDataProperty()!=null) {this.setDataProperty(element.getDataProperty());return;}
 		    }
 			
-			public void setDomain(String newDomain)
+			public void setDomain(Description newDomain)
 			{
 				this.domain=newDomain;
 			}
 			
-			public String getDomain()
+			public Description getDomain()
 			{
 				return this.domain;
 			}
 			
-			public void setDataProperty(String newDataProperty)
+			public void setDataProperty(DataProperty newDataProperty)
 			{
 				this.dataProperty=newDataProperty;
 			}
 			
-			public String getDataProperty()
+			public DataProperty getDataProperty()
 			{
 				return this.dataProperty;
 			}
 
 		}
 		public static class DataPropertyRange extends DataPropertyAxiom{
-			String range;
-			String dataProperty;
+			Datatype range;
+			DataProperty dataProperty;
 			
 			public DataPropertyRange(){
 		    }
@@ -205,29 +210,29 @@ public class Axiom {
 				if (this.getDataProperty()==null && element.getDataProperty()!=null) {this.setDataProperty(element.getDataProperty());return;}
 		    }
 			
-			public void setRange(String newRange)
+			public void setRange(Datatype newRange)
 			{
 				this.range=newRange;
 			}
 			
-			public String getRange()
+			public Datatype getRange()
 			{
 				return this.range;
 			}
 			
-			public void setDataProperty(String newDataProperty)
+			public void setDataProperty(DataProperty newDataProperty)
 			{
 				this.dataProperty=newDataProperty;
 			}
 			
-			public String getDataProperty()
+			public DataProperty getDataProperty()
 			{
 				return this.dataProperty;
 			}
 
 		}
 		public static class DisjointDataProperties extends DataPropertyAxiom{
-			Set<String> dataProperties = new HashSet<String>();
+			Set<DataProperty> dataProperties = new HashSet<DataProperty>();
 			
 			
 			public DisjointDataProperties(){
@@ -237,24 +242,24 @@ public class Axiom {
 				if (element.getDataProperties().size()>0) {this.getDataProperties().addAll(element.getDataProperties());return;}
 		    }
 			
-			public Set<String> getDataProperties()
+			public Set<DataProperty> getDataProperties()
 			{
 				return this.dataProperties;
 			}
 			
-			public void addDataProperties(String newDataProperties)
+			public void addDataProperties(DataProperty newDataProperties)
 			{
 				this.dataProperties.add(newDataProperties);
 			}
 			
-			public void removeDataProperties(String oldDataProperties)
+			public void removeDataProperties(DataProperty oldDataProperties)
 			{
 				this.dataProperties.remove(oldDataProperties);
 			}
 
 		}
 		public static class EquivalentDataProperties extends DataPropertyAxiom{
-			Set<String> dataProperties = new HashSet<String>();
+			Set<DataProperty> dataProperties = new HashSet<DataProperty>();
 			
 			
 			public EquivalentDataProperties(){
@@ -264,24 +269,24 @@ public class Axiom {
 				if (element.getDataProperties().size()>0) {this.getDataProperties().addAll(element.getDataProperties());return;}
 		    }
 			
-			public Set<String> getDataProperties()
+			public Set<DataProperty> getDataProperties()
 			{
 				return this.dataProperties;
 			}
 			
-			public void addDataProperties(String newDataProperties)
+			public void addDataProperties(DataProperty newDataProperties)
 			{
 				this.dataProperties.add(newDataProperties);
 			}
 			
-			public void removeDataProperties(String oldDataProperties)
+			public void removeDataProperties(DataProperty oldDataProperties)
 			{
 				this.dataProperties.remove(oldDataProperties);
 			}
 
 		}
 		public static class FunctionalDataProperty extends DataPropertyAxiom{
-			String dataProperty;
+			DataProperty dataProperty;
 			
 			
 			public FunctionalDataProperty(){
@@ -291,20 +296,20 @@ public class Axiom {
 				if (this.getDataProperty()==null && element.getDataProperty()!=null) {this.setDataProperty(element.getDataProperty());return;}
 		    }
 			
-			public String getDataProperty()
+			public DataProperty getDataProperty()
 			{
 				return this.dataProperty;
 			}
 			
-			public void setDataProperty(String newDataProperty)
+			public void setDataProperty(DataProperty newDataProperty)
 			{
 				this.dataProperty=newDataProperty;
 			}
 			
 		}
 		public static class SubDataPropertyOf extends DataPropertyAxiom{
-			String subDataProperty;
-			String superDataProperty;
+			DataProperty subDataProperty;
+			DataProperty superDataProperty;
 			
 			
 			public SubDataPropertyOf(){
@@ -315,21 +320,21 @@ public class Axiom {
 				if (this.getSuperDataProperty()==null && element.getSuperDataProperty()!=null) {this.setSuperDataProperty(element.getSuperDataProperty());return;}
 		    }
 			
-			public String getSubDataProperty()
+			public DataProperty getSubDataProperty()
 			{
 				return this.subDataProperty;
 			}
 			
-			public void setSubDataProperty(String newSubDataProperty)
+			public void setSubDataProperty(DataProperty newSubDataProperty)
 			{
 				this.subDataProperty=newSubDataProperty;
 			}
-			public String getSuperDataProperty()
+			public DataProperty getSuperDataProperty()
 			{
 				return this.superDataProperty;
 			}
 			
-			public void setSuperDataProperty(String newSuperDataProperty)
+			public void setSuperDataProperty(DataProperty newSuperDataProperty)
 			{
 				this.superDataProperty=newSuperDataProperty;
 			}
@@ -337,24 +342,24 @@ public class Axiom {
 	}
 	
 	public static class Declaration extends Axiom{
-		String entity;
+		OWLEntity entity;
 		public Declaration(){
 	    }
 		public void append(Declaration element){				
 			if (this.getEntity()==null && element.getEntity()!=null) {this.setEntity(element.getEntity());return;}
 	    }
-		public String getEntity()
+		public OWLEntity getEntity()
 		{
 			return this.entity;
 		}		
-		public void setEntity(String newEntity)
+		public void setEntity(OWLEntity newEntity)
 		{
 			this.entity=newEntity;
 		}
 	}
 	
 	public static class EntityAnnotation extends Axiom{
-		String entity;
+		OWLEntity entity;
 		Set<String> entityAnnotation = new HashSet<String>();
 		
 		public EntityAnnotation(){
@@ -363,11 +368,11 @@ public class Axiom {
 			if (this.getEntity()==null && element.getEntity()!=null) {this.setEntity(element.getEntity());return;}
 			if (element.getEntityAnnotation().size()>0) {this.getEntityAnnotation().addAll(element.getEntityAnnotation());return;}
 	    }
-		public String getEntity()
+		public OWLEntity getEntity()
 		{
 			return this.entity;
 		}		
-		public void setEntity(String newEntity)
+		public void setEntity(OWLEntity newEntity)
 		{
 			this.entity=newEntity;
 		}
@@ -389,36 +394,36 @@ public class Axiom {
 		public Fact(){
 	    }
 		public static class ClassAssertion extends Fact{
-			String OWLClass;
-			String individual;
+			Description OWLClass;
+			Individual individual;
 			public ClassAssertion(){
 		    }
 			public void append(ClassAssertion element){				
 				if (this.getOWLClass()==null && element.getOWLClass()!=null) {this.setOWLClass(element.getOWLClass());return;}
 				if (this.getIndividual()==null && element.getIndividual()!=null) {this.setIndividual(element.getIndividual());return;}
 		    }
-			public String getOWLClass()
+			public Description getOWLClass()
 			{
 				return this.OWLClass;
 			}
 			
-			public void setOWLClass(String newOWLClass)
+			public void setOWLClass(Description newOWLClass)
 			{
 				this.OWLClass=newOWLClass;
 			}
-			public String getIndividual()
+			public Individual getIndividual()
 			{
 				return this.individual;
 			}
 			
-			public void setIndividual(String newIndividual)
+			public void setIndividual(Individual newIndividual)
 			{
 				this.individual=newIndividual;
 			}
 		}
 		public static class DataPropertyAssertion extends Fact{
-			String dataProperty;
-			String sourceIndividual;
+			DataProperty dataProperty;
+			Individual sourceIndividual;
 			String targetValue;
 			
 			public DataPropertyAssertion(){
@@ -429,22 +434,22 @@ public class Axiom {
 				if (this.getTargetValue()==null && element.getTargetValue()!=null) {this.setTargetValue(element.getTargetValue());return;}
 		    }
 			
-			public String getDataProperty()
+			public DataProperty getDataProperty()
 			{
 				return this.dataProperty;
 			}
 			
-			public void setDataProperty(String newDataProperty)
+			public void setDataProperty(DataProperty newDataProperty)
 			{
 				this.dataProperty=newDataProperty;
 			}
 			
-			public String getSourceIndividual()
+			public Individual getSourceIndividual()
 			{
 				return this.sourceIndividual;
 			}
 			
-			public void setSourceIndividual(String newSourceIndividual)
+			public void setSourceIndividual(Individual newSourceIndividual)
 			{
 				this.sourceIndividual=newSourceIndividual;
 			}
@@ -460,7 +465,7 @@ public class Axiom {
 			}
 		}
 		public static class DifferentIndividuals extends Fact{
-			Set<String> differentIndividuals = new HashSet<String>();
+			Set<Individual> differentIndividuals = new HashSet<Individual>();
 			
 			
 			public DifferentIndividuals(){
@@ -470,25 +475,25 @@ public class Axiom {
 				if (element.getDifferentIndividuals().size()>0) {this.getDifferentIndividuals().addAll(element.getDifferentIndividuals());return;}
 		    }
 			
-			public Set<String> getDifferentIndividuals()
+			public Set<Individual> getDifferentIndividuals()
 			{
 				return this.differentIndividuals;
 			}
 			
-			public void addDifferentIndividuals(String newDifferentIndividuals)
+			public void addDifferentIndividuals(Individual newDifferentIndividuals)
 			{
 				this.differentIndividuals.add(newDifferentIndividuals);
 			}
 			
-			public void removeDifferentIndividuals(String oldDifferentIndividuals)
+			public void removeDifferentIndividuals(Individual oldDifferentIndividuals)
 			{
 				this.differentIndividuals.remove(oldDifferentIndividuals);
 			}
 
 		}
 		public static class NegativeDataPropertyAssertion extends Fact{
-			String dataProperty;
-			String sourceIndividual;
+			DataProperty dataProperty;
+			Individual sourceIndividual;
 			String targetValue;
 			
 			public NegativeDataPropertyAssertion(){
@@ -499,22 +504,22 @@ public class Axiom {
 				if (this.getTargetValue()==null && element.getTargetValue()!=null) {this.setTargetValue(element.getTargetValue());return;}
 		    }
 			
-			public String getDataProperty()
+			public DataProperty getDataProperty()
 			{
 				return this.dataProperty;
 			}
 			
-			public void setDataProperty(String newDataProperty)
+			public void setDataProperty(DataProperty newDataProperty)
 			{
 				this.dataProperty=newDataProperty;
 			}
 			
-			public String getSourceIndividual()
+			public Individual getSourceIndividual()
 			{
 				return this.sourceIndividual;
 			}
 			
-			public void setSourceIndividual(String newSourceIndividual)
+			public void setSourceIndividual(Individual newSourceIndividual)
 			{
 				this.sourceIndividual=newSourceIndividual;
 			}
@@ -530,9 +535,9 @@ public class Axiom {
 			}
 		}
 		public static class NegativeObjectPropertyAssertion extends Fact{
-			String objectProperty;
-			String sourceIndividual;
-			String targetIndividual;
+			ObjectProperty objectProperty;
+			Individual sourceIndividual;
+			Individual targetIndividual;
 			
 			public NegativeObjectPropertyAssertion(){
 		    }
@@ -542,40 +547,40 @@ public class Axiom {
 				if (this.getTargetIndividual()==null && element.getTargetIndividual()!=null) {this.setTargetIndividual(element.getTargetIndividual());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 			
-			public String getSourceIndividual()
+			public Individual getSourceIndividual()
 			{
 				return this.sourceIndividual;
 			}
 			
-			public void setSourceIndividual(String newSourceIndividual)
+			public void setSourceIndividual(Individual newSourceIndividual)
 			{
 				this.sourceIndividual=newSourceIndividual;
 			}
 			
-			public String getTargetIndividual()
+			public Individual getTargetIndividual()
 			{
 				return this.targetIndividual;
 			}
 			
-			public void setTargetIndividual(String newTargetIndividual)
+			public void setTargetIndividual(Individual newTargetIndividual)
 			{
 				this.targetIndividual=newTargetIndividual;
 			}
 		}
 		public static class ObjectPropertyAssertion extends Fact{
-			String objectProperty;
-			String sourceIndividual;
-			String targetIndividual;
+			ObjectProperty objectProperty;
+			Individual sourceIndividual;
+			Individual targetIndividual;
 			
 			public ObjectPropertyAssertion(){
 		    }
@@ -585,38 +590,38 @@ public class Axiom {
 				if (this.getTargetIndividual()==null && element.getTargetIndividual()!=null) {this.setTargetIndividual(element.getTargetIndividual());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 			
-			public String getSourceIndividual()
+			public Individual getSourceIndividual()
 			{
 				return this.sourceIndividual;
 			}
 			
-			public void setSourceIndividual(String newSourceIndividual)
+			public void setSourceIndividual(Individual newSourceIndividual)
 			{
 				this.sourceIndividual=newSourceIndividual;
 			}
 			
-			public String getTargetIndividual()
+			public Individual getTargetIndividual()
 			{
 				return this.targetIndividual;
 			}
 			
-			public void setTargetIndividual(String newTargetIndividual)
+			public void setTargetIndividual(Individual newTargetIndividual)
 			{
 				this.targetIndividual=newTargetIndividual;
 			}
 		}
 		public static class SameIndividual extends Fact{
-			Set<String> sameIndividuals = new HashSet<String>();
+			Set<Individual> sameIndividuals = new HashSet<Individual>();
 			
 			
 			public SameIndividual(){
@@ -626,17 +631,17 @@ public class Axiom {
 				if (element.getSameIndividuals().size()>0) {this.getSameIndividuals().addAll(element.getSameIndividuals());return;}
 		    }
 			
-			public Set<String> getSameIndividuals()
+			public Set<Individual> getSameIndividuals()
 			{
 				return this.sameIndividuals;
 			}
 			
-			public void addSameIndividuals(String newSameIndividual)
+			public void addSameIndividuals(Individual newSameIndividual)
 			{
 				this.sameIndividuals.add(newSameIndividual);
 			}
 			
-			public void removeSameIndividuals(String oldSameIndividual)
+			public void removeSameIndividuals(Individual oldSameIndividual)
 			{
 				this.sameIndividuals.remove(oldSameIndividual);
 			}
@@ -648,7 +653,7 @@ public class Axiom {
 		public ObjectPropertyAxiom(){		
 	    }
 		public static class AsymmetricObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public AsymmetricObjectProperty(){		
 		    }
 			
@@ -656,18 +661,18 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class DisjointObjectProperties extends ObjectPropertyAxiom{
-			Set<String> disjointObjectProperties = new HashSet<String>();
+			Set<ObjectProperty> disjointObjectProperties = new HashSet<ObjectProperty>();
 			
 			
 			public DisjointObjectProperties(){
@@ -677,24 +682,24 @@ public class Axiom {
 				if (element.getDisjointObjectProperties().size()>0) {this.getDisjointObjectProperties().addAll(element.getDisjointObjectProperties());return;}
 		    }
 			
-			public Set<String> getDisjointObjectProperties()
+			public Set<ObjectProperty> getDisjointObjectProperties()
 			{
 				return this.disjointObjectProperties;
 			}
 			
-			public void addDisjointObjectProperties(String newDisjointObjectProperties)
+			public void addDisjointObjectProperties(ObjectProperty newDisjointObjectProperties)
 			{
 				this.disjointObjectProperties.add(newDisjointObjectProperties);
 			}
 			
-			public void removeDisjointObjectProperties(String oldDisjointObjectProperties)
+			public void removeDisjointObjectProperties(ObjectProperty oldDisjointObjectProperties)
 			{
 				this.disjointObjectProperties.remove(oldDisjointObjectProperties);
 			}
 
 		}
 		public static class EquivalentObjectProperties extends ObjectPropertyAxiom{
-			Set<String> equivalentObjectProperties = new HashSet<String>();
+			Set<ObjectProperty> equivalentObjectProperties = new HashSet<ObjectProperty>();
 			
 			
 			public EquivalentObjectProperties(){
@@ -704,24 +709,24 @@ public class Axiom {
 				if (element.getEquivalentObjectProperties().size()>0) {this.getEquivalentObjectProperties().addAll(element.getEquivalentObjectProperties());return;}
 		    }
 			
-			public Set<String> getEquivalentObjectProperties()
+			public Set<ObjectProperty> getEquivalentObjectProperties()
 			{
 				return this.equivalentObjectProperties;
 			}
 			
-			public void addEquivalentObjectProperties(String newEquivalentObjectProperties)
+			public void addEquivalentObjectProperties(ObjectProperty newEquivalentObjectProperties)
 			{
 				this.equivalentObjectProperties.add(newEquivalentObjectProperties);
 			}
 			
-			public void removeDisjointObjectProperties(String oldEquivalentObjectProperties)
+			public void removeDisjointObjectProperties(ObjectProperty oldEquivalentObjectProperties)
 			{
 				this.equivalentObjectProperties.remove(oldEquivalentObjectProperties);
 			}
 
 		}
 		public static class FunctionalObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public FunctionalObjectProperty(){		
 		    }
 			
@@ -729,18 +734,18 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class InverseFunctionalObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public InverseFunctionalObjectProperty(){		
 		    }
 			
@@ -748,18 +753,18 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class InverseObjectProperties extends ObjectPropertyAxiom{
-			Set<String> inverseObjectProperties = new HashSet<String>();
+			Set<ObjectProperty> inverseObjectProperties = new HashSet<ObjectProperty>();
 			
 			
 			public InverseObjectProperties(){
@@ -769,24 +774,24 @@ public class Axiom {
 				if (element.getInverseObjectProperties().size()>0) {this.getInverseObjectProperties().addAll(element.getInverseObjectProperties());return;}
 		    }
 			
-			public Set<String> getInverseObjectProperties()
+			public Set<ObjectProperty> getInverseObjectProperties()
 			{
 				return this.inverseObjectProperties;
 			}
 			
-			public void addInverseObjectProperties(String newInverseObjectProperties)
+			public void addInverseObjectProperties(ObjectProperty newInverseObjectProperties)
 			{
 				this.inverseObjectProperties.add(newInverseObjectProperties);
 			}
 			
-			public void removeInverseObjectProperties(String oldInverseObjectProperties)
+			public void removeInverseObjectProperties(ObjectProperty oldInverseObjectProperties)
 			{
 				this.inverseObjectProperties.remove(oldInverseObjectProperties);
 			}
 
 		}
 		public static class IrreflexiveObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public IrreflexiveObjectProperty(){		
 		    }
 			
@@ -794,19 +799,19 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class ObjectPropertyDomain extends ObjectPropertyAxiom{
-			String objectProperty;
-			String domain;
+			ObjectProperty objectProperty;
+			Description domain;
 			public ObjectPropertyDomain(){		
 		    }
 			
@@ -815,28 +820,28 @@ public class Axiom {
 				if (this.getDomain()==null && element.getDomain()!=null) {this.setDomain(element.getDomain());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
-			public String getDomain()
+			public Description getDomain()
 			{
 				return this.domain;
 			}
 			
-			public void setDomain(String newDomain)
+			public void setDomain(Description newDomain)
 			{
 				this.domain=newDomain;
 			}
 		}
 		public static class ObjectPropertyRange extends ObjectPropertyAxiom{
-			String objectProperty;
-			String range;
+			ObjectProperty objectProperty;
+			Description range;
 			public ObjectPropertyRange(){		
 		    }
 			
@@ -845,27 +850,27 @@ public class Axiom {
 				if (this.getRange()==null && element.getRange()!=null) {this.setRange(element.getRange());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
-			public String getRange()
+			public Description getRange()
 			{
 				return this.range;
 			}
 			
-			public void setRange(String newRange)
+			public void setRange(Description newRange)
 			{
 				this.range=newRange;
 			}
 		}
 		public static class ReflexiveObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public ReflexiveObjectProperty(){		
 		    }
 			
@@ -873,18 +878,18 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class SymmetricObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public SymmetricObjectProperty(){		
 		    }
 			
@@ -892,18 +897,18 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class TransitiveObjectProperty extends ObjectPropertyAxiom{
-			String objectProperty;
+			ObjectProperty objectProperty;
 			public TransitiveObjectProperty(){		
 		    }
 			
@@ -911,19 +916,19 @@ public class Axiom {
 				if (this.getObjectProperty()==null && element.getObjectProperty()!=null) {this.setObjectProperty(element.getObjectProperty());return;}
 		    }
 			
-			public String getObjectProperty()
+			public ObjectProperty getObjectProperty()
 			{
 				return this.objectProperty;
 			}
 			
-			public void setObjectProperty(String newObjectProperty)
+			public void setObjectProperty(ObjectProperty newObjectProperty)
 			{
 				this.objectProperty=newObjectProperty;
 			}
 		}
 		public static class SubObjectPropertyOf extends ObjectPropertyAxiom{
-			String superObjectProperty;
-			Set<String> subObjectProperties = new HashSet<String>();
+			ObjectProperty superObjectProperty;
+			Set<ObjectProperty> subObjectProperties = new HashSet<ObjectProperty>();
 			
 			
 			public SubObjectPropertyOf(){
@@ -936,27 +941,27 @@ public class Axiom {
 			
 			
 			
-			public String getSuperObjectProperty()
+			public ObjectProperty getSuperObjectProperty()
 			{
 				return this.superObjectProperty;
 			}
 			
-			public void setSuperObjectProperty(String newSuperObjectProperty)
+			public void setSuperObjectProperty(ObjectProperty newSuperObjectProperty)
 			{
 				this.superObjectProperty=newSuperObjectProperty;
 			}
 			
-			public Set<String> getSubObjectProperties()
+			public Set<ObjectProperty> getSubObjectProperties()
 			{
 				return this.subObjectProperties;
 			}
 			
-			public void addSubObjectProperties(String newSubObjectProperties)
+			public void addSubObjectProperties(ObjectProperty newSubObjectProperties)
 			{
 				this.subObjectProperties.add(newSubObjectProperties);
 			}
 			
-			public void removeSubObjectProperties(String oldSubObjectProperties)
+			public void removeSubObjectProperties(ObjectProperty oldSubObjectProperties)
 			{
 				this.subObjectProperties.remove(oldSubObjectProperties);
 			}
