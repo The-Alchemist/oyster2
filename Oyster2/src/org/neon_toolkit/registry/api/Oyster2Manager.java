@@ -36,6 +36,8 @@ import org.neon_toolkit.omv.api.extensions.mapping.OMVMapping;
 import org.neon_toolkit.omv.api.extensions.mapping.OMVMappingProperty;
 import org.neon_toolkit.omv.api.extensions.peer.OMVPeer;
 import org.neon_toolkit.owlodm.api.Axiom;
+import org.neon_toolkit.owlodm.api.Description;
+import org.neon_toolkit.owlodm.api.OWLEntity;
 import org.neon_toolkit.owlodm.api.Axiom.Declaration;
 import org.neon_toolkit.owlodm.api.Axiom.EntityAnnotation;
 import org.neon_toolkit.owlodm.api.Axiom.ClassAxiom.DisjointClasses;
@@ -68,6 +70,24 @@ import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ReflexiveObjectProp
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SubObjectPropertyOf;
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SymmetricObjectProperty;
 import org.neon_toolkit.owlodm.api.Axiom.ObjectPropertyAxiom.TransitiveObjectProperty;
+import org.neon_toolkit.owlodm.api.Description.DataAllValuesFrom;
+import org.neon_toolkit.owlodm.api.Description.DataExactCardinality;
+import org.neon_toolkit.owlodm.api.Description.DataHasValue;
+import org.neon_toolkit.owlodm.api.Description.DataMaxCardinality;
+import org.neon_toolkit.owlodm.api.Description.DataMinCardinality;
+import org.neon_toolkit.owlodm.api.Description.DataSomeValuesFrom;
+import org.neon_toolkit.owlodm.api.Description.ObjectAllValuesFrom;
+import org.neon_toolkit.owlodm.api.Description.ObjectComplementOf;
+import org.neon_toolkit.owlodm.api.Description.ObjectExactCardinality;
+import org.neon_toolkit.owlodm.api.Description.ObjectExistsSelf;
+import org.neon_toolkit.owlodm.api.Description.ObjectHasValue;
+import org.neon_toolkit.owlodm.api.Description.ObjectIntersectionOf;
+import org.neon_toolkit.owlodm.api.Description.ObjectMaxCardinality;
+import org.neon_toolkit.owlodm.api.Description.ObjectMinCardinality;
+import org.neon_toolkit.owlodm.api.Description.ObjectOneOf;
+import org.neon_toolkit.owlodm.api.Description.ObjectSomeValuesFrom;
+import org.neon_toolkit.owlodm.api.Description.ObjectUnionOf;
+import org.neon_toolkit.owlodm.api.OWLEntity.Datatype;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.oyster2.Oyster2Factory;
 import org.neon_toolkit.registry.oyster2.Properties;
@@ -447,38 +467,220 @@ public class Oyster2Manager{
 	}
 	
 	private static String getAxiomString(Axiom a){
-		if (a instanceof DisjointClasses) return "\t"+ getDataSetString(((DisjointClasses)a).getDisjointClasses(),"disjointClasses",100);
-		else if (a instanceof DisjointUnion) return "\t"+getData(((DisjointUnion)a).getUnionClass(),"unionClass")+"\t"+getDataSetString(((DisjointUnion)a).getDisjointClasses(),"disjointClasses",100);
-		else if (a instanceof EquivalentClasses) return "\t"+getDataSetString(((EquivalentClasses)a).getEquivalentClasses(),"equivalentClasses",100);
-		else if (a instanceof SubClassOf) return "\t"+getData(((SubClassOf)a).getSubClass(),"subClass")+"\t"+getData(((SubClassOf)a).getSuperClass(),"superClass");
-		else if (a instanceof DataPropertyDomain) return "\t"+getData(((DataPropertyDomain)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyDomain)a).getDomain(),"domain");
-		else if (a instanceof DataPropertyRange) return "\t"+getData(((DataPropertyRange)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyRange)a).getRange(),"range");
-		else if (a instanceof DisjointDataProperties) return "\t"+getDataSetString(((DisjointDataProperties)a).getDataProperties(),"dataProperties",100);
-		else if (a instanceof EquivalentDataProperties) return "\t"+getDataSetString(((EquivalentDataProperties)a).getDataProperties(),"dataProperties",100);
-		else if (a instanceof FunctionalDataProperty) return "\t"+getData(((FunctionalDataProperty)a).getDataProperty(),"dataProperty");
-		else if (a instanceof SubDataPropertyOf) return "\t"+getData(((SubDataPropertyOf)a).getSubDataProperty(),"subDataProperty")+"\t"+getData(((SubDataPropertyOf)a).getSuperDataProperty(),"superDataProperty");
-		else if (a instanceof Declaration) return "\t"+getData(((Declaration)a).getEntity(),"entity");
-		else if (a instanceof EntityAnnotation) return "\t"+getData(((EntityAnnotation)a).getEntity(),"entity")+"\t"+getDataSetString(((EntityAnnotation)a).getEntityAnnotation(),"entityAnnotation",100);
-		else if (a instanceof ClassAssertion) return "\t"+getData(((ClassAssertion)a).getOWLClass(),"OWLClass")+"\t"+getData(((ClassAssertion)a).getIndividual(),"individual");
-		else if (a instanceof DataPropertyAssertion) return "\t"+getData(((DataPropertyAssertion)a).getDataProperty(),"dataProperty")+"\t"+getData(((DataPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((DataPropertyAssertion)a).getTargetValue(),"targetValue");
-		else if (a instanceof DifferentIndividuals) return "\t"+getDataSetString(((DifferentIndividuals)a).getDifferentIndividuals(),"differentIndividuals",100);
-		else if (a instanceof NegativeDataPropertyAssertion) return "\t"+getData(((NegativeDataPropertyAssertion)a).getDataProperty(),"dataProperty")+"\t"+getData(((NegativeDataPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((NegativeDataPropertyAssertion)a).getTargetValue(),"targetValue");
-		else if (a instanceof NegativeObjectPropertyAssertion) return "\t"+getData(((NegativeObjectPropertyAssertion)a).getObjectProperty(),"objectProperty")+"\t"+getData(((NegativeObjectPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((NegativeObjectPropertyAssertion)a).getTargetIndividual(),"targetIndividual");
-		else if (a instanceof ObjectPropertyAssertion) return "\t"+getData(((ObjectPropertyAssertion)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyAssertion)a).getSourceIndividual(),"sourceIndividual")+"\t"+getData(((ObjectPropertyAssertion)a).getTargetIndividual(),"targetIndividual");
-		else if (a instanceof SameIndividual) return "\t"+getDataSetString(((SameIndividual)a).getSameIndividuals(),"sameIndividuals",100);
-		else if (a instanceof AsymmetricObjectProperty) return "\t"+getData(((AsymmetricObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof DisjointObjectProperties) return "\t"+getDataSetString(((DisjointObjectProperties)a).getDisjointObjectProperties(),"disjointObjectProperties",100);
-		else if (a instanceof EquivalentObjectProperties) return "\t"+getDataSetString(((EquivalentObjectProperties)a).getEquivalentObjectProperties(),"equivalentObjectProperties",100);
-		else if (a instanceof FunctionalObjectProperty) return "\t"+getData(((FunctionalObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof InverseFunctionalObjectProperty) return "\t"+getData(((InverseFunctionalObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof InverseObjectProperties) return "\t"+getDataSetString(((InverseObjectProperties)a).getInverseObjectProperties(),"inverseObjectProperties",100);
-		else if (a instanceof IrreflexiveObjectProperty) return "\t"+getData(((IrreflexiveObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof ObjectPropertyDomain) return "\t"+getData(((ObjectPropertyDomain)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyDomain)a).getDomain(),"domain");
-		else if (a instanceof ObjectPropertyRange) return "\t"+getData(((ObjectPropertyRange)a).getObjectProperty(),"objectProperty")+"\t"+getData(((ObjectPropertyRange)a).getRange(),"range");
-		else if (a instanceof ReflexiveObjectProperty) return "\t"+getData(((ReflexiveObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof SymmetricObjectProperty) return "\t"+getData(((SymmetricObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof TransitiveObjectProperty) return "\t"+getData(((TransitiveObjectProperty)a).getObjectProperty(),"objectProperty");
-		else if (a instanceof SubObjectPropertyOf) return "\t"+getData(((SubObjectPropertyOf)a).getSuperObjectProperty(),"superObjectProperty")+"\t"+getDataSetString(((SubObjectPropertyOf)a).getSubObjectProperties(),"subObjectProperties",100);		
+		if (a instanceof DisjointClasses) {
+			Iterator it = ((DisjointClasses)a).getDisjointClasses().iterator();
+			String rep="";
+			while (it.hasNext()){
+				Description temp=(Description)it.next();
+				rep=rep+"\t"+ getData(getDescriptionString(temp),"disjointClasses");
+			}
+			return rep;
+		}
+		else if (a instanceof DisjointUnion) {
+			Iterator it = ((DisjointUnion)a).getDisjointClasses().iterator();
+			String rep="";
+			while (it.hasNext()){
+				Description temp=(Description)it.next();
+				rep=rep+"\t"+ getData(getDescriptionString(temp),"disjointClasses");
+			}
+			rep=rep+"\t"+ getData(getDescriptionString(((DisjointUnion)a).getUnionClass()),"unionClass");
+			return rep;
+		}
+		else if (a instanceof EquivalentClasses) {
+			Iterator it = ((EquivalentClasses)a).getEquivalentClasses().iterator();
+			String rep="";
+			while (it.hasNext()){
+				Description temp=(Description)it.next();
+				rep=rep+"\t"+ getData(getDescriptionString(temp),"equivalentClasses");
+			}
+			return rep;
+		}
+		else if (a instanceof SubClassOf) {
+			return "\t"+getData(getDescriptionString(((SubClassOf)a).getSubClass()),"subClass")+"\t"+getData(getDescriptionString(((SubClassOf)a).getSuperClass()),"superClass");
+		}
+		else if (a instanceof DataPropertyDomain) {
+			return "\t"+getData(getOWLEntityString(((DataPropertyDomain)a).getDataProperty()),"dataProperty")+"\t"+getData(getDescriptionString(((DataPropertyDomain)a).getDomain()),"domain");
+		}
+		else if (a instanceof DataPropertyRange) {
+			return "\t"+getData(getOWLEntityString(((DataPropertyRange)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataPropertyRange)a).getRange()),"range");
+		}
+		else if (a instanceof DisjointDataProperties) {
+			Iterator it = ((DisjointDataProperties)a).getDataProperties().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof EquivalentDataProperties) {
+			Iterator it = ((EquivalentDataProperties)a).getDataProperties().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof FunctionalDataProperty) return "\t"+getData(getOWLEntityString(((FunctionalDataProperty)a).getDataProperty()),"dataProperty");
+		else if (a instanceof SubDataPropertyOf) return "\t"+getData(getOWLEntityString(((SubDataPropertyOf)a).getSubDataProperty()),"subDataProperty")+"\t"+getData(getOWLEntityString(((SubDataPropertyOf)a).getSuperDataProperty()),"superDataProperty");
+		else if (a instanceof Declaration) {
+			return "\t"+getData(getOWLEntityString(((Declaration)a).getEntity()),"entity");
+		}
+		else if (a instanceof EntityAnnotation) {
+			return "\t"+getData(getOWLEntityString(((EntityAnnotation)a).getEntity()),"entity")+"\t"+getDataSetString(((EntityAnnotation)a).getEntityAnnotation(),"entityAnnotation",100);
+		}
+		else if (a instanceof ClassAssertion) {
+			return "\t"+getData(getDescriptionString(((ClassAssertion)a).getOWLClass()),"OWLClass")+"\t"+getData(getOWLEntityString(((ClassAssertion)a).getIndividual()),"individual");
+		}
+		else if (a instanceof DataPropertyAssertion) return "\t"+getData(getOWLEntityString(((DataPropertyAssertion)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataPropertyAssertion)a).getSourceIndividual()),"sourceIndividual")+"\t"+getData(((DataPropertyAssertion)a).getTargetValue(),"targetValue");
+		else if (a instanceof DifferentIndividuals) {
+			Iterator it = ((DifferentIndividuals)a).getDifferentIndividuals().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual temp=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"differentIndividuals");
+			}
+			return rep;
+		}
+		else if (a instanceof NegativeDataPropertyAssertion) return "\t"+getData(getOWLEntityString(((NegativeDataPropertyAssertion)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((NegativeDataPropertyAssertion)a).getSourceIndividual()),"sourceIndividual")+"\t"+getData(((NegativeDataPropertyAssertion)a).getTargetValue(),"targetValue");
+		else if (a instanceof NegativeObjectPropertyAssertion) return "\t"+getData(getOWLEntityString(((NegativeObjectPropertyAssertion)a).getObjectProperty()),"objectProperty")+"\t"+getData(getOWLEntityString(((NegativeObjectPropertyAssertion)a).getSourceIndividual()),"sourceIndividual")+"\t"+getData(getOWLEntityString(((NegativeObjectPropertyAssertion)a).getTargetIndividual()),"targetIndividual");
+		else if (a instanceof ObjectPropertyAssertion) return "\t"+getData(getOWLEntityString(((ObjectPropertyAssertion)a).getObjectProperty()),"objectProperty")+"\t"+getData(getOWLEntityString(((ObjectPropertyAssertion)a).getSourceIndividual()),"sourceIndividual")+"\t"+getData(getOWLEntityString(((ObjectPropertyAssertion)a).getTargetIndividual()),"targetIndividual");
+		else if (a instanceof SameIndividual) {
+			Iterator it = ((SameIndividual)a).getSameIndividuals().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual temp=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"sameIndividuals");
+			}
+			return rep;
+		}
+		else if (a instanceof AsymmetricObjectProperty) return "\t"+getData(getOWLEntityString(((AsymmetricObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof DisjointObjectProperties) {
+			Iterator it = ((DisjointObjectProperties)a).getDisjointObjectProperties().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"disjointObjectProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof EquivalentObjectProperties) {
+			Iterator it = ((EquivalentObjectProperties)a).getEquivalentObjectProperties().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"equivalentObjectProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof FunctionalObjectProperty) return "\t"+getData(getOWLEntityString(((FunctionalObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof InverseFunctionalObjectProperty) return "\t"+getData(getOWLEntityString(((InverseFunctionalObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof InverseObjectProperties) {
+			Iterator it = ((InverseObjectProperties)a).getInverseObjectProperties().iterator();
+			String rep="";
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"inverseObjectProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof IrreflexiveObjectProperty) return "\t"+getData(getOWLEntityString(((IrreflexiveObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof ObjectPropertyDomain) {
+			return "\t"+getData(getOWLEntityString(((ObjectPropertyDomain)a).getObjectProperty()),"objectProperty")+"\t"+getData(getDescriptionString(((ObjectPropertyDomain)a).getDomain()),"domain");
+		}
+		else if (a instanceof ObjectPropertyRange) {
+			return "\t"+getData(getOWLEntityString(((ObjectPropertyRange)a).getObjectProperty()),"objectProperty")+"\t"+getData(getDescriptionString(((ObjectPropertyRange)a).getRange()),"range");
+		}
+		else if (a instanceof ReflexiveObjectProperty) return "\t"+getData(getOWLEntityString(((ReflexiveObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof SymmetricObjectProperty) return "\t"+getData(getOWLEntityString(((SymmetricObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof TransitiveObjectProperty) return "\t"+getData(getOWLEntityString(((TransitiveObjectProperty)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof SubObjectPropertyOf) {
+			String rep= "\t"+getData(getOWLEntityString(((SubObjectPropertyOf)a).getSuperObjectProperty()),"superObjectProperty");
+			Iterator it = ((SubObjectPropertyOf)a).getSubObjectProperties().iterator();
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"subObjectProperties");
+			}
+			return rep;		
+		}
+		return null;
+	}
+	
+	private static String getOWLEntityString(OWLEntity a){
+		if (a instanceof org.neon_toolkit.owlodm.api.OWLEntity.DataProperty) return getData(((org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)a).getURI(),"dataProperty");
+		if (a instanceof Datatype) return getData(((Datatype)a).getURI(),"dataType");
+		if (a instanceof org.neon_toolkit.owlodm.api.OWLEntity.Individual) return getData(((org.neon_toolkit.owlodm.api.OWLEntity.Individual)a).getURI(),"individual");
+		if (a instanceof org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty) return getData(((org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty)a).getURI(),"objectProperty");
+		if (a instanceof Description) return getDescriptionString((Description)a);
+		return null;
+	}
+	
+	private static String getDescriptionString(Description a){
+		if (a instanceof DataAllValuesFrom) {
+			String rep= "\t"+getData(getOWLEntityString(((DataAllValuesFrom)a).getDataRange()),"dataRange");
+			Iterator it = ((DataAllValuesFrom)a).getDataProperties().iterator();
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+			}
+			return rep;
+		}
+		else if (a instanceof DataExactCardinality) return "\t"+getData(getOWLEntityString(((DataExactCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataExactCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataExactCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof DataHasValue)  return "\t"+getData(getOWLEntityString(((DataHasValue)a).getDataProperty()),"dataProperty")+"\t"+getData(((DataHasValue)a).getConstant(),"constant");
+		else if (a instanceof DataMaxCardinality)  {
+			return "DataMaxCardinality:\n"+"\t"+getData(getOWLEntityString(((DataMaxCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataMaxCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataMaxCardinality)a).getCardinality().toString(),"cardinality");
+		}
+		else if (a instanceof DataMinCardinality) return "\t"+getData(getOWLEntityString(((DataMinCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataMinCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataMinCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof DataSomeValuesFrom) {
+			String rep= "\t"+getData(getOWLEntityString(((DataSomeValuesFrom)a).getDataRange()),"dataRange");
+			Iterator it = ((DataSomeValuesFrom)a).getDataProperties().iterator();
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neon_toolkit.owlodm.api.OWLEntity.DataProperty)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+			}
+			return rep;
+		}
+		
+		else if (a instanceof ObjectAllValuesFrom) return "\t"+ getData(getOWLEntityString(((ObjectAllValuesFrom)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectAllValuesFrom)a).getOWLClass());
+		else if (a instanceof ObjectComplementOf) return "\t"+ getDescriptionString (((ObjectComplementOf)a).getOWLClass());
+		else if (a instanceof ObjectExactCardinality) return "\t"+getData(getOWLEntityString(((ObjectExactCardinality)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectExactCardinality)a).getOWLClass())+"\t"+getData(((ObjectExactCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof ObjectExistsSelf) return "\t"+ getData(getOWLEntityString(((ObjectExistsSelf)a).getObjectProperty()),"objectProperty");
+		else if (a instanceof ObjectHasValue) return "\t"+ getData(getOWLEntityString(((ObjectHasValue)a).getObjectProperty()),"objectProperty")+"\t"+ getData(getOWLEntityString(((ObjectHasValue)a).getValue()),"value");
+		else if (a instanceof ObjectIntersectionOf) {
+			Iterator it = ((ObjectIntersectionOf)a).getOWLClasses().iterator();
+			String rep="";
+			while (it.hasNext()){
+				Description temp=(Description)it.next();
+				rep=rep+"\t"+ getDescriptionString (temp);
+			}
+			return rep;
+		}
+		else if (a instanceof ObjectMaxCardinality) {
+			return "ObjectMaxCardinality:\n"+"\t\t\t"+getOWLEntityString(((ObjectMaxCardinality)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectMaxCardinality)a).getOWLClass())+"\t\t\t"+getData(((ObjectMaxCardinality)a).getCardinality().toString(),"cardinality");
+		}
+		else if (a instanceof ObjectMinCardinality) return "\t"+getData(getOWLEntityString(((ObjectMinCardinality)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectMinCardinality)a).getOWLClass())+"\t"+getData(((ObjectMinCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof ObjectOneOf) {
+			String rep= "";
+			Iterator it = ((ObjectOneOf)a).getIndividuals().iterator();
+			while (it.hasNext()){
+				org.neon_toolkit.owlodm.api.OWLEntity.Individual temp=(org.neon_toolkit.owlodm.api.OWLEntity.Individual)it.next();
+				rep=rep+"\t"+ getData(getOWLEntityString(temp),"individuals");
+			}
+			return rep;
+		}
+		else if (a instanceof ObjectSomeValuesFrom) return "\t"+ getData(getOWLEntityString(((ObjectSomeValuesFrom)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectSomeValuesFrom)a).getOWLClass());
+		else if (a instanceof ObjectUnionOf) {
+			Iterator it = ((ObjectUnionOf)a).getOWLClasses().iterator();
+			String rep="";
+			while (it.hasNext()){
+				Description temp=(Description)it.next();
+				rep=rep+"\t"+ getDescriptionString (temp);
+			}
+			return rep;
+		}
+		
+		else if (a instanceof org.neon_toolkit.owlodm.api.Description.OWLClass) return getData(((org.neon_toolkit.owlodm.api.Description.OWLClass)a).getURI(),"OWLClass"); 
 		return null;
 	}
 	
@@ -586,7 +788,7 @@ public class Oyster2Manager{
 			    local = local+"\n";
 			}
 				
-		return local;
+		return local.replace("\n\n", "\n");
 	}
 	
 	private static OntologyChangeEvent getEvent(String URI,String value, Individual tIndividual){
@@ -1218,6 +1420,8 @@ public class Oyster2Manager{
 		OMVMapping omv7;
 		OMVMappingProperty omv8;
 		String omv100="";
+		
+		 
 		
 		Iterator it = which.iterator();
 		try{

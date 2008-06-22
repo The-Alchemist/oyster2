@@ -94,8 +94,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		if (entityState==null) System.out.println("Inserting new element...");
 		String nextState = Constants.DraftState;
@@ -152,8 +152,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)){
@@ -221,8 +221,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)){
@@ -299,6 +299,7 @@ public class WorkflowManagement {
 		}
 		else return;
 		
+		
 		//checking previous entity state
 		//first get the ontology of the change
 		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
@@ -306,8 +307,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (!entityState.equalsIgnoreCase(Constants.DraftState)){
@@ -366,8 +367,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (!entityState.equalsIgnoreCase(Constants.ToBeApprovedState)){
@@ -426,8 +427,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)){
@@ -505,8 +506,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (entityState==null || entityState==""){ //Assuming initial state = approved
@@ -570,8 +571,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (entityState.equalsIgnoreCase(Constants.ToBeDeletedState)){
@@ -632,8 +633,8 @@ public class WorkflowManagement {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
-		String entity = cMgmt.getRelatedEntity(changeURI);
-		String entityState = cMgmt.getEntityState(mainOntoReply, entity);
+		//String entity = cMgmt.getRelatedEntity(changeURI);
+		String entityState = cMgmt.getEntityStateFromChange(changeURI);
 		//now setting next state
 		String nextState;
 		if (entityState.equalsIgnoreCase(Constants.ToBeApprovedState)){
@@ -853,6 +854,30 @@ public class WorkflowManagement {
 		}
 		return replyActions;
 	}
+	public Action getChangeAction(OMVChange o){
+		String [] actions = {"Delete", "Insert", "Update", "RejectToApproved", "RejectToBeApproved", "RejectToDraft", "SendToApproved", "SendToBeApproved", "SendToBeDeleted"};
+		Action replyAction = null;
+		String tURN=o.getURI();
+		
+		
+		for (int i=0; i<actions.length;i++){
+			//System.out.println("trying with action: "+actions[i]);
+			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
+			Individual oIndividual = KAON2Manager.factory().individual(tURN+";action="+actions[i]);
+			try {
+				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], localRegistry);
+					replyAction=reply;
+					break;
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return replyAction;
+	}
+	
 	public Action getOntologyAction(OMVOntology o){
 		String [] actions = {"MoveToDraft", "MoveToBeApproved", "Approval", "Publish"};
 		Action replyAction = null;

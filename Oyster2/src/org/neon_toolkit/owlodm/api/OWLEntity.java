@@ -30,30 +30,29 @@ public class OWLEntity {
 	}
 	
 	public static class DataProperty extends OWLEntity{
-		public DataProperty(){
+		public DataProperty(String uri){
+			this.URI=uri;
 	    }
 	
 	}
 	
 	public static class Datatype extends OWLEntity{
-		public Datatype(){
+		public Datatype(String uri){
+			this.URI=uri;
 	    }
 	
 	}
 	
 	public static class Individual extends OWLEntity{
-		public Individual(){
+		public Individual(String uri){
+			this.URI=uri;
 	    }
 		
 	}
 	
 	public static class ObjectProperty extends OWLEntity{
-		public ObjectProperty(){
-	    }
-	}
-	
-	public static class OWLClass extends OWLEntity{
-		public OWLClass(){
+		public ObjectProperty(String uri){
+			this.URI=uri;
 	    }
 	}
 	

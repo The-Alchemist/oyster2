@@ -30,6 +30,9 @@ import org.neon_toolkit.registry.api.Oyster2Connection;
 import org.neon_toolkit.registry.api.Oyster2Manager;
 import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.workflow.api.Action;
+import org.neon_toolkit.owlodm.api.Description.OWLClass;
+import org.neon_toolkit.owlodm.api.Description.ObjectMaxCardinality;
+import org.neon_toolkit.owlodm.api.OWLEntity.ObjectProperty;
 
 
 public class ChangeTests {
@@ -50,6 +53,7 @@ public class ChangeTests {
 		OMVOntology faoOntology = new OMVOntology();
 		faoOntology.setURI("http://www.fao.org/aims/aos/fi/species_v1.0.owl");
 		faoOntology.setResourceLocator("http://www.fao.org/aims/aos/fi/species_v1.0.owl");
+		faoOntology.setNumberOfAxioms(10);
 		
 		//EXAMPLE EDITORS
 		OMVPerson va = new OMVPerson();
@@ -169,7 +173,7 @@ public class ChangeTests {
 			Iterator it = changes.iterator();
 			while (it.hasNext()){
 				OMVChange t = (OMVChange)it.next();
-				oyster2Conn.submitToBeApproved(t.getURI(),null);
+				oyster2Conn.submitToBeApproved(t.getURI(),se);
 			}
 		}
 		
@@ -179,6 +183,11 @@ public class ChangeTests {
 			oyster2Conn.remove(specDel);
 		}
 		
+		if (args[0].equalsIgnoreCase("15")){
+			OMVChange t = new OMVChange();
+			t.setURI("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=C8468AE1ACC5E8B034DACEB8C0A2CC2102435C1E");
+			oyster2Conn.remove(t);
+		}
 		
 		if (args[0].equalsIgnoreCase("2")){
 			System.out.println ("Last Change from Log: "+oyster2Conn.getLastChangeIdFromLog(faoOntology));
@@ -187,18 +196,18 @@ public class ChangeTests {
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
 			
 			changes.clear();
-			changes.addAll(oyster2Conn.getChanges(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967"));
-			System.out.println("Changes for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
+			changes.addAll(oyster2Conn.getChanges(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020"));
+			System.out.println("Changes for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020)");
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
 			
 			changes.clear();
 			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange(),null));
-			System.out.println("Changes for the specified ontology: ");
+			System.out.println("Changes for the specified ontology of type EntityChange: ");
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
 		
 			changes.clear();
-			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967"));
-			System.out.println("Changes for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
+			changes.addAll(oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020"));
+			System.out.println("Changes for the specified ontology of type EntityChange since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020)");
 			System.out.println(Oyster2Manager.serializeOMVChanges(changes));
 			
 			Set<OMVOntology> trackedOntologies = oyster2Conn.getOntologiesWithChanges();
@@ -210,8 +219,8 @@ public class ChangeTests {
 			System.out.println(Oyster2Manager.serializeActions(actions));
 			
 			actions.clear();
-			actions=oyster2Conn.getEntityActionsHistory(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967");
-			System.out.println("Entity actions for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=92695188044F5BCCD7DF0636101ACE6656E2A967)");
+			actions=oyster2Conn.getEntityActionsHistory(faoOntology, "http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020");
+			System.out.println("Entity actions for the specified ontology since: (http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=1C96E8F3A3E6967202EC4B0F930A78A76362A020)");
 			System.out.println(Oyster2Manager.serializeActions(actions));
 			
 			Action ontologyAction=oyster2Conn.getOntologyAction(faoOntology);
@@ -242,7 +251,7 @@ public class ChangeTests {
 		//First axiom change
 		System.out.println("registering example...");
 		Declaration newClass = new Declaration();
-		newClass.setEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster");
+		newClass.setEntity(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster"));
 		Addition addClassAxiom = new Addition();
 		addClassAxiom.setAppliedAxiom(newClass);
 		addClassAxiom.setAppliedToOntology(faoOntology);
@@ -258,7 +267,7 @@ public class ChangeTests {
 		//Lets add another class
 		//First axiom change
 		Declaration newClass1 = new Declaration();
-		newClass1.setEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog");
+		newClass1.setEntity(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog"));
 		Addition addClassAxiom1 = new Addition();
 		addClassAxiom1.setAppliedAxiom(newClass1);
 		addClassAxiom1.setAppliedToOntology(faoOntology);
@@ -274,7 +283,7 @@ public class ChangeTests {
 		//Lets add a subclass
 		//First axiom changes
 		Declaration newClass2 = new Declaration();
-		newClass2.setEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
+		newClass2.setEntity(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
 		Addition addClassAxiom2 = new Addition();
 		addClassAxiom2.setAppliedAxiom(newClass2);
 		addClassAxiom2.setAppliedToOntology(faoOntology);
@@ -282,8 +291,8 @@ public class ChangeTests {
 		String ch1=oyster2Conn.getLastChangeId();
 		
 		SubClassOf sco = new SubClassOf();
-		sco.setSubClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
-		sco.setSuperClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster");
+		sco.setSubClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		sco.setSuperClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster"));
 		Addition addSubClassOf = new Addition();
 		addSubClassOf.setAppliedAxiom(sco);
 		addSubClassOf.setAppliedToOntology(faoOntology);
@@ -301,8 +310,9 @@ public class ChangeTests {
 		
 		//Lets add an object property with domain and range
 		//First axiom changes
+		
 		Declaration newObjectProperty = new Declaration();
-		newObjectProperty.setEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears");
+		newObjectProperty.setEntity(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
 		Addition addObjectProperty = new Addition();
 		addObjectProperty.setAppliedAxiom(newObjectProperty);
 		addObjectProperty.setAppliedToOntology(faoOntology);
@@ -310,8 +320,8 @@ public class ChangeTests {
 		String c1=oyster2Conn.getLastChangeId();
 		
 		ObjectPropertyDomain pD = new ObjectPropertyDomain();
-		pD.setObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears");
-		pD.setDomain("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog");
+		pD.setObjectProperty(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
+		pD.setDomain(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog"));
 		Addition addObjectPropertyDomain = new Addition();
 		addObjectPropertyDomain.setAppliedAxiom(pD);
 		addObjectPropertyDomain.setAppliedToOntology(faoOntology);
@@ -319,8 +329,8 @@ public class ChangeTests {
 		String c2=oyster2Conn.getLastChangeId();
 		
 		ObjectPropertyRange pR = new ObjectPropertyRange();
-		pR.setObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears");
-		pR.setRange("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster");
+		pR.setObjectProperty(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
+		pR.setRange(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster"));
 		Addition addObjectPropertyRange = new Addition();
 		addObjectPropertyRange.setAppliedAxiom(pR);
 		addObjectPropertyRange.setAppliedToOntology(faoOntology);
@@ -340,8 +350,8 @@ public class ChangeTests {
 		//Lets add a composite change (move class)
 		//First removal changes (axiom & entity) i.e. entity changes (optionally, just to track the entities states)
 		SubClassOf sco1 = new SubClassOf();
-		sco1.setSubClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
-		sco1.setSuperClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster");
+		sco1.setSubClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		sco1.setSuperClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Monster"));
 		Removal removeSubClassOf = new Removal();
 		removeSubClassOf.setAppliedAxiom(sco1);
 		removeSubClassOf.setAppliedToOntology(faoOntology);
@@ -358,8 +368,8 @@ public class ChangeTests {
 		
 		//Then addition changes (axiom & entity) i.e. entity changes (optionally, just to track the entities states)
 		SubClassOf sco2 = new SubClassOf();
-		sco2.setSubClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
-		sco2.setSuperClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog");
+		sco2.setSubClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		sco2.setSuperClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Dog"));
 		Addition addSubClassOf1 = new Addition();
 		addSubClassOf1.setAppliedAxiom(sco2);
 		addSubClassOf1.setAppliedToOntology(faoOntology);
@@ -380,6 +390,41 @@ public class ChangeTests {
 		newMoveClass.addConsistsOf(change3);
 		newMoveClass.addConsistsOf(change4);
 		oyster2Conn.register(newMoveClass);
+		
+		
+		//Lets add a subclass complex
+		//First axiom changes
+		
+		ObjectMaxCardinality omc= new ObjectMaxCardinality();
+		omc.setCardinality(5);
+		omc.setObjectProperty(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
+		omc.setOWLClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		
+		Declaration newClass5 = new Declaration();
+		newClass5.setEntity(omc);
+		Addition addClassAxiom5 = new Addition();
+		addClassAxiom5.setAppliedAxiom(newClass5);
+		addClassAxiom5.setAppliedToOntology(faoOntology);
+		oyster2Conn.register(addClassAxiom5);
+		String ch5=oyster2Conn.getLastChangeId();
+		
+		SubClassOf sco5 = new SubClassOf();
+		sco5.setSubClass(omc);
+		sco5.setSuperClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		Addition addSubClassOf5 = new Addition();
+		addSubClassOf5.setAppliedAxiom(sco5);
+		addSubClassOf5.setAppliedToOntology(faoOntology);
+		oyster2Conn.register(addSubClassOf5);
+		String ch6=oyster2Conn.getLastChangeId();
+		
+		//Then entity change (optionally)
+		AddSubClassOf newClassEntity5 = new AddSubClassOf();
+		newClassEntity5.setAppliedToOntology(faoOntology);
+		newClassEntity5.addConsistsOfAtomicOperation(ch5);
+		newClassEntity5.addConsistsOfAtomicOperation(ch6);
+		newClassEntity5.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
+		newClassEntity5.addHasAuthor(se);
+		oyster2Conn.register(newClassEntity5);
 		
 		//Specify the next version of the ontology
 		OMVOntology faoOntology_v2 = new OMVOntology();
