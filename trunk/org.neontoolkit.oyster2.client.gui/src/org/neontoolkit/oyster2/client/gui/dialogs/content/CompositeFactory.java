@@ -94,7 +94,9 @@ public class CompositeFactory {
 			return composite;
 		}
 		else if (type.equals(LONG_TEXT_TYPE)) {
-			return	new TextAreaComposite(parent,style,section);
+			TextAreaComposite composite = new TextAreaComposite(parent,style,section);
+			composite.setRequired(isRequired);
+			return composite;
 		}
 		else if (type.equals(LIST_PARTY_TYPE)) {
 			PartyComposite composite =
