@@ -84,7 +84,16 @@ public class WebServersLocator {
 	}
 	
 	public boolean removeServer(String server) {
-		if (servers.remove(server)) {
+		
+		if (servers.contains(server)) {
+			if (server.equals(getCurrentSelection())) {
+				System.out.println("Removing selected server");
+				servers.remove(server);
+				if (!servers.isEmpty()) {
+					setCurrentSelection(servers.iterator().next());
+				}
+			}
+			
 			fireContentChanged(server,WebServersLocator.DELETED);
 			//List<String> servers = configuration.getList(SERVER_LIST_KEY);
 			
