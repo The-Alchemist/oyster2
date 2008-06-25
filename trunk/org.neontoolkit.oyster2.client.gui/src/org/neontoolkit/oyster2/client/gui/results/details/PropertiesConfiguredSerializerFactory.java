@@ -17,9 +17,7 @@ import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
  */
 public class PropertiesConfiguredSerializerFactory implements
 		IResultSerializerFactory {
-	
-	
-	
+		
 	Map<String,String> serializers = null;
 	
 	public void setPropertiesFile(String []initArgs) {

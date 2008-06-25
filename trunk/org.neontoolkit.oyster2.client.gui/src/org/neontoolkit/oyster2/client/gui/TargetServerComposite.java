@@ -48,22 +48,23 @@ public class TargetServerComposite extends Composite {
 
 
 	private void putServerCombo() {
-		serverCombo = new Combo(this,SWT.DROP_DOWN);
+		serverCombo = new Combo(this,SWT.DROP_DOWN|SWT.READ_ONLY);
 		String [] servers = Activator.getWebServersLocator().getServers();
 		String selectedServer = Activator.getWebServersLocator().
 			getCurrentSelection();
 		serverCombo.setItems(servers);
 		if (selectedServer != null) {
-			/*int i = 0;
+			int i = 0;
 			for (; i<servers.length;i++) {
 				if (servers[i].equals(selectedServer))
 					break;
-			}*/
+			}
 			serverCombo.setText(selectedServer);
-			//serverCombo.select(i);
+			serverCombo.select(i);
 		}
 		else {
 			serverCombo.setText(serverCombo.getItem(0));
+			
 		}
 		
 	}
@@ -114,7 +115,11 @@ public class TargetServerComposite extends Composite {
 				}
 				else if (((String)event.data).equals(WebServersLocator.DELETED) ) {
 					serverCombo.remove(server);
-				}				
+					if (serverCombo.getText().trim().equals("")) {
+						if (serverCombo.getItemCount()>0)
+							serverCombo.select(0);
+					}
+				}
 			}
 		};
 		Activator.getWebServersLocator().addContentListener(serverListChangeListener);
