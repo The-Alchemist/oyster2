@@ -1,0 +1,15 @@
+org.neontoolkit.omv.api.core
+org.neontoolkit.omv.api.extensions.OWLchange
+org.neontoolkit.omv.api.extensions.change
+org.neontoolkit.omv.api.extensions.mapping
+org.neontoolkit.omv.api.extensions.peer
+org.neontoolkit.owlodm.api
+org.neontoolkit.registry.api
+org.neontoolkit.registry.api.change
+org.neontoolkit.registry.api.conditions
+org.neontoolkit.registry.api.duplicates
+org.neontoolkit.registry.api.individuals
+org.neontoolkit.registry.api.properties
+org.neontoolkit.registry.api.workflow
+org.neontoolkit.registry.oyster2.server
+org.neontoolkit.workflow.api
