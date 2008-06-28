@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The class Axiom provides the object 
- * representation of the Axiom OWLODM Object  
+ * The class Description provides the object 
+ * representation of the Description OWLODM Object  
  * @author Raul Palma
  * @version 2.0, March 2008
  */

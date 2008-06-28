@@ -427,11 +427,10 @@ public class ChangeManagement {
 	}
 	
 	/**
-	 * Removes a change from Oyster2 registry.
+	 * Removes a change from Oyster2 registry. If is an
+	 * entity change, removes related atomic changes.
 	 * @param o is the OMVChange object representing the
-	 * change that will be removed.
-	 * NOTE: This method is called within the change management 
-	 * implementation, it should not be called directly.
+	 * change that will be removed. 
 	 */
 	@SuppressWarnings("unchecked")
 	public void safeRemove(OMVChange changeE)

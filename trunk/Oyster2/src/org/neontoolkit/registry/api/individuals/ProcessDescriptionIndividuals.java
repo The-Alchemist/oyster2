@@ -36,8 +36,8 @@ import org.neontoolkit.registry.oyster2.Constants;
 
 
 /**
- * The class ProcessAxiomIndividuals provides the methods to
- * create Axiom objects  
+ * The class ProcessDescriptionIndividuals provides the methods to
+ * create Description objects  
  * representing the result of a query 
  * @author Raul Palma
  * @version 2.0, March 2008

@@ -35,8 +35,8 @@ import org.neontoolkit.registry.oyster2.OntologyProperty;
 import org.neontoolkit.registry.util.GUID;
 
 /**
- * The class AxiomProperties provides the methods to
- * retrieve the properties from Axiom objects 
+ * The class DescriptionProperties provides the methods to
+ * retrieve the properties from Description objects 
  * representing the object of the registry 
  * @author Raul Palma
  * @version 2.0, March 2008

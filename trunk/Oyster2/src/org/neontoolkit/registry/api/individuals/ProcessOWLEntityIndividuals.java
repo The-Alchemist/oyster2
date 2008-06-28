@@ -15,8 +15,8 @@ import org.neontoolkit.registry.oyster2.Constants;
 
 
 /**
- * The class ProcessAxiomIndividuals provides the methods to
- * create Axiom objects  
+ * The class ProcessOWLEntityIndividuals provides the methods to
+ * create OWLEntity objects  
  * representing the result of a query 
  * @author Raul Palma
  * @version 2.0, March 2008

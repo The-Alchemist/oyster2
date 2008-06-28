@@ -9,8 +9,8 @@ import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.registry.oyster2.OntologyProperty;
 
 /**
- * The class AxiomProperties provides the methods to
- * retrieve the properties from Axiom objects 
+ * The class OWLEntityProperties provides the methods to
+ * retrieve the properties from OWLEntity objects 
  * representing the object of the registry 
  * @author Raul Palma
  * @version 2.0, March 2008
