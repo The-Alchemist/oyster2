@@ -1196,7 +1196,7 @@ public class Oyster2Connection {
 	public void submitToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToBeApproved(changeURI, p);
+			wMgmt.submitToBeApproved(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1208,7 +1208,7 @@ public class Oyster2Connection {
 	public void submitToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToApproved(changeURI, p);
+			wMgmt.submitToApproved(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1221,7 +1221,7 @@ public class Oyster2Connection {
 	public void submitToBeDeleted(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToBeDeleted(changeURI, p);
+			wMgmt.submitToBeDeleted(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1234,7 +1234,7 @@ public class Oyster2Connection {
 	public void rejectToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToBeApproved(changeURI, p);
+			wMgmt.rejectToBeApproved(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1248,7 +1248,7 @@ public class Oyster2Connection {
 	public void rejectToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToApproved(changeURI, p);
+			wMgmt.rejectToApproved(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1262,7 +1262,7 @@ public class Oyster2Connection {
 	public void rejectToDraft(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToDraft(changeURI, p);
+			wMgmt.rejectToDraft(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
