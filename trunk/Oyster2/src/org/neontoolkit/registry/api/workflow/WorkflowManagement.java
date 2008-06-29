@@ -69,7 +69,7 @@ public class WorkflowManagement {
 
 	//ADDING ACTIONS
 	@SuppressWarnings("unchecked")
-	public boolean insert(String changeURI, OMVPerson p){
+	public boolean insert(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;} 
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)) {System.out.println("Only subject experts are allowed to insert elements...");return false;}
@@ -89,9 +89,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -126,7 +130,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public boolean delete(String changeURI, OMVPerson p){
+	public boolean delete(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to delete elements...");return false;}
@@ -147,9 +151,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -196,7 +204,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public boolean update(String changeURI, OMVPerson p){
+	public boolean update(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to update elements...");return false;}
@@ -216,9 +224,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -281,7 +293,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public void submitToBeApproved(String changeURI, OMVPerson p){
+	public void submitToBeApproved(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)) {System.out.println("Only subject experts are allowed to send elements to be approved...");return;}
@@ -302,9 +314,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -342,7 +358,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void submitToApproved(String changeURI, OMVPerson p){
+	public void submitToApproved(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to approve elements...");return;}
@@ -362,9 +378,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -402,7 +422,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);	
 	}
 	@SuppressWarnings("unchecked")
-	public boolean submitToBeDeleted(String changeURI, OMVPerson p){
+	public boolean submitToBeDeleted(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to send elements to be deleted...");return false;}
@@ -422,9 +442,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -481,7 +505,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToBeApproved(String changeURI, OMVPerson p){
+	public void rejectToBeApproved(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to be approved...");return;}
@@ -501,9 +525,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -546,7 +574,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToApproved(String changeURI, OMVPerson p){
+	public void rejectToApproved(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to approved...");return;}
@@ -566,9 +594,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -608,7 +640,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToDraft(String changeURI, OMVPerson p){
+	public void rejectToDraft(String changeURI, OMVPerson p, OMVOntology o){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to draft...");return;}
@@ -628,9 +660,13 @@ public class WorkflowManagement {
 		
 		//checking previous entity state
 		//first get the ontology of the change
-		ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
-		Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		OMVOntology mainOntoReply;
+		if (o !=null) mainOntoReply=o;
+		else{
+			ObjectProperty ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.appliedToOntology);
+			Individual targetValue=getPropertyValue(changeURI,ontologyObjectProperty,Constants.CHANGEURI+conceptChange);
+			mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(targetValue, "ontology", localRegistry);
+		}
 		//now get the entity state
 		ChangeManagement cMgmt= new ChangeManagement();
 		//String entity = cMgmt.getRelatedEntity(changeURI);
@@ -672,6 +708,8 @@ public class WorkflowManagement {
 	@SuppressWarnings("unchecked")
 	public void moveToDraft(OMVOntology o, OMVPerson p){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}		
+		
+		if (getOntologyState(o).equalsIgnoreCase(Constants.DraftState)) return;
 		//First remove current ontology action if exists i.e. only one ontology action is required
 		removeOntologyActions(o);
 		//update change state

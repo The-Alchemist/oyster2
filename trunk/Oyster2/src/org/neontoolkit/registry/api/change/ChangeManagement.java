@@ -91,6 +91,7 @@ public class ChangeManagement {
 	@SuppressWarnings("unchecked")
 	public String register(OMVChange o)
 	{
+		//mOyster2.getLogger().info("Start registering");
 		List pList = new LinkedList();
 		if (o.getAppliedToOntology()!=null){
 			if (!isTracked(o.getAppliedToOntology())){System.out.println("To register changes the ontology tracking of this ontology should be activated, use method startTracking...");return null;}
@@ -144,8 +145,10 @@ public class ChangeManagement {
 					}
 				}
 			}
+			//mOyster2.getLogger().info("Finished prerequisites check");
 			pList.clear();
 			pList=ChangeProperties.getChangeProperties(o);
+			//mOyster2.getLogger().info("Finished getting change properties");
 			//Generate trace
 			String previousChange="";
 			boolean first=true;
@@ -160,6 +163,7 @@ public class ChangeManagement {
 				previousChange=o.getHasPreviousChange();
 				first=false;
 			}
+			//mOyster2.getLogger().info("Finished getting previous change");
 			//Specify class name to add
 			String concept=getChangeConcept(o);
 			OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
@@ -174,10 +178,10 @@ public class ChangeManagement {
 					break;
 				}
 			}
-			
+			//mOyster2.getLogger().info("Finished getting class name");
 			//register change
 			IOntology.addConceptToRegistry(1,pList,30, null);
-			
+			//mOyster2.getLogger().info("Finished adding change");
 			//Workflow info
 			if (mOyster2.getWorkflowSupport()){
 				if (o instanceof OMVEntityChange){
@@ -190,12 +194,13 @@ public class ChangeManagement {
 					//CHECK ROLES AND NEXT STATES
 					boolean success=false;
 					if (o instanceof ClassChange || o instanceof OWLClassChange || o instanceof IndividualChange || o instanceof OWLIndividualChange || o instanceof PropertyChange || o instanceof OWLObjectPropertyChange || o instanceof OWLDataPropertyChange || o instanceof AnnotationPropertyChange){
-						success=wMgmt.update(tURN,editor);
+						success=wMgmt.update(tURN,editor,o.getAppliedToOntology());
 					}else if (o instanceof AddClass || o instanceof AddIndividual || o instanceof AddProperty || o instanceof AddDatatype ){
-						success=wMgmt.insert(tURN,editor);
+						success=wMgmt.insert(tURN,editor,o.getAppliedToOntology());
 					}else if (o instanceof RemoveClass || o instanceof RemoveIndividual || o instanceof RemoveProperty || o instanceof RemoveDatatype ){
-						success=wMgmt.submitToBeDeleted(tURN,editor);
+						success=wMgmt.submitToBeDeleted(tURN,editor,o.getAppliedToOntology());
 					}
+					//mOyster2.getLogger().info("Finished registering workflow action");
 					//Set entity state ->Automatically
 					if (!success){ //if not success remove change (and its corresponding atomics & axioms) and return
 						//get atomic changes
@@ -287,7 +292,9 @@ public class ChangeManagement {
 			
 			//when success update log and change specification
 			updateLog(o.getAppliedToOntology(),pList, first);
+			//mOyster2.getLogger().info("Finished updating log");
 			updateChangeSpecification(o.getAppliedToOntology(),pList,first);
+			//mOyster2.getLogger().info("Finished updating changespec");
 			return tURN;
 		}
 		return null;
