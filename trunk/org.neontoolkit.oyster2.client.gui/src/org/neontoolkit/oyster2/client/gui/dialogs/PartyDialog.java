@@ -22,11 +22,11 @@ import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposi
 public class PartyDialog extends ResizableInputDialog {
 
 	
-	public final static String NAME_COMBO_VALUES_KEY = "nameComboValues";
+	public final static String NAME_COMBO_VALUES_KEY = "nameComboValues"; //$NON-NLS-1$
 	
-	public final static String LASTNAME_COMBO_VALUES_KEY = "lastnameComboValues";
+	public final static String LASTNAME_COMBO_VALUES_KEY = "lastnameComboValues"; //$NON-NLS-1$
 	
-	public final static String ORGANIZATION_COMBO_VALUES_KEY = "organizationComboValues";
+	public final static String ORGANIZATION_COMBO_VALUES_KEY = "organizationComboValues"; //$NON-NLS-1$
 	
 	private Set<Person> people = new HashSet<Person>();
 	
@@ -55,7 +55,7 @@ public class PartyDialog extends ResizableInputDialog {
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Party input data");
+		newShell.setText(Messages.getString("PartyDialog.shell.title")); //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
@@ -79,7 +79,7 @@ public class PartyDialog extends ResizableInputDialog {
 		form.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
 		form.getBody().setLayout(layout);
-		form.setText("Select party");
+		form.setText(Messages.getString("PartyDialog.form.text")); //$NON-NLS-1$
 		
 		
 		makePeopleSection();
@@ -96,13 +96,13 @@ public class PartyDialog extends ResizableInputDialog {
 		group.setBackground(form.getBackground());
 		Section section = 
 			toolkit.createSection(group,Section.TWISTIE|SWT.WRAP);
-		section.setText("Organizations");
+		section.setText(Messages.getString("PartyDialog.organizations.label")); //$NON-NLS-1$
 		section.setLayout(new FillLayout());
 		section.setBackground(form.getBackground());
 		section.setTitleBarBackground(form.getBackground());
 		this.organizationSelection = new OrganizationSelectionComposite(section,SWT.NONE,
 				this.organizations,
-				getCustomSettingsSection()+"organizationSelectionComposite");
+				getCustomSettingsSection()+"organizationSelectionComposite"); //$NON-NLS-1$
 		section.setClient(organizationSelection);
 		return group;
 	}
@@ -119,12 +119,12 @@ public class PartyDialog extends ResizableInputDialog {
 		group.setLayout(new FillLayout());
 		Section section = 
 			toolkit.createSection(group,Section.TWISTIE|SWT.WRAP);
-		section.setText("People");
+		section.setText(Messages.getString("PartyDialog.people.label")); //$NON-NLS-1$
 		section.setBackground(form.getBackground());
 		section.setTitleBarBackground(form.getBackground());
 		section.setLayout(new FillLayout());
 		this.personSelection = new PersonSelectionComposite(section,SWT.NONE,
-				people,getCustomSettingsSection()+"personSelectionComposite");
+				people,getCustomSettingsSection()+"personSelectionComposite"); //$NON-NLS-1$
 		
 		section.setClient(personSelection);
 		return group;

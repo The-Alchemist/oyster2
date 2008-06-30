@@ -65,13 +65,12 @@ public class SubmitQueryJob extends WorkspaceJob {
 		Status status = null;
 		if (this.targetService == null || this.filters == null 
 				|| queryTarget == null) {
-			System.out.println("Trying to send query with target service: " +
-					targetService + " and filters " + filters);
-			throw new RuntimeException("Null value in required parameter");
+			
+			throw new RuntimeException("Null value in required parameter"); //$NON-NLS-1$
 		}
 		try {
-			monitor.beginTask("Submitting query",3);
-			monitor.subTask("Build query");
+			monitor.beginTask(Messages.getString("SubmitQueryJob.monitor.begin"),3); //$NON-NLS-1$
+			monitor.subTask(Messages.getString("SubmitQueryJob.monitor.building")); //$NON-NLS-1$
 			QueryPortAxis2Adapter queryPortAdapter =
 				new QueryPortAxis2Adapter();
 			
@@ -81,12 +80,12 @@ public class SubmitQueryJob extends WorkspaceJob {
 	 	    serviceStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(soTimeout);
 			queryPortAdapter.setServiceStub(serviceStub);
 			monitor.worked(1);
-			monitor.subTask("Waiting for server response");
+			monitor.subTask(Messages.getString("SubmitQueryJob.monitor.waiting")); //$NON-NLS-1$
 			response =
 				queryPortAdapter.submitQueryRequest(queryTarget.getName(),null, filters);
 			resultString = response.getStringMessage();
 			monitor.worked(2);
-			monitor.subTask("Building view");
+			monitor.subTask(Messages.getString("SubmitQueryJob.monitor.view")); //$NON-NLS-1$
 			if (monitor.isCanceled()) {
 				return Status.CANCEL_STATUS;
 			}
@@ -97,7 +96,7 @@ public class SubmitQueryJob extends WorkspaceJob {
 			
 		}
 		catch (AxisFault e) {
-			resultString = "Comunication with server failed. Cause: " +
+			resultString = Messages.getString("SubmitQueryJob.error.message.axis") + //$NON-NLS-1$
 				e.getMessage();
 			e.printStackTrace();
 			response = null;
@@ -105,7 +104,7 @@ public class SubmitQueryJob extends WorkspaceJob {
 				return Status.CANCEL_STATUS;
 			}
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
-					Status.OK,"Communication with the server had problems. Cause: " +
+					Status.OK,Messages.getString("SubmitQueryJob.error.status.message") + //$NON-NLS-1$
 					e.getLocalizedMessage(),e);
 			
 			openResultsView();
@@ -118,7 +117,7 @@ public class SubmitQueryJob extends WorkspaceJob {
 				return Status.CANCEL_STATUS;
 			}
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
-					Status.OK,"Error: " + e.getLocalizedMessage(),e);
+					Status.OK,Messages.getString("SubmitQueryJob.error.label") + e.getLocalizedMessage(),e); //$NON-NLS-1$
 			openResultsView();
 		}
 		
@@ -171,7 +170,7 @@ public class SubmitQueryJob extends WorkspaceJob {
 			public void run() {
 				Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 				MessageDialog.openInformation(shell, 
-                  "Submit Complete", 
+                  Messages.getString("SubmitQueryJob.succes.message"),  //$NON-NLS-1$
                   resultString);
 			}
 		};

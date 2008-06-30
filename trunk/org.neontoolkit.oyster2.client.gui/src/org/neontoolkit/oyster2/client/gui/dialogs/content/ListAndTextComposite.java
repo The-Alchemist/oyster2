@@ -62,7 +62,7 @@ public class ListAndTextComposite extends InputComposite {
 		//buttons
 
 		addButton = new Button(this, SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("ListAndTextComposite.addbutton.text")); //$NON-NLS-1$
 		formData = new FormData();
 		formData.right = new FormAttachment(100,-5);
 		formData.width = buttonWidth;  // Generated
@@ -71,7 +71,7 @@ public class ListAndTextComposite extends InputComposite {
 		
 		
 		removeButton = new Button(this, SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("ListAndTextComposite.removebutton.text")); //$NON-NLS-1$
 		
 		formData = new FormData();
 		formData.top = new FormAttachment(addButton,5);
@@ -81,7 +81,7 @@ public class ListAndTextComposite extends InputComposite {
 		
 		
 		browseButton = new Button(this,SWT.PUSH);
-		browseButton.setText("...");
+		browseButton.setText("..."); //$NON-NLS-1$
 		formData = new FormData();
 		formData.top = new FormAttachment(removeButton,5);
 		formData.right = new FormAttachment(100,-5);
@@ -111,7 +111,7 @@ public class ListAndTextComposite extends InputComposite {
 		listener = new Listener() {
 			public void handleEvent(Event event) {
 				if (event.widget == addButton) {
-					if(! text.getText().trim().equals("")) {
+					if(! text.getText().trim().equals("")) { //$NON-NLS-1$
 						
 						if (!items.contains(text.getText())) {
 							list.add(text.getText());

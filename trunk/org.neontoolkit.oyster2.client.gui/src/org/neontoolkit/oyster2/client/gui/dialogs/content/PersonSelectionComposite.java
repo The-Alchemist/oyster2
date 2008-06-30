@@ -33,9 +33,9 @@ import org.neontoolkit.oyster2.client.gui.Activator;
  */
 public class PersonSelectionComposite extends Composite {
 
-	private static final String NAME_COMBO_ITEMS_KEY ="nameComboItems";
+	private static final String NAME_COMBO_ITEMS_KEY ="nameComboItems"; //$NON-NLS-1$
 	
-	private static final String LASTNAME_COMBO_ITEMS_KEY ="lastnameComboItems";
+	private static final String LASTNAME_COMBO_ITEMS_KEY ="lastnameComboItems"; //$NON-NLS-1$
 	
 	private static final int numberOfSavedValues = 20;
 	
@@ -107,7 +107,7 @@ public class PersonSelectionComposite extends Composite {
 		Composite textInputComposite = createComboComposite(nameItems,
 				lastnameItems);
 		addButton = new Button(this,SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("PersonSelectionComposite.addbutton.text")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.right = new FormAttachment(100,-5);
 		fd.top = new FormAttachment(0,5);
@@ -121,7 +121,7 @@ public class PersonSelectionComposite extends Composite {
 		textInputComposite.setLayoutData(fd);
 				
 		removeButton = new Button(this,SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("PersonSelectionComposite.removebutton.text")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.left = new FormAttachment(0,5);
 		fd.bottom = new FormAttachment(100,-5);
@@ -179,7 +179,7 @@ public class PersonSelectionComposite extends Composite {
 		FormData fd = null;
 		
 		label = new Label(this,SWT.NONE);
-		label.setText("People currently in the list");
+		label.setText(Messages.getString("PersonSelectionComposite.people.present.label")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.top = new FormAttachment(textInputComposite,5);
 		fd.left = new FormAttachment(0,5);
@@ -207,7 +207,7 @@ public class PersonSelectionComposite extends Composite {
 		FormData fd = null;
 		
 		nameLabel = new Label(newInputComposite,SWT.NONE);
-		nameLabel.setText("Name");
+		nameLabel.setText(Messages.getString("PersonSelectionComposite.name.label")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.left = new FormAttachment(0,5);
 		fd.top = new FormAttachment(0,5);
@@ -215,8 +215,8 @@ public class PersonSelectionComposite extends Composite {
 		nameLabel.setLayoutData(fd);
 		
 		if (nameItems != null) {
-		System.out.println("Name items class " + nameItems.getClass());
-		System.out.println("Name items values;: " );
+		System.out.println("Name items class " + nameItems.getClass()); //$NON-NLS-1$
+		System.out.println("Name items values;: " ); //$NON-NLS-1$
 		for (int i = 0;i<nameItems.length;i++)
 			System.out.println(nameItems[i]);
 		}
@@ -244,7 +244,7 @@ public class PersonSelectionComposite extends Composite {
 			}
 		}
 		lastnameLabel = new Label(newInputComposite,SWT.NONE);
-		lastnameLabel.setText("Lastname");
+		lastnameLabel.setText(Messages.getString("PersonSelectionComposite.lastname.label")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.width = labelWidth;
 		fd.bottom = new FormAttachment(100,-5);
@@ -268,8 +268,8 @@ public class PersonSelectionComposite extends Composite {
 				if (event.widget == addButton) {
 					String nameText = nameCombo.getText().trim();
 					String lastnameText = lastnameCombo.getText().trim();
-					if ((! nameText.equals("")) && (!lastnameText.equals(""))) {
-					String fullName = nameText + " " +lastnameText;
+					if ((! nameText.equals("")) && (!lastnameText.equals(""))) { //$NON-NLS-1$ //$NON-NLS-2$
+					String fullName = nameText + " " +lastnameText; //$NON-NLS-1$
 					
 					Person person = new Person();
 					person.setName(nameText);
@@ -308,9 +308,6 @@ public class PersonSelectionComposite extends Composite {
 		
 		int i ;
 		for (i= 0;i<selected.length;i++) {
-			System.out.println("Removing from model, index: " + String.valueOf(selected[i]) + 
-					" value: " + people.get(Integer.valueOf(selected[i])).name + " " +
-					people.get(Integer.valueOf(selected[i])).lastname);
 			people.remove(Integer.valueOf(selected[i]));
 			
 		}
@@ -326,9 +323,6 @@ public class PersonSelectionComposite extends Composite {
 		while(valuesIterator.hasNext()) {
 			
 			people.put(Integer.valueOf(i),valuesIterator.next());
-			System.out.println("Put item with index: " + String.valueOf(i) + 
-					" value: " + people.get(Integer.valueOf(i)).name + " " +
-					people.get(Integer.valueOf(i)).lastname);
 			i++;
 		}
 		
@@ -344,9 +338,8 @@ public class PersonSelectionComposite extends Composite {
 		
 		while (it.hasNext()) {
 			entry = it.next();
-			System.out.println("Storing in list index " + entry.getKey().intValue() + " " + entry.getValue().getName() +
-					" " + entry.getValue().getLastname());
-			list.add(entry.getValue().getName() + " " + entry.getValue().getLastname(),
+			
+			list.add(entry.getValue().getName() + " " + entry.getValue().getLastname(), //$NON-NLS-1$
 					entry.getKey().intValue());
 		}
 	}

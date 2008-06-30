@@ -43,14 +43,15 @@ public class OntologyContentProvider implements ITreeContentProvider {
 						items.add(item);
 					}
 			}
-			else {  System.out.println("element: "+((Entity)element).getURI());
+			else {  
 					children = getSubTopics(ontology,(Entity)element);
 									
 					items.addAll(children);
 				}
 			
 		}catch(KAON2Exception e){
-			System.err.println(e.toString()+"at OntologyContentProvider getChildren()");
+			throw new RuntimeException(e);
+			//System.err.println(e.toString()+"at OntologyContentProvider getChildren()");
 		}
 		
 		return items.toArray();
@@ -79,13 +80,12 @@ public class OntologyContentProvider implements ITreeContentProvider {
 				
 				if(isTypeOntology)
 					return ((OWLClass)element).getSubDescriptions(ontology).size()>0;
-				else if(!isTypeOntology)
+				else
 					return getSubTopics(ontology,(Entity)element).size()>0;
-				else {
-					System.err.println("element Type error in hasChildren at OntologyContentProvider");
-				}
+				
 			}catch(KAON2Exception e){
-			System.err.println(e.toString()+"in OntologyContentProvider:hasChildren");
+				
+				System.err.println(e.toString()+"in OntologyContentProvider:hasChildren");
 			}
 			return false;
 		}
@@ -103,7 +103,7 @@ public class OntologyContentProvider implements ITreeContentProvider {
 	}
 	
 public Collection getSubTopics(Ontology ontology,Entity topicEntry){
-		System.out.println("Getting subtopics of " + topicEntry.getURI());
+		//System.out.println("Getting subtopics of " + topicEntry.getURI());
 		Collection subTopics = new ArrayList();
 		Individual topicIndiv = KAON2Manager.factory().individual(topicEntry.getURI());
 		//String topicURI = topicIndiv.getURI();
@@ -112,7 +112,8 @@ public Collection getSubTopics(Ontology ontology,Entity topicEntry){
 		try{
 		 propertyMap = topicIndiv.getObjectPropertyValues(ontology);
 		}catch(KAON2Exception e){
-			System.err.println(e.toString()+":OntologyContentProvider getSubTopics()");
+			throw new RuntimeException(e);
+			//System.err.println(e.toString()+":OntologyContentProvider getSubTopics()");
 		}
 		Collection subIndivs =(Collection) propertyMap.get(subTopic);
 		if(subIndivs!=null){

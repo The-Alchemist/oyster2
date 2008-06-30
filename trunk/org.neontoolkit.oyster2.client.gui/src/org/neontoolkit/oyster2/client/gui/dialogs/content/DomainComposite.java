@@ -43,7 +43,7 @@ public class DomainComposite extends InputComposite {
 		//buttons
 
 		addButton = new Button(this, SWT.PUSH);
-		addButton.setText("Change");
+		addButton.setText(Messages.getString("DomainComposite.addbutton.text")); //$NON-NLS-1$
 		formData = new FormData();
 		formData.right = new FormAttachment(100,-5);
 		formData.width = buttonWidth;  
@@ -52,7 +52,7 @@ public class DomainComposite extends InputComposite {
 		
 		
 		removeButton = new Button(this, SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("DomainComposite.removebutton.text")); //$NON-NLS-1$
 		
 		formData = new FormData();
 		formData.top = new FormAttachment(addButton,5);

@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.neontoolkit.oyster2.client.gui.ResourceLoader;
+
 
 /**
  * @author David Muñoz
@@ -28,9 +28,9 @@ public class TextAreaComposite extends InputComposite {
 			String section) {
 		super(parent,style,section,null);
 		setCustomSettingsSection(section);
-		ResourceLoader rl = ResourceLoader.getResourceLoader();
+		
 		setLayout(new GridLayout(1,false));
-		String oldText = rl.get(section,ITEMS_KEY);
+		
 		
 		text = new Text(this, SWT.MULTI|SWT.BORDER | SWT.MULTI
 				|SWT.V_SCROLL);
@@ -51,10 +51,7 @@ public class TextAreaComposite extends InputComposite {
 		
 		
 		text.setEditable(true);
-		if (oldText == null)
-			oldText = "";
-		text.setText(oldText);
-		setInput(oldText);
+
 		makeListeners();
 	}
 	private void makeListeners() {

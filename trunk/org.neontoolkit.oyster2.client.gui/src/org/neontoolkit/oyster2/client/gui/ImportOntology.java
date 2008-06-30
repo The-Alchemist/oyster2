@@ -31,11 +31,7 @@ public class ImportOntology extends Control {
 				uris[i] = url.toURI();
 			}
 			else {
-				//import the file
-				System.out.println(url.getFile().substring(1));
 				
-				
-	        	
 		        String filename =  url.getFile().substring(1);
 		        
 		        filename = DatamodelPlugin.getDefault().getNewOntologyFilename(projectName, filename,

@@ -15,9 +15,9 @@ public enum FilterType {
 	// PersonFilterType is not really a filter. It should be deleted when
 	// preparing the GUI for nested querys
 	
-	StringFilterType("StringFilterType"),DateTimeFilterType("DateTimeFilterType"),
-	BooleanFilterType("BooleanFilterType"),IntegerFilterType("IntegerFilterType"),
-	PersonFilterType("PersonFilterType"); 
+	StringFilterType("StringFilterType"),DateTimeFilterType("DateTimeFilterType"), //$NON-NLS-1$ //$NON-NLS-2$
+	BooleanFilterType("BooleanFilterType"),IntegerFilterType("IntegerFilterType"), //$NON-NLS-1$ //$NON-NLS-2$
+	PersonFilterType("PersonFilterType");  //$NON-NLS-1$
 	
 	private String name = null;
 	
@@ -34,29 +34,29 @@ public enum FilterType {
    }
 	
 	
-	public static final String[] StringFilterTypeComparators = {"EQ","Like","NotLike", "NE"};
+	public static final String[] StringFilterTypeComparators = {"EQ","Like","NotLike", "NE"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
-	public static final String[] DateTimeFilterTypeComparators = {"EQ","NE","GT","GE","LT","LE"};
+	public static final String[] DateTimeFilterTypeComparators = {"EQ","NE","GT","GE","LT","LE"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	
-	public static final String[] IntegerFilterTypeComparators = {"EQ","NE","GT","GE","LT","LE"};
+	public static final String[] IntegerFilterTypeComparators = {"EQ","NE","GT","GE","LT","LE"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	
-	public static final String[] BooleanFilterTypeComparators = {"EQ","NE"};
+	public static final String[] BooleanFilterTypeComparators = {"EQ","NE"}; //$NON-NLS-1$ //$NON-NLS-2$
 	
-	public static final String COMPARATOR_EQUAL = "EQ";
+	public static final String COMPARATOR_EQUAL = "EQ"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_NOT_EQUAL = "NE";
+	public static final String COMPARATOR_NOT_EQUAL = "NE"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_GREATER_THAN = "GT";
+	public static final String COMPARATOR_GREATER_THAN = "GT"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_GREATER_OR_EQUAL = "GE";
+	public static final String COMPARATOR_GREATER_OR_EQUAL = "GE"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_LESSER_THAN = "LT";
+	public static final String COMPARATOR_LESSER_THAN = "LT"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_LESSER_OR_EQUAL = "LE";
+	public static final String COMPARATOR_LESSER_OR_EQUAL = "LE"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_LIKE = "Like";
+	public static final String COMPARATOR_LIKE = "Like"; //$NON-NLS-1$
 	
-	public static final String COMPARATOR_NOT_LIKE = "NotLike";
+	public static final String COMPARATOR_NOT_LIKE = "NotLike"; //$NON-NLS-1$
 	
 	protected static Map<FilterType,String[]> comparators;
 	static {

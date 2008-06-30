@@ -25,7 +25,7 @@ public class SearchMessages {
 	         return RESOURCE_BUNDLE.getString(key);
 	     } catch (MissingResourceException e) {
 	    	 e.printStackTrace();
-	         return "!" + key + "!";
+	         return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 	     }
 	   }
 	  

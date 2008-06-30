@@ -34,7 +34,7 @@ public class LifecyclePortAxis2Adapter {
 				ebXMLTranslator.translateOntology(omvOntology);
 			
 			if (ontologyType == null) {
-				return "Invalid data in ontology attributes";
+				return "Invalid data in ontology: ebmXMLTranslator could not serialize ontology";
 			}
 			
 			registryObjectListType.addIdentifiable(ontologyType);

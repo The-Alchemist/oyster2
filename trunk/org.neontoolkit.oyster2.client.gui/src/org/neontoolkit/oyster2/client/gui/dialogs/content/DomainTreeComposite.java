@@ -74,7 +74,7 @@ public class DomainTreeComposite extends InputComposite {
 		//excepcion aqui
 		Ontology topicOntology = Oyster2.getSharedInstance().getTopicOntology();
 		Entity topicRoot = Oyster2.getSharedInstance().getTopicOntologyRoot();
-		System.out.println("Topic root: " + topicRoot.getURI());
+		
 		topicViewer = new TreeViewer(baseComposite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER| SWT.FULL_SELECTION);
 		topicViewer.setContentProvider(new OntologyContentProvider(

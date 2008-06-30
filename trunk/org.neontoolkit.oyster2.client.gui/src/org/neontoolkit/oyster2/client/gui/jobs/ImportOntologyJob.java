@@ -4,7 +4,6 @@
 package org.neontoolkit.oyster2.client.gui.jobs;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,15 +62,15 @@ public class ImportOntologyJob extends Job {
 		}
 		if (errors.size() != 0) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
-					Status.OK,"There were errors in the import process",null);
+					Status.OK,Messages.getString("ImportOntologyJob.errors.message"),null); //$NON-NLS-1$
 			for (String errorString : errors) {
-				resultString = errorString+"\n";
+				resultString = errorString+"\n"; //$NON-NLS-1$
 			}
 		}
 		else {
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,
-					"The ontologies were imported successfully",null);
-			resultString = "Success";
+					Messages.getString("ImportOntologyJob.success.message"),null); //$NON-NLS-1$
+			resultString = "Success"; //$NON-NLS-1$
 		}
 		if (isModal(this)) {
             // The progress dialog is still open so
@@ -95,7 +94,7 @@ public class ImportOntologyJob extends Job {
         
         if(monitor != null) {
         	//monitor.beginTask(Messages.getString("FileSystemImportWizard.3"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-        	pl = new ImportProgressListener("", monitor);
+        	pl = new ImportProgressListener("", monitor); //$NON-NLS-1$
         }
         String[] s = null;
         try {
@@ -141,7 +140,7 @@ public class ImportOntologyJob extends Job {
 			public void run() {
 				Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 				MessageDialog.openInformation(shell, 
-                  "Finished import", 
+                  Messages.getString("ImportOntologyJob.finished.message"),  //$NON-NLS-1$
                   resultString);
 			}
 		};

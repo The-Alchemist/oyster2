@@ -17,10 +17,10 @@ import org.eclipse.ui.PlatformUI;
 public abstract class ResizableInputDialog extends InputDialog {
 	//constants
 	
-	public final static String TAG_X = "x";
-	public final static String TAG_Y = "y";
-	public final static String TAG_WIDTH = "width";
-	public final static String TAG_HEIGHT = "height";
+	public final static String TAG_X = "x"; //$NON-NLS-1$
+	public final static String TAG_Y = "y"; //$NON-NLS-1$
+	public final static String TAG_WIDTH = "width"; //$NON-NLS-1$
+	public final static String TAG_HEIGHT = "height"; //$NON-NLS-1$
 	
 	
 	//private and protected members
@@ -72,9 +72,8 @@ public abstract class ResizableInputDialog extends InputDialog {
 	protected Point getInitialSize() {
 		Rectangle displaySize = getShell().getDisplay().getBounds();
 		Rectangle oldBounds = loadBounds();
-		System.out.println("Initial size:");
+
 		if (oldBounds != null) {
-			System.out.println("Using old bounds");
 			return new Point(
 					displaySize.width < oldBounds.width ? displaySize.width : oldBounds.width,
 					displaySize.height < oldBounds.height ? displaySize.height : oldBounds.height);
