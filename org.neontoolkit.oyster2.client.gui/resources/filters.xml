@@ -1,7 +1,0 @@
-<queryFilters>
-	<filters>
-		<item>StringFilterType</item>
-		<item>DateTimeFilterType</item>
-		<item>IntegerFilterType</item>
-	</filters>
-</queryFilters>
