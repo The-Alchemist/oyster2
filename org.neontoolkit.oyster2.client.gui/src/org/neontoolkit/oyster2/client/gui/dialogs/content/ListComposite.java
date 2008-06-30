@@ -42,14 +42,14 @@ public class ListComposite extends InputComposite {
 		//ResourceLoader rl = ResourceLoader.getResourceLoader();
 		if (predefined != null) { 
 			if (predefined.length == 0) {
-				throw new RuntimeException("Must have predefined values");
+				throw new RuntimeException(Messages.getString("ListComposite.error.missing.predefined")); //$NON-NLS-1$
 			}
 			else {
 				setSaveSettingsOnExit(false);
 			}
 		}
 		else {
-			throw new RuntimeException("Must have predefined values");
+			throw new RuntimeException(Messages.getString("ListComposite.error.missing.predefined")); //$NON-NLS-1$
 		}
 		items = new HashSet<String>();
 		FormData formData = null;
@@ -59,7 +59,7 @@ public class ListComposite extends InputComposite {
 		//buttons
 
 		addButton = new Button(this, SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("ListComposite.addbutton.text")); //$NON-NLS-1$
 		formData = new FormData();
 		formData.right = new FormAttachment(100,-5);
 		formData.width = buttonWidth;  
@@ -68,7 +68,7 @@ public class ListComposite extends InputComposite {
 		
 		
 		removeButton = new Button(this, SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("ListComposite.removebutton.text")); //$NON-NLS-1$
 		
 		formData = new FormData();
 		formData.top = new FormAttachment(addButton,5);

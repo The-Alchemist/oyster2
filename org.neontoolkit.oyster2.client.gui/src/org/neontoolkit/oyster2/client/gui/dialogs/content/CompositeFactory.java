@@ -25,14 +25,14 @@ import org.neontoolkit.oyster2.client.gui.validator.Validator;
  *
  */
 public class CompositeFactory {
-	public static final String LIST_DOMAIN_TYPE = "LIST_DOMAIN_TYPE";
-	public static final String LIST_PARTY_TYPE = "LIST_PARTY_TYPE";
-	public static final String LIST_AND_TEXT_TYPE = "LIST_AND_TEXT_TYPE";
-	public static final String LIST_TYPE = "LIST_TYPE";
-	public static final String COMBO_TYPE = "COMBO_TYPE";
-	public static final String TEXT_TYPE = "TEXT_TYPE";
-	public static final String LONG_TEXT_TYPE = "LONG_TEXT_TYPE";
-	public static final String CALENDAR_TYPE = "CALENDAR_TYPE";
+	public static final String LIST_DOMAIN_TYPE = "LIST_DOMAIN_TYPE"; //$NON-NLS-1$
+	public static final String LIST_PARTY_TYPE = "LIST_PARTY_TYPE"; //$NON-NLS-1$
+	public static final String LIST_AND_TEXT_TYPE = "LIST_AND_TEXT_TYPE"; //$NON-NLS-1$
+	public static final String LIST_TYPE = "LIST_TYPE"; //$NON-NLS-1$
+	public static final String COMBO_TYPE = "COMBO_TYPE"; //$NON-NLS-1$
+	public static final String TEXT_TYPE = "TEXT_TYPE"; //$NON-NLS-1$
+	public static final String LONG_TEXT_TYPE = "LONG_TEXT_TYPE"; //$NON-NLS-1$
+	public static final String CALENDAR_TYPE = "CALENDAR_TYPE"; //$NON-NLS-1$
 	private static Map<String,Validator> validators = null;
 	
 	static {
@@ -117,7 +117,7 @@ public class CompositeFactory {
 		}
 		else {
 		throw new RuntimeException (CompositeFactory.class.toString()+
-				"Unsopported type: " + type);
+				Messages.getString("CompositeFactory.unsupported.type") + type); //$NON-NLS-1$
 		}
 		
 	}

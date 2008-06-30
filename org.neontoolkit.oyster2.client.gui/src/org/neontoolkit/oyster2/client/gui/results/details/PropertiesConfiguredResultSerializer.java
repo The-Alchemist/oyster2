@@ -21,24 +21,24 @@ import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
  */
 public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 	
-	protected static String lineDelimiter = "\n";
+	protected static String lineDelimiter = "\n"; //$NON-NLS-1$
 	
 	private List<String> partyProperties = null;
 	
 	private static final String HEADER =
-		"<?xml version=\"1.0\" encoding=\"utf-8\"?>" + lineDelimiter +
-		"<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#" +
-		 "xmlns:omv=\"http://omv.ontoware.org/2005/05/ontology#\">" +
+		"<?xml version=\"1.0\" encoding=\"utf-8\"?>" + lineDelimiter + //$NON-NLS-1$
+		"<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#" + //$NON-NLS-1$
+		 "xmlns:omv=\"http://omv.ontoware.org/2005/05/ontology#\">" + //$NON-NLS-1$
 		lineDelimiter;
 	
 	
 	private PropertiesConfiguration configuration = null;
 	
 	private static final String DOC_END =
-		"</rdf:Description>\n</rdf:RDF>";
+		"</rdf:Description>\n</rdf:RDF>"; //$NON-NLS-1$
 	
 	private static final String RDF_TYPE_STRING =
-		"<rdf:type rdf:resource=\"http://www.w3.org/2000/01/rdf-schema#Resource\"/>" +
+		"<rdf:type rdf:resource=\"http://www.w3.org/2000/01/rdf-schema#Resource\"/>" + //$NON-NLS-1$
 		lineDelimiter;
 	
 	
@@ -48,7 +48,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 			path = Activator.getDefault().getResourcesDir() + File.separator
 			+ path;
 			configuration = new PropertiesConfiguration(path);
-			partyProperties = configuration.getList("party.properties");
+			partyProperties = configuration.getList("party.properties"); //$NON-NLS-1$
 		} catch (ConfigurationException e) {
 		
 			e.printStackTrace();
@@ -88,7 +88,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 	}
 	
 	private String makeEndTag(String beginTag) {
-		return beginTag.replaceAll("<", "</");
+		return beginTag.replaceAll("<", "</"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private void serializeProperty(List<LinkedText> list,String propertyName,
@@ -104,7 +104,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		
 		
 		if (propertyValue instanceof String) {
-			makePlainText(list, "\t" + beginTag);
+			makePlainText(list, "\t" + beginTag); //$NON-NLS-1$
 			
 			linkedText = new LinkedText();
 			
@@ -132,7 +132,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 				if (propertyText.charAt(0) == '#') {
 					propertyText = propertyText.substring(1);
 				}
-				makePlainText(list,"\t" + beginTag);
+				makePlainText(list,"\t" + beginTag); //$NON-NLS-1$
 				linkedText.setText(propertyText);
 				
 				
@@ -186,14 +186,14 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 			ISearchResult result, String propertyName ) {
 		
 		// get party specific methods
-		String personPropertyName = configuration.getString(propertyName+".person");
+		String personPropertyName = configuration.getString(propertyName+".person"); //$NON-NLS-1$
 		
-		String orgNamePropertyName = configuration.getString(propertyName+".organization");
+		String orgNamePropertyName = configuration.getString(propertyName+".organization"); //$NON-NLS-1$
 		
 		
 		Map<String,String> propertyNames = new HashMap<String,String>();
-		propertyNames.put("person",personPropertyName);
-		propertyNames.put("organization",orgNamePropertyName);
+		propertyNames.put("person",personPropertyName); //$NON-NLS-1$
+		propertyNames.put("organization",orgNamePropertyName); //$NON-NLS-1$
 		
 		LinkedText linkedText = null;
 		ISearchLink link = null;
@@ -208,7 +208,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		
 		
 		if (propertyValue instanceof String) {
-			makePlainText(list, "\t" + beginTag);
+			makePlainText(list, "\t" + beginTag); //$NON-NLS-1$
 			linkedText = new LinkedText();
 			link = new PartySearchLink();
 			
@@ -243,7 +243,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 				
 
 				linkedText.setLink(link);
-				makePlainText(list, "\t" + beginTag);
+				makePlainText(list, "\t" + beginTag); //$NON-NLS-1$
 				list.add(linkedText);
 				makePlainText(list, endTag+lineDelimiter);
 			}
@@ -257,10 +257,10 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		LinkedText link = new LinkedText();
 		
 		StringBuffer text = new StringBuffer(HEADER + 
-				lineDelimiter + "<rdf:Description rdf:about=\""); 
-		text.append(result.getId() + "\">" + lineDelimiter);
+				lineDelimiter + "<rdf:Description rdf:about=\"");  //$NON-NLS-1$
+		text.append(result.getId() + "\">" + lineDelimiter); //$NON-NLS-1$
 		text.append(RDF_TYPE_STRING);
-		text.append("<rdf:type rdf:resource=\"" + result.getRDFType() + "\"/>" +
+		text.append("<rdf:type rdf:resource=\"" + result.getRDFType() + "\"/>" + //$NON-NLS-1$ //$NON-NLS-2$
 				lineDelimiter);
 		link.setText(text.toString());
 		list.add(link);

@@ -24,9 +24,9 @@ public abstract class InputDialog extends TrayDialog {
 	
 	protected IDialogSettings dialogSettings = null;
 	
-	public static final String DIALOG_SETTINGS_SUFFIX = "Dialog";
+	public static final String DIALOG_SETTINGS_SUFFIX = "Dialog"; //$NON-NLS-1$
 	
-	public static final String ITEMS_KEY = "Items";
+	public static final String ITEMS_KEY = "Items"; //$NON-NLS-1$
 	/* This method must be overriden to create the correct section */
 	protected InputDialog(String section, Shell parentShell) {
 		super(parentShell);

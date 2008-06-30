@@ -57,7 +57,7 @@ public class OntologyAdapter {
 		
 		while (it.hasNext()) {
 			attributeName = (String)it.next();
-			System.out.println("Examining composite for attribute " + attributeName);
+			
 			composite = composites.get(attributeName);
 			input = composite.getInput();
 			if ((input instanceof String[])) {
@@ -66,7 +66,7 @@ public class OntologyAdapter {
 			}
 			else if ((input instanceof String)) {
 				if (((String)input).trim().equals("")) {
-					System.out.println("Attribute was null");
+			
 					continue;
 				}
 			}
@@ -75,16 +75,10 @@ public class OntologyAdapter {
 			try {
 				
 				field = clazz.getDeclaredField(attributeName);
-				if (field == null) {
-					System.out.println("field was null!!!");
-				}
-				else {
-					System.out.println("Field's declaring class " +field.getType());
-				}
+				
 				field.setAccessible(true);
 				if (field.getType().equals(String.class)) {
 					field.set(omvObject,(String)input);
-					System.out.println("Set field to " + field.get(omvObject));
 				}
 				else if (field.getType().equals(Boolean.class)) {
 					field.set(omvObject,Boolean.valueOf((String)input));
@@ -236,8 +230,6 @@ public class OntologyAdapter {
 					}
 					else if (attributeName.equals("isIncompatibleWith")) {
 						values = (String[])input;
-						System.out.println("Input for isIncompatibleWith: " + input.getClass());
-						System.out.println(input.toString());
 						
 						OMVOntology otherOntology = null;
 						for (i = 0;i<values.length;i++) {
@@ -275,7 +267,7 @@ public class OntologyAdapter {
 			}
 			
 		};
-		System.out.println("Finished making ontology object");
+		
 		
 		return omvObject;
 	}
@@ -284,7 +276,7 @@ public class OntologyAdapter {
 	
 	private static void setOntologyId(OMVOntology ontology, String id) {
 		//URI
-		System.out.println("setOntologyId of" + id);
+		
 		int URIEndIndex = id.indexOf("?version=");
 		
 		int versionStartIndex = URIEndIndex + "?version=".length();
@@ -296,8 +288,6 @@ public class OntologyAdapter {
 		ontology.setURI(id.substring(0, URIEndIndex));
 		ontology.setVersion(id.substring(versionStartIndex,versionEndIndex));
 		ontology.setResourceLocator(id.substring(locationStartIndex, locationEndIndex));
-		System.out.println("resolved " + ontology.getURI() + " " +
-				ontology.getVersion() + " " + ontology.getResourceLocator());
 		
 	}
 	

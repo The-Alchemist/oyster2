@@ -143,7 +143,7 @@ public class ListEditionDialog extends ResizableInputDialog {
 	private void addElement() {
 		String text = textLine.getText().trim();
 		
-		if (text.equals(""))
+		if (text.equals("")) //$NON-NLS-1$
 			return;
 		
 		if (deleted.contains(text)) {
@@ -182,14 +182,14 @@ public class ListEditionDialog extends ResizableInputDialog {
 		gd = new GridData();
 		
 		addButton = new Button(buttonsComposite,SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("ListEditionDialog.listEditionDialog.addbutton.add")); //$NON-NLS-1$
 		gd.grabExcessHorizontalSpace = true;
 		gd.horizontalAlignment = GridData.FILL;
 		addButton.setLayoutData(gd);
 		
 		gd = new GridData();
 		removeButton = new Button(buttonsComposite,SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("ListEditionDialog.listEditionDialog.removebutton.remove")); //$NON-NLS-1$
 		gd.horizontalAlignment = GridData.FILL;
 		gd.grabExcessHorizontalSpace = true;
 		removeButton.setLayoutData(gd);

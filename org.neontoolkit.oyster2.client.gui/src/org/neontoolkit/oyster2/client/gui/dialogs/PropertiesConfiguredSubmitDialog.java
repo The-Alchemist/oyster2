@@ -58,43 +58,43 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	//constants
 	private static final String CONFIGURATION_FILE_NAME = 
-		"PropertiesConfiguredSubmitDialog.properties";
+		"PropertiesConfiguredSubmitDialog.properties"; //$NON-NLS-1$
 	
-	private static final String IDENTIFIERS_KEY = "configuration.identifiers";
+	private static final String IDENTIFIERS_KEY = "configuration.identifiers"; //$NON-NLS-1$
 	
-	private static final String TARGET_BUNDLE_KEY = "bundle.file";
+	private static final String TARGET_BUNDLE_KEY = "bundle.file"; //$NON-NLS-1$
 	
-	private static final String TARGET_CATEGORIES_KEY = "target.categories";
+	private static final String TARGET_CATEGORIES_KEY = "target.categories"; //$NON-NLS-1$
 	
-	private static final String CATEGORY_ATTRIBUTES_SUFFIX = ".category.attributes";
+	private static final String CATEGORY_ATTRIBUTES_SUFFIX = ".category.attributes"; //$NON-NLS-1$
 	
-	private static final String TYPE_SUFFIX = ".type";
+	private static final String TYPE_SUFFIX = ".type"; //$NON-NLS-1$
 	
-	private static final String EDITABLE_SUFFIX = ".editable";
+	private static final String EDITABLE_SUFFIX = ".editable"; //$NON-NLS-1$
 	
-	private static final String DEFAULT_SUFFIX = ".default";
+	private static final String DEFAULT_SUFFIX = ".default"; //$NON-NLS-1$
 	
-	private static final String REQUIRED_SUFFIX = ".required";
+	private static final String REQUIRED_SUFFIX = ".required"; //$NON-NLS-1$
 	
-	private static final String VALIDATOR_SUFFIX = ".validator";
+	private static final String VALIDATOR_SUFFIX = ".validator"; //$NON-NLS-1$
 	
-	private static final String PREDEFINED_SUFFIX = ".predefined";
+	private static final String PREDEFINED_SUFFIX = ".predefined"; //$NON-NLS-1$
 	
-	private static final String SOURCE_TYPE_SUFFIX = ".source.type";
+	private static final String SOURCE_TYPE_SUFFIX = ".source.type"; //$NON-NLS-1$
 	
-	private static final String FILE_SOURCE ="file";
+	private static final String FILE_SOURCE ="file"; //$NON-NLS-1$
 	
-	private static final String ONTOLOGY_SOURCE ="ontology";
+	private static final String ONTOLOGY_SOURCE ="ontology"; //$NON-NLS-1$
 	
-	private static final String BOOLEAN_SOURCE ="booleans";
+	private static final String BOOLEAN_SOURCE ="booleans"; //$NON-NLS-1$
 	
-	private static final String ELEMENTS_KEY="elements";
+	private static final String ELEMENTS_KEY="elements"; //$NON-NLS-1$
 	
-	private static final String SOURCE_SUFFIX = ".source";
+	private static final String SOURCE_SUFFIX = ".source"; //$NON-NLS-1$
 	
-	private static final String CLASS_SUFFIX = ".class";
+	private static final String CLASS_SUFFIX = ".class"; //$NON-NLS-1$
 	
-	private static final String NAMESPACE_KEY = "namespace";
+	private static final String NAMESPACE_KEY = "namespace"; //$NON-NLS-1$
 	
 	private ArrayList<String> booleanValues = null;
 	
@@ -154,8 +154,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		booleanValues = new ArrayList<String>();
-		booleanValues.add("true");
-		booleanValues.add("false");
+		booleanValues.add("true"); //$NON-NLS-1$
+		booleanValues.add("false"); //$NON-NLS-1$
 		
 		Composite baseComposite =  (Composite)super.createDialogArea(parent);
 		baseComposite.setLayout(new FillLayout());
@@ -165,7 +165,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			generalConfiguration = 
 				new PropertiesConfiguration(path + File.separator + CONFIGURATION_FILE_NAME);
 			messagesResolver = new MessageResolver(this.getClass().getPackage().getName() + 
-					".SubmitMessages");
+					".SubmitMessages"); //$NON-NLS-1$
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -200,7 +200,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 					Shell shell = Activator.getDefault()
 					.getWorkbench().getActiveWorkbenchWindow().getShell();
 					TranslatedAttributeSelectionDialog dialog =
-						new TranslatedAttributeSelectionDialog("searchViewAttributesDialog",
+						new TranslatedAttributeSelectionDialog("searchViewAttributesDialog", //$NON-NLS-1$
 								shell,template);
 					dialog.setCategories(categories);
 					dialog.setSelection(selection);
@@ -232,7 +232,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		submitTarget = targets[targetCombo.getSelectionIndex()];
 		
 		String path = Activator.getDefault().getResourcesDir() + File.separator +
-		generalConfiguration.getString(submitTarget+".file");
+		generalConfiguration.getString(submitTarget+".file"); //$NON-NLS-1$
 		
 		try {
 			targetConfiguration = new PropertiesConfiguration(path);
@@ -243,7 +243,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		String targetBundle = targetConfiguration.getString(TARGET_BUNDLE_KEY);
 		template = TemplateManager.getInstance().getTemplate(submitTarget);
 		targetMessagesResolver = new MessageResolver(
-				this.getClass().getPackage().getName() + "." +targetBundle);
+				this.getClass().getPackage().getName() + "." +targetBundle); //$NON-NLS-1$
 		String defaultTemplate = template.getDefaultTemplate();
 		List<String> templateAttributes =
 			template.getTemplateProperties(defaultTemplate);
@@ -262,7 +262,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		
 		String [] categoryNames = targetConfiguration.getStringArray(TARGET_CATEGORIES_KEY); 
-		System.err.println("====== BEGIN =========================");
+		
 		
 		String []categoryAttributes = null;
 		
@@ -276,7 +276,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		}
 		form.getBody().layout(true,true);
 		form.reflow(false);
-		System.err.println("=============END==================");
+
 	}
 	
 	private boolean makeSection(Composite parent,String category, String[] categoryAttributes) {
@@ -330,26 +330,24 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 				selection.put(ontologyAttribute,false);
 			if ((isEnabled != null) &&
 					isEnabled) {
-				System.out.println(ontologyAttribute + " must be present");
+				
 				// the composite must be present
 				if (! composites.containsKey(ontologyAttribute)) {
-					System.out.println("creating composite");
+					
 					child = makeComposite(sectionClient, ontologyAttribute);
 					
 					composites.put(ontologyAttribute,child);
 					emptySection = false;
 				}
 				else {
-					System.out.println("present already");
 					emptySection = false;
 				}
 				
 			}
 			else {
 				// the composite must not be present
-				System.out.println(ontologyAttribute + " must not be present");
+				
 				if (composites.containsKey(ontologyAttribute)) {
-					System.out.println("removing");
 					attributeGroup = (Group)composites.get(ontologyAttribute).getData();
 					composites.get(ontologyAttribute).dispose();
 					attributeGroup.dispose();
@@ -361,7 +359,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			
 		}
 		if (emptySection) {
-			System.out.println("section " + category + " deleted");
 			section.dispose();
 			sectionGroup.dispose();
 			currentSections.remove(category);
@@ -406,7 +403,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		Group group = null;
 		
 		
-		System.out.println("MAKING COMPOSITE FOR  " + ontologyAttribute);
 		
 		InputComposite child = null;
 		
@@ -417,7 +413,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			//loader.getAttribute(fileHandler,
 			//		ontologyAttribute, "editable");
 		if (editable == null) {
-			editable = "true";
+			editable = "true"; //$NON-NLS-1$
 		}
 		validatorName = targetConfiguration.getString(ontologyAttribute + VALIDATOR_SUFFIX); 
 			
@@ -448,7 +444,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		//loader.getAttribute(fileHandler,
 		//			ontologyAttribute, "predefined");
 		
-		if ((predefined != null) && predefined.equals("true")) {
+		if ((predefined != null) && predefined.equals("true")) { //$NON-NLS-1$
 			predefinedValues = loadPredefinedValues(ontologyAttribute);
 		}
 		
@@ -456,12 +452,12 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		group.setLayout(new FillLayout());
 		
 		if (isRequired)
-			group.setText(label + " (Required)");
+			group.setText(label + Messages.getString("PropertiesConfiguredSubmitDialog.required.label")); //$NON-NLS-1$
 		else 
 			group.setText(label);
 		
 		child = CompositeFactory.createComposite(compositeType,
-				group, SWT.NONE,"submitOntologyPreferences." + ontologyAttribute,
+				group, SWT.NONE,"submitOntologyPreferences." + ontologyAttribute, //$NON-NLS-1$
 				predefinedValues,editable,validatorName,defaultValue,
 				isRequired);
 		
@@ -518,7 +514,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		composite.setLayout(new FormLayout());
 		
 		Label label = new Label(composite,SWT.NONE);
-		label.setText(messagesResolver.getString("target.label"));
+		label.setText(messagesResolver.getString("target.label")); //$NON-NLS-1$
 		
 		targetCombo = new Combo(composite,SWT.DROP_DOWN|SWT.BORDER);
 		targets = generalConfiguration.getStringArray(IDENTIFIERS_KEY);
@@ -532,7 +528,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		
 		attributesSelectionButton = new Button(composite,SWT.PUSH);
-		attributesSelectionButton.setText("Select attributes");
+		attributesSelectionButton.setText(Messages.getString("PropertiesConfiguredSubmitDialog.select.attributes.label")); //$NON-NLS-1$
 		makeTargetCompositeListeners();
 		targetCombo.select(0);
 		FormData fd = null;
@@ -574,7 +570,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		form = toolkit.createScrolledForm(baseComposite);
 		form.getBody().setLayout(layout);
-		form.setText("Ontology metadata");
+		form.setText(Messages.getString("PropertiesConfiguredSubmitDialog.form.text")); //$NON-NLS-1$
 		
 		form.setBackground(baseComposite.getBackground());
 		form.setBackgroundMode(SWT.INHERIT_NONE);
@@ -587,7 +583,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		ArrayList<String> allErrors = new ArrayList<String>();
 		ArrayList<String> validationErrors = null;
 		if (composites.size() == 0) {
-			allErrors.add(messagesResolver.getString("form.empty"));
+			allErrors.add(messagesResolver.getString("form.empty")); //$NON-NLS-1$
 		}
 		Iterator<String> keys = composites.keySet().iterator();
 		String key = null;
@@ -600,8 +596,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			key = keys.next();
 			composite = composites.get(key);
 			if ( !composite.testFilled()) {
-				message = messagesResolver.getString("missing.field");
-				allErrors.add(message + ": " + targetMessagesResolver.getString(key));
+				message = messagesResolver.getString("missing.field"); //$NON-NLS-1$
+				allErrors.add(message + ": " + targetMessagesResolver.getString(key)); //$NON-NLS-1$
 			}
 			else {
 				validationErrors = composite.validate(); 
@@ -611,7 +607,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 				else {
 					if (validationErrors.size() != 0) {
 						for (String errorMessage : validationErrors) {
-							allErrors.add(targetMessagesResolver.getString(key) + ": " +errorMessage);
+							allErrors.add(targetMessagesResolver.getString(key) + ": " +errorMessage); //$NON-NLS-1$
 						}
 					}
 					else {
@@ -624,11 +620,11 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			super.okPressed();
 		}
 		else {
-			String dialogErrorMessage = "";
+			String dialogErrorMessage = ""; //$NON-NLS-1$
 			for (String errorMessage : allErrors) {
-				dialogErrorMessage = dialogErrorMessage + "\n\t" + errorMessage;
+				dialogErrorMessage = dialogErrorMessage + "\n\t" + errorMessage; //$NON-NLS-1$
 			}
-			message = messagesResolver.getString("error");
+			message = messagesResolver.getString("error"); //$NON-NLS-1$
 			MessageDialog.openError(getShell(),message,dialogErrorMessage);
 		}
 	}

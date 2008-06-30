@@ -57,7 +57,7 @@ public class StringFilterCellModifier implements ICellModifier {
 	 */
 	public void modify(Object element, String property, Object value) {
 		Item item = (Item) element;
-		System.out.println("Modify, index " + value.toString());
+		
         FilterValue filter = (FilterValue) item.getData();
 		if (property.equals("search for"))
 			filter.setValue(value);

@@ -45,7 +45,7 @@ public class CalendarDialog extends InputDialog {
 	protected void okPressed() {
 		SimpleDateFormat dateFormat =
 			new SimpleDateFormat(GUIConstants.DATE_FORMAT);
-		System.out.println("Parsed date: " + calendarComposite.getCalendar().getTime());
+		
 		setInput(dateFormat.format(calendarComposite.getCalendar().getTime()));
 		super.okPressed();
 		

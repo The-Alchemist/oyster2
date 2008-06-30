@@ -1581,7 +1581,6 @@ public class ebXMLTranslator {
     	URI param;
     	String params = ref.replaceAll(" ","%20");
 		try {
-			System.err.println("makeReferenceURI4OMV");
 			
 			/*
 			if (params.contains("://")) param=new URI(params);
@@ -1590,7 +1589,7 @@ public class ebXMLTranslator {
 			param = new URI(params);
 			ReferenceURI temp_refURI = new ReferenceURI();
 	    	temp_refURI.setReferenceURI(param);
-	    	System.err.println("Returning " + temp_refURI);
+	    	
 	    	return temp_refURI;
 		} catch (MalformedURIException e) {
 			// TODO Auto-generated catch block

@@ -26,7 +26,7 @@ import org.neontoolkit.oyster2.client.gui.Activator;
  */
 public class OrganizationSelectionComposite extends Composite {
 	
-	private static final String NAME_COMBO_ITEMS_KEY = "organizationNamesKey";
+	private static final String NAME_COMBO_ITEMS_KEY = "organizationNamesKey"; //$NON-NLS-1$
 		
 	private static final int numberOfSavedValues = 20;
 	
@@ -61,14 +61,14 @@ public class OrganizationSelectionComposite extends Composite {
 		FormData fd = null;
 		
 		Label label = new Label(this,SWT.NONE);
-		label.setText("Name");
+		label.setText(Messages.getString("OrganizationSelectionComposite.name.label")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.top = new FormAttachment(0,5);
 		fd.left = new FormAttachment(0,5);
 		label.setLayoutData(fd);
 		
 		addButton = new Button(this, SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("OrganizationSelectionComposite.addbutton.text")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.right = new FormAttachment(100,-5);
 		fd.top = new FormAttachment(0,5);
@@ -87,7 +87,7 @@ public class OrganizationSelectionComposite extends Composite {
 		nameCombo.setLayoutData(fd);
 		
 		label = new Label(this,SWT.NONE);
-		label.setText("Organizations currently in the list");
+		label.setText(Messages.getString("OrganizationSelectionComposite.organizations.present.label")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.left = new FormAttachment(0,5);
 		fd.top = new FormAttachment(nameCombo,5);
@@ -96,7 +96,7 @@ public class OrganizationSelectionComposite extends Composite {
 		
 		
 		removeButton = new Button(this,SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("OrganizationSelectionComposite.removebutton.text")); //$NON-NLS-1$
 		fd = new FormData();
 		fd.left = new FormAttachment(0,5);
 		fd.bottom = new FormAttachment(100,-5);
@@ -150,8 +150,8 @@ public class OrganizationSelectionComposite extends Composite {
 				if (event.widget == addButton) {
 					
 					String name = nameCombo.getText().trim();
-					System.out.println("Adding " + name);
-					if( ! name.equals("")) {
+
+					if( ! name.equals("")) { //$NON-NLS-1$
 						if (! organizations.contains(name)) {
 							list.add(name);
 							nameCombo.add(name);

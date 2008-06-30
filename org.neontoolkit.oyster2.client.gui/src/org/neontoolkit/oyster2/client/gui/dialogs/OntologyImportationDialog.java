@@ -94,7 +94,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Import ontologies");
+		newShell.setText(Messages.getString("OntologyImportationDialog.shell.title")); //$NON-NLS-1$
 	}
 	
 	@Override
@@ -107,7 +107,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 		
 		form = toolkit.createForm(baseComposite);
 		
-		form.setText("Import ontologies");
+		form.setText(Messages.getString("OntologyImportationDialog.form.title")); //$NON-NLS-1$
 		
 		form.setBackground(parent.getBackground());
 		form.setBackgroundMode(SWT.INHERIT_NONE);
@@ -153,7 +153,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 		// get the project list
 		Group group = new Group(form.getBody(),SWT.SHADOW_ETCHED_IN);
 		group.setLayout(new FillLayout());
-		group.setText("Select project to import into");
+		group.setText(Messages.getString("OntologyImportationDialog.select.project.label")); //$NON-NLS-1$
 		String [] projectNames = null;
 		try {
 			projectNames = DatamodelPlugin.getDefault().getOntologyProjects();
@@ -170,7 +170,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 		// TODO Auto-generated method stub
 		Group group = new Group(form.getBody(),SWT.SHADOW_ETCHED_IN);
 		group.setLayout(new FillLayout());
-		group.setText("Selected ontologies");
+		group.setText(Messages.getString("OntologyImportationDialog.selected.ontologies.label")); //$NON-NLS-1$
 		
 		viewer =
 			new TableViewer(group, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL| SWT.FULL_SELECTION);
@@ -207,7 +207,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 	protected void okPressed() {
 		int selectedIndex =projectList.getSelectionIndex();
 		if (selectedIndex == -1) {
-			MessageDialog.openError(getShell(),"Error","Please select a project");
+			MessageDialog.openError(getShell(),Messages.getString("OntologyImportationDialog.error.label"),Messages.getString("OntologyImportationDialog.error.missing.project")); //$NON-NLS-1$ //$NON-NLS-2$
 			return;
 		}
 		String projectName = projectList.getItem(selectedIndex);
@@ -218,9 +218,9 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 	
 	public String getModule(URL location, String projectName) throws KAON2Exception {
 		// TODO Auto-generated method stub
-		String logicalURI = "";
+		String logicalURI = ""; //$NON-NLS-1$
     	
-    	if (location.getProtocol().equals("file")) {
+    	if (location.getProtocol().equals("file")) { //$NON-NLS-1$
     		String fileName = location.getFile();
     		String physicalURI = new File(fileName).toURI().toString();
     		logicalURI = KAON2Manager.getOntologyURI(physicalURI, null);

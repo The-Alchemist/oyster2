@@ -105,8 +105,8 @@ public class Oyster2 {
 		ontologies.put(ontologyKey,theOntology);
 		}
 		catch (Exception e ) {
-			System.err.println("Exception reading ontology:" + e.getMessage());
-			System.err.println("Exception cause:" + e.getCause());
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 	

@@ -72,8 +72,6 @@ public class CalendarComposite extends Composite {
 				Text text = (Text)e.getSource();
 				try {
 					Date date = dateFormat.parse(text.getText());
-					System.out.println("Date parsed: " + date.toString() +
-							" from text: " + text.getText());
 					Calendar calendar = Calendar.getInstance();
 			        calendar.setTime(date);
 			        swtCalendar.setCalendar(calendar);

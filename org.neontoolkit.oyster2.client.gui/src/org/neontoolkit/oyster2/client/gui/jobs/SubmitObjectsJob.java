@@ -63,7 +63,7 @@ public class SubmitObjectsJob extends WorkspaceJob {
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,resultString,null);
 		} catch (AxisFault e) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
-					Status.OK,"Couldn't perform operation",e);
+					Status.OK,Messages.getString("SubmitObjectsJob.error.message"),e); //$NON-NLS-1$
 		}
 		
 		if (isModal(this)) {
@@ -90,7 +90,7 @@ public class SubmitObjectsJob extends WorkspaceJob {
 			public void run() {
 				Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 				MessageDialog.openInformation(shell, 
-                  "Submit Complete", 
+                  Messages.getString("SubmitObjectsJob.completed.message"),  //$NON-NLS-1$
                   resultString);
 			}
 		};

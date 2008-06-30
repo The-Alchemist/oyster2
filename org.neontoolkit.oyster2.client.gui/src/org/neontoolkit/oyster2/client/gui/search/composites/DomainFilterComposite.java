@@ -45,7 +45,7 @@ public class DomainFilterComposite extends FilterComposite {
 		FilterValue filterValue = null;
 		for (String topic : topics.values()) {
 			filterValue = new FilterValue();
-			filterValue.setComparator("Like");
+			filterValue.setComparator("Like"); //$NON-NLS-1$
 			filterValue.setNegate(false);
 			filterValue.setValue(topic);
 			filterValues.add(filterValue);

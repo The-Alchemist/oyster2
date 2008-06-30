@@ -35,7 +35,7 @@ import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
  */
 public class DetailsComposite extends Composite {
 
-	private StyledText wrapedTextComponent = null;
+	private StyledText wrappedTextComponent = null;
 	private Color linkColor = new Color(Display.getCurrent(), new RGB(0, 0, 200));
 	private Cursor defaultCursor = new Cursor(this.getShell().getDisplay(), SWT.CURSOR_IBEAM);
 	private Cursor handCursor = new Cursor(this.getShell().getDisplay(), SWT.CURSOR_HAND);
@@ -47,9 +47,9 @@ public class DetailsComposite extends Composite {
 
 		
 		this.setLayout(new FillLayout());
-		wrapedTextComponent = new StyledText(this, style);
-		wrapedTextComponent.setEditable(false);
-		wrapedTextComponent.setCaret(null);
+		wrappedTextComponent = new StyledText(this, style);
+		wrappedTextComponent.setEditable(false);
+		wrappedTextComponent.setCaret(null);
 		
 		Listener listener = new Listener() {
 			public void handleEvent(Event e) {
@@ -66,7 +66,7 @@ public class DetailsComposite extends Composite {
 		
 		
 		//
-		wrapedTextComponent.addMouseListener(new org.eclipse.swt.events.MouseAdapter(){
+		wrappedTextComponent.addMouseListener(new org.eclipse.swt.events.MouseAdapter(){
 			public void mouseDown(MouseEvent e) {
 				ISearchLink link = getLink(new Point(e.x, e.y));
 				if(link != null){
@@ -77,13 +77,13 @@ public class DetailsComposite extends Composite {
 			}
 		});
 		
-		wrapedTextComponent.addMouseMoveListener(new MouseMoveListener(){
+		wrappedTextComponent.addMouseMoveListener(new MouseMoveListener(){
 			public void mouseMove(MouseEvent e){
 				ISearchLink link = getLink(new Point(e.x, e.y));
 				if(link != null){
-					wrapedTextComponent.setCursor(handCursor);
+					wrappedTextComponent.setCursor(handCursor);
 				}else {
-					wrapedTextComponent.setCursor(defaultCursor);
+					wrappedTextComponent.setCursor(defaultCursor);
 				}
 			}
 		});
@@ -105,7 +105,7 @@ public class DetailsComposite extends Composite {
 	
 	private ISearchLink getLink(Point point) {
 		try{
-			int offset = wrapedTextComponent.getOffsetAtLocation(point);
+			int offset = wrappedTextComponent.getOffsetAtLocation(point);
 			for(int i=0; i<links.size(); i++){
 				LinkHolder holder = links.get(i);
 				if(holder.contains(offset)){
@@ -119,7 +119,7 @@ public class DetailsComposite extends Composite {
 	
 	
 	public void setEntry(ISearchResult result) {
-		wrapedTextComponent.setText("");
+		wrappedTextComponent.setText(""); //$NON-NLS-1$
 		List<LinkedText> linkList = null;
 		links = new LinkedList<LinkHolder>();
 		IResultSerializer serializer =
@@ -131,16 +131,16 @@ public class DetailsComposite extends Composite {
 		}
 		
 		
-		wrapedTextComponent.setTopIndex(0);
+		wrappedTextComponent.setTopIndex(0);
 	}
 	
 	private void append(LinkedText linkedText) {
 		if (linkedText.getLink() == null) {
-			wrapedTextComponent.append(linkedText.getText() );
+			wrappedTextComponent.append(linkedText.getText() );
 		}
 		else {
 			LinkHolder linkHolder = new LinkHolder();
-			int begin = wrapedTextComponent.getCharCount()-1;
+			int begin = wrappedTextComponent.getCharCount()-1;
 			int end = begin + linkedText.getText().length()+1; //BEWARE OFF TROLLS
 			appendText(linkedText.getText(), SWT.BOLD, linkColor);
 			linkHolder = new LinkHolder();
@@ -154,9 +154,9 @@ public class DetailsComposite extends Composite {
 	
 
 	private void appendText(String text, int style, Color textColor){
-		wrapedTextComponent.append(text);
-		StyleRange range = new StyleRange(wrapedTextComponent.getCharCount()-text.length(), text.length(), textColor, null, style);
-		wrapedTextComponent.setStyleRange(range);
+		wrappedTextComponent.append(text);
+		StyleRange range = new StyleRange(wrappedTextComponent.getCharCount()-text.length(), text.length(), textColor, null, style);
+		wrappedTextComponent.setStyleRange(range);
 	}
 	
 	
@@ -164,26 +164,26 @@ public class DetailsComposite extends Composite {
 	 * 
 	 */
 	public void setFont(Font font){
-		wrapedTextComponent.setFont(font);
+		wrappedTextComponent.setFont(font);
 	}
 	
 	/**
 	 * @return
 	 */
 	public Control getTextComponent(){
-		return wrapedTextComponent;
+		return wrappedTextComponent;
 	}
 	
 	
 	@Override
 	public Point computeSize(int wHint, int hHint) {
 		//return new Point(wHint,hHint);
-		return wrapedTextComponent.computeSize(wHint, hHint);
+		return wrappedTextComponent.computeSize(wHint, hHint);
 	}
 	@Override
 	public Point computeSize(int wHint, int hHint, boolean changed) {
 		//return new Point(wHint,hHint);
-		return wrapedTextComponent.computeSize(wHint, hHint, true);
+		return wrappedTextComponent.computeSize(wHint, hHint, true);
 	}
 	
 	

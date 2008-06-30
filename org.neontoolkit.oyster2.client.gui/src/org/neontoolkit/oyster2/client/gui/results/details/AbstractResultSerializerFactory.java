@@ -29,19 +29,19 @@ public abstract class AbstractResultSerializerFactory implements IResultSerializ
 				//AbstractResultSerializerFactory.class.getPackage().getName().replace(".","/");
 			
 			PropertiesConfiguration configuration = 
-				new PropertiesConfiguration(path+"/AbstractResultSerializerFactoryConfiguration.properties");
+				new PropertiesConfiguration(path+"/AbstractResultSerializerFactoryConfiguration.properties"); //$NON-NLS-1$
 	
 			//configuration.setBasePath(path);
 			
 			
-			factoryClassName = configuration.getString("factory.class");
+			factoryClassName = configuration.getString("factory.class"); //$NON-NLS-1$
 			
 			if (factoryClassName == null) {
-				throw new RuntimeException("missing resultSerializerFactory class name");
+				throw new RuntimeException(Messages.getString("AbstractResultSerializerFactory.missing.serializer.class.name")); //$NON-NLS-1$
 			}
 			
-			factoryInitArguments = configuration.getStringArray("factory.init.arguments");
-			factoryInitMethodName = configuration.getString("factory.init.method");
+			factoryInitArguments = configuration.getStringArray("factory.init.arguments"); //$NON-NLS-1$
+			factoryInitMethodName = configuration.getString("factory.init.method"); //$NON-NLS-1$
 			Class factoryClass = Class.forName(factoryClassName);
 			factory = (IResultSerializerFactory)factoryClass.newInstance();
 			//if has init method, use it. 

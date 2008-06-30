@@ -30,9 +30,9 @@ public class DateFilterComposite extends SingleFilterComposite {
 			String[] predefined, String [] comparators,Filter filter) {
 		super(parent, style, section, predefined,comparators,filter);
 		dialogButton = new Button(this,SWT.PUSH);
-		dialogButton.setText("Change date");
+		dialogButton.setText(Messages.getString("DateFilterComposite.dialob.button.text.changedate")); //$NON-NLS-1$
 		addButtonListener();
-		nestedDialog = new CalendarDialog(section+"CalendarDialog",getShell());
+		nestedDialog = new CalendarDialog(section+"CalendarDialog",getShell()); //$NON-NLS-1$
 	}
 
 	protected void makeLayout() {

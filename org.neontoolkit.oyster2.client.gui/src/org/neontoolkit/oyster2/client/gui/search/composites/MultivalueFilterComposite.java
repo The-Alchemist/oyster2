@@ -37,8 +37,6 @@ import contributed.john.mason.CComboBoxCellEditor;
  */
 public class MultivalueFilterComposite extends FilterComposite {
 
-	protected static final String ITEMS_KEY = "ITEMS"; 
-	
 	protected Filter filter = null;
 	
 	protected ArrayList<FilterValue> filters = null;
@@ -82,7 +80,7 @@ public class MultivalueFilterComposite extends FilterComposite {
 					FilterValue filter = new FilterValue();
 					filter.setComparator(comparators[0]);
 					filter.setNegate(Boolean.valueOf(false));
-					filter.setValue("Search string here");
+					filter.setValue(Messages.getString("MultivalueFilterComposite.filter.table.column.text")); //$NON-NLS-1$
 					filters.add(filter);
 					tableViewer.add(filter);
 				}
@@ -105,9 +103,9 @@ public class MultivalueFilterComposite extends FilterComposite {
 
 	private void makeButtons() {
 		addButton = new Button(this, SWT.PUSH);
-		addButton.setText("Add");
+		addButton.setText(Messages.getString("MultivalueFilterComposite.button.add.text")); //$NON-NLS-1$
 		removeButton = new Button(this,SWT.PUSH);
-		removeButton.setText("Remove");
+		removeButton.setText(Messages.getString("MultivalueFilterComposite.button.remove.text")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -155,14 +153,14 @@ public class MultivalueFilterComposite extends FilterComposite {
 		Table table = tableViewer.getTable();
 		
 		column = new TableColumn(table,SWT.LEFT);
-		column.setText("search for");
+		column.setText(Messages.getString("MultivalueFilterComposite.filter.table.column.text")); //$NON-NLS-1$
 		columnNames[0] = column.getText();
 		column.pack();
 		
 		table.showColumn(column);
 		
 		column = new TableColumn(table,SWT.LEFT);
-		column.setText("comparator");
+		column.setText(Messages.getString("MultivalueFilterComposite.comparator.table.column.text")); //$NON-NLS-1$
 		columnNames[1] = column.getText();
 		column.pack();
 		table.showColumn(column);
@@ -209,7 +207,7 @@ public class MultivalueFilterComposite extends FilterComposite {
 			return null;
 		while (it.hasNext()) {
 			filterValue = it.next();
-			if (filterValue.getValue().toString().trim().equals("")) {
+			if (filterValue.getValue().toString().trim().equals("")) { //$NON-NLS-1$
 				it.remove();
 			}
 		}

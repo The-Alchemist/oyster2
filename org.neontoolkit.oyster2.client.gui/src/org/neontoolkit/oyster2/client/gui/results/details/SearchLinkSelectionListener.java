@@ -65,7 +65,7 @@ public class SearchLinkSelectionListener implements ISearchLinkSelectionListener
 
 
 			//get person domain attribute
-			domainAttribute = domainClass.getAttribute(propertyNames.get("person"));
+			domainAttribute = domainClass.getAttribute(propertyNames.get("person")); //$NON-NLS-1$
 			boolean multi = domainAttribute.hasMultipleParameters();
 			FilterType filterType = domainAttribute.getFilterType();
 
@@ -91,7 +91,7 @@ public class SearchLinkSelectionListener implements ISearchLinkSelectionListener
 		//create the organization filter
 
 		//get organization domain attribute
-		domainAttribute = domainClass.getAttribute(propertyNames.get("organization"));
+		domainAttribute = domainClass.getAttribute(propertyNames.get("organization")); //$NON-NLS-1$
 		boolean multi = domainAttribute.hasMultipleParameters();
 		FilterType filterType = domainAttribute.getFilterType();
 
@@ -210,7 +210,7 @@ private void makeSimpleSearch(ISearchLink link) {
 
 private void sendQuery(String domainClassName,
 		IQueryDomainClass domainClass,Map<String, Object> filters) {
-	SubmitQueryJob job = new SubmitQueryJob("search " + domainClassName );
+	SubmitQueryJob job = new SubmitQueryJob("search " + domainClassName ); //$NON-NLS-1$
 	job.setTargetService(Activator.getWebServersLocator().getCurrentSelection());
 	job.setFilters(filters);
 	job.setUser(false);

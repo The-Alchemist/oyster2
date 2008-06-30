@@ -32,7 +32,7 @@ public class PropertiesConfiguredSerializerFactory implements
 				new PropertiesConfiguration(file);
 			String namespace = null;
 			String[] serializerFiles =
-				generalConfiguration.getStringArray("serializerFiles");
+				generalConfiguration.getStringArray("serializerFiles"); //$NON-NLS-1$
 			for (int i = 0;i<serializerFiles.length;i++) {
 				namespace = generalConfiguration.getString(serializerFiles[i]);
 				serializers.put(namespace,serializerFiles[i]);

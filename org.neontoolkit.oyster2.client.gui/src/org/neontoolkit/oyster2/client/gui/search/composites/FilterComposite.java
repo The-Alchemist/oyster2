@@ -20,6 +20,8 @@ public abstract class FilterComposite extends Composite {
 	
 	protected IDialogSettings dialogSettings = null;
 	
+	protected static final String DIALOG_ITEMS_KEY = "items";
+		
 	private boolean saveSettingsOnExit = false;
 	
 	protected String [] predefined = null;

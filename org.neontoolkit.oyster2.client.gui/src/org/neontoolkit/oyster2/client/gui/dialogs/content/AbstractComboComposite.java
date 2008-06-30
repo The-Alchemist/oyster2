@@ -18,7 +18,7 @@ public abstract class AbstractComboComposite extends InputComposite {
 
 	protected Combo combo = null;
 	
-	protected static final String ITEMS_KEY = "items";
+	protected static final String ITEMS_KEY = "items"; //$NON-NLS-1$
 	
 	protected boolean editable = true;
 	
@@ -89,7 +89,7 @@ public abstract class AbstractComboComposite extends InputComposite {
 		// that may be added.
 		if (getSaveSettingsOnExit()) {
 			String []itemsToSave = null;
-			if ((! combo.getText().trim().equals("")) &&
+			if ((! combo.getText().trim().equals("")) && //$NON-NLS-1$
 					(! repeated(combo.getText(),combo.getItems()))) {
 				int i = 0;
 				int numItems = combo.getItemCount();
@@ -128,14 +128,14 @@ public abstract class AbstractComboComposite extends InputComposite {
 	@Override
 	public boolean testFilled() {
 		if (isRequired()) {
-			return (! combo.getText().trim().equals(""));
+			return (! combo.getText().trim().equals("")); //$NON-NLS-1$
 		}
 		return true;
 	}
 	
 	@Override
 	public ArrayList<String> validate() {
-		if ( !combo.getText().trim().equals(""))
+		if ( !combo.getText().trim().equals("")) //$NON-NLS-1$
 			return super.validate();
 		return new ArrayList<String>();
 	}

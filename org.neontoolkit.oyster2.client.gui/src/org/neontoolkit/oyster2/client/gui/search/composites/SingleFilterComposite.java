@@ -27,8 +27,6 @@ public class SingleFilterComposite extends FilterComposite {
 	
 	//protected Button negateButton = null;
 	
-	protected static final String ITEMS_KEY = "items";
-	
 	protected boolean editable = true;
 	
 	protected final static int numberOfSavedValues = 20;
@@ -80,7 +78,7 @@ public class SingleFilterComposite extends FilterComposite {
 	}
 	
 	public void loadSettings() {
-		String []items = dialogSettings.getArray(ITEMS_KEY);
+		String []items = dialogSettings.getArray(DIALOG_ITEMS_KEY);
 		if (items != null)
 			valueCombo.setItems(items);
 	}
@@ -107,7 +105,7 @@ public class SingleFilterComposite extends FilterComposite {
 				for(i = 1; i<itemsToSave.length;i++ ) {
 					itemsToSave[i] = valueCombo.getItems()[i-1];
 				}
-				dialogSettings.put(ITEMS_KEY,itemsToSave);
+				dialogSettings.put(DIALOG_ITEMS_KEY,itemsToSave);
 			}
 		}
 	}
@@ -165,10 +163,10 @@ public class SingleFilterComposite extends FilterComposite {
 		String []items = null;
 		
 		if (predefined == null) {
-			items = dialogSettings.getArray(ITEMS_KEY);
+			items = dialogSettings.getArray(DIALOG_ITEMS_KEY);
 		}
 		else if (predefined.length == 0) {
-			items = dialogSettings.getArray(ITEMS_KEY);
+			items = dialogSettings.getArray(DIALOG_ITEMS_KEY);
 		}
 		else {
 			items = predefined;

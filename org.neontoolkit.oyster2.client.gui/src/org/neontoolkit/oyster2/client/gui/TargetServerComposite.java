@@ -43,7 +43,7 @@ public class TargetServerComposite extends Composite {
 	
 	private void putEditButton() {
 		addButton = new Button(this,SWT.PUSH);
-		addButton.setText("Edit");
+		addButton.setText(Messages.getString("TargetServerComposite.serverComposite.edit.button")); //$NON-NLS-1$
 	}
 
 
@@ -115,7 +115,7 @@ public class TargetServerComposite extends Composite {
 				}
 				else if (((String)event.data).equals(WebServersLocator.DELETED) ) {
 					serverCombo.remove(server);
-					if (serverCombo.getText().trim().equals("")) {
+					if (serverCombo.getText().trim().equals("")) { //$NON-NLS-1$
 						if (serverCombo.getItemCount()>0)
 							serverCombo.select(0);
 					}
@@ -144,7 +144,7 @@ public class TargetServerComposite extends Composite {
 
 			public void handleEvent(Event event) {
 				Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
-				dialog = new ListEditionDialog("ServerCompositeDialog",shell);
+				dialog = new ListEditionDialog("ServerCompositeDialog",shell); //$NON-NLS-1$
 				
 				String []items = serverCombo.getItems();
 				dialog.setItems(items);

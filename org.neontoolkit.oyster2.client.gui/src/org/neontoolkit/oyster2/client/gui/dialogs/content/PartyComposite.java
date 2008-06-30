@@ -82,7 +82,7 @@ public class PartyComposite extends InputComposite {
 		//buttons
 
 		editButton = new Button(this, SWT.PUSH);
-		editButton.setText("Change");
+		editButton.setText(Messages.getString("PartyComposite.editbutton.text")); //$NON-NLS-1$
 		formData = new FormData();
 		formData.right = new FormAttachment(100,-5);
 		formData.width = buttonWidth;  
@@ -111,12 +111,6 @@ public class PartyComposite extends InputComposite {
 					int result,i;
 					try {
 					PartyDialog dialog = (PartyDialog)nestedDialog;
-					System.out.println("Setting people in partydialog with " +
-							party.getPeople().size() + " members, which are:");
-					for(Person p : party.getPeople()) {
-						System.out.println(p.getName() + " : " + p.getLastname());
-					}
-					
 					dialog.setPeople(party.getPeople());
 					dialog.setOrganizations(party.getOrganizations());
 					result = nestedDialog.open();
@@ -125,11 +119,6 @@ public class PartyComposite extends InputComposite {
 						list.removeAll();
 						
 						party.setPeople(dialog.getPeople());
-						
-						System.out.println("Got from the dialog: ");
-						for(Person p : party.getPeople()) {
-							System.out.println(p.getName() + " : " + p.getLastname());
-						}
 						
 						String []organizations = dialog.getOrganizations();
 						party.setOrganizations(organizations);
@@ -140,7 +129,7 @@ public class PartyComposite extends InputComposite {
 						Person []peopleArray = new Person[party.getPeople().size()];
 						peopleArray = party.getPeople().toArray(peopleArray);
 						for (i = 0;i<peopleArray.length;i++) {
-							list.add(peopleArray[i].getName() + " " + peopleArray[i].getLastname());
+							list.add(peopleArray[i].getName() + " " + peopleArray[i].getLastname()); //$NON-NLS-1$
 						}
 						
 					}
