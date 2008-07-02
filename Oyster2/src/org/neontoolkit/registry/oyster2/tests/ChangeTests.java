@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.core.OMVPerson;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLClassChange.EquivalentClassChange.AddEquivalentClass;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddObjectProperty;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChangeSpecification;
@@ -23,6 +24,7 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.Ontol
 import org.neontoolkit.omv.api.extensions.mapping.OMVMapping;
 import org.neontoolkit.omv.api.extensions.mapping.OMVMappingMethod;
 import org.neontoolkit.owlodm.api.Axiom.Declaration;
+import org.neontoolkit.owlodm.api.Axiom.ClassAxiom.EquivalentClasses;
 import org.neontoolkit.owlodm.api.Axiom.ClassAxiom.SubClassOf;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyDomain;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyRange;
@@ -400,13 +402,13 @@ public class ChangeTests {
 		omc.setObjectProperty(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
 		omc.setOWLClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
 		
-		Declaration newClass5 = new Declaration();
-		newClass5.setEntity(omc);
-		Addition addClassAxiom5 = new Addition();
-		addClassAxiom5.setAppliedAxiom(newClass5);
-		addClassAxiom5.setAppliedToOntology(faoOntology);
-		oyster2Conn.register(addClassAxiom5);
-		String ch5=oyster2Conn.getLastChangeId();
+		//Declaration newClass5 = new Declaration();
+		//newClass5.setEntity(omc);
+		//Addition addClassAxiom5 = new Addition();
+		//addClassAxiom5.setAppliedAxiom(newClass5);
+		//addClassAxiom5.setAppliedToOntology(faoOntology);
+		//oyster2Conn.register(addClassAxiom5);
+		//String ch5=oyster2Conn.getLastChangeId();
 		
 		SubClassOf sco5 = new SubClassOf();
 		sco5.setSubClass(omc);
@@ -420,11 +422,45 @@ public class ChangeTests {
 		//Then entity change (optionally)
 		AddSubClassOf newClassEntity5 = new AddSubClassOf();
 		newClassEntity5.setAppliedToOntology(faoOntology);
-		newClassEntity5.addConsistsOfAtomicOperation(ch5);
+		//newClassEntity5.addConsistsOfAtomicOperation(ch5);
 		newClassEntity5.addConsistsOfAtomicOperation(ch6);
 		newClassEntity5.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
 		newClassEntity5.addHasAuthor(se);
 		oyster2Conn.register(newClassEntity5);
+		
+		
+		//Lets add another equivalent complex
+		//First axiom changes
+		
+		ObjectMaxCardinality omc77= new ObjectMaxCardinality();
+		omc77.setCardinality(5);
+		omc77.setObjectProperty(new ObjectProperty("http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
+		omc77.setOWLClass(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		
+		//Declaration newClass77 = new Declaration();
+		//newClass77.setEntity(omc77);
+		//Addition addClassAxiom77 = new Addition();
+		//addClassAxiom77.setAppliedAxiom(newClass77);
+		//addClassAxiom77.setAppliedToOntology(faoOntology);
+		//oyster2Conn.register(addClassAxiom77);
+		//String ch77=oyster2Conn.getLastChangeId();
+		
+		EquivalentClasses sco77 = new EquivalentClasses();
+		sco77.addEquivalentClasses(omc77);
+		sco77.addEquivalentClasses(new OWLClass("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet"));
+		Addition a77 = new Addition();
+		a77.setAppliedAxiom(sco77);
+		a77.setAppliedToOntology(faoOntology);
+		oyster2Conn.register(a77);
+		String ch77=oyster2Conn.getLastChangeId();
+		
+		//Then entity change (optionally)
+		AddEquivalentClass newClassEntity77 = new AddEquivalentClass();
+		newClassEntity77.setAppliedToOntology(faoOntology);
+		newClassEntity77.addConsistsOfAtomicOperation(ch77);
+		newClassEntity77.addHasRelatedEntity("http://www.fao.org/aims/aos/fi/species_v1.0.owl#Pet");
+		newClassEntity77.addHasAuthor(se);
+		oyster2Conn.register(newClassEntity77);
 		
 		//Specify the next version of the ontology
 		OMVOntology faoOntology_v2 = new OMVOntology();

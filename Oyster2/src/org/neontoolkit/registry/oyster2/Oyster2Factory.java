@@ -19,7 +19,7 @@ import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.registry.oyster2.Properties;
 import org.neontoolkit.registry.util.GUID;
 import org.semanticweb.kaon2.api.*;
-import org.semanticweb.kaon2.api.logic.*;
+//import org.semanticweb.kaon2.api.logic.*;
 
 /**
  * This class represents the Oyster2 facility. It is responsible for all
@@ -417,8 +417,8 @@ public class Oyster2Factory {
 						Constants.VERSIONINFO, Integer.toString(1));
 				
 				this.mInformer = new AdvertInformer();
-				Rule subTopicRule = this.mInformer.createSubTopicRule(topicOntology);
-				this.mInformer.addRule(this.localRegistryOntology, subTopicRule);
+				//Rule subTopicRule = this.mInformer.createSubTopicRule(topicOntology);
+				//this.mInformer.addRule(this.localRegistryOntology, subTopicRule);
 				
 			} else {
 				/* For the second file */ 
