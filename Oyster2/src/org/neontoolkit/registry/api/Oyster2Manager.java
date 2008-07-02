@@ -618,64 +618,84 @@ public class Oyster2Manager{
 	
 	private static String getDescriptionString(Description a){
 		if (a instanceof DataAllValuesFrom) {
-			String rep= "\t"+getData(getOWLEntityString(((DataAllValuesFrom)a).getDataRange()),"dataRange");
+			String rep= "DataAllValuesFrom:\n"+"\t\t\t"+getOWLEntityString(((DataAllValuesFrom)a).getDataRange());
 			Iterator it = ((DataAllValuesFrom)a).getDataProperties().iterator();
 			while (it.hasNext()){
 				org.neontoolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neontoolkit.owlodm.api.OWLEntity.DataProperty)it.next();
-				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+				rep=rep+"\n\t\t\t"+ getOWLEntityString(temp);
 			}
 			return rep;
 		}
-		else if (a instanceof DataExactCardinality) return "\t"+getData(getOWLEntityString(((DataExactCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataExactCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataExactCardinality)a).getCardinality().toString(),"cardinality");
-		else if (a instanceof DataHasValue)  return "\t"+getData(getOWLEntityString(((DataHasValue)a).getDataProperty()),"dataProperty")+"\t"+getData(((DataHasValue)a).getConstant(),"constant");
-		else if (a instanceof DataMaxCardinality)  {
-			return "DataMaxCardinality:\n"+"\t"+getData(getOWLEntityString(((DataMaxCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataMaxCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataMaxCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof DataExactCardinality) {
+			return "DataExactCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataExactCardinality)a).getDataProperty())+"\n\t\t\t"+getOWLEntityString(((DataExactCardinality)a).getDataRange())+"\n\t\t\t"+getData(((DataExactCardinality)a).getCardinality().toString(),"cardinality");
 		}
-		else if (a instanceof DataMinCardinality) return "\t"+getData(getOWLEntityString(((DataMinCardinality)a).getDataProperty()),"dataProperty")+"\t"+getData(getOWLEntityString(((DataMinCardinality)a).getDataRange()),"dataRange")+"\t"+getData(((DataMinCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof DataHasValue)  {
+			return "DataExactCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataHasValue)a).getDataProperty())+"\n\t\t\t"+getData(((DataHasValue)a).getConstant(),"constant");
+		}
+		else if (a instanceof DataMaxCardinality)  {
+			return "DataMaxCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataMaxCardinality)a).getDataProperty())+"\n\t\t\t"+getOWLEntityString(((DataMaxCardinality)a).getDataRange())+"\n\t\t\t"+getData(((DataMaxCardinality)a).getCardinality().toString(),"cardinality");
+		}
+		else if (a instanceof DataMinCardinality) {
+			return "DataMinCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataMinCardinality)a).getDataProperty())+"\n\t\t\t"+getOWLEntityString(((DataMinCardinality)a).getDataRange())+"\n\t\t\t"+getData(((DataMinCardinality)a).getCardinality().toString(),"cardinality");
+		}
 		else if (a instanceof DataSomeValuesFrom) {
-			String rep= "\t"+getData(getOWLEntityString(((DataSomeValuesFrom)a).getDataRange()),"dataRange");
+			String rep= "DataSomeValuesFrom:\n"+"\t\t\t"+getOWLEntityString(((DataSomeValuesFrom)a).getDataRange());
 			Iterator it = ((DataSomeValuesFrom)a).getDataProperties().iterator();
 			while (it.hasNext()){
 				org.neontoolkit.owlodm.api.OWLEntity.DataProperty temp=(org.neontoolkit.owlodm.api.OWLEntity.DataProperty)it.next();
-				rep=rep+"\t"+ getData(getOWLEntityString(temp),"dataProperties");
+				rep=rep+"\n\t\t\t"+ getOWLEntityString(temp);
 			}
 			return rep;
 		}
 		
-		else if (a instanceof ObjectAllValuesFrom) return "\t"+ getData(getOWLEntityString(((ObjectAllValuesFrom)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectAllValuesFrom)a).getOWLClass());
-		else if (a instanceof ObjectComplementOf) return "\t"+ getDescriptionString (((ObjectComplementOf)a).getOWLClass());
-		else if (a instanceof ObjectExactCardinality) return "\t"+getData(getOWLEntityString(((ObjectExactCardinality)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectExactCardinality)a).getOWLClass())+"\t"+getData(((ObjectExactCardinality)a).getCardinality().toString(),"cardinality");
-		else if (a instanceof ObjectExistsSelf) return "\t"+ getData(getOWLEntityString(((ObjectExistsSelf)a).getObjectProperty()),"objectProperty");
-		else if (a instanceof ObjectHasValue) return "\t"+ getData(getOWLEntityString(((ObjectHasValue)a).getObjectProperty()),"objectProperty")+"\t"+ getData(getOWLEntityString(((ObjectHasValue)a).getValue()),"value");
+		else if (a instanceof ObjectAllValuesFrom) {
+			return "ObjectAllValuesFrom:\n"+"\t\t\t"+ getOWLEntityString(((ObjectAllValuesFrom)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectAllValuesFrom)a).getOWLClass());
+		}
+		else if (a instanceof ObjectComplementOf) {
+			return "ObjectComplementOf:\n"+"\t\t\t"+ getDescriptionString (((ObjectComplementOf)a).getOWLClass());
+		}
+		else if (a instanceof ObjectExactCardinality) {
+			return "ObjectExactCardinality:\n"+"\t\t\t"+getOWLEntityString(((ObjectExactCardinality)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectExactCardinality)a).getOWLClass())+"\t\t\t"+getData(((ObjectExactCardinality)a).getCardinality().toString(),"cardinality");
+		}
+		else if (a instanceof ObjectExistsSelf) {
+			return "ObjectExistsSelf:\n"+"\t\t\t"+ getOWLEntityString(((ObjectExistsSelf)a).getObjectProperty());
+		}
+		else if (a instanceof ObjectHasValue) {
+			return "ObjectHasValue:\n"+"\t\t\t"+ getOWLEntityString(((ObjectHasValue)a).getObjectProperty())+"\n\t\t\t"+ getOWLEntityString(((ObjectHasValue)a).getValue());
+		}
 		else if (a instanceof ObjectIntersectionOf) {
 			Iterator it = ((ObjectIntersectionOf)a).getOWLClasses().iterator();
-			String rep="";
+			String rep="ObjectIntersectionOf:\n";
 			while (it.hasNext()){
 				Description temp=(Description)it.next();
-				rep=rep+"\t"+ getDescriptionString (temp);
+				rep=rep+"\t\t\t"+ getDescriptionString (temp);
 			}
 			return rep;
 		}
 		else if (a instanceof ObjectMaxCardinality) {
 			return "ObjectMaxCardinality:\n"+"\t\t\t"+getOWLEntityString(((ObjectMaxCardinality)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectMaxCardinality)a).getOWLClass())+"\t\t\t"+getData(((ObjectMaxCardinality)a).getCardinality().toString(),"cardinality");
 		}
-		else if (a instanceof ObjectMinCardinality) return "\t"+getData(getOWLEntityString(((ObjectMinCardinality)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectMinCardinality)a).getOWLClass())+"\t"+getData(((ObjectMinCardinality)a).getCardinality().toString(),"cardinality");
+		else if (a instanceof ObjectMinCardinality) {
+			return "ObjectMinCardinality:\n"+"\t\t\t"+getOWLEntityString(((ObjectMinCardinality)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectMinCardinality)a).getOWLClass())+"\t\t\t"+getData(((ObjectMinCardinality)a).getCardinality().toString(),"cardinality");
+		}
 		else if (a instanceof ObjectOneOf) {
-			String rep= "";
+			String rep= "ObjectOneOf:";
 			Iterator it = ((ObjectOneOf)a).getIndividuals().iterator();
 			while (it.hasNext()){
 				org.neontoolkit.owlodm.api.OWLEntity.Individual temp=(org.neontoolkit.owlodm.api.OWLEntity.Individual)it.next();
-				rep=rep+"\t"+ getData(getOWLEntityString(temp),"individuals");
+				rep=rep+"\n\t\t\t"+ getOWLEntityString(temp);
 			}
 			return rep;
 		}
-		else if (a instanceof ObjectSomeValuesFrom) return "\t"+ getData(getOWLEntityString(((ObjectSomeValuesFrom)a).getObjectProperty()),"objectProperty")+"\t"+getDescriptionString (((ObjectSomeValuesFrom)a).getOWLClass());
+		else if (a instanceof ObjectSomeValuesFrom) {
+			return "ObjectSomeValuesFrom:\n"+"\t\t\t"+ getOWLEntityString(((ObjectSomeValuesFrom)a).getObjectProperty())+"\n\t\t\t"+getDescriptionString (((ObjectSomeValuesFrom)a).getOWLClass());
+		}
 		else if (a instanceof ObjectUnionOf) {
 			Iterator it = ((ObjectUnionOf)a).getOWLClasses().iterator();
-			String rep="";
+			String rep="ObjectSomeValuesFrom:\n";
 			while (it.hasNext()){
 				Description temp=(Description)it.next();
-				rep=rep+"\t"+ getDescriptionString (temp);
+				rep=rep+"\t\t\t"+ getDescriptionString (temp);
 			}
 			return rep;
 		}
