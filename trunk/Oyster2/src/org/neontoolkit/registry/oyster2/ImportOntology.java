@@ -655,6 +655,10 @@ public class ImportOntology {
 				OntologyProperty prop = (OntologyProperty)it2.next();
 				//System.out.println(prop.getPropertyName());
 				Boolean whatIs = checkDataProperty(prop.getPropertyName());
+				if (which >=70){ 
+					if (prop.getPropertyName().equalsIgnoreCase("value")) whatIs=false; //value is defined as dataproperty in mapping ontology and objectproperty in owlodmontology
+					if (prop.getPropertyName().equalsIgnoreCase("constant")) whatIs=true; //constant is not defined as dataproperty in owlodm ontology
+				}
 				if (whatIs){
 					DataProperty ontologyDataProperty=null;
 					if (which<13)ontologyDataProperty = KAON2Manager.factory().dataProperty(Constants.OMVURI + prop.getPropertyName());
@@ -677,11 +681,7 @@ public class ImportOntology {
 					String oldValue = org.neontoolkit.registry.util.Utilities.getString(oIndividual.getDataPropertyValue(targetRegistry,ontologyDataProperty)); //(String)
 					if (dType==org.neontoolkit.registry.util.Utilities.STRING_TYPE ){
 					  //if (which<30 || (which>=30 && !prop.getPropertyName().equalsIgnoreCase("URI") && !prop.getPropertyName().equalsIgnoreCase("name"))){
-						if (which>=70 && prop.getPropertyName().equalsIgnoreCase("cardinality")){  //ERROR CARDINALITY NOT DEFINED CORRECTLY IN OWLODM ONTOLOGY YET
-							if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oIndividual.getDataPropertyValue(targetRegistry,ontologyDataProperty).getValue())),OntologyChangeEvent.ChangeType.REMOVE));
-							changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(new Integer(pValue))),OntologyChangeEvent.ChangeType.ADD));
-						}
-						else if (org.neontoolkit.registry.util.Utilities.multipleO(prop.getPropertyName())){ //Manage multiple string values for data properties
+						if (org.neontoolkit.registry.util.Utilities.multipleO(prop.getPropertyName())){ //Manage multiple string values for data properties
 							if(!targetRegistry.containsAxiom(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),true)){
 								changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
 							}
@@ -705,6 +705,10 @@ public class ImportOntology {
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(new Boolean(pValue))),OntologyChangeEvent.ChangeType.ADD));
 					}
 					else if (which>=30 && prop.getPropertyName().equalsIgnoreCase("URI")){ //URI NOT DEFINED FOR OWLCHANGES & AXIOMS & WORKFLOW & DECLARATIONS & OWLENTITY IN ONTOLOGIES BUT NECESSARY FOR IDENTIFYING OBJECTS
+						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
+						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
+					}
+					else if (which>=70 && prop.getPropertyName().equalsIgnoreCase("constant")){ //constant NOT DEFINED FOR OWLCHANGES & AXIOMS & WORKFLOW & DECLARATIONS & OWLENTITY IN ONTOLOGIES BUT NECESSARY FOR IDENTIFYING OBJECTS
 						if(oldValue !=null)changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(oldValue)),OntologyChangeEvent.ChangeType.REMOVE));
 						changes.add(new OntologyChangeEvent(KAON2Manager.factory().dataPropertyMember(ontologyDataProperty,oIndividual,KAON2Manager.factory().constant(pValue)),OntologyChangeEvent.ChangeType.ADD));
 					}
@@ -1492,5 +1496,3 @@ public class ImportOntology {
 	
 
 }
-
-

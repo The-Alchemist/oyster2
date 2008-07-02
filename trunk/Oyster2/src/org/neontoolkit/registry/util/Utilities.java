@@ -12,7 +12,7 @@ import org.semanticweb.kaon2.api.owl.elements.*;
  *
  * @author Jeen Broekstra
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  **/
 public class Utilities {
 
@@ -143,7 +143,7 @@ public class Utilities {
     		Set<DataRange> ranges=ontologyDataProperty.getRangeDataRanges(wOntology);
     		//System.out.println("range    "+ranges.toString());
     		for (DataRange range : ranges){
-    			if (range.toString().equalsIgnoreCase("xsd:integer")) return INTEGER_TYPE;
+    			if (range.toString().equalsIgnoreCase("xsd:integer") || range.toString().equalsIgnoreCase("xsd:int")) return INTEGER_TYPE;
     			else if (range.toString().equalsIgnoreCase("xsd:float")) return FLOAT_TYPE;
     			else if (range.toString().equalsIgnoreCase("xsd:boolean")) return BOOLEAN_TYPE;
     			else return STRING_TYPE;
