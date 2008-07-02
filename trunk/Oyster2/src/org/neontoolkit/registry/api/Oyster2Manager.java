@@ -630,7 +630,7 @@ public class Oyster2Manager{
 			return "DataExactCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataExactCardinality)a).getDataProperty())+"\n\t\t\t"+getOWLEntityString(((DataExactCardinality)a).getDataRange())+"\n\t\t\t"+getData(((DataExactCardinality)a).getCardinality().toString(),"cardinality");
 		}
 		else if (a instanceof DataHasValue)  {
-			return "DataExactCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataHasValue)a).getDataProperty())+"\n\t\t\t"+getData(((DataHasValue)a).getConstant(),"constant");
+			return "DataHasValue:\n"+"\t\t\t"+getOWLEntityString(((DataHasValue)a).getDataProperty())+"\n\t\t\t"+getData(((DataHasValue)a).getConstant(),"constant");
 		}
 		else if (a instanceof DataMaxCardinality)  {
 			return "DataMaxCardinality:\n"+"\t\t\t"+getOWLEntityString(((DataMaxCardinality)a).getDataProperty())+"\n\t\t\t"+getOWLEntityString(((DataMaxCardinality)a).getDataRange())+"\n\t\t\t"+getData(((DataMaxCardinality)a).getCardinality().toString(),"cardinality");
