@@ -1,4 +1,4 @@
-package org.neon_toolkit.oyster.plugin.menu.actions;
+package org.neontoolkit.oyster.plugin.menu.actions;
 
 import java.io.File;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,9 +10,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.neon_toolkit.registry.api.Oyster2Connection;
-import org.neon_toolkit.registry.api.Oyster2Manager;
-import org.neon_toolkit.registry.util.EntryDetailSerializer;
+import org.neontoolkit.registry.api.Oyster2Connection;
+import org.neontoolkit.registry.api.Oyster2Manager;
+import org.neontoolkit.registry.util.EntryDetailSerializer;
 
 /**
  * Our sample action implements workbench action delegate.
@@ -57,7 +57,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						monitor.worked(10);
 						if(serverProcess==null) {
 							System.out.println("executing the server...");
-							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neon_toolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
+							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neontoolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
 						}
 						if(serverProcess==null){
 							MessageDialog.openInformation(

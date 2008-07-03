@@ -7,7 +7,7 @@
       <actionSet
             label="Sample Action Set"
             visible="true"
-            id="org.neon_toolkit.oyster.plugin.menu.actionSet">
+            id="org.neontoolkit.oyster.plugin.menu.actionSet">
          <menu
                label="Registr&amp;y"
                id="registryMenu">
@@ -16,9 +16,9 @@
             </separator>
          </menu>
          <action
-               class="org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry"
+               class="org.neontoolkit.oyster.plugin.menu.actions.StartRegistry"
                icon="icons/o1.GIF"
-               id="org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry"
+               id="org.neontoolkit.oyster.plugin.menu.actions.StartRegistry"
                label="&amp;Start Registry"
                menubarPath="registryMenu/sampleGroup"
                style="push"
