@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.neontoolkit.changelogging.actionSet1"
+            label="label"
+            visible="true">
+      </actionSet>
+   </extension>
+   <extension
+         point="com.ontoprise.ontostudio.gui.preShutdown">
+      <listener class="org.neontoolkit.changelogging.gui.PreShutdown"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.neontoolkit.changelogging.gui"
+            name="Ontology Change Log"/>
+      <view
+            allowMultiple="false"
+            category="org.neontoolkit.changelogging.gui"
+            class="org.neontoolkit.changelogging.gui.ChangeLogView"
+            id="org.neontoolkit.changelogging.gui.changelogview"
+            name="Change Log View"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="org.neontoolkit.changelogging.menu"
+            objectClass="com.ontoprise.ontostudio.owl.gui.navigator.ontology.OntologyTreeElement">
+         <action
+               class="org.neontoolkit.changelogging.menu.Track"
+               id="org.neontoolkit.changelogging.menu.track"
+               label="Track"/>
+      </objectContribution>
+   </extension>
+
+</plugin>
