@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.Map.Entry;
 
-import org.neon_toolkit.registry.omv.xsd.query.OntologyQueryType;
 import org.neontoolkit.oyster2.client.core.querymanager.querybuilders.QueryObjectBuildersRepository;
 import org.neontoolkit.oyster2.client.gui.GUIConstants;
+import org.neontoolkit.registry.omv.xsd.query.OntologyQueryType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.BooleanFilterType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.ComparatorType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.DateTimeFilterType;

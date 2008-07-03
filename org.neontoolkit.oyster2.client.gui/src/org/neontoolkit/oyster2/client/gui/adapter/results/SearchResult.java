@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.neontoolkit.oyster2.client.gui.GUIConstants;
+import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;

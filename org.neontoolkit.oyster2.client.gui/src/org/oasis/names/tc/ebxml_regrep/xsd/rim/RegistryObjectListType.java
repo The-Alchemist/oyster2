@@ -6,7 +6,7 @@
  */
 package org.oasis.names.tc.ebxml_regrep.xsd.rim;
 
-import org.neon_toolkit.registry.omv.xsd.rim.SubstitutionGroupExtensionMapper;
+import org.neontoolkit.registry.omv.xsd.rim.SubstitutionGroupExtensionMapper;
 
 
 /**

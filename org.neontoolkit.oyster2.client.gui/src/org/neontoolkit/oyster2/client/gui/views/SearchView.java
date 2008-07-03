@@ -123,7 +123,7 @@ public class SearchView extends ViewPart {
 		//setup form
 		form = toolkit.createScrolledForm(parent);
 		form.getBody().setLayout(layout);
-		form.setText("Make search");
+		form.setText("Search");
 		form.setBackground(parent.getBackground());
 		form.setBackgroundMode(SWT.INHERIT_NONE);
 		
@@ -158,7 +158,7 @@ public class SearchView extends ViewPart {
 		
 		Section section = toolkit.createSection(formBody, GUIConstants.SECTION_STYLE);
 		fieldsSection = section;
-		section.setText("Query parameters");
+		section.setText(messagesResolver.getString("SearchView.query.fields.title"));
 		section.setLayout(new FillLayout());
 		
 		// create child composite to hold the Combos
@@ -254,7 +254,7 @@ public class SearchView extends ViewPart {
 	private Section makeConfigurationSection(Composite parent) {
 		
 		Section section = toolkit.createSection(parent, GUIConstants.SECTION_STYLE);
-		section.setText("Query settings");
+		section.setText(messagesResolver.getString("SearchView.query.configuration.title"));
 		section.setLayout(new FillLayout());
 		
 		// create child composite to hold the Combos
@@ -348,7 +348,9 @@ public class SearchView extends ViewPart {
 					
 					//save current input in composites
 					SubmitQueryJob job = new SubmitQueryJob("search ontology");
-					String targetService = Activator.getWebServersLocator().getCurrentSelection();
+					// this is previous to making the combo editable
+					//String targetService = Activator.getWebServersLocator().getCurrentSelection();
+					String targetService = serverComposite.getCurrentSelection();
 					job.setTargetService(targetService);
 					Map<String,Object> filters = getFilters();
 					

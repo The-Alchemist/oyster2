@@ -20,7 +20,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressConstants;
-import org.neon_toolkit.registry.omv.service.querymanager.NeOnRegistryOMVOysterStub;
 import org.neontoolkit.oyster2.client.core.QueryResponse;
 import org.neontoolkit.oyster2.client.core.querymanager.QueryPortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
@@ -28,6 +27,7 @@ import org.neontoolkit.oyster2.client.gui.PerspectiveFactory;
 import org.neontoolkit.oyster2.client.gui.adapter.results.IResultsAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.results.ResultsAdapterFactory;
 import org.neontoolkit.oyster2.client.gui.views.SearchResultsView;
+import org.neontoolkit.registry.omv.service.querymanager.NeOnRegistryOMVOysterStub;
 
 /**
  * @author David Muñoz

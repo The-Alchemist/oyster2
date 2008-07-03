@@ -27,7 +27,7 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "OntologyEngineeringToolQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyEngineeringToolQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyEngineeringToolQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0".equals(namespaceURI) &&
@@ -37,17 +37,17 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OMVRegistryObjectType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OMVRegistryObjectType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyEngineeringToolType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyEngineeringToolType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyEngineeringToolType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyType_Type".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyType_Type.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyType_Type.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -122,7 +122,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) && "LicenseModelQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.LicenseModelQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.LicenseModelQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -147,7 +147,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) && "OntologyQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -197,7 +197,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologySyntaxType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologySyntaxType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologySyntaxType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -243,7 +243,7 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "OntologyLanguageQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyLanguageQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyLanguageQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0".equals(namespaceURI) &&
@@ -264,7 +264,7 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "OntologyEngineeringMethodologyQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyEngineeringMethodologyQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyEngineeringMethodologyQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0".equals(namespaceURI) &&
@@ -284,12 +284,12 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyDomainType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyDomainType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyDomainType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OMVObjectRefType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -299,7 +299,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyTaskType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyTaskType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyTaskType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0".equals(namespaceURI) &&
@@ -325,7 +325,7 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "OntologyDomainQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyDomainQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyDomainQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -350,7 +350,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "FormalityLevelType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.FormalityLevelType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.FormalityLevelType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0".equals(namespaceURI) &&
@@ -371,7 +371,7 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "OntologySyntaxQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologySyntaxQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologySyntaxQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0".equals(namespaceURI) &&
@@ -382,12 +382,12 @@ public class ExtensionMapper {
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "FormalityLevelQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.FormalityLevelQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.FormalityLevelQueryType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) && "OntologyTypeQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyTypeQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyTypeQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -407,7 +407,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyEngineeringMethodologyType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyEngineeringMethodologyType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyEngineeringMethodologyType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -422,18 +422,18 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) && "OntologyTaskQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.OntologyTaskQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.OntologyTaskQueryType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "LicenseModelType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.LicenseModelType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.LicenseModelType.Factory.parse(reader);
         }
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:query:2.3".equals(
                     namespaceURI) &&
                 "KnowledgeRepresentationParadigmQueryType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.query.KnowledgeRepresentationParadigmQueryType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.query.KnowledgeRepresentationParadigmQueryType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -538,7 +538,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "KnowledgeRepresentationParadigmType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.KnowledgeRepresentationParadigmType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.KnowledgeRepresentationParadigmType.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -563,7 +563,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "Ontology_Type".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.Ontology_Type.Factory.parse(reader);
         }
 
         if ("urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0".equals(namespaceURI) &&
@@ -578,7 +578,7 @@ public class ExtensionMapper {
 
         if ("urn:neon-toolkit-org:registry:omv:xsd:rim:2.3".equals(namespaceURI) &&
                 "OntologyLanguageType".equals(typeName)) {
-            return org.neon_toolkit.registry.omv.xsd.rim.OntologyLanguageType.Factory.parse(reader);
+            return org.neontoolkit.registry.omv.xsd.rim.OntologyLanguageType.Factory.parse(reader);
         }
 
         throw new org.apache.axis2.databinding.ADBException("Unsupported type " +

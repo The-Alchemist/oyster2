@@ -4,10 +4,10 @@
 package org.neontoolkit.oyster2.client.core;
 
 import org.apache.axis2.databinding.types.URI;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
-import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_ebxml.ebXMLTranslator;
-import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
+import org.neontoolkit.registry.omv.service.oyster.querymanager.to_ebxml.ebXMLTranslator;
+import org.neontoolkit.registry.omv.xsd.rim.Ontology_Type;
 import org.oasis.names.tc.ebxml_regrep.xsd.lcm.SubmitObjectsRequest;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectListType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
