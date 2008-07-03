@@ -1,4 +1,4 @@
-package org.neon_toolkit.oyster.plugin.menu;
+package org.neontoolkit.oyster.plugin.menu;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -10,7 +10,7 @@ import org.osgi.framework.BundleContext;
 public class MenuActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.neon_toolkit.oyster.plugin.menu";
+	public static final String PLUGIN_ID = "org.neontoolkit.oyster.plugin.menu";
 
 	// The shared instance
 	private static MenuActivator plugin;
