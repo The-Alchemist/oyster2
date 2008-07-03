@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Oyster NeOn Toolkit Plugin
-Bundle-SymbolicName: org.neon_toolkit.oyster.plugin.iwizard;singleton:=true
+Bundle-SymbolicName: org.neontoolkit.oyster.plugin.iwizard;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.neon_toolkit.oyster.plugin.iwizard.RegistryActivator
+Bundle-Activator: org.neontoolkit.oyster.plugin.iwizard.RegistryActivator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.ui,
  com.ontoprise.ontostudio.io,
  util,
  datamodelBase,
- org.neon_toolkit.oyster.plugin.menu,
- OysterPlugin_v2.0
+ OysterPlugin_v2.1,
+ org.neontoolkit.oyster.plugin.menu
 Eclipse-LazyStart: true

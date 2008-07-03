@@ -5,13 +5,13 @@
    <extension
          point="org.eclipse.ui.importWizards">
       	   <category
-            id="org.neon_toolkit.oyster.plugin.iwizard.Registry"
+            id="org.neontoolkit.oyster.plugin.iwizard.Registry"
             name="Registry"/>
       <wizard
-            category="org.neon_toolkit.oyster.plugin.iwizard.Registry"
-            class="org.neon_toolkit.oyster.plugin.iwizard.RegistryImportWizard"
+            category="org.neontoolkit.oyster.plugin.iwizard.Registry"
+            class="org.neontoolkit.oyster.plugin.iwizard.RegistryImportWizard"
             icon="icons/o1.GIF"
-            id="org.neon_toolkit.oyster.plugin.iwizard.RegistryImportWizard"
+            id="org.neontoolkit.oyster.plugin.iwizard.RegistryImportWizard"
             name="RegistryImportWizard"/>
       	 
       

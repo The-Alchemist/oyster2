@@ -1,9 +1,8 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -17,8 +16,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
-
-import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
 import com.ontoprise.ontostudio.io.FileFilter;
 import com.ontoprise.ontostudio.io.IOPlugin;
 import com.ontoprise.ontostudio.io.Messages;
@@ -145,7 +142,8 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
 
     @Override
     protected void initControls() {
-    	
+    	super.initControls();
+    	/*
     	try {
             String[] projects = DatamodelPlugin.getDefault().getOntologyProjects();
             updateCombo(projects);
@@ -162,6 +160,7 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
         if (_preselectedProject != null) {
             _projectCombo.select(_projectCombo.indexOf(_preselectedProject));
         }
+        */
         checkStatus();
     }
 

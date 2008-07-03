@@ -1,4 +1,4 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 import java.util.Hashtable;
 
