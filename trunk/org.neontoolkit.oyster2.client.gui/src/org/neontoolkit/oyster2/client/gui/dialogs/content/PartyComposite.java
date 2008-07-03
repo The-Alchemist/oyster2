@@ -171,5 +171,12 @@ public class PartyComposite extends InputComposite {
 		}
 		else return true;
 	}
+
+
+	@Override
+	public void setInitialValue(Object value) {
+		// TODO Auto-generated method stub
+		return ;
+	}
 	
 }

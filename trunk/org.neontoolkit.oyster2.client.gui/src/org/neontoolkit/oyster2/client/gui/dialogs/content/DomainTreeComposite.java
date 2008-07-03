@@ -3,6 +3,7 @@
  */
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -18,9 +19,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.neon_toolkit.registry.ui.provider.OntologyContentProvider;
-import org.neon_toolkit.registry.ui.provider.OntologyLabelProvider;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
+import org.neontoolkit.registry.ui.provider.OntologyContentProvider;
+import org.neontoolkit.registry.ui.provider.OntologyLabelProvider;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.Ontology;
 
@@ -113,6 +114,11 @@ public class DomainTreeComposite extends InputComposite {
 		
 		setInput(values);
 		return values;
+	}
+
+	@Override
+	public void setInitialValue(Object value) {
+		throw new RuntimeException("Not implemented");
 	}
 	
 }

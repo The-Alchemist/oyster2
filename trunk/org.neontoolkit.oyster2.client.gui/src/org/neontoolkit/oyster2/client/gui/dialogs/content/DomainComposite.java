@@ -3,6 +3,7 @@
  */
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -133,5 +134,14 @@ public class DomainComposite extends InputComposite {
 		return true;
 	}
 	
+	@Override
+	public void setInitialValue(Object value) {
+		ArrayList<String> initialValues = 
+			(ArrayList<String>)value;
+		for (String domain : initialValues) {
+			list.add(domain);
+		}
+		setInput(list.getItems());
+	}
 	
 }

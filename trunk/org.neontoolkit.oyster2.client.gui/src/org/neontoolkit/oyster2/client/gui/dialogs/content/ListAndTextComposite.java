@@ -3,6 +3,7 @@
  */
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -263,7 +264,15 @@ public class ListAndTextComposite extends InputComposite {
 		return true;
 	}
 	
-	
+	@Override
+	public void setInitialValue(Object value) {
+		ArrayList<String> initialValues =
+			(ArrayList<String>)value;
+		String [] listValues = new String[initialValues.size()];
+		items.addAll(initialValues);
+		list.setItems(items.toArray(listValues));
+		setInput(list.getItems());
+	}
 	
 	
 }

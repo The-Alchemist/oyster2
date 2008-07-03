@@ -92,6 +92,9 @@ public abstract class InputComposite extends org.eclipse.swt.widgets.Composite {
 	public void saveSettings() {	
 	}
 	
+	
+	public abstract void setInitialValue(Object value);
+	
 	/**
 	 * @return the saveSettingsOnExit
 	 */

@@ -15,10 +15,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.IProgressConstants;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
+import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.oyster2.client.core.LifecyclePortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
+import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
 
 /**
  * @author David Muñoz

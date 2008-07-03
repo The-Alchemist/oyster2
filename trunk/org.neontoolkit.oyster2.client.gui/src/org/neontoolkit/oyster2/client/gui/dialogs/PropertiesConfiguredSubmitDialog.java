@@ -324,19 +324,19 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		Boolean isEnabled = null;
 		
 		
-		for (String ontologyAttribute : categoryAttributes) {
-			isEnabled = selection.get(ontologyAttribute);
+		for (String attribute : categoryAttributes) {
+			isEnabled = selection.get(attribute);
 			if (isEnabled == null)
-				selection.put(ontologyAttribute,false);
+				selection.put(attribute,false);
 			if ((isEnabled != null) &&
 					isEnabled) {
 				
 				// the composite must be present
-				if (! composites.containsKey(ontologyAttribute)) {
+				if (! composites.containsKey(attribute)) {
 					
-					child = makeComposite(sectionClient, ontologyAttribute);
+					child = makeComposite(sectionClient, attribute);
 					
-					composites.put(ontologyAttribute,child);
+					composites.put(attribute,child);
 					emptySection = false;
 				}
 				else {
@@ -347,12 +347,12 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			else {
 				// the composite must not be present
 				
-				if (composites.containsKey(ontologyAttribute)) {
-					attributeGroup = (Group)composites.get(ontologyAttribute).getData();
-					composites.get(ontologyAttribute).dispose();
+				if (composites.containsKey(attribute)) {
+					attributeGroup = (Group)composites.get(attribute).getData();
+					composites.get(attribute).dispose();
 					attributeGroup.dispose();
 					
-					composites.remove(ontologyAttribute);
+					composites.remove(attribute);
 				}
 				
 			}
@@ -617,6 +617,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			}
 		}
 		if (allErrors.size() == 0) {
+			serverComposite.getCurrentSelection();
 			super.okPressed();
 		}
 		else {

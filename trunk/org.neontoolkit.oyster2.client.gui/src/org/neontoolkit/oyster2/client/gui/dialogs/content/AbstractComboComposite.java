@@ -147,6 +147,13 @@ public abstract class AbstractComboComposite extends InputComposite {
 		return editable;
 	}
 
+	@Override
+	public void setInitialValue(Object value) {
+		String initialValue = (String)value;
+		combo.setText(initialValue);
+		setInput(initialValue);
+		
+	}
 
 	
 }

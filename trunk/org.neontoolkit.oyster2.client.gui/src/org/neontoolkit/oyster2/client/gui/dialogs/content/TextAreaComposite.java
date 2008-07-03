@@ -70,4 +70,11 @@ public class TextAreaComposite extends InputComposite {
 		}
 		return true;
 	}
+	@Override
+	public void setInitialValue(Object value) {
+		String oldText = (String)value;
+		text.setText(oldText);
+		setInput(oldText);
+		
+	}
 }

@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.neon_toolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.OntologyAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDialog;

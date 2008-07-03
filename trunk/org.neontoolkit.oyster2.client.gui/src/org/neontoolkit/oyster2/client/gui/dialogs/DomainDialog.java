@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.neon_toolkit.registry.ui.provider.OntologyContentProvider;
-import org.neon_toolkit.registry.ui.provider.OntologyLabelProvider;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
+import org.neontoolkit.registry.ui.provider.OntologyContentProvider;
+import org.neontoolkit.registry.ui.provider.OntologyLabelProvider;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.Ontology;
 
