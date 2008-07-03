@@ -1,4 +1,4 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 
 
@@ -26,21 +26,21 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.neon_toolkit.omv.api.core.OMVFormalityLevel;
-import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
-import org.neon_toolkit.omv.api.core.OMVLicenseModel;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringMethodology;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringTool;
-import org.neon_toolkit.omv.api.core.OMVOntologyLanguage;
-import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
-import org.neon_toolkit.omv.api.core.OMVOntologyTask;
-import org.neon_toolkit.omv.api.core.OMVOntologyType;
-import org.neon_toolkit.omv.api.core.OMVPerson;
-import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
-import org.neon_toolkit.registry.api.Oyster2Manager;
-import org.neon_toolkit.registry.oyster2.Oyster2Query;
+import org.neontoolkit.omv.api.core.OMVFormalityLevel;
+import org.neontoolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
+import org.neontoolkit.omv.api.core.OMVLicenseModel;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.core.OMVOntologyDomain;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringMethodology;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringTool;
+import org.neontoolkit.omv.api.core.OMVOntologyLanguage;
+import org.neontoolkit.omv.api.core.OMVOntologySyntax;
+import org.neontoolkit.omv.api.core.OMVOntologyTask;
+import org.neontoolkit.omv.api.core.OMVOntologyType;
+import org.neontoolkit.omv.api.core.OMVPerson;
+import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
+import org.neontoolkit.registry.api.Oyster2Manager;
+import org.neontoolkit.registry.oyster2.Oyster2Query;
 
 
 

@@ -1,8 +1,8 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 import org.osgi.framework.BundleContext;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
+import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 
 
 /**
@@ -11,7 +11,7 @@ import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
 public class RegistryActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.neon_toolkit.oyster.plugin.iwizard";
+	public static final String PLUGIN_ID = "org.neontoolkit.oyster.plugin.iwizard";
 
 	// The shared instance
 	private static RegistryActivator plugin;

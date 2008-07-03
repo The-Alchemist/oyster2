@@ -1,4 +1,4 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.semanticweb.kaon2.api.KAON2Connection;
+import org.semanticweb.kaon2.api.OntologyManager;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
@@ -29,6 +29,7 @@ import com.ontoprise.ontostudio.gui.control.Control;
 import com.ontoprise.ontostudio.gui.navigator.module.ModuleControl;
 import com.ontoprise.ontostudio.script.ProcedureCallLogger;
 import com.ontoprise.util.URIUtilities;
+//import org.semanticweb.kaon2.api.KAON2Connection;
 
 public class ImportOntology extends Control {
 
@@ -41,7 +42,7 @@ public class ImportOntology extends Control {
         List<String> importedModules = new ArrayList<String>();
         URI uri = new URI(physicalUri);
         IOntologyContainer container = getContainer(projectName);
-        KAON2Connection connection = container.getConnection();
+        OntologyManager connection = container.getConnection();
 
     	//check which Ontology Format the file is
         //String ontologyFormat =KAON2Manager.getFormatName(physicalUri, null);

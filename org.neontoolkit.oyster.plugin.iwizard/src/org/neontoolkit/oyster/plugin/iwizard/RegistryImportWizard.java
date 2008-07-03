@@ -1,8 +1,9 @@
-package org.neon_toolkit.oyster.plugin.iwizard;
+package org.neontoolkit.oyster.plugin.iwizard;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.net.URL;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -22,7 +23,7 @@ import com.ontoprise.ontostudio.io.wizard.AbstractImportSelectionPage;
 import com.ontoprise.ontostudio.io.wizard.AbstractImportWizard;
 import com.ontoprise.ontostudio.io.wizard.ImportProgressListener;
 import com.ontoprise.util.URIUtilities;
-import org.neon_toolkit.oyster.plugin.menu.actions.StartRegistry;
+import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 
 public class RegistryImportWizard extends AbstractImportWizard {
 	static RegistryActivator conn = RegistryActivator.getDefault();
@@ -76,6 +77,12 @@ public class RegistryImportWizard extends AbstractImportWizard {
     public AbstractImportSelectionPage getImportSelectionPage() {
         return new RegistryImportSelectionPage(getFileFilter());
     }
+    
+    @Override
+	public String[] doImport(String project, URI[] physicalURIs, IProgressMonitor monitor) throws OntologyImportException {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     @Override
     public String[] doImport(String project, URL location, String defaultUri, IProgressMonitor monitor) throws OntologyImportException {
@@ -178,5 +185,6 @@ public class RegistryImportWizard extends AbstractImportWizard {
         //return StringRepresentation.toString(IDTermUtil.uriToTerm(logicalURI));
         return StringRepresentation.toString(URIUtilities.ontologyURIToModule(logicalURI));
 	}
+	
     
 }
