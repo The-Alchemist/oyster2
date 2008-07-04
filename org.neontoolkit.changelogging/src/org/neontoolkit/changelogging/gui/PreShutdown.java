@@ -42,7 +42,7 @@ public class PreShutdown implements IPreShutdownListener {
 		List<OWLChangeListener> olistener = new ArrayList<OWLChangeListener>();
 		for(Object result : results){
 			if(Track.FlogicList.containsKey((Ontology)result))
-					flistener.add(Track.FlogicList.get((Ontology)result));
+				flistener.add(Track.FlogicList.get((Ontology)result));
 			if(Track.OWLList.containsKey((Ontology)result))
 				olistener.add(Track.OWLList.get((Ontology)result));
 		}
@@ -56,10 +56,13 @@ public class PreShutdown implements IPreShutdownListener {
 			return true;
 		}
 		
-		for(OWLChangeListener listener : olistener)
-			listener.persist();
-		OWLChangeListener.stopOyster();
-		
+		try {
+			for(OWLChangeListener listener : olistener)
+				listener.persist();
+		}catch (Exception e) {
+			e.printStackTrace();
+			return true;
+		}
 		return true;
 	}
 	

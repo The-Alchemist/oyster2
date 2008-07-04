@@ -95,7 +95,7 @@ public class OWLChangeListener implements OntologyListener {
 		return isChanged;
 	}
 	
-	public void persist(){			// persist the changes on the monitored ontology
+	public void persist(){	// persist the changes on the monitored ontology
 		for(OMVAtomicChange change : changeList){
 			change.setAppliedToOntology(omvOnto);
 			//oyster2Conn.register(change);

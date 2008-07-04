@@ -20,6 +20,7 @@ public class SaveListDialog extends ListSelectionDialog {
 
 class SCProvider implements IStructuredContentProvider {
 
+	@SuppressWarnings("unchecked")
 	public Object[] getElements(Object inputElement) {
 		if(inputElement instanceof List)
 			return ((List)inputElement).toArray();
