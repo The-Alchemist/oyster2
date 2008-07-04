@@ -69,7 +69,7 @@ public class ImportOntology extends Control {
             
             Set<Ontology> ontos = OntologyImportHelper.importOntologies(connection, new String[] {physicalUri}, listener);
             if (!ontos.isEmpty()) {
-        		Iterator ontosIter = ontos.iterator();
+        		Iterator<Ontology> ontosIter = ontos.iterator();
         		while (ontosIter.hasNext()) {
 					Ontology onto = (Ontology) ontosIter.next();
 		        	ModuleControl.getDefault().addModuleToProject(StringRepresentation.toString(onto.getModule()), projectName);
