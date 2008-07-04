@@ -4,7 +4,7 @@ Bundle-Name: Changelogging Plug-in
 Bundle-SymbolicName: org.neontoolkit.changelogging;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.changelogging.Activator
-Bundle-Vendor: Tian Chi & Jia Yu
+Bundle-Vendor: Tian Chi & Jia Yu & Raul Palma
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

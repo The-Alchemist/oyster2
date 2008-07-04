@@ -34,6 +34,7 @@ public class ChangeLogger {
 		init();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void init() throws IOException, JDOMException{
 		File rootDir = new File(Constants.logFolder);
 		if(!rootDir.exists()){
@@ -81,6 +82,7 @@ public class ChangeLogger {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void add(Object changeType, Object event){
 		if(changeType instanceof ChangeType){
 			Literal lit = (Literal) event;
