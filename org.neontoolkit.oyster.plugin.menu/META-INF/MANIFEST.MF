@@ -4,7 +4,7 @@ Bundle-Name: Menu Plug-in
 Bundle-SymbolicName: org.neontoolkit.oyster.plugin.menu;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.oyster.plugin.menu.MenuActivator
-Bundle-Localization: plugin
+Bundle-Vendor: Raul Palma
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  OysterPlugin_v2.1

@@ -4,7 +4,7 @@ Bundle-Name: Oyster NeOn Toolkit Plugin
 Bundle-SymbolicName: org.neontoolkit.oyster.plugin.iwizard;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.oyster.plugin.iwizard.RegistryActivator
-Bundle-Localization: plugin
+Bundle-Vendor: Raul Palma
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

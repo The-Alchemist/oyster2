@@ -278,7 +278,7 @@ public class RegistrySummaryPage extends WizardPage  {
 	
 
 	//Fill table with the ontologies that fulfill the conditions
-	private void fillTable (HashMap OntConditions) {
+	private void fillTable (HashMap<String, Object> OntConditions) {
 		
 		indexButton = 0;
 		if (senseButtons!=null){
@@ -322,14 +322,14 @@ public class RegistrySummaryPage extends WizardPage  {
         table.addListener(SWT.CHECK, listener1);
         
 	    // Fill the table with the ontology information
-        Iterator it = ontologies.iterator();
+        Iterator<OMVOntology> it = ontologies.iterator();
         while(it.hasNext()) {
         	//retrieve a sense
         	OMVOntology ontology = (OMVOntology) it.next();
         	String URI = ontology.getURI();
         	//String name = ontology.getName().toString()==null ? "": ontology.getName().toString();
         	String name;
-        	Iterator itS = ontology.getName().iterator();
+        	Iterator<String> itS = ontology.getName().iterator();
         	if(itS.hasNext()){
         		name=(String)itS.next();
         	}else{
@@ -412,12 +412,12 @@ public class RegistrySummaryPage extends WizardPage  {
 	}
 	
 	//get the ontologies that fulfill the conditions provided by the user 
-	public Set<OMVOntology> getOntologies(HashMap OntConditions) {
+	public Set<OMVOntology> getOntologies(HashMap<String, Object> OntConditions) {
 		
 		//retrieve all conditions		
 		OMVOntology conditions = new OMVOntology();
 		
-		for (Iterator it = OntConditions.keySet().iterator(); it.hasNext();) {
+		for (Iterator<String> it = OntConditions.keySet().iterator(); it.hasNext();) {
 			String key = (String) it.next();
 			
 			//string values
@@ -517,7 +517,7 @@ public class RegistrySummaryPage extends WizardPage  {
 			    	   	
 			    monitor.worked(60);
 			    if (OMVOb1!=null && OMVOb1.size()>0){
-			    	Iterator it = OMVOb1.iterator();
+			    	Iterator<Object> it = OMVOb1.iterator();
 			    	try{
 			    		while(it.hasNext()){
 			    			OMVOntology omv = (OMVOntology)it.next();
