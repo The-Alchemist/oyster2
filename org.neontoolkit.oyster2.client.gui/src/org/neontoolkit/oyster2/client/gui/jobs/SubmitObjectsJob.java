@@ -15,10 +15,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.IProgressConstants;
-import org.neontoolkit.omv.api.core.OMVOntology;
-import org.neontoolkit.oyster2.client.core.LifecyclePortAxis2Adapter;
+import org.neontoolkit.oyster2.client.core.lifecycle.LifecyclePortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
+import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -26,7 +26,7 @@ import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOyst
  */
 public class SubmitObjectsJob extends WorkspaceJob {
 
-	private OMVOntology ontology = null;
+	private OMVRegistryObjectType omvObject = null;
 	
 	private String targetService = null;
 	
@@ -47,9 +47,9 @@ public class SubmitObjectsJob extends WorkspaceJob {
 
 	@Override
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-		if ((targetService == null) || (ontology == null)) {
+		if ((targetService == null) || (omvObject == null)) {
 			throw new RuntimeException("Service endpoint set to " +
-					targetService + " object set to " + ontology.toString());
+					targetService + " object set to " + omvObject.toString());
 		}
 		Status status = null;
 		LifecyclePortAxis2Adapter lifecyclePortAdapter = new LifecyclePortAxis2Adapter();
@@ -59,7 +59,7 @@ public class SubmitObjectsJob extends WorkspaceJob {
 			long soTimeout = 10 * 60 * 1000; // four minutes
 	 	    serviceStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(soTimeout);
 			lifecyclePortAdapter.setServiceStub(serviceStub);
-			resultString = lifecyclePortAdapter.submitObjectsRequest(ontology).toString();
+			resultString = lifecyclePortAdapter.submitObjectsRequest(omvObject).toString();
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,resultString,null);
 		} catch (AxisFault e) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
@@ -97,20 +97,6 @@ public class SubmitObjectsJob extends WorkspaceJob {
 	}
 
 
-	/**
-	 * @return the ontology
-	 */
-	public final OMVOntology getOntology() {
-		return ontology;
-	}
-
-
-	/**
-	 * @param ontology the ontology to set
-	 */
-	public final void setOntology(OMVOntology ontology) {
-		this.ontology = ontology;
-	}
 	
 	
 	/**
@@ -126,5 +112,15 @@ public class SubmitObjectsJob extends WorkspaceJob {
 	public final void setTargetService(String targetService) {
 		this.targetService = targetService;
 	}
+
+	public OMVRegistryObjectType getOmvObject() {
+		return omvObject;
+	}
+
+	public void setOmvObject(OMVRegistryObjectType omvObject) {
+		this.omvObject = omvObject;
+	}
+	
+	
 	
 }

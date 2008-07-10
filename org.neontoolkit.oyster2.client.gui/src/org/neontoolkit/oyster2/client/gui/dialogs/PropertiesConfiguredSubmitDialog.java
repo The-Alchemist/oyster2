@@ -60,6 +60,9 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	private static final String CONFIGURATION_FILE_NAME = 
 		"PropertiesConfiguredSubmitDialog.properties"; //$NON-NLS-1$
 	
+	private static final String ADAPTER_FILE_NAME =
+		"adapter.file";
+	
 	private static final String IDENTIFIERS_KEY = "configuration.identifiers"; //$NON-NLS-1$
 	
 	private static final String TARGET_BUNDLE_KEY = "bundle.file"; //$NON-NLS-1$
@@ -80,7 +83,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	private static final String PREDEFINED_SUFFIX = ".predefined"; //$NON-NLS-1$
 	
-	private static final String SOURCE_TYPE_SUFFIX = ".source.type"; //$NON-NLS-1$
+	private static final String SOURCE_TYPE_SUFFIX = ".source"; //$NON-NLS-1$
 	
 	private static final String FILE_SOURCE ="file"; //$NON-NLS-1$
 	
@@ -117,6 +120,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	private Button attributesSelectionButton = null;
 	
 	// dependent of the object being submitted
+	
+	private String adapterFileName = null;
 	
 	private PropertiesConfiguration targetConfiguration = null;
 	
@@ -247,7 +252,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		String defaultTemplate = template.getDefaultTemplate();
 		List<String> templateAttributes =
 			template.getTemplateProperties(defaultTemplate);
-		
+		adapterFileName = targetConfiguration.getString(ADAPTER_FILE_NAME);
 		currentSections = new TreeMap<String,Composite>();
 		categories = new HashMap<String, String[]>();
 		selection = new HashMap<String, Boolean>();
@@ -651,6 +656,20 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	 */
 	public final void setComposites(Map<String, InputComposite> composites) {
 		this.composites = composites;
+	}
+
+	/**
+	 * @return the adapterFileName
+	 */
+	public final String getAdapterFileName() {
+		return adapterFileName;
+	}
+
+	/**
+	 * @param adapterFileName the adapterFileName to set
+	 */
+	public final void setAdapterFileName(String adapterFileName) {
+		this.adapterFileName = adapterFileName;
 	}
 	
 	

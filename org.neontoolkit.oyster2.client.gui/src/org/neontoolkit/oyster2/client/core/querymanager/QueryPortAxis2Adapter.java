@@ -10,7 +10,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.databinding.ADBException;
 import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.types.URI.MalformedURIException;
-import org.neontoolkit.oyster2.client.core.QueryResponse;
 import org.neontoolkit.oyster2.client.core.querymanager.querybuilders.RegistryObjectQueryBuilder;
 import org.neontoolkit.registry.omv.service.querymanager.NeOnRegistryOMVOysterStub;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.AdhocQueryRequest;

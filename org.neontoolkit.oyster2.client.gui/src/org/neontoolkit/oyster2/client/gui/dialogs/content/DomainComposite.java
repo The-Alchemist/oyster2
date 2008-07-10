@@ -28,6 +28,8 @@ public class DomainComposite extends InputComposite {
 
 	private List list = null;
 	
+	private Map<String,String> labelsMap = null;
+	
 	private Button addButton = null;
 	
 	private Button removeButton = null;
@@ -37,6 +39,7 @@ public class DomainComposite extends InputComposite {
 	public DomainComposite(Composite parent, int style, String section,
 			String [] predefined) {
 		super(parent,style,section,predefined);
+		labelsMap = new HashMap<String, String>();
 		FormData formData = null;
 		
 		this.setLayout(new FormLayout());
@@ -75,7 +78,7 @@ public class DomainComposite extends InputComposite {
 		list.setLayoutData(makeGridForControl(list,6));
 		
 		
-		setInput(new HashMap<String,String>());
+		setInput(list.getItems());
 		makeListeners();
 	}
 
@@ -83,27 +86,29 @@ public class DomainComposite extends InputComposite {
 		Listener listener = null;
 		listener = new Listener() {
 			public void handleEvent(Event event) {
-				Map<String,String> values = null;
+				
 				if (event.widget == removeButton) {
 					String [] selected = list.getSelection();
-					values = (Map<String,String>)getInput();
+					
 					for (int i = 0;i<selected.length;i++) {
-						values.remove(selected[i]);
+						labelsMap.remove(selected[i]);
 					}
+					String [] newValues = new String[labelsMap.size()];
 					list.remove(list.getSelectionIndices());
+					setInput(labelsMap.values().toArray(newValues));
 				}
 				else if (event.widget == addButton) {
 					int result;
 					
-					
 					result = nestedDialog.open();
 					
 					if (result == TrayDialog.OK) {
-						values = (Map<String,String>)nestedDialog.getInput();
-						setInput(values);
-						String []newList = new String[values.size()]; 
-						newList = values.keySet().toArray(newList);
+						labelsMap = (Map<String,String>)nestedDialog.getInput();
+						
+						String []newList = new String[labelsMap.size()]; 
+						newList = labelsMap.keySet().toArray(newList);
 						list.setItems(newList);
+						setInput((labelsMap.values().toArray(newList)));
 					}
 				}
 			}
@@ -136,12 +141,14 @@ public class DomainComposite extends InputComposite {
 	
 	@Override
 	public void setInitialValue(Object value) {
-		ArrayList<String> initialValues = 
+		
+		throw new RuntimeException("Not implemented yet");
+		/*ArrayList<String> initialValues = 
 			(ArrayList<String>)value;
 		for (String domain : initialValues) {
 			list.add(domain);
 		}
-		setInput(list.getItems());
+		setInput(list.getItems());*/
 	}
 	
 }
