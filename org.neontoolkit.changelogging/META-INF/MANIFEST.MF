@@ -4,7 +4,7 @@ Bundle-Name: Changelogging Plug-in
 Bundle-SymbolicName: org.neontoolkit.changelogging;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.changelogging.Activator
-Bundle-Vendor: Tian Chi & Jia Yu & Raul Palma
+Bundle-Vendor: UPM & UKARL
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui,
  util,
  com.ontoprise.ontostudio.gui,
  com.ontoprise.ontostudio.owl.gui,
- OysterPlugin_v2.1,
+ org.neontoolkit.registry.api,
  org.neontoolkit.oyster.plugin.menu
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,

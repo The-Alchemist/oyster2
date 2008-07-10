@@ -4,7 +4,7 @@ Bundle-Name: Oyster NeOn Toolkit Plugin
 Bundle-SymbolicName: org.neontoolkit.oyster.plugin.iwizard;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.oyster.plugin.iwizard.RegistryActivator
-Bundle-Vendor: Raul Palma
+Bundle-Vendor: UPM
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.ui,
  com.ontoprise.ontostudio.io,
  util,
  datamodelBase,
- OysterPlugin_v2.1,
+ org.neontoolkit.registry.api,
  org.neontoolkit.oyster.plugin.menu
 Eclipse-LazyStart: true
