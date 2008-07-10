@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.neontoolkit.oyster2.client.core;
+package org.neontoolkit.oyster2.client.core.querymanager;
 
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 

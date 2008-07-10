@@ -37,5 +37,5 @@ Require-Bundle: org.eclipse.ui,
  datamodelBase,
  util,
  com.ontoprise.dependencies,
- OysterPlugin_v2.1
+ org.neontoolkit.registry.api
 Eclipse-LazyStart: true

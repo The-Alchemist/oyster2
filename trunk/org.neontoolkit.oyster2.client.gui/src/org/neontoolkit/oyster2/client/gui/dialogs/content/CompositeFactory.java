@@ -33,6 +33,7 @@ public class CompositeFactory {
 	public static final String TEXT_TYPE = "TEXT_TYPE"; //$NON-NLS-1$
 	public static final String LONG_TEXT_TYPE = "LONG_TEXT_TYPE"; //$NON-NLS-1$
 	public static final String CALENDAR_TYPE = "CALENDAR_TYPE"; //$NON-NLS-1$
+	public static final String NATURAL_LANGUAGE_TYPE = "NATURAL_LANGUAGE_TYPE"; //$NON-NLS-1$
 	private static Map<String,Validator> validators = null;
 	
 	static {
@@ -68,6 +69,16 @@ public class CompositeFactory {
 		if (type.equals(LIST_TYPE)) {
 			ListComposite composite =
 				new ListComposite(parent,style,section,values);
+			SimpleListSelectionDialog dialog =
+				new SimpleListSelectionDialog(section+InputDialog.DIALOG_SETTINGS_SUFFIX,shell,values);
+			composite.setNestedDialog(dialog);
+			composite.setRequired(isRequired);
+			composite.setValidator(validators.get(validatorName));
+			return composite;
+		}
+		else if (type.equals(NATURAL_LANGUAGE_TYPE)) {
+			NaturalLanguageComposite composite =
+				new NaturalLanguageComposite(parent,style,section,values);
 			SimpleListSelectionDialog dialog =
 				new SimpleListSelectionDialog(section+InputDialog.DIALOG_SETTINGS_SUFFIX,shell,values);
 			composite.setNestedDialog(dialog);
