@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.axis2.databinding.types.URI;
+import org.apache.axis2.databinding.types.URI.MalformedURIException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdaptersManager;
@@ -136,19 +138,62 @@ public class PropertiesConfiguredAdapter {
 	private void makeIdentifier(OMVRegistryObjectType axisObject,
 			Map<String, Object> properties) {
 		String field = null;
-		StringBuffer identifierBuffer = new StringBuffer(this.identifier);
-		int fieldBegin = 0;
+		String literal = null;
+		StringBuffer identifierBuffer = new StringBuffer(identifier);
+		String builtIdentifier = ""; 
 		int fieldEnd = 0;
-		boolean finished = false;
-		while (!finished) {
-			fieldBegin = identifierBuffer.indexOf("\"", fieldEnd);
-			if (fieldBegin != -1) {
-				fieldEnd = identifierBuffer.indexOf("\"", fieldBegin+1);
-				
+		int current = 0;
+		
+		while (current < identifierBuffer.length()) {
+			fieldEnd = getTokenEnd(identifierBuffer,current+1);
+			
+			if (identifierBuffer.charAt(current) == '\"') {
+				if (fieldEnd != -1) {
+					current++;
+					literal = identifierBuffer.substring(current, fieldEnd);
+					current = fieldEnd+1; // skip the last "
+					builtIdentifier = builtIdentifier + literal;
+					
+				}
+				else {
+					throw new RuntimeException("Unfinished literal in identifier");
+				}
+			}
+			
+			else {
+				if (fieldEnd == -1)
+					fieldEnd = identifierBuffer.length();
+				if (identifierBuffer.charAt(current) == ' ') {
+					current++;
+				}
+
+				field = identifierBuffer.substring(current, fieldEnd);
+				current = fieldEnd;
+				builtIdentifier = builtIdentifier + properties.get(field);
+				System.out.println("id " + field);
+				System.out.println("value " + properties.get(field));
 				
 			}
+			
 		}
-		
+		try {
+			axisObject.setId(new URI(builtIdentifier));
+		} catch (MalformedURIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
+	private static int getTokenEnd(StringBuffer identifierBuffer, int current) {
+		char c;
+		for (int i = current;i<identifierBuffer.length();i++) {
+			c = identifierBuffer.charAt(i);
+			if ((c == '\"') || (c== ' '))
+					return i;
+		}
+		return -1;
 	}
 
 	
