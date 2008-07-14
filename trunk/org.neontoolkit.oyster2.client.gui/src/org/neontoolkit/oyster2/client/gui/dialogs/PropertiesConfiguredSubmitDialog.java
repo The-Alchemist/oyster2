@@ -83,7 +83,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	private static final String PREDEFINED_SUFFIX = ".predefined"; //$NON-NLS-1$
 	
-	private static final String SOURCE_TYPE_SUFFIX = ".source"; //$NON-NLS-1$
+	private static final String SOURCE_TYPE_SUFFIX = ".source.type"; //$NON-NLS-1$
 	
 	private static final String FILE_SOURCE ="file"; //$NON-NLS-1$
 	
@@ -272,8 +272,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		String []categoryAttributes = null;
 		
 		for (String category : categoryNames) {
-			
-			
 			categoryAttributes = targetConfiguration.getStringArray(category + CATEGORY_ATTRIBUTES_SUFFIX);
 			categories.put(category,categoryAttributes);
 			makeSection(parent,category,categoryAttributes);
@@ -482,6 +480,11 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			valuesSource = targetConfiguration.getString(ontologyAttribute + SOURCE_SUFFIX);
 			String path = Activator.getDefault().getResourcesDir();
 			PropertiesConfiguration configuration;
+			System.out.println("Attribute " + ontologyAttribute);
+			System.out.println("source for " + ontologyAttribute + SOURCE_SUFFIX);
+			System.out.println("		 " + valuesSource);
+			
+			
 			try {
 				configuration = new PropertiesConfiguration(
 						path + valuesSource );
