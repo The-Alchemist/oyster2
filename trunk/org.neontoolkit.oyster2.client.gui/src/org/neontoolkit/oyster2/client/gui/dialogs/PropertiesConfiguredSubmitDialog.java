@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
@@ -121,6 +122,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	// dependent of the object being submitted
 	
+	private Composite formBody = null;
+	
 	private String adapterFileName = null;
 	
 	private PropertiesConfiguration targetConfiguration = null;
@@ -181,7 +184,9 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		serverComposite = new TargetServerComposite(form.getBody(),SWT.NONE);
 		makeTargetComposite(form.getBody());
 		getTargetConfiguration();
-		makeComposites(form.getBody());
+		formBody = new Composite(form.getBody(),SWT.NONE);
+		formBody.setLayout(makeFormBodyLayout());
+		makeComposites(formBody);
 		
 		
 		
@@ -194,11 +199,17 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				if ( event.widget == targetCombo) {
-					String newTarget = targetCombo.getItem(targetCombo.getSelectionIndex());
+					String newTarget = targets[targetCombo.getSelectionIndex()];
+					
+					
 					if (! submitTarget.equals(newTarget)) {
 						cleanTargetConfiguration();
 						getTargetConfiguration();
-						makeComposites(form.getBody());
+						formBody.dispose();
+						
+						formBody = new Composite(form.getBody(),SWT.NONE);
+						formBody.setLayout(makeFormBodyLayout());
+						makeComposites(formBody);
 					}
 				}
 				else if (event.widget == attributesSelectionButton) {
@@ -213,7 +224,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 					dialog.setMessagesResolver(targetMessagesResolver);
 					int result = dialog.open();
 					if (result == dialog.OK) {
-						makeComposites(form.getBody());
+						makeComposites(formBody);
 					}
 				}
 			}
@@ -225,6 +236,9 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	
 	private void cleanTargetConfiguration() {
+		
+		//TODO dispose sections too
+		
 		for (Entry<String,InputComposite> entry : composites.entrySet()) {
 			entry.getValue().dispose();
 		}
@@ -278,8 +292,9 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			
 		}
 		form.getBody().layout(true,true);
-		form.reflow(false);
-
+		
+		//form.reflow(false);
+		form.reflow(true);
 	}
 	
 	private boolean makeSection(Composite parent,String category, String[] categoryAttributes) {
@@ -392,7 +407,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 	}
 
-	private InputComposite makeComposite(Composite sectionClient, String ontologyAttribute) {
+	private InputComposite makeComposite(Composite sectionClient, String omvClassAttribute) {
 		boolean isRequired = false;
 		String compositeType = null;
 		List<String> predefinedValues = null;
@@ -409,30 +424,30 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		InputComposite child = null;
 		
-		compositeType = targetConfiguration.getString(ontologyAttribute + TYPE_SUFFIX);
+		compositeType = targetConfiguration.getString(omvClassAttribute + TYPE_SUFFIX);
 			//loader.getAttribute(fileHandler,
 			//		ontologyAttribute, "type");
-		editable = targetConfiguration.getString(ontologyAttribute + EDITABLE_SUFFIX);
+		editable = targetConfiguration.getString(omvClassAttribute + EDITABLE_SUFFIX);
 			//loader.getAttribute(fileHandler,
 			//		ontologyAttribute, "editable");
 		if (editable == null) {
 			editable = "true"; //$NON-NLS-1$
 		}
-		validatorName = targetConfiguration.getString(ontologyAttribute + VALIDATOR_SUFFIX); 
+		validatorName = targetConfiguration.getString(omvClassAttribute + VALIDATOR_SUFFIX); 
 			
 			//loader.getAttribute(fileHandler,
 			//	ontologyAttribute, "validator");
 		
 		
-		label = targetMessagesResolver.getString(ontologyAttribute);
+		label = targetMessagesResolver.getString(omvClassAttribute);
 			//loader.getAttribute(fileHandler,
 			//		ontologyAttribute, "label");
 		
-		defaultValue = targetConfiguration.getString(ontologyAttribute+ DEFAULT_SUFFIX);
+		defaultValue = targetConfiguration.getString(omvClassAttribute+ DEFAULT_SUFFIX);
 		//	loader.getAttribute(fileHandler,
 		//			ontologyAttribute, "default");
 		
-		required = targetConfiguration.getString(ontologyAttribute + REQUIRED_SUFFIX); 
+		required = targetConfiguration.getString(omvClassAttribute + REQUIRED_SUFFIX); 
 			
 		//	loader.getAttribute(fileHandler,
 		//		ontologyAttribute, "required");
@@ -442,13 +457,13 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		}
 
 		predefined = targetConfiguration.
-		getString(ontologyAttribute + PREDEFINED_SUFFIX);
+		getString(omvClassAttribute + PREDEFINED_SUFFIX);
 			
 		//loader.getAttribute(fileHandler,
 		//			ontologyAttribute, "predefined");
 		
 		if ((predefined != null) && predefined.equals("true")) { //$NON-NLS-1$
-			predefinedValues = loadPredefinedValues(ontologyAttribute);
+			predefinedValues = loadPredefinedValues(omvClassAttribute);
 		}
 		
 		group = new Group(sectionClient,SWT.SHADOW_NONE);
@@ -460,7 +475,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			group.setText(label);
 		
 		child = CompositeFactory.createComposite(compositeType,
-				group, SWT.NONE,"submitOntologyPreferences." + ontologyAttribute, //$NON-NLS-1$
+				group, SWT.NONE,"submitOntologyPreferences." + this.submitTarget + omvClassAttribute, //$NON-NLS-1$					
 				predefinedValues,editable,validatorName,defaultValue,
 				isRequired);
 		
@@ -563,6 +578,18 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 
 	
 	private void configureForm(Composite baseComposite) {
+		
+		toolkit = new FormToolkit(baseComposite.getDisplay());
+		
+		form = toolkit.createScrolledForm(baseComposite);
+		//form.getBody().setLayout(layout);
+		form.setText(Messages.getString("PropertiesConfiguredSubmitDialog.form.text")); //$NON-NLS-1$
+		form.getBody().setLayout(makeFormBodyLayout());
+		form.setBackground(baseComposite.getBackground());
+		form.setBackgroundMode(SWT.INHERIT_NONE);
+	}
+	
+	private Layout makeFormBodyLayout() {
 		ColumnLayout layout = new ColumnLayout();
 		
 		layout.topMargin = 0;
@@ -573,18 +600,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		layout.verticalSpacing = 10;
 		layout.maxNumColumns = 1;
 		layout.minNumColumns = 1;
-		
-		toolkit = new FormToolkit(baseComposite.getDisplay());
-		
-		form = toolkit.createScrolledForm(baseComposite);
-		form.getBody().setLayout(layout);
-		form.setText(Messages.getString("PropertiesConfiguredSubmitDialog.form.text")); //$NON-NLS-1$
-		
-		form.setBackground(baseComposite.getBackground());
-		form.setBackgroundMode(SWT.INHERIT_NONE);
+		return layout;
 	}
-	
-	
 	
 	@Override
 	protected void okPressed() {

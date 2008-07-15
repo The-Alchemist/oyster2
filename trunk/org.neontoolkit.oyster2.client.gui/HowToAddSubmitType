@@ -1,6 +1,6 @@
 1. In PropertiesConfiguredSubmitDialog.properties
-	add an identifier to the line:
-		configuration.identifiers = submitOntology
+	add an identifier to the line  (use a comma to separate the new value):
+		configuration.identifiers = submitOntology, newidentifier
 		
 	add a line with the identifier plus the suffix ".file" and the
 	name of a file in /resources as value, like in
