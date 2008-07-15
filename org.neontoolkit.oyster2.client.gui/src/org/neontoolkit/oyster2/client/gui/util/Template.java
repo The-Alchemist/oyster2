@@ -28,7 +28,8 @@ public class Template {
 	
 	public Template(String filename) {
 		String path = Activator.getDefault().getResourcesDir() +
-			File.separator + filename;
+			File.separator + "templates" + File.separator + filename;
+		
 		//String path = filename;
 		try {
 			

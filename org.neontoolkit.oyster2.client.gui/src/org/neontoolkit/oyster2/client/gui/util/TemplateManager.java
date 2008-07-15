@@ -26,17 +26,21 @@ public class TemplateManager {
 	
 	public TemplateManager() {
 		templates = new HashMap<String, Template>();
+		
 		String path = Activator.getDefault().getResourcesDir() +
-			File.separator + "TemplateManager.properties";
+			File.separator + "templates" + File.separator + "TemplateManager.properties";
 		try {
 			PropertiesConfiguration configuration =
 				new PropertiesConfiguration(path);
-			String id = null;
+			String []idsArray = null;
 			String [] files = configuration.getStringArray(LIST_OF_FILES_KEY);
 			for (String filename : files) {
-				id = configuration.getString(filename+".id");
+				idsArray = configuration.getStringArray(filename+".id");
+				
 				Template template = new Template(filename);
-				templates.put(id,template);
+				for (String id : idsArray) {
+					templates.put(id,template);
+				}
 			}
 		} 
 		catch (ConfigurationException e) {
