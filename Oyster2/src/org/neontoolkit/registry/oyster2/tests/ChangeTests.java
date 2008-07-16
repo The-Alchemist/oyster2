@@ -69,6 +69,11 @@ public class ChangeTests {
 		se.setHasRole(Constants.SubjectExpert);
 		
 		//SCENARIOS
+		if (args[0].equalsIgnoreCase("16")){
+			List<OMVChange> change = new LinkedList<OMVChange>(); 
+			change.add(oyster2Conn.getChange("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=0E49A2AB25EB8B5E1958A6DD6A4D53F01310DB95"));
+			System.out.println(Oyster2Manager.serializeOMVChanges(change));
+		}
 		if (args[0].equalsIgnoreCase("14")){
 			oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
 			Thread.sleep(60000);

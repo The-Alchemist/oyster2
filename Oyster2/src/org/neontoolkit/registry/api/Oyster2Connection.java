@@ -1138,6 +1138,16 @@ public class Oyster2Connection {
 	}
 	
 	/**
+	 * Gets the change object given the change URI
+	 * @param changeID is the change URI
+	 * @return The OMVChange object
+	 */
+	public OMVChange getChange(String changeId){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getChange(changeId, null);
+	}
+	
+	/**
 	 * Force to start the syncrhonization of changes
 	 * with all known peers. A new thread is created to 
 	 * do the job
