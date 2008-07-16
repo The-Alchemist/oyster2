@@ -436,7 +436,7 @@ public class ChangeManagement {
 	/**
 	 * Removes a change from Oyster2 registry. If is an
 	 * entity change, removes related atomic changes.
-	 * @param o is the OMVChange object representing the
+	 * @param changeE is the OMVChange object representing the
 	 * change that will be removed. 
 	 */
 	@SuppressWarnings("unchecked")
@@ -689,8 +689,10 @@ public class ChangeManagement {
 	}
 	
 	/**
-	 * Gets the entity associated to a specific change
-	 * @param changeURI is the uri of the change for which for which we
+	 * Gets the state of an entity.
+	 * @param o is the OMVOntology representing the ontology containing
+	 * the entity
+	 * @param entityURI is the uri of the change for which for which we
 	 * want to search the related entity
 	 * @return The uri of the related entity 
 	 */
@@ -1265,7 +1267,7 @@ public class ChangeManagement {
 	
 	/**
 	 * Gets the change object given the change URI
-	 * @param changeID is the change URI
+	 * @param changeId is the change URI
 	 * @param registry is the target registry to search the change
 	 * @return The OMVChange object
 	 */
