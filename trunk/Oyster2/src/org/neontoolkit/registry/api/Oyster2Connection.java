@@ -1139,7 +1139,7 @@ public class Oyster2Connection {
 	
 	/**
 	 * Gets the change object given the change URI
-	 * @param changeID is the change URI
+	 * @param changeId is the change URI
 	 * @return The OMVChange object
 	 */
 	public OMVChange getChange(String changeId){
