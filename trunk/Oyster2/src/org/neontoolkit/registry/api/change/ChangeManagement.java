@@ -1263,6 +1263,30 @@ public class ChangeManagement {
 		
 	}
 	
+	/**
+	 * Gets the change object given the change URI
+	 * @param changeID is the change URI
+	 * @param registry is the target registry to search the change
+	 * @return The OMVChange object
+	 */
+	public OMVChange getChange(String changeId, Ontology registry){
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		OMVChange o = new OMVChange();
+		Individual oIndividual = KAON2Manager.factory().individual(changeId);
+		String conceptChange=null;
+		try {
+			conceptChange = oIndividual.getDescriptionsMemberOf(targetRegistry).iterator().next().toString();
+			o = ProcessChangeIndividuals.processChangeIndividual(oIndividual, conceptChange, targetRegistry);
+		} catch (KAON2Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return o;
+	}
+	
 	//HISTORY && TRACKING METHODS
 	private Set<Axiom> getAxioms(OMVAtomicChange c){
 		Set<Axiom> replySet = new HashSet<Axiom>();
