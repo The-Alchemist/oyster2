@@ -14,6 +14,7 @@ import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdaptersManager;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -110,11 +111,11 @@ public class PropertiesConfiguredAdapter {
 		return Class.forName(setterArgClassName);
 	}
 
-	public OMVRegistryObjectType makeAxisObject(Map<String,Object> properties)
+	public RegistryObjectType makeAxisObject(Map<String,Object> properties)
 		throws InstantiationException, IllegalAccessException {
 		
-		OMVRegistryObjectType axisObject = 
-			(OMVRegistryObjectType)axisObjectClass.newInstance();
+		RegistryObjectType axisObject = 
+			(RegistryObjectType)axisObjectClass.newInstance();
 		Method setterMethod = null;
 		String attributeName = null;
 		
@@ -135,7 +136,7 @@ public class PropertiesConfiguredAdapter {
 		
 	}
 
-	private void makeIdentifier(OMVRegistryObjectType axisObject,
+	private void makeIdentifier(RegistryObjectType axisObject,
 			Map<String, Object> properties) {
 		String field = null;
 		String literal = null;

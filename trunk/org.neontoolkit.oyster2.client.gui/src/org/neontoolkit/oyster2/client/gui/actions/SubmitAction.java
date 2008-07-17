@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
@@ -26,8 +27,10 @@ import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
+import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
 import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 
 
@@ -37,7 +40,7 @@ import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
  */
 public class SubmitAction implements IWorkbenchWindowActionDelegate {
 
-	private Map<String,Object> inputObjects = null;
+	
 	
 	private List<PartyMembers> parties = null;
 	
@@ -74,10 +77,10 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 			PropertiesConfiguredAdapter adapter = 
 				new PropertiesConfiguredAdapter(adapterFileName);
 			Map<String,InputComposite> inputComposites = dialog.getComposites();
-			getFields(inputComposites);
-			sendParty();
+			Map<String,Object> inputObjects = getFields(inputComposites);
+			//sendParty();
 			
-			OMVRegistryObjectType registryObject = null;
+			RegistryObjectType registryObject = null;
 			try {
 				registryObject = adapter.makeAxisObject(inputObjects);
 			} catch (Exception e) {
@@ -107,32 +110,45 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		}
 	}
 
+/*
 	private void sendParty() {
-		// TODO Auto-generated method stub
+		for (PartyMembers party : parties) {
+			sendPeople(party.getPeople());
+			sendOrganizations(party.getOrganizations());
+		}
 		
 	}
 
-	private void getFields(Map<String, InputComposite> inputComposites) {
+	private void sendPeople(Set<Person> people) {
+		Map<String, Object>
+		for (Person person : people) {
+			
+		}
+		
+	}
+*/
+	private Map<String,Object> getFields(Map<String, InputComposite> inputComposites) {
 		Object value = null;
 		PartyMembers party = null;
-		String text = null;
-		inputObjects = new HashMap<String, Object>();
+		
+		Map<String,Object> inputObjects = new HashMap<String, Object>();
 		parties = new LinkedList<PartyMembers>();
 		for (Map.Entry<String, InputComposite> entry : inputComposites.entrySet()) {
 			value = entry.getValue().getInput();
 			if (value instanceof PartyMembers) {
 				party = (PartyMembers)value;
 				parties.add(party);
-				serializeParty(entry.getKey(),party);
+				serializeParty(entry.getKey(),party,inputObjects);
 			}
 			else {
 				inputObjects.put(entry.getKey(),value);
 			}
 		}
-		
+		return inputObjects;
 	}
 
-	private void serializeParty(String key, PartyMembers party) {
+	private void serializeParty(String key, PartyMembers party,
+			Map<String,Object> inputObjects ) {
 		
 		
 		String [] ids = new String[party.getOrganizations().length +

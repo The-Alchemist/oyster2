@@ -13,6 +13,7 @@ import org.apache.axis2.databinding.types.URI.MalformedURIException;
 import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ReferenceURI;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -32,7 +33,7 @@ public class OMVObjectRefArraySetterAdapter implements SetterAdapter {
 	/* (non-Javadoc)
 	 * @see org.neontoolkit.oyster2.client.gui.adapter.submit.SetterAdapter#setValue(org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType, java.lang.reflect.Method, java.lang.Object)
 	 */
-	public void setValue(OMVRegistryObjectType object, Method method,
+	public void setValue(RegistryObjectType object, Method method,
 			Object value) {
 		//we need to check if there's only one id because the WSDL interface
 		//specifies an array even for some single - valued properties

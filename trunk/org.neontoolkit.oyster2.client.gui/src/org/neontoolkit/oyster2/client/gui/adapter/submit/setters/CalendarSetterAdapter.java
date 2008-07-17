@@ -10,6 +10,7 @@ import java.util.Calendar;
 
 import org.neontoolkit.oyster2.client.gui.GUIConstants;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -30,7 +31,7 @@ public class CalendarSetterAdapter implements SetterAdapter {
 	/* (non-Javadoc)
 	 * @see org.neontoolkit.oyster2.client.gui.adapter.submit.SetterAdapter#setValue(org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType, java.lang.reflect.Method, java.lang.Object)
 	 */
-	public void setValue(OMVRegistryObjectType object, Method method,
+	public void setValue(RegistryObjectType object, Method method,
 			Object value) {
 		String dateString = (String)value;
 		Calendar calendar = Calendar.getInstance();

@@ -69,4 +69,7 @@
 	Add another entry "templateObject.properties.id" and assign the value used
 	as identifier in #1.
 	
-	Add the template file in the resources directory.		
+	Add the template file in the resources directory.
+	
+5. Add a value to SubmitMessages.properties bundle with the id used in #|
+	as key.	
