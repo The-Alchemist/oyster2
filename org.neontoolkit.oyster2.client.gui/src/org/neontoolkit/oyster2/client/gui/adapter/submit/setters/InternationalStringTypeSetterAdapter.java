@@ -11,6 +11,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.FreeFormText;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.LocalizedStringType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -28,7 +29,7 @@ public class InternationalStringTypeSetterAdapter implements SetterAdapter {
 	/* (non-Javadoc)
 	 * @see org.neontoolkit.oyster2.client.gui.adapter.submit.SetterAdapter#setValue(org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType, java.lang.reflect.Method, java.lang.Object)
 	 */
-	public void setValue(OMVRegistryObjectType object, Method method,
+	public void setValue(RegistryObjectType object, Method method,
 			Object value) {
 		InternationalStringType intString = null;
 		if (value instanceof String[])
@@ -67,7 +68,7 @@ public class InternationalStringTypeSetterAdapter implements SetterAdapter {
 
 	}
 
-	private InternationalStringType setSingle(OMVRegistryObjectType object,
+	private InternationalStringType setSingle(RegistryObjectType object,
 		Method method, Object value) {
 		String text = (String)value;
 		InternationalStringType intString= new InternationalStringType();
@@ -82,7 +83,7 @@ public class InternationalStringTypeSetterAdapter implements SetterAdapter {
 		return intString;
 	}
 
-	private InternationalStringType setArray(OMVRegistryObjectType object, Method method, Object value) {
+	private InternationalStringType setArray(RegistryObjectType object, Method method, Object value) {
 		String[] values = (String[])value;
 		InternationalStringType intString= new InternationalStringType();
 		

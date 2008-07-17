@@ -19,6 +19,7 @@ import org.neontoolkit.oyster2.client.core.lifecycle.LifecyclePortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
  * @author David Muñoz
@@ -26,7 +27,7 @@ import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
  */
 public class SubmitObjectsJob extends WorkspaceJob {
 
-	private OMVRegistryObjectType omvObject = null;
+	private RegistryObjectType omvObject = null;
 	
 	private String targetService = null;
 	
@@ -113,11 +114,11 @@ public class SubmitObjectsJob extends WorkspaceJob {
 		this.targetService = targetService;
 	}
 
-	public OMVRegistryObjectType getOmvObject() {
+	public RegistryObjectType getOmvObject() {
 		return omvObject;
 	}
 
-	public void setOmvObject(OMVRegistryObjectType omvObject) {
+	public void setOmvObject(RegistryObjectType omvObject) {
 		this.omvObject = omvObject;
 	}
 	

@@ -291,6 +291,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			makeSection(parent,category,categoryAttributes);
 			
 		}
+		
+		
 		form.getBody().layout(true,true);
 		
 		//form.reflow(false);

@@ -8,6 +8,7 @@ import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOyst
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.lcm.SubmitObjectsRequest;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectListType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
 
 /**
@@ -17,7 +18,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
 public class LifecyclePortAxis2Adapter {
 private NeOnRegistryOMVOysterStub serviceStub = null;
 	
-	public String submitObjectsRequest(OMVRegistryObjectType omvObject) {
+	public String submitObjectsRequest(RegistryObjectType omvObject) {
 		RegistryResponse response = null;
 		SubmitObjectsRequest submitObjectsRequest = new SubmitObjectsRequest();
 		try {
