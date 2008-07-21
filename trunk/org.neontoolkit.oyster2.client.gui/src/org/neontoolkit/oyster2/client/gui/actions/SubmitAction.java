@@ -19,6 +19,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.oyster2.client.gui.Activator;
+import org.neontoolkit.oyster2.client.gui.adapter.PartySubmitAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.OntologyAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.InputDialog;
@@ -32,6 +33,8 @@ import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
+import com.sun.corba.se.spi.ior.MakeImmutable;
+
 
 
 /**
@@ -39,8 +42,6 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
  *
  */
 public class SubmitAction implements IWorkbenchWindowActionDelegate {
-
-	
 	
 	private List<PartyMembers> parties = null;
 	
@@ -78,7 +79,10 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 				new PropertiesConfiguredAdapter(adapterFileName);
 			Map<String,InputComposite> inputComposites = dialog.getComposites();
 			Map<String,Object> inputObjects = getFields(inputComposites);
-			//sendParty();
+			List<RegistryObjectType> partyObjects = null;
+			if (parties.size() != 0)
+				partyObjects = 
+					PartySubmitAdapter.getInstance().getPartyObjects(parties);
 			
 			RegistryObjectType registryObject = null;
 			try {
@@ -103,22 +107,17 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 			String targetService = Activator.getWebServersLocator().getCurrentSelection();
 			job.setTargetService(targetService);
 			job.setOmvObject(registryObject);
-			
+			job.setParties(partyObjects);
 			job.setUser(true);
 			job.schedule();
 			}
 		}
 	}
 
-/*
-	private void sendParty() {
-		for (PartyMembers party : parties) {
-			sendPeople(party.getPeople());
-			sendOrganizations(party.getOrganizations());
-		}
-		
-	}
 
+	
+
+	/*
 	private void sendPeople(Set<Person> people) {
 		Map<String, Object>
 		for (Person person : people) {
@@ -135,6 +134,14 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		parties = new LinkedList<PartyMembers>();
 		for (Map.Entry<String, InputComposite> entry : inputComposites.entrySet()) {
 			value = entry.getValue().getInput();
+			if (value instanceof String) {
+				if (((String)value).trim().equals(""))
+					continue;
+			}
+			else if (value instanceof String[]) {
+				if (((String[])value).length == 0)
+					continue;
+			}
 			if (value instanceof PartyMembers) {
 				party = (PartyMembers)value;
 				parties.add(party);
@@ -153,6 +160,8 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		
 		String [] ids = new String[party.getOrganizations().length +
 		                           party.getPeople().size()];
+		if (ids.length == 0)
+			return;
 		int i = 0;
 		for (String organization : party.getOrganizations()) {
 			ids[i] = organization;

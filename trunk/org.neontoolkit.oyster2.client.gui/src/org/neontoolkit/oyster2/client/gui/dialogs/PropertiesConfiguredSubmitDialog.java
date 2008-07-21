@@ -230,6 +230,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			}
 
 		};
+		
 		targetCombo.addListener(SWT.Selection, listener);
 		attributesSelectionButton.addListener(SWT.Selection, listener);
 	}
@@ -645,6 +646,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		}
 		if (allErrors.size() == 0) {
 			serverComposite.getCurrentSelection();
+			serverComposite.dispose();
 			super.okPressed();
 		}
 		else {

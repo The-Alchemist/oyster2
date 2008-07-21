@@ -127,9 +127,18 @@ public class WebServersLocator {
 	public void addSelectionListener(Listener listener) {
 		this.selectionListeners.add(listener);
 	}
+	public void removeSelectionListener(Listener listener) {
+		this.selectionListeners.remove(listener);
+	}
+	
+	
 	public void addContentListener(Listener listener) {
 		this.contentListeners.add(listener);
 	}
+	public void removeContentListener(Listener listener) {
+		this.contentListeners.remove(listener);
+	}
+	
 	
 	public void fireContentChanged(String item, String action) {
 		Event event = new Event();

@@ -3,6 +3,8 @@
  */
 package org.neontoolkit.oyster2.client.core.lifecycle;
 
+import java.util.List;
+
 import org.apache.axis2.databinding.types.URI;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
@@ -18,7 +20,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
 public class LifecyclePortAxis2Adapter {
 private NeOnRegistryOMVOysterStub serviceStub = null;
 	
-	public String submitObjectsRequest(RegistryObjectType omvObject) {
+	public String submitObjectsRequest(List<RegistryObjectType> omvObjectList) {
 		RegistryResponse response = null;
 		SubmitObjectsRequest submitObjectsRequest = new SubmitObjectsRequest();
 		try {
@@ -27,8 +29,9 @@ private NeOnRegistryOMVOysterStub serviceStub = null;
 		
 			RegistryObjectListType registryObjectListType =
 				new RegistryObjectListType();
-			
-			registryObjectListType.addIdentifiable(omvObject);
+			for (RegistryObjectType omvObject : omvObjectList) {
+				registryObjectListType.addIdentifiable(omvObject);
+			}
 			submitObjectsRequest.setRegistryObjectList(registryObjectListType);
 			response = serviceStub.submitObjects(submitObjectsRequest);
 			
