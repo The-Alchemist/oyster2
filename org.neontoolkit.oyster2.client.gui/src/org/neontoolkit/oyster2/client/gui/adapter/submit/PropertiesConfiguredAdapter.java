@@ -86,8 +86,8 @@ public class PropertiesConfiguredAdapter {
 				setterMethodName = configuration.getString(attribute + SETTER_SUFFIX);
 				setterArgClassName = configuration.getString(attribute + SETTER_ARG_SUFFIX);
 				
-				
 				argumentClass = getClass(setterArgClassName);
+				
 				setterMethod = axisObjectClass.getMethod(setterMethodName,new Class[]{argumentClass});
 				
 				setterConfiguration = new SetterConfiguration();
@@ -126,6 +126,7 @@ public class PropertiesConfiguredAdapter {
 		for (Map.Entry<String, Object> entry : properties.entrySet()) {
 			attributeName = entry.getKey();
 			configuration = setterConfigurations.get(attributeName);
+			
 			adapter = configuration.getSetterAdapter();
 			setterMethod = configuration.getMethod();
 			

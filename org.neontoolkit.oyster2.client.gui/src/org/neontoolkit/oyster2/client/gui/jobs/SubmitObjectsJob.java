@@ -3,6 +3,9 @@
  */
 package org.neontoolkit.oyster2.client.gui.jobs;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.axis2.AxisFault;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +30,8 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
  */
 public class SubmitObjectsJob extends WorkspaceJob {
 
+	private List<RegistryObjectType> parties = null;
+	
 	private RegistryObjectType omvObject = null;
 	
 	private String targetService = null;
@@ -60,7 +65,14 @@ public class SubmitObjectsJob extends WorkspaceJob {
 			long soTimeout = 10 * 60 * 1000; // four minutes
 	 	    serviceStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(soTimeout);
 			lifecyclePortAdapter.setServiceStub(serviceStub);
-			resultString = lifecyclePortAdapter.submitObjectsRequest(omvObject).toString();
+			List<RegistryObjectType> objectList = new LinkedList<RegistryObjectType>();
+			if (parties != null) {
+				for (RegistryObjectType partyObject : parties) {
+					objectList.add(partyObject);
+				}
+			}
+			objectList.add(omvObject);
+			resultString = lifecyclePortAdapter.submitObjectsRequest(objectList).toString();
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,resultString,null);
 		} catch (AxisFault e) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
@@ -121,7 +133,13 @@ public class SubmitObjectsJob extends WorkspaceJob {
 	public void setOmvObject(RegistryObjectType omvObject) {
 		this.omvObject = omvObject;
 	}
-	
-	
+
+	public List<RegistryObjectType> getParties() {
+		return parties;
+	}
+
+	public void setParties(List<RegistryObjectType> parties) {
+		this.parties = parties;
+	}
 	
 }

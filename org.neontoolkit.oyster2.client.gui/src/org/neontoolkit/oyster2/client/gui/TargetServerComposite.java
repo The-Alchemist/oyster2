@@ -3,6 +3,9 @@
  */
 package org.neontoolkit.oyster2.client.gui;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -28,6 +31,11 @@ public class TargetServerComposite extends Composite {
 	private Button addButton = null;
 	
 	private ListEditionDialog dialog  = null;
+	
+	private Listener serverListChangeListener = null;
+	
+	private Listener serverSelectionListener = null;
+	
 	
 	public TargetServerComposite(Composite parent,int style) {
 		super(parent,style);
@@ -96,6 +104,8 @@ public class TargetServerComposite extends Composite {
 	
 	
 	private void makeListeners() {
+		
+		
 		// this listeners sets the current selection of this composite as
 		// the global selected item
 		Listener selectionListener = new Listener()	{
@@ -109,7 +119,7 @@ public class TargetServerComposite extends Composite {
 		serverCombo.addListener(SWT.Selection, selectionListener);
 		
 		// this listener updates the list of servers
-		Listener serverListChangeListener = new Listener() {
+		serverListChangeListener = new Listener() {
 			public void handleEvent(Event event) {
 				String server = event.text;
 				if (((String)event.data).equals(WebServersLocator.ADDED) ) {
@@ -128,7 +138,7 @@ public class TargetServerComposite extends Composite {
 		
 		//this listener sets the current selection of this composite
 		//to be the same as the global selection
-		Listener serverSelectionListener = new Listener() {
+		serverSelectionListener = new Listener() {
 			public void handleEvent(Event event) {
 				String selected =
 					Activator.getWebServersLocator().getCurrentSelection();
@@ -138,6 +148,7 @@ public class TargetServerComposite extends Composite {
 		};
 		Activator.getWebServersLocator().
 			addSelectionListener(serverSelectionListener);
+		
 		
 		
 		// this is the edit listener, which opens a dialog to modify
@@ -168,6 +179,7 @@ public class TargetServerComposite extends Composite {
 			
 		};
 		addButton.addListener(SWT.Selection, buttonListener);
+		
 	}
 	
 	public String getCurrentSelection() {
@@ -190,6 +202,14 @@ public class TargetServerComposite extends Composite {
 		Activator.getWebServersLocator().addServer(server);
 		Activator.getWebServersLocator().setCurrentSelection(server);
 		return server;
+	}
+	
+	
+	@Override
+	public void dispose() {
+		Activator.getWebServersLocator().removeContentListener(serverListChangeListener);
+		Activator.getWebServersLocator().removeSelectionListener(serverSelectionListener);
+		super.dispose();
 	}
 	
 }
