@@ -69,7 +69,7 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		PropertiesConfiguredSubmitDialog dialog =
 			new PropertiesConfiguredSubmitDialog("SUBMIT_SECTION",shell);
-		
+		SubmitFieldReader fieldReader = new SubmitFieldReader();
 		int result = dialog.open();
 		if (result == Dialog.OK) {
 			String adapterFileName = Activator.getDefault().getResourcesDir() +
@@ -78,11 +78,14 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 			PropertiesConfiguredAdapter adapter = 
 				new PropertiesConfiguredAdapter(adapterFileName);
 			Map<String,InputComposite> inputComposites = dialog.getComposites();
-			Map<String,Object> inputObjects = getFields(inputComposites);
+			Map<String,Object> inputObjects = fieldReader.getFields(inputComposites);
+			
+			parties = fieldReader.getParties();
 			List<RegistryObjectType> partyObjects = null;
-			if (parties.size() != 0)
+			if (parties.size() != 0) {
 				partyObjects = 
 					PartySubmitAdapter.getInstance().getPartyObjects(parties);
+			}
 			
 			RegistryObjectType registryObject = null;
 			try {
@@ -126,6 +129,7 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		
 	}
 */
+	/*
 	private Map<String,Object> getFields(Map<String, InputComposite> inputComposites) {
 		Object value = null;
 		PartyMembers party = null;
@@ -173,13 +177,17 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		}
 		inputObjects.put(key, ids);
 	}
-
+	 */	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
 	 */
+	
 	public void selectionChanged(IAction action, ISelection selection) {
 		// TODO Auto-generated method stub
 
 	}
 
+	
+	
+	
 }

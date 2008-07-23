@@ -9,6 +9,7 @@ import org.apache.axis2.databinding.types.URI;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
 import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.lcm.SubmitObjectsRequest;
+import org.oasis.names.tc.ebxml_regrep.xsd.lcm.UpdateObjectsRequest;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectListType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
@@ -47,6 +48,34 @@ private NeOnRegistryOMVOysterStub serviceStub = null;
 		
 	}
 
+	public String updateObjectsRequest(List<RegistryObjectType> omvObjectList) {
+		RegistryResponse response = null;
+		UpdateObjectsRequest updateObjectsRequest = new UpdateObjectsRequest();
+		try {
+			updateObjectsRequest.setId(new URI("http://update_objects_request_id_" +
+					 System.currentTimeMillis()));
+		
+			RegistryObjectListType registryObjectListType =
+				new RegistryObjectListType();
+			for (RegistryObjectType omvObject : omvObjectList) {
+				registryObjectListType.addIdentifiable(omvObject);
+			}
+			updateObjectsRequest.setRegistryObjectList(registryObjectListType);
+			response = serviceStub.updateObjects(updateObjectsRequest);
+			
+			
+		}
+		catch (Exception e) {
+			return e.getMessage();
+		}
+		
+		String message = response.getRegistryResponse().getStatus().toString();
+		int beginIndex = message.lastIndexOf(":")+1;
+		return message.substring(beginIndex);
+		
+		
+	}
+	
 	/**
 	 * @return the serviceStub
 	 */
