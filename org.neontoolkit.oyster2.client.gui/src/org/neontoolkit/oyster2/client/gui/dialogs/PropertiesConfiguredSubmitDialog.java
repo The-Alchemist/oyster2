@@ -44,6 +44,7 @@ import org.neontoolkit.oyster2.client.gui.IMessageResolver;
 import org.neontoolkit.oyster2.client.gui.MessageResolver;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
 import org.neontoolkit.oyster2.client.gui.TargetServerComposite;
+import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.CompositeFactory;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.util.Template;
@@ -139,6 +140,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	private Map<String,String[]> categories = null;
 	
 	private Map<String,Boolean> selection = null;
+	
+	private ISearchResult objectToUpdate = null;
 	
 	/**
 	 * @param name
@@ -477,10 +480,18 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		else 
 			group.setText(label);
 		
+		
 		child = CompositeFactory.createComposite(compositeType,
 				group, SWT.NONE,"submitOntologyPreferences." + this.submitTarget + omvClassAttribute, //$NON-NLS-1$					
 				predefinedValues,editable,validatorName,defaultValue,
 				isRequired);
+		if (objectToUpdate != null) {
+			Object initialValue = objectToUpdate.getValue(omvClassAttribute); 
+			if (initialValue != null) {
+				child.setInitialValue(initialValue);
+			}
+		}
+		
 		
 		child.setData(group);
 		return child;
@@ -695,6 +706,20 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	public final void setAdapterFileName(String adapterFileName) {
 		this.adapterFileName = adapterFileName;
 	}
-	
+
+	/**
+	 * @return the objectToUpdate
+	 */
+	public final ISearchResult getObjectToUpdate() {
+		return objectToUpdate;
+	}
+
+	/**
+	 * @param objectToUpdate the objectToUpdate to set
+	 */
+	public final void setObjectToUpdate(ISearchResult objectToUpdate) {
+		this.objectToUpdate = objectToUpdate;
+	}
+
 	
 }

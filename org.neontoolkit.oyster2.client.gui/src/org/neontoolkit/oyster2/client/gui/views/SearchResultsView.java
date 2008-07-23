@@ -2,8 +2,6 @@ package org.neontoolkit.oyster2.client.gui.views;
 
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -43,6 +41,7 @@ import org.neontoolkit.oyster2.client.gui.IMessageResolver;
 import org.neontoolkit.oyster2.client.gui.MessageResolver;
 import org.neontoolkit.oyster2.client.gui.PerspectiveFactory;
 import org.neontoolkit.oyster2.client.gui.actions.DownloadOntologyGUIAction;
+import org.neontoolkit.oyster2.client.gui.actions.UpdateAction;
 import org.neontoolkit.oyster2.client.gui.adapter.results.IResultsAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
 import org.neontoolkit.oyster2.client.gui.dialogs.TranslatedAttributeSelectionDialog;
@@ -75,6 +74,7 @@ public class SearchResultsView extends ViewPart {
 	private Composite parent = null;
 	private Composite child = null;
 	private DownloadOntologyGUIAction downloadAction;
+	private UpdateAction updateAction = null;
 	
 	private Action doubleClickAction;
 	private Action changeVisibilityAction;
@@ -88,11 +88,11 @@ public class SearchResultsView extends ViewPart {
 	private SearchResultPreferences preferences = null;
 	
 	
-	
+	/*
 	private static final String VISIBILITY_MEMENTO_TAG = "visibility";
 	private static final String COLUMN_WIDTH_MEMENTO_TAG = "columnWidth";
 	private static final String COLUMN_ORDER_MEMENTO_TAG = "columnOrder";
-	
+	*/
 
 	
 	/**
@@ -294,6 +294,7 @@ public class SearchResultsView extends ViewPart {
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(downloadAction);
 		
+		manager.add(updateAction);
 		// Other plug-ins can contribute their actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
@@ -308,6 +309,14 @@ public class SearchResultsView extends ViewPart {
 		downloadAction.setToolTipText("Downloads the ontology from the URL specified by it's resource locator");
 		downloadAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 			getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		
+		
+		
+		updateAction = new UpdateAction();
+		updateAction.setText("update");
+		
+		
+		
 		
 		
 		doubleClickAction = new Action() {
