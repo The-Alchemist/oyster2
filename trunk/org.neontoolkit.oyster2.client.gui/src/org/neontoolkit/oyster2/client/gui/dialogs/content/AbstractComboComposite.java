@@ -149,7 +149,11 @@ public abstract class AbstractComboComposite extends InputComposite {
 
 	@Override
 	public void setInitialValue(Object value) {
-		String initialValue = (String)value;
+		String initialValue = null;
+		if (value instanceof String)
+			initialValue = (String)value;
+		else 
+			initialValue = ((ArrayList<String>)value).get(0);
 		combo.setText(initialValue);
 		setInput(initialValue);
 		

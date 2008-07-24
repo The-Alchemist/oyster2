@@ -3,6 +3,8 @@
  */
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -54,6 +56,8 @@ public class TextAreaComposite extends InputComposite {
 
 		makeListeners();
 	}
+	
+	
 	private void makeListeners() {
 		Listener listener = new Listener(){
 			public void handleEvent(Event arg0) {
@@ -72,7 +76,12 @@ public class TextAreaComposite extends InputComposite {
 	}
 	@Override
 	public void setInitialValue(Object value) {
-		String oldText = (String)value;
+		String oldText = null;
+		if (value instanceof String)
+			oldText = (String)value;
+		else {
+			oldText = ((ArrayList<String>)value).get(0);
+		}
 		text.setText(oldText);
 		setInput(oldText);
 		
