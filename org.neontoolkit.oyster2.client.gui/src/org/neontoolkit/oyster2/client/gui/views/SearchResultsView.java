@@ -314,10 +314,7 @@ public class SearchResultsView extends ViewPart {
 		
 		updateAction = new UpdateAction();
 		updateAction.setText("update");
-		
-		
-		
-		
+		updateAction.setView(this);
 		
 		doubleClickAction = new Action() {
 			public void run() {

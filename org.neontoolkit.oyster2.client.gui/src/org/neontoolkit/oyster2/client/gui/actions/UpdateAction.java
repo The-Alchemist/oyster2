@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.adapter.PartySubmitAdapter;
@@ -18,6 +19,7 @@ import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDial
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
+import org.neontoolkit.oyster2.client.gui.views.SearchResultsView;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**
@@ -28,7 +30,7 @@ public class UpdateAction extends Action {
 
 	private ISearchResult objectToUpdate = null;
 	
-	
+	private SearchResultsView view = null;
 	
 	private List<PartyMembers> parties = null;
 	
@@ -38,6 +40,11 @@ public class UpdateAction extends Action {
 		PropertiesConfiguredSubmitDialog dialog =
 			new PropertiesConfiguredSubmitDialog("UPDATE_SECTION",shell);
 		SubmitFieldReader fieldReader = new SubmitFieldReader();
+		getSelectedObject();
+		
+		
+		
+		
 		dialog.setObjectToUpdate(objectToUpdate);
 		int result = dialog.open();
 		if (result == Dialog.OK) {
@@ -69,22 +76,29 @@ public class UpdateAction extends Action {
 			if (registryObject == null) {
 				MessageDialog.openError(shell, 
                   "Error", 
-                  "The ontology attribute values were not valid");
+                  "The attribute values were not valid");
 				return;
 			}
 			else {
-			SubmitObjectsJob job = new SubmitObjectsJob("submit "+registryObject.getId() + 
-					" to " + Activator.getWebServersLocator().getCurrentSelection());
+			SubmitObjectsJob job = new SubmitObjectsJob("update "+registryObject.getId() + 
+					" at " + Activator.getWebServersLocator().getCurrentSelection());
 			
 			String targetService = Activator.getWebServersLocator().getCurrentSelection();
 			job.setTargetService(targetService);
 			job.setOmvObject(registryObject);
 			job.setParties(partyObjects);
+			job.setOperation(SubmitObjectsJob.UPDATE);
 			job.setUser(true);
 			job.schedule();
 			}
 		}
 	
+	}
+
+	private void getSelectedObject() {
+		Object [] selectedResults =
+			((IStructuredSelection)view.getViewer().getSelection()).toArray();
+		objectToUpdate = (ISearchResult)selectedResults[0];
 	}
 
 	/**
@@ -100,7 +114,39 @@ public class UpdateAction extends Action {
 	public final void setObjectToUpdate(ISearchResult objectToUpdate) {
 		this.objectToUpdate = objectToUpdate;
 	}
+
+	/**
+	 * @return the view
+	 */
+	public final SearchResultsView getView() {
+		return view;
+	}
+
+	/**
+	 * @param view the view to set
+	 */
+	public final void setView(SearchResultsView view) {
+		this.view = view;
+	}
 	
 	
+	
+	/*
+	private void makeEnableListener() {
+		ISelectionChangedListener listener = new ISelectionChangedListener() {
+
+			public void selectionChanged(SelectionChangedEvent event) {
+				Object [] selectedResults =
+					((IStructuredSelection)view.getViewer().getSelection()).toArray();
+				if (selectedResults.length == 1)
+					setEnabled(true);
+				else
+					setEnabled(false);
+				
+			}
+			
+		};
+		view.getViewer().addSelectionChangedListener(listener);
+	}*/
 
 }

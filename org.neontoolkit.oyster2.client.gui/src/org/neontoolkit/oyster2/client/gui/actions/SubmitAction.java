@@ -100,7 +100,7 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 			if (registryObject == null) {
 				MessageDialog.openError(shell, 
                   "Error", 
-                  "The ontology attribute values were not valid");
+                  "The attribute values were not valid");
 				return;
 			}
 			else {
@@ -109,6 +109,7 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 			
 			String targetService = Activator.getWebServersLocator().getCurrentSelection();
 			job.setTargetService(targetService);
+			job.setOperation(SubmitObjectsJob.SUBMIT);
 			job.setOmvObject(registryObject);
 			job.setParties(partyObjects);
 			job.setUser(true);

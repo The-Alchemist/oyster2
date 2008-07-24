@@ -38,6 +38,12 @@ public class SubmitObjectsJob extends WorkspaceJob {
 	
 	private String resultString = null;
 	
+	private int operation = -1;
+	
+	public final static int SUBMIT = 1;
+	
+	public final static int UPDATE = 2;
+	
 	public SubmitObjectsJob(String name) {
 		super(name);
 		
@@ -72,7 +78,13 @@ public class SubmitObjectsJob extends WorkspaceJob {
 				}
 			}
 			objectList.add(omvObject);
-			resultString = lifecyclePortAdapter.submitObjectsRequest(objectList).toString();
+			
+			if (operation == SUBMIT)
+				resultString = lifecyclePortAdapter.submitObjectsRequest(objectList).toString();
+			else if (operation == UPDATE)
+				resultString = lifecyclePortAdapter.updateObjectsRequest(objectList).toString();
+			else
+				throw new RuntimeException("No operation specified for " + this.getClass().getName());
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,resultString,null);
 		} catch (AxisFault e) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
@@ -140,6 +152,20 @@ public class SubmitObjectsJob extends WorkspaceJob {
 
 	public void setParties(List<RegistryObjectType> parties) {
 		this.parties = parties;
+	}
+
+	/**
+	 * @return the operation
+	 */
+	public final int getOperation() {
+		return operation;
+	}
+
+	/**
+	 * @param operation the operation to set
+	 */
+	public final void setOperation(int operation) {
+		this.operation = operation;
 	}
 	
 }
