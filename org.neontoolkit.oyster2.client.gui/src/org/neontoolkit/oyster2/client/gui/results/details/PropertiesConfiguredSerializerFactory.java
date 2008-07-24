@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 
 /**
  * @author David Muñoz
@@ -50,7 +50,7 @@ public class PropertiesConfiguredSerializerFactory implements
 	/* (non-Javadoc)
 	 * @see org.neontoolkit.oyster2.client.gui.results.details.IResultSerializerFactory#getSerializer(org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult)
 	 */
-	public IResultSerializer getSerializer(ISearchResult result) {
+	public IResultSerializer getSerializer(IOMVObject result) {
 		PropertiesConfiguredResultSerializer serializer =
 			new PropertiesConfiguredResultSerializer();
 		serializer.setProperties(serializers.get(result.getRDFType()));

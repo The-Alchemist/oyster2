@@ -13,6 +13,7 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.neontoolkit.oyster2.client.gui.IMessageResolver;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 
 
@@ -32,11 +33,11 @@ public class ResultsAdapter implements IResultsAdapter {
 	private String resultsType = null;
 	
 	//maps identifier with object
-	private Map<String,ISearchResult> results = null;
+	private Map<String,IOMVObject> results = null;
 		
 	private String[] mainProperties = null;
 
-	public ISearchResult getResult(String id) {
+	public IOMVObject getResult(String id) {
 		return results.get(id);
 	}
 
@@ -60,15 +61,15 @@ public class ResultsAdapter implements IResultsAdapter {
 		
 	}
 
-	public ISearchResult[] getResults() {
-		ISearchResult[] resultsArray =
-			new ISearchResult[results.size()];
+	public IOMVObject[] getResults() {
+		IOMVObject[] resultsArray =
+			new IOMVObject[results.size()];
 		return results.values().toArray(resultsArray);
 	}
 
 	public void setList(IdentifiableType[] list,IMessageResolver messagesResolver,
 			File configurationFile, String RDFType) {
-		ISearchResult result = null;
+		IOMVObject result = null;
 		this.messagesResolver = messagesResolver;
 		
 		PropertiesConfiguration propertiesConfiguration = null;
@@ -83,7 +84,7 @@ public class ResultsAdapter implements IResultsAdapter {
 		
 		
 		
-		results = new HashMap<String,ISearchResult>();
+		results = new HashMap<String,IOMVObject>();
 		for (int i = 0; i<list.length;i++) {
 			result = new SearchResult(list[i],configurationFile,RDFType);
 			results.put(result.getId(),result);

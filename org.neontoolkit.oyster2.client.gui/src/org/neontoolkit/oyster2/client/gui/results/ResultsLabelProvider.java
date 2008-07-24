@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Image;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 
 /**
  * @author David Muñoz
@@ -43,7 +43,7 @@ public class ResultsLabelProvider extends LabelProvider implements
 	 */
 	public String getColumnText(Object element, int columnIndex) {
 		Object [] properties = tableViewer.getColumnProperties();
-		ISearchResult result = (ISearchResult)element;
+		IOMVObject result = (IOMVObject)element;
 		Object labelObject =
 			result.getValue(properties[columnIndex].toString());
 		if (labelObject == null)

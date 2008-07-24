@@ -3,7 +3,6 @@
  */
 package org.neontoolkit.oyster2.client.gui.jobs;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.axis2.AxisFault;
@@ -21,45 +20,29 @@ import org.eclipse.ui.progress.IProgressConstants;
 import org.neontoolkit.oyster2.client.core.lifecycle.LifecyclePortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
-import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
 
 /**
  * @author David Muñoz
  *
  */
-public class SubmitObjectsJob extends WorkspaceJob {
+public class DeleteObjectsJob extends WorkspaceJob {
 
-	private List<RegistryObjectType> parties = null;
-	
-	private RegistryObjectType omvObject = null;
-	
-	private String targetService = null;
+	private List<ObjectRefType> objectList = null;
 	
 	private String resultString = null;
 	
-	private int operation = -1;
+	private String targetService = null;
 	
-	public final static int SUBMIT = 1;
-	
-	public final static int UPDATE = 2;
-	
-	public SubmitObjectsJob(String name) {
+	public DeleteObjectsJob(String name) {
 		super(name);
-		
+		// TODO Auto-generated constructor stub
 	}
-
-	 public boolean isModal(Job job) {
-	        Boolean isModal = (Boolean)job.getProperty(
-	                               IProgressConstants.PROPERTY_IN_DIALOG);
-	        if(isModal == null) return false;
-	        return isModal.booleanValue();
-	}
-
 
 	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-		if ((targetService == null) || (omvObject == null)) {
+	public IStatus runInWorkspace(IProgressMonitor monitor)
+			throws CoreException {
+		if ((targetService == null) || (objectList == null)) {
 			throw new RuntimeException(this.getClass() + " not properly initialized");
 		}
 		Status status = null;
@@ -70,20 +53,9 @@ public class SubmitObjectsJob extends WorkspaceJob {
 			long soTimeout = 10 * 60 * 1000; // four minutes
 	 	    serviceStub._getServiceClient().getOptions().setTimeOutInMilliSeconds(soTimeout);
 			lifecyclePortAdapter.setServiceStub(serviceStub);
-			List<RegistryObjectType> objectList = new LinkedList<RegistryObjectType>();
-			if (parties != null) {
-				for (RegistryObjectType partyObject : parties) {
-					objectList.add(partyObject);
-				}
-			}
-			objectList.add(omvObject);
 			
-			if (operation == SUBMIT)
-				resultString = lifecyclePortAdapter.submitObjectsRequest(objectList).toString();
-			else if (operation == UPDATE)
-				resultString = lifecyclePortAdapter.updateObjectsRequest(objectList).toString();
-			else
-				throw new RuntimeException("No operation specified for " + this.getClass().getName());
+			resultString = lifecyclePortAdapter.removeObjectsRequest(objectList).toString();
+			
 			status = new Status(Status.OK,Activator.PLUGIN_ID,Status.OK,resultString,null);
 		} catch (AxisFault e) {
 			status = new Status(Status.ERROR,Activator.PLUGIN_ID,
@@ -98,6 +70,14 @@ public class SubmitObjectsJob extends WorkspaceJob {
         	 setProperty(IProgressConstants.KEEP_PROPERTY, Boolean.TRUE);
         	 setProperty(IProgressConstants.ACTION_PROPERTY,getCompletedAction());
          }return status;
+	}
+
+	
+	public boolean isModal(Job job) {
+        Boolean isModal = (Boolean)job.getProperty(
+                               IProgressConstants.PROPERTY_IN_DIALOG);
+        if(isModal == null) return false;
+        return isModal.booleanValue();
 	}
 	
 	
@@ -136,35 +116,21 @@ public class SubmitObjectsJob extends WorkspaceJob {
 	public final void setTargetService(String targetService) {
 		this.targetService = targetService;
 	}
-
-	public RegistryObjectType getOmvObject() {
-		return omvObject;
-	}
-
-	public void setOmvObject(RegistryObjectType omvObject) {
-		this.omvObject = omvObject;
-	}
-
-	public List<RegistryObjectType> getParties() {
-		return parties;
-	}
-
-	public void setParties(List<RegistryObjectType> parties) {
-		this.parties = parties;
+	
+	/**
+	 * @return the objectList
+	 */
+	public final List<ObjectRefType> getObjectList() {
+		return objectList;
 	}
 
 	/**
-	 * @return the operation
+	 * @param objectList the objectList to set
 	 */
-	public final int getOperation() {
-		return operation;
+	public final void setObjectList(List<ObjectRefType> objectList) {
+		this.objectList = objectList;
 	}
 
-	/**
-	 * @param operation the operation to set
-	 */
-	public final void setOperation(int operation) {
-		this.operation = operation;
-	}
+	
 	
 }

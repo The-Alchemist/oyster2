@@ -7,7 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.dialogs.OntologyImportationDialog;
 import org.neontoolkit.oyster2.client.gui.jobs.ImportOntologyJob;
 import org.neontoolkit.oyster2.client.gui.views.SearchResultsView;
@@ -27,11 +27,11 @@ public class DownloadOntologyGUIAction extends Action {
 			((IStructuredSelection)view.getViewer().getSelection()).toArray();
 		
 		String [] ontologyLocators = null;
-		ISearchResult[] selectedSearchResults =
-			new ISearchResult[selectedResults.length];
+		IOMVObject[] selectedSearchResults =
+			new IOMVObject[selectedResults.length];
 		ontologyLocators = new String[selectedResults.length];
 		for (int i = 0; i<selectedResults.length;i++) {
-			selectedSearchResults[i] = (ISearchResult)selectedResults[i];
+			selectedSearchResults[i] = (IOMVObject)selectedResults[i];
 			ontologyLocators[i] = (String)selectedSearchResults[i].getValue("resourceLocator");
 		}
 

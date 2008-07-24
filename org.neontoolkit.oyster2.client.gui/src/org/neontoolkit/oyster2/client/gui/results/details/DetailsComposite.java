@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 
 
 
@@ -118,7 +118,7 @@ public class DetailsComposite extends Composite {
 	}
 	
 	
-	public void setEntry(ISearchResult result) {
+	public void setEntry(IOMVObject result) {
 		wrappedTextComponent.setText(""); //$NON-NLS-1$
 		List<LinkedText> linkList = null;
 		links = new LinkedList<LinkHolder>();

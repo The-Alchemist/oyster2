@@ -7,9 +7,12 @@ import java.util.List;
 
 import org.apache.axis2.databinding.types.URI;
 import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
+import org.oasis.names.tc.ebxml_regrep.xsd.lcm.RemoveObjectsRequest;
 import org.oasis.names.tc.ebxml_regrep.xsd.lcm.SubmitObjectsRequest;
 import org.oasis.names.tc.ebxml_regrep.xsd.lcm.UpdateObjectsRequest;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefListType;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefListTypeSequence;
+import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectListType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rs.RegistryResponse;
@@ -73,6 +76,37 @@ private NeOnRegistryOMVOysterStub serviceStub = null;
 		int beginIndex = message.lastIndexOf(":")+1;
 		return message.substring(beginIndex);
 		
+	}
+	
+	
+	public String removeObjectsRequest(List<ObjectRefType> omvObjectList) {
+		RegistryResponse response = null;
+		RemoveObjectsRequest removeObjectsRequest = new RemoveObjectsRequest();
+		try {
+			removeObjectsRequest.setId(new URI("http://remove_objects_request_id_" +
+					 System.currentTimeMillis()));
+			ObjectRefListTypeSequence objectRef = null;
+				
+			ObjectRefListType registryObjectListType = 
+				new ObjectRefListType();
+			for (ObjectRefType omvObject : omvObjectList) {
+				objectRef = new ObjectRefListTypeSequence();
+				objectRef.setObjectRef(omvObject);
+				registryObjectListType.addObjectRefListTypeSequence(objectRef);
+			}
+			removeObjectsRequest.setObjectRefList(registryObjectListType);
+			
+			response = serviceStub.removeObjects(removeObjectsRequest);
+			
+			
+		}
+		catch (Exception e) {
+			return e.getMessage();
+		}
+		
+		String message = response.getRegistryResponse().getStatus().toString();
+		int beginIndex = message.lastIndexOf(":")+1;
+		return message.substring(beginIndex);
 		
 	}
 	

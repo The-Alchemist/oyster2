@@ -12,8 +12,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.adapter.PartySubmitAdapter;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
@@ -28,9 +28,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
  */
 public class UpdateAction extends Action {
 
-	private ISearchResult objectToUpdate = null;
-	
-	private SearchResultsView view = null;
+	private IOMVObject objectToUpdate = null;
 	
 	private List<PartyMembers> parties = null;
 	
@@ -40,9 +38,6 @@ public class UpdateAction extends Action {
 		PropertiesConfiguredSubmitDialog dialog =
 			new PropertiesConfiguredSubmitDialog("UPDATE_SECTION",shell);
 		SubmitFieldReader fieldReader = new SubmitFieldReader();
-		getSelectedObject();
-		
-		
 		
 		
 		dialog.setObjectToUpdate(objectToUpdate);
@@ -95,40 +90,22 @@ public class UpdateAction extends Action {
 	
 	}
 
-	private void getSelectedObject() {
-		Object [] selectedResults =
-			((IStructuredSelection)view.getViewer().getSelection()).toArray();
-		objectToUpdate = (ISearchResult)selectedResults[0];
-	}
+	
 
 	/**
 	 * @return the objectToUpdate
 	 */
-	public final ISearchResult getObjectToUpdate() {
+	public final IOMVObject getObjectToUpdate() {
 		return objectToUpdate;
 	}
 
 	/**
 	 * @param objectToUpdate the objectToUpdate to set
 	 */
-	public final void setObjectToUpdate(ISearchResult objectToUpdate) {
+	public final void setObjectToUpdate(IOMVObject objectToUpdate) {
 		this.objectToUpdate = objectToUpdate;
 	}
 
-	/**
-	 * @return the view
-	 */
-	public final SearchResultsView getView() {
-		return view;
-	}
-
-	/**
-	 * @param view the view to set
-	 */
-	public final void setView(SearchResultsView view) {
-		this.view = view;
-	}
-	
 	
 	
 	/*

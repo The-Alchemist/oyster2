@@ -13,7 +13,7 @@ import java.util.Map;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 
 /**
  * @author David Muñoz
@@ -58,7 +58,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 	/* (non-Javadoc)
 	 * @see org.neontoolkit.oyster2.client.gui.results.details.IResultSerializer#serialize(org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult)
 	 */
-	public List<LinkedText> serialize(ISearchResult result) {
+	public List<LinkedText> serialize(IOMVObject result) {
 		List<LinkedText> list = serializeHeader(result);
 		
 		//LinkedText linkedText = null;
@@ -92,7 +92,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 	}
 	
 	private void serializeProperty(List<LinkedText> list,String propertyName,
-			ISearchResult result) {
+			IOMVObject result) {
 		LinkedText linkedText = null;
 		SearchLink link = null;
 		String beginTag = null;
@@ -183,7 +183,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 	
 	
 	private void serializeParty(List<LinkedText> list,
-			ISearchResult result, String propertyName ) {
+			IOMVObject result, String propertyName ) {
 		
 		// get party specific methods
 		String personPropertyName = configuration.getString(propertyName+".person"); //$NON-NLS-1$
@@ -251,7 +251,7 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		
 	}
 	
-	private List<LinkedText> serializeHeader(ISearchResult result) {
+	private List<LinkedText> serializeHeader(IOMVObject result) {
 		List<LinkedText> list = new LinkedList<LinkedText>();
 		
 		LinkedText link = new LinkedText();
