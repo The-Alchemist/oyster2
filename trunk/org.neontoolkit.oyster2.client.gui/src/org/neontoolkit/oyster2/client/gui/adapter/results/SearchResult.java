@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.neontoolkit.oyster2.client.gui.GUIConstants;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
@@ -23,7 +24,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
  * @author David Muñoz
  *
  */
-public class SearchResult implements ISearchResult {
+public class SearchResult implements IOMVObject {
 
 	private static final SimpleDateFormat dateFormat =
 		new SimpleDateFormat(GUIConstants.DATE_FORMAT);

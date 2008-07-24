@@ -44,7 +44,7 @@ import org.neontoolkit.oyster2.client.gui.IMessageResolver;
 import org.neontoolkit.oyster2.client.gui.MessageResolver;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
 import org.neontoolkit.oyster2.client.gui.TargetServerComposite;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.CompositeFactory;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.TextAreaComposite;
@@ -142,7 +142,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	private Map<String,Boolean> selection = null;
 	
-	private ISearchResult objectToUpdate = null;
+	private IOMVObject objectToUpdate = null;
 	
 	/**
 	 * @param name
@@ -714,14 +714,14 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	/**
 	 * @return the objectToUpdate
 	 */
-	public final ISearchResult getObjectToUpdate() {
+	public final IOMVObject getObjectToUpdate() {
 		return objectToUpdate;
 	}
 
 	/**
 	 * @param objectToUpdate the objectToUpdate to set
 	 */
-	public final void setObjectToUpdate(ISearchResult objectToUpdate) {
+	public final void setObjectToUpdate(IOMVObject objectToUpdate) {
 		this.objectToUpdate = objectToUpdate;
 	}
 

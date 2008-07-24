@@ -1,9 +1,9 @@
 package org.neontoolkit.oyster2.client.gui.results.details;
 
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 
 public interface IResultSerializerFactory {
 	
-	public IResultSerializer getSerializer(ISearchResult result);
+	public IResultSerializer getSerializer(IOMVObject result);
 	
 }

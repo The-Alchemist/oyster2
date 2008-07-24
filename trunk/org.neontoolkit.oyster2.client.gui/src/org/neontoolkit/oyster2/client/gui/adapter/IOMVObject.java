@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.neontoolkit.oyster2.client.gui.adapter.results;
+package org.neontoolkit.oyster2.client.gui.adapter;
 
 /**
  * @author David Muñoz
  *
  */
-public interface ISearchResult {
+public interface IOMVObject {
 
 	public String getRDFType();
 	

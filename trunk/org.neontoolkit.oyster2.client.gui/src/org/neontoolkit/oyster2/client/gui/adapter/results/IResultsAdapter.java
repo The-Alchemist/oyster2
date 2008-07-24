@@ -7,6 +7,7 @@ import java.io.File;
 
 
 import org.neontoolkit.oyster2.client.gui.IMessageResolver;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 
 /**
@@ -16,8 +17,8 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.IdentifiableType;
 public interface IResultsAdapter {
 	public void setList(IdentifiableType[] list,IMessageResolver messagesResolver,
 			File configurationFile, String RDFType);
-	public ISearchResult[] getResults();
-	public ISearchResult getResult(String id);
+	public IOMVObject[] getResults();
+	public IOMVObject getResult(String id);
 	public String getResultsType();
 	public void setResultsType(String type);
 	public String[] getResultPropertyNames();

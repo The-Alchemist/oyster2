@@ -8,7 +8,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.results.details.DetailsComposite;
 
 /**
@@ -30,7 +30,7 @@ public class SearchResultDetailsView extends ViewPart {
 		parent.setLayout(new FillLayout());
 	}
 
-	public void setDetails(ISearchResult result) {
+	public void setDetails(IOMVObject result) {
 		if (child != null)
 			child.dispose();
 		child = new ScrolledComposite(parent,SWT.H_SCROLL | SWT.V_SCROLL);

@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.adapter.results.IResultsAdapter;
-import org.neontoolkit.oyster2.client.gui.adapter.results.ISearchResult;
 import org.neontoolkit.oyster2.client.gui.results.ResultsLabelProvider;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
@@ -51,7 +51,7 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 	
 	private Composite projectSelectionComposite = null;
 	
-	private ISearchResult[] selection = null;
+	private IOMVObject[] selection = null;
 	
 	private String project = null;
 	
@@ -236,14 +236,14 @@ public class OntologyImportationDialog extends ResizableInputDialog {
 	/**
 	 * @return the selection
 	 */
-	public final ISearchResult[] getSelection() {
+	public final IOMVObject[] getSelection() {
 		return selection;
 	}
 
 	/**
 	 * @param selection the selection to set
 	 */
-	public final void setSelection(ISearchResult[] selection) {
+	public final void setSelection(IOMVObject[] selection) {
 		this.selection = selection;
 	}
 
