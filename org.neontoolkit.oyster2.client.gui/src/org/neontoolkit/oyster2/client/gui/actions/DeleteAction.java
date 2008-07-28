@@ -9,6 +9,9 @@ import java.util.List;
 import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.types.URI.MalformedURIException;
 import org.eclipse.jface.action.Action;
+import org.neontoolkit.oyster2.client.gui.Activator;
+import org.neontoolkit.oyster2.client.gui.jobs.DeleteObjectsJob;
+import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
 
 /**
@@ -17,7 +20,7 @@ import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
  */
 public class DeleteAction extends Action {
 	
-	private String[] ids = null; 
+	private String[] objectIdentifiers = null; 
 	
 	@Override
 	public void run() {
@@ -25,7 +28,7 @@ public class DeleteAction extends Action {
 		List<ObjectRefType> list = new LinkedList<ObjectRefType>();
 		URI uri;
 		try {
-			for (String id : ids) {
+			for (String id : objectIdentifiers) {
 				uri = new URI(id);
 				objectRef = new ObjectRefType();
 				objectRef.setId(uri);
@@ -36,24 +39,32 @@ public class DeleteAction extends Action {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		DeleteObjectsJob job = new DeleteObjectsJob("Submitting remove request" +
+				Activator.getWebServersLocator().getCurrentSelection());
 		
+		String targetService = Activator.getWebServersLocator().getCurrentSelection();
+		job.setTargetService(targetService);
+		job.setObjectList(list);
+		job.setUser(true);
+		job.schedule();
 		
 	}
 
 	/**
-	 * @return the ids
+	 * @return the objectIdentifiers
 	 */
-	public final String[] getIds() {
-		return ids;
+	public final String[] getObjectIdentifiers() {
+		return objectIdentifiers;
 	}
 
 	/**
-	 * @param ids the ids to set
+	 * @param objectIdentifiers the objectIdentifiers to set
 	 */
-	public final void setIds(String[] ids) {
-		this.ids = ids;
+	public final void setObjectIdentifiers(String[] objectIdentifiers) {
+		this.objectIdentifiers = objectIdentifiers;
 	}
 
+	
 	
 	
 	

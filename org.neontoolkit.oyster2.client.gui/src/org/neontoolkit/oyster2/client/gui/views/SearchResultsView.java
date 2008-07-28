@@ -40,8 +40,8 @@ import org.neontoolkit.oyster2.client.gui.GUIConstants;
 import org.neontoolkit.oyster2.client.gui.IMessageResolver;
 import org.neontoolkit.oyster2.client.gui.MessageResolver;
 import org.neontoolkit.oyster2.client.gui.PerspectiveFactory;
+import org.neontoolkit.oyster2.client.gui.actions.DeleteFromViewAction;
 import org.neontoolkit.oyster2.client.gui.actions.DownloadOntologyGUIAction;
-import org.neontoolkit.oyster2.client.gui.actions.UpdateAction;
 import org.neontoolkit.oyster2.client.gui.actions.UpdateFromViewAction;
 import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.adapter.results.IResultsAdapter;
@@ -76,6 +76,7 @@ public class SearchResultsView extends ViewPart {
 	private Composite child = null;
 	private DownloadOntologyGUIAction downloadAction;
 	private UpdateFromViewAction updateAction = null;
+	private DeleteFromViewAction deleteAction = null;
 	
 	private Action doubleClickAction;
 	private Action changeVisibilityAction;
@@ -296,6 +297,8 @@ public class SearchResultsView extends ViewPart {
 		manager.add(downloadAction);
 		
 		manager.add(updateAction);
+		
+		manager.add(deleteAction);
 		// Other plug-ins can contribute their actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
@@ -316,6 +319,11 @@ public class SearchResultsView extends ViewPart {
 		updateAction = new UpdateFromViewAction();
 		updateAction.setText("update");
 		updateAction.setView(this);
+		
+		deleteAction = new DeleteFromViewAction();
+		deleteAction.setText("delete");
+		deleteAction.setView(this);
+		
 		
 		doubleClickAction = new Action() {
 			public void run() {
