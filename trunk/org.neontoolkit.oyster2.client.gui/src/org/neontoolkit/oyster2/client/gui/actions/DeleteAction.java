@@ -11,7 +11,6 @@ import org.apache.axis2.databinding.types.URI.MalformedURIException;
 import org.eclipse.jface.action.Action;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.jobs.DeleteObjectsJob;
-import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
 
 /**
