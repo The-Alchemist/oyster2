@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -180,6 +182,15 @@ public class TargetServerComposite extends Composite {
 		};
 		addButton.addListener(SWT.Selection, buttonListener);
 		
+		
+		DisposeListener disposeListener = new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				Activator.getWebServersLocator().removeContentListener(serverListChangeListener);
+				Activator.getWebServersLocator().removeSelectionListener(serverSelectionListener);
+			}
+			
+		};
+		addDisposeListener(disposeListener);
 	}
 	
 	public String getCurrentSelection() {
@@ -204,12 +215,13 @@ public class TargetServerComposite extends Composite {
 		return server;
 	}
 	
-	
+	/*
 	@Override
 	public void dispose() {
-		Activator.getWebServersLocator().removeContentListener(serverListChangeListener);
-		Activator.getWebServersLocator().removeSelectionListener(serverSelectionListener);
+		System.out.print("Disposing server composite");
+		//Activator.getWebServersLocator().removeContentListener(serverListChangeListener);
+		//Activator.getWebServersLocator().removeSelectionListener(serverSelectionListener);
 		super.dispose();
-	}
+	}*/
 	
 }
