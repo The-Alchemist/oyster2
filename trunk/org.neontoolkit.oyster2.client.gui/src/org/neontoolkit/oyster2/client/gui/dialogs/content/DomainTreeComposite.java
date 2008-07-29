@@ -22,7 +22,9 @@ import org.eclipse.swt.widgets.Label;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
 import org.neontoolkit.registry.ui.provider.OntologyContentProvider;
 import org.neontoolkit.registry.ui.provider.OntologyLabelProvider;
+import org.semanticweb.kaon2.on;
 import org.semanticweb.kaon2.api.Entity;
+import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
 
 /**
@@ -91,8 +93,12 @@ public class DomainTreeComposite extends InputComposite {
 	 */
 	@Override
 	public boolean testFilled() {
-		// TODO Auto-generated method stub
-		return false;
+		if (isRequired()) {
+			StructuredSelection selection =
+				(StructuredSelection) topicViewer.getSelection();
+			return ! selection.isEmpty();
+		}
+		return true;
 	}
 	
 	@Override
@@ -118,7 +124,18 @@ public class DomainTreeComposite extends InputComposite {
 
 	@Override
 	public void setInitialValue(Object value) {
-		throw new RuntimeException("Not implemented");
+		ArrayList<String> initialValues = (ArrayList<String>)value;
+		//Ontology topicOntology = Oyster2.getSharedInstance().getTopicOntology();
+		Entity entry = null;
+		Entity[] topicList = new Entity[initialValues.size()];
+		int i = 0;
+		for (String topic : initialValues) {
+			entry = KAON2Manager.factory().owlClass(topic);
+			topicList[i++] = entry;
+		}
+		StructuredSelection selection = 
+			new StructuredSelection(topicList);
+		topicViewer.setSelection(selection);
 	}
 	
 }

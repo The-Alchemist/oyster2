@@ -53,9 +53,17 @@ public class ResultsLabelProvider extends LabelProvider implements
 		Iterable iterableResult = (Iterable)labelObject;
 		Iterator it = iterableResult.iterator();
 		StringBuffer composedLabel = new StringBuffer();
+		String thisItem = null;
 		while (it.hasNext()) {
-			composedLabel.append(it.next().toString().replaceAll("#","") +
-					"; ");
+			thisItem = it.next().toString();
+			if (thisItem.charAt(0) == '#') {
+				composedLabel.append(thisItem.substring(1) +"; ");
+			}
+			else {
+				composedLabel.append(thisItem  +"; ");
+			}
+			//composedLabel.append(it.next().toString().replaceAll("#","") +
+			//		"; ");
 		}
 		return composedLabel.toString().trim();
 	}

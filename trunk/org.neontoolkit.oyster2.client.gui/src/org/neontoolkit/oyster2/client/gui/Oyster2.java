@@ -33,7 +33,7 @@ public class Oyster2 {
 	
 	private static String TOPIC_ONTOLOGY_ROOT = "Top";
 	
-	private static String TOPIC_ONTOLOGY_KEY = "Top";
+	private static String TOPIC_ONTOLOGY_KEY = "TopicOntology";
 	
 	private static String OMV_ONTOLOGY_KEY = "OMVOntology";
 	
@@ -71,7 +71,7 @@ public class Oyster2 {
 	
 	private void openOntology(String ontologyKey,String filename, 
 			IConfig.OntologyLanguage language)
-	throws IOException, KAON2Exception, InterruptedException {
+		throws IOException, KAON2Exception, InterruptedException {
 		
 		//get file
 		Path filePath = new Path("resources" + File.separator + filename);
@@ -123,6 +123,7 @@ public class Oyster2 {
 		return topicRoot;
 	}
 	
+	/*
 	public ArrayList<String> getOMVInstanceNames(String theClass) throws KAON2Exception {
 		OWLClass clazz=KAON2Manager.factory().owlClass(theClass);
 		Ontology OMVOntology = ontologies.get(OMV_ONTOLOGY_KEY);
@@ -136,7 +137,7 @@ public class Oyster2 {
 		return instanceList;
 	}
 	
-
+*/
 	public ArrayList<String>
 		getOMVInstanceNames(String theClass, String namespaceToStrip)
 			throws KAON2Exception {

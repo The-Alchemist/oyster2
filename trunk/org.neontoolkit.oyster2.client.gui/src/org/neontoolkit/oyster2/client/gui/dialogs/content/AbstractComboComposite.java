@@ -154,6 +154,8 @@ public abstract class AbstractComboComposite extends InputComposite {
 			initialValue = (String)value;
 		else 
 			initialValue = ((ArrayList<String>)value).get(0);
+		if (initialValue.charAt(0) == '#')
+			initialValue = initialValue.substring(1);
 		combo.setText(initialValue);
 		setInput(initialValue);
 		

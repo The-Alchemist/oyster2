@@ -119,9 +119,9 @@ public class CompositeFactory {
 			return composite;
 		}
 		else if (type.equals(LIST_DOMAIN_TYPE)) {
-			DomainComposite composite =
-				new DomainComposite(parent,style,section,values);
-			composite.setNestedDialog(new DomainDialog(section+InputDialog.DIALOG_SETTINGS_SUFFIX,shell));
+			DomainTreeComposite composite =
+				new DomainTreeComposite(parent,style,section);
+			//composite.setNestedDialog(new DomainDialog(section+InputDialog.DIALOG_SETTINGS_SUFFIX,shell));
 			composite.setValidator(validators.get(validatorName));
 			composite.setRequired(isRequired);
 			return composite;

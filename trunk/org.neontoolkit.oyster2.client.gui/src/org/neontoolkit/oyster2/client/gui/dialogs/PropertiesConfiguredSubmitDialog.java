@@ -102,6 +102,10 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	private static final String NAMESPACE_KEY = "namespace"; //$NON-NLS-1$
 	
+	private static final String CONFIGURATION_FOLDER_KEY = "configuration.folder";
+	
+	private static final String ADAPTER_FILES_FOLDER_KEY = "configuration.adapter.folder";
+	
 	private ArrayList<String> booleanValues = null;
 	
 	private Map<String,InputComposite> composites = 
@@ -111,6 +115,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	private TargetServerComposite serverComposite = null;
 	private FormToolkit toolkit;
 	private ScrolledForm form;
+	
+	private static String configurationFolder = null; 
 	
 	private IMessageResolver messagesResolver = null;
 	
@@ -178,6 +184,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 				new PropertiesConfiguration(path + File.separator + CONFIGURATION_FILE_NAME);
 			messagesResolver = new MessageResolver(this.getClass().getPackage().getName() + 
 					".SubmitMessages"); //$NON-NLS-1$
+			configurationFolder = generalConfiguration.getString(CONFIGURATION_FOLDER_KEY);
 		} catch (ConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -256,7 +263,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		submitTarget = targets[targetCombo.getSelectionIndex()];
 		
 		String path = Activator.getDefault().getResourcesDir() + File.separator +
-		generalConfiguration.getString(submitTarget+".file"); //$NON-NLS-1$
+			configurationFolder + File.separator + 
+			generalConfiguration.getString(submitTarget+".file"); //$NON-NLS-1$
 		
 		try {
 			targetConfiguration = new PropertiesConfiguration(path);
@@ -271,7 +279,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		String defaultTemplate = template.getDefaultTemplate();
 		List<String> templateAttributes =
 			template.getTemplateProperties(defaultTemplate);
-		adapterFileName = targetConfiguration.getString(ADAPTER_FILE_NAME);
+		adapterFileName = generalConfiguration.getString(ADAPTER_FILES_FOLDER_KEY) +
+			File.separator + targetConfiguration.getString(ADAPTER_FILE_NAME);
 		currentSections = new TreeMap<String,Composite>();
 		categories = new HashMap<String, String[]>();
 		selection = new HashMap<String, Boolean>();
@@ -679,6 +688,8 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	 */
 	public boolean close() {
 		boolean returnCode  = super.close();
+		if (!serverComposite.isDisposed())
+			serverComposite.dispose();
 		toolkit.dispose();
 		return returnCode;
 	}
