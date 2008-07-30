@@ -103,7 +103,7 @@ public class StartServer {
 					try {
 						URLClassLoader cl = new URLClassLoader(new URL[] { new URL("http://ontoware.org/frs/download.php/455/kaon2.jar") });//new URLClassLoader(urls);
 						cl.loadClass("org.semanticweb.kaon2.server.ServerMain");
-						Class cls = Class.forName("org.semanticweb.kaon2.server.ServerMain", false, cl);
+						Class<?> cls = Class.forName("org.semanticweb.kaon2.server.ServerMain", false, cl);
 				    	Method method = cls.getDeclaredMethod("main", new Class[] { String[].class });
 				        String[] argum= new String[4];
 				        argum[0]="-registry";
