@@ -12,7 +12,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-//import org.eclipse.jface.preference.PreferenceStore;
 import org.neontoolkit.omv.api.core.OMVFormalityLevel;
 import org.neontoolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
 import org.neontoolkit.omv.api.core.OMVLicenseModel;
