@@ -1,11 +1,13 @@
 package org.neontoolkit.changelogging.core.owl;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+//import java.net.InetAddress;
+//import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.core.OMVPerson;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange;
@@ -121,6 +123,8 @@ import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
 import org.neontoolkit.changelogging.core.Constants;
 
+import com.ontoprise.ontostudio.gui.GuiPlugin;
+
 
 public class ThreadRunner implements Runnable {
 	private ChangeType cType;
@@ -129,6 +133,7 @@ public class ThreadRunner implements Runnable {
 	private List<OMVAtomicChange> changeList = new ArrayList<OMVAtomicChange>();
 	public static Oyster2Connection oyster2Conn = StartRegistry.connection;//null;
 	private Ontology changedOntology;
+	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
 	
 	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto){
 		cType=cTypeX;
@@ -157,7 +162,9 @@ public class ThreadRunner implements Runnable {
 		atomicChange.setDate(date_time);
 		atomicChange.setAppliedToOntology(omvOnto);
 		
+		
 		OMVPerson se = new OMVPerson();
+		/*
 		se.setFirstName("System");
 		try {
 			se.setLastName(InetAddress.getLocalHost().getHostName());
@@ -166,6 +173,20 @@ public class ThreadRunner implements Runnable {
 			e.printStackTrace();
 		}
 		se.setHasRole(org.neontoolkit.registry.oyster2.Constants.SubjectExpert);
+		*/
+		try{
+			String role = _store.getString("ROLE"); 
+			String firstname = _store.getString("USER_FIRSTNAME");
+			String lastname = _store.getString("USER_LASTNAME");
+			se.setFirstName(firstname);
+			se.setLastName(lastname);
+			se.setHasRole(role);
+			if (se.getLastName()==null || se.getFirstName()==null ||  se.getLastName().equalsIgnoreCase("") || se.getFirstName().equalsIgnoreCase("")) return;
+		}
+		catch(Exception e){
+			return;
+		}
+		atomicChange.addHasAuthor(se);
 		
 		if(args.get(0).equals(Constants.ACTION_CLASS) ){
 			Declaration declaration = new Declaration();
