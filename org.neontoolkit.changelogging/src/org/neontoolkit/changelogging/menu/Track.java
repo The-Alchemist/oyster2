@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,6 +19,7 @@ import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyManager;
 import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
+import com.ontoprise.ontostudio.gui.GuiPlugin;
 import com.ontoprise.ontostudio.owl.gui.navigator.ontology.OntologyTreeElement;
 import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.omv.api.core.OMVOntology;
@@ -31,6 +33,7 @@ public class Track extends Action implements IObjectActionDelegate {
     protected String ontoURI;
     
     public static Oyster2Connection oyster2Conn = null;
+    private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
 
     
 	private Shell shell;
@@ -85,6 +88,16 @@ public class Track extends Action implements IObjectActionDelegate {
 				try {
 					Ontology ontology = connection.getOntology(ontoURI);
 					if (!oyster2Conn.isTracked(o)){
+						String role = _store.getString("ROLE"); 
+						String firstname = _store.getString("USER_FIRSTNAME");
+						String lastname = _store.getString("USER_LASTNAME");
+						if (lastname==null || firstname==null || role==null || lastname.equalsIgnoreCase("") || firstname.equalsIgnoreCase("") || role.equalsIgnoreCase("")) {
+							MessageDialog.openError(
+									shell,
+									"Change Capturing Component",
+									"You have to be logged-in first...");
+							return;
+						}
 						oyster2Conn.startTracking(o);
 						
 						OWLChangeListener listener = new OWLChangeListener(ontology, o);
