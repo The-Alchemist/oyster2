@@ -58,7 +58,7 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
         } catch (MalformedURLException e) {
             try {
                 //return new File(_fileInput.getText()).toURL();
-                return new File(locator).toURL();
+                return new File(locator).toURI().toURL(); //File(locator).toURL();
             } catch (MalformedURLException e1) {
                 IOPlugin.logError("", e); //$NON-NLS-1$
                 return null;
@@ -82,7 +82,7 @@ public class RegistryImportSelectionPage extends AbstractImportSelectionPage {
                 url = new URL(filesArray[i]);
             } catch (MalformedURLException e) {
                 try {
-                    url = new File(filesArray[i]).toURL();
+                    url = new File(filesArray[i]).toURI().toURL();//File(filesArray[i]).toURL();
                 } catch (MalformedURLException e1) {
                     IOPlugin.logError("", e); //$NON-NLS-1$
                     return null;
