@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.neontoolkit.oyster2.client.gui.adapter;
+package org.neontoolkit.oyster2.client.gui.adapter.submit;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;

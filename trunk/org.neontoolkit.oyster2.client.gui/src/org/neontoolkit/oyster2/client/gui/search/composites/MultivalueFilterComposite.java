@@ -68,6 +68,7 @@ public class MultivalueFilterComposite extends FilterComposite {
 		
 		makeTableViewer(comparators);
 		tableViewer.setInput(filters);
+		
 		makeButtons();
 		makeLayout();
 		makeListeners();
@@ -194,6 +195,7 @@ public class MultivalueFilterComposite extends FilterComposite {
 				new StringFilterCellModifier(tableViewer,this.comparators));
 		tableViewer.setLabelProvider(new StringFilterLabelProvider());
 		tableViewer.setContentProvider(new ArrayContentProvider());
+		
 	}
 
 	/* (non-Javadoc)
