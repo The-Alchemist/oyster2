@@ -373,11 +373,17 @@ public class SearchView extends ViewPart {
 					String target = queryTargetCombo.getItem(queryTargetCombo.getSelectionIndex());
 					target = queryTargets.get(target);
 					template = TemplateManager.getInstance().getTemplate(target);
+					cleanFieldsSection();
+					makeFieldsSection(form.getBody());
+					form.getBody().layout(true,true);
+					form.reflow(true);
 				}
 				
 				
 				
 			}
+
+			
 		};
 		attributeSelectionButton.addListener(SWT.Selection, listener);
 		queryTargetCombo.addListener(SWT.Selection, listener);
@@ -386,6 +392,11 @@ public class SearchView extends ViewPart {
 		
 	}
 
+	private void cleanFieldsSection() {
+		fieldsSection.dispose();
+	}
+	
+	
 	private void putAttributeSelectionButton(Composite composite) {
 		attributeSelectionButton = new Button(composite, SWT.PUSH);
 		
@@ -404,14 +415,14 @@ public class SearchView extends ViewPart {
 		String [] OMVSupportedClasses =
 			queryFactory.getQueryTargets();
 		String [] labels = new String[OMVSupportedClasses.length];
-		
+		String internalName = null;
 		IMessageResolver temporaryMessageResolver = null;
 		//la clave con la que tengo que meterlo es el nombre interno
 		for (int i = 0; i< OMVSupportedClasses.length;i++) {
 			omvClass = OMVSupportedClasses[i];
 			temporaryMessageResolver = QueryFactory.getInstance().getMessageBundle(omvClass);
-			
-			label =  temporaryMessageResolver.getString("target");
+			internalName = QueryFactory.getInstance().getInternalName(omvClass);
+			label =  temporaryMessageResolver.getString(internalName);
 			queryTargets.put(label,omvClass);
 			labels[i] = label;
 		}

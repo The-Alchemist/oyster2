@@ -1,0 +1,11 @@
+attributes = URI,name,isSubdomainOf
+class = org.neontoolkit.registry.omv.xsd.rim.OntologyDomainType
+identifier = name
+
+
+URI.setter.argument.class = org.apache.axis2.databinding.types.URI
+URI.setter = setURI
+name.setter.argument.class = org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType
+name.setter = setName
+isSubdomainOf.setter = setIsSubDomainOf
+isSubdomainOf.setter.argument.class = [Lorg.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;

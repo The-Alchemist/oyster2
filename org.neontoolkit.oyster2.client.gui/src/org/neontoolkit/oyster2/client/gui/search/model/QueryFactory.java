@@ -86,6 +86,12 @@ public class QueryFactory {
 		return this.domainClasses.keySet().toArray(targets);
 	}
 	
+	
+	public String[] getInternalNames() {
+		String [] targets = new String[internalNames.size()];
+		return this.internalNames.values().toArray(targets);
+	}
+	
 	public IQueryDomainClass getQueryTargetDescription(String targetName) {
 		return this.domainClasses.get(targetName);
 	}

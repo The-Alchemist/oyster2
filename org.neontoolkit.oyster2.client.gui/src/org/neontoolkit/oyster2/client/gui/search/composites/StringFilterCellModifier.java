@@ -36,11 +36,11 @@ public class StringFilterCellModifier implements ICellModifier {
 	 */
 	public Object getValue(Object element, String property) {
 		FilterValue filter = (FilterValue)element;
-		if (property.equals("search for"))
+		if (property.equals(Messages.getString("MultivalueFilterComposite.filter.table.column.text")))
 			return filter.getValue();
 		else if (property.equals("negate"))
 			return filter.getNegate();
-		else if (property.equals("comparator")) {
+		else if (property.equals(Messages.getString("MultivalueFilterComposite.comparator.table.column.text"))) {
 			String comparator = filter.getComparator();
 			for (int i = 0;i<comparators.length;i++) {
 				if (comparators[i].equals(comparator))
@@ -59,11 +59,11 @@ public class StringFilterCellModifier implements ICellModifier {
 		Item item = (Item) element;
 		
         FilterValue filter = (FilterValue) item.getData();
-		if (property.equals("search for"))
+		if (property.equals(Messages.getString("MultivalueFilterComposite.filter.table.column.text")))
 			filter.setValue(value);
 		else if (property.equals("negate"))
 			filter.setNegate((Boolean)value);
-		else if (property.equals("comparator")) {
+		else if (property.equals(Messages.getString("MultivalueFilterComposite.comparator.table.column.text"))) {
 			Integer index = (Integer)value;
 			filter.setComparator(comparators[index.intValue()]);
 		}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.neontoolkit.oyster2.client.gui.adapter;
+package org.neontoolkit.oyster2.client.gui.adapter.submit;
 
 import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.InternationalStringTypeSetterAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdapter;
@@ -46,7 +46,9 @@ public class PersonTypeAdapter extends PersonType {
 			setName(getPersonName().getFirstName().toString() + lastname);
 		}
 	}
-
+	
+	
+	
 	private void setName(String text) {
 		InternationalStringType intString= new InternationalStringType();
 		InternationalStringTypeSequence tempists=new InternationalStringTypeSequence();

@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
-import org.neontoolkit.oyster2.client.gui.adapter.PartySubmitAdapter;
+import org.neontoolkit.oyster2.client.gui.adapter.submit.PartySubmitAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
