@@ -1361,6 +1361,37 @@ public class Oyster2Connection {
 			System.out.println("Wofkflow support is not enabled");
 		return null;
 	}
+	/**
+	 * Gets the change state
+	 * @param changeURI is the URI of the target entity
+	 * @return the entity state.
+	 */
+	public String getChangeState(String changeURI){
+		if (mOyster2.getWorkflowSupport()){
+			ChangeManagement cMgmt= new ChangeManagement();
+			return cMgmt.getEntityStateFromChange(changeURI);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	
+	/**
+	 * Gets all changes that have a specific state
+	 * @param o the ontology having the changes
+	 * @param state specifies the states of the 
+	 * changes that are being searched
+	 * @return the set of changes that are in a specific
+	 * state.
+	 */
+	public Set<OMVChange> getChangesWithState (OMVOntology o, String state){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getChangesWithState(o, null, state);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	
 	
 	//REAL IMPLEMENTATIONS OF SOME PUBLIC METHODS
 	/**

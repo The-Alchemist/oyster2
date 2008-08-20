@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -961,6 +962,21 @@ public class WorkflowManagement {
 		
 		return replyAction;
 	}
+	
+	public Set<OMVChange> getChangesWithState (OMVOntology o, Ontology registry, String state){
+		Set<OMVChange> reply = new HashSet<OMVChange>();
+		ChangeManagement cMgmt= new ChangeManagement();
+		Set<OMVChange> changes = cMgmt.getTrackedChangesSet(o, registry);
+		Iterator it = changes.iterator();
+		while (it.hasNext()){
+			OMVChange c = (OMVChange)it.next();
+			String st = cMgmt.getEntityStateFromChange(c.getURI());
+			if (st.equalsIgnoreCase(state))
+				reply.add(c);
+		}
+		return reply;
+	}
+	
 	
 	//WORKFLOW INFO MGMT
 	public void addEntityChangeState(String c, String concept, String targetURI){
