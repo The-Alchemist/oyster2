@@ -2,6 +2,7 @@ package org.neontoolkit.registry.oyster2.tests;
 
 
 
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +70,14 @@ public class ChangeTests {
 		se.setHasRole(Constants.SubjectExpert);
 		
 		//SCENARIOS
+		if (args[0].equalsIgnoreCase("18")){
+			oyster2Conn.submitToBeApproved("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=57D5D0D58A6FFA7E071F9DEE995163DC8079368C",se);			
+		}
+		if (args[0].equalsIgnoreCase("17")){
+			List<OMVChange> change = new LinkedList<OMVChange>(); 
+			change.addAll(oyster2Conn.getChangesWithState(faoOntology, Constants.DraftState));
+			System.out.println(Oyster2Manager.serializeOMVChanges(change));
+		}
 		if (args[0].equalsIgnoreCase("16")){
 			List<OMVChange> change = new LinkedList<OMVChange>(); 
 			change.add(oyster2Conn.getChange("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=0E49A2AB25EB8B5E1958A6DD6A4D53F01310DB95"));
@@ -192,7 +201,7 @@ public class ChangeTests {
 		
 		if (args[0].equalsIgnoreCase("15")){
 			OMVChange t = new OMVChange();
-			t.setURI("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=C8468AE1ACC5E8B034DACEB8C0A2CC2102435C1E");
+			t.setURI("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=9939ED2FE573E4547FE3C273ED70FA16F8843F5B");
 			oyster2Conn.remove(t);
 		}
 		
