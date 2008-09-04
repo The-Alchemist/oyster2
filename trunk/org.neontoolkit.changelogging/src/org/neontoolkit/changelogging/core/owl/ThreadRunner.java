@@ -200,7 +200,6 @@ public class ThreadRunner implements Runnable {
 				classEntity = new AddClass();
 			}else if (atomicChange instanceof Removal){
 				classEntity = new RemoveClass();
-				
 			}
 			classEntity.setAppliedToOntology(omvOnto);
 			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
