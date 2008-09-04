@@ -88,32 +88,23 @@ public class Track extends Action implements IObjectActionDelegate {
 				try {
 					Ontology ontology = connection.getOntology(ontoURI);
 					if (!oyster2Conn.isTracked(o)){
-						String role = _store.getString("ROLE"); 
-						String firstname = _store.getString("USER_FIRSTNAME");
-						String lastname = _store.getString("USER_LASTNAME");
-						if (lastname==null || firstname==null || role==null || lastname.equalsIgnoreCase("") || firstname.equalsIgnoreCase("") || role.equalsIgnoreCase("")) {
-							MessageDialog.openError(
-									shell,
-									"Change Capturing Component",
-									"You have to be logged-in first...");
-							return;
-						}
-						oyster2Conn.startTracking(o);
-						
-						OWLChangeListener listener = new OWLChangeListener(ontology, o);
-						ontology.addOntologyListener(listener);
-						Track.OWLList.put(ontology, listener);
+						addTrack(ontology, o);
 					}
 					else{
-						boolean ans=MessageDialog.openQuestion(
+						if (!Track.OWLList.containsKey(ontology)){
+							addTrack(ontology,o);
+						}
+						else{
+							boolean ans=MessageDialog.openQuestion(
 								shell,
 								"Change Capturing Component",
-							"This ontology is already being tracked. Do you want to stop tracking it?");
-						if (ans) {
-							oyster2Conn.stopTracking(o);
-							OWLChangeListener listener = Track.OWLList.remove(ontology);
-							listener.persist();
-							ontology.removeOntologyListener(listener);
+								"This ontology is already being tracked. Do you want to stop tracking it?");
+							if (ans) {
+								oyster2Conn.stopTracking(o);
+								OWLChangeListener listener = Track.OWLList.remove(ontology);
+								listener.persist();
+								ontology.removeOntologyListener(listener);
+							}
 						}
 					}
 				} catch (KAON2Exception e) {
@@ -129,6 +120,24 @@ public class Track extends Action implements IObjectActionDelegate {
 		}
 	}
 
+	private void addTrack(Ontology ontology, OMVOntology o){
+		String role = _store.getString("ROLE"); 
+		String firstname = _store.getString("USER_FIRSTNAME");
+		String lastname = _store.getString("USER_LASTNAME");
+		if (lastname==null || firstname==null || role==null || lastname.equalsIgnoreCase("") || firstname.equalsIgnoreCase("") || role.equalsIgnoreCase("")) {
+			MessageDialog.openError(
+					shell,
+					"Change Capturing Component",
+					"You have to be logged-in first...");
+			return;
+		}
+		oyster2Conn.startTracking(o);
+		
+		OWLChangeListener listener = new OWLChangeListener(ontology, o);
+		ontology.addOntologyListener(listener);
+		Track.OWLList.put(ontology, listener);
+	}
+	
 	public void selectionChanged(IAction action, ISelection selection) {
 		// TODO Auto-generated method stub
 		selectionOntology = (IStructuredSelection) selection;	

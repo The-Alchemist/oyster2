@@ -188,7 +188,7 @@ public class ThreadRunner implements Runnable {
 		}
 		atomicChange.addHasAuthor(se);
 		
-		if(args.get(0).equals(Constants.ACTION_CLASS) ){
+		if(args.get(0).equals(Constants.ACTION_CLASS) ){			
 			Declaration declaration = new Declaration();
 			declaration.setEntity(new org.neontoolkit.owlodm.api.Description.OWLClass (args.get(1)));
 			atomicChange.setAppliedAxiom(declaration);
@@ -200,6 +200,7 @@ public class ThreadRunner implements Runnable {
 				classEntity = new AddClass();
 			}else if (atomicChange instanceof Removal){
 				classEntity = new RemoveClass();
+				
 			}
 			classEntity.setAppliedToOntology(omvOnto);
 			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
