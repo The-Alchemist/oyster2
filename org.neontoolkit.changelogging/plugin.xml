@@ -22,6 +22,7 @@
             allowMultiple="false"
             category="org.neontoolkit.changelogging.gui"
             class="org.neontoolkit.changelogging.gui.ChangeLogView"
+            icon="icons/changecap.GIF"
             id="org.neontoolkit.changelogging.gui.changelogview"
             name="Change Log View"/>
    </extension>
