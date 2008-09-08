@@ -55,7 +55,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class WorkflowManager provides the methods to support the
  * editorial workflow 
  * @author Raul Palma
- * @version 2.0, March 2008
+ * @version 2.2, September 2008
  */
 public class WorkflowManagement {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -862,11 +862,15 @@ public class WorkflowManagement {
 
 	//GET INFORMATION
 	public List<Action> getEntityActionsHistory(OMVOntology o, Ontology registry, String fromChange){
+		Ontology targetRegistry;
+		if (registry!=null) targetRegistry=registry;
+		else targetRegistry = localRegistry;
+		
 		String [] actions = {"Delete", "Insert", "Update", "RejectToApproved", "RejectToBeApproved", "RejectToDraft", "SendToApproved", "SendToBeApproved", "SendToBeDeleted"};
 		List<Action> replyActions = new LinkedList<Action>();
 		List<OMVChange> workList = new LinkedList<OMVChange>(); 
 		ChangeManagement cMgmt= new ChangeManagement();
-		List<OMVChange> changes = cMgmt.getTrackedChanges(o, registry, fromChange);
+		List<OMVChange> changes = cMgmt.getTrackedChanges(o, targetRegistry, fromChange);
 		Iterator it = changes.iterator();
 		while (it.hasNext()){
 			OMVChange t = (OMVChange)it.next();
@@ -964,9 +968,13 @@ public class WorkflowManagement {
 	}
 	
 	public Set<OMVChange> getChangesWithState (OMVOntology o, Ontology registry, String state){
+		Ontology targetRegistry;
+		if (registry!=null) targetRegistry=registry;
+		else targetRegistry = localRegistry;
+		
 		Set<OMVChange> reply = new HashSet<OMVChange>();
 		ChangeManagement cMgmt= new ChangeManagement();
-		Set<OMVChange> changes = cMgmt.getTrackedChangesSet(o, registry);
+		Set<OMVChange> changes = cMgmt.getTrackedChangesSet(o, targetRegistry);
 		Iterator it = changes.iterator();
 		while (it.hasNext()){
 			OMVChange c = (OMVChange)it.next();
@@ -1117,7 +1125,8 @@ public class WorkflowManagement {
 				localRegistry.applyChanges(changes);
 				localRegistry.persist();
 				try {
-					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+					if (localRegistryFile!=null)
+						localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1151,7 +1160,8 @@ public class WorkflowManagement {
 				localRegistry.applyChanges(changes);
 				localRegistry.persist();
 				try {
-					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+					if (localRegistryFile!=null)
+						localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

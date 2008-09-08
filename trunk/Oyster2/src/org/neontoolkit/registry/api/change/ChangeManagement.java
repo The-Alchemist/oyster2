@@ -68,7 +68,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class ChangeManager provides the methods to support the
  * change support 
  * @author Raul Palma
- * @version 2.0, March 2008
+ * @version 2.2, September 2008
  */
 public class ChangeManagement {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -1460,7 +1460,8 @@ public class ChangeManagement {
 				localRegistry.applyChanges(changes);
 				localRegistry.persist();
 				try {
-					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+					if (localRegistryFile!=null)
+						localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1495,7 +1496,8 @@ public class ChangeManagement {
 				localRegistry.applyChanges(changes);
 				localRegistry.persist();
 				try {
-					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+					if (localRegistryFile!=null)
+						localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1535,7 +1537,8 @@ public class ChangeManagement {
 				localRegistry.applyChanges(changes);
 				localRegistry.persist();
 				try {
-					localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+					if (localRegistryFile!=null)
+						localRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

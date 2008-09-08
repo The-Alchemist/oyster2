@@ -185,6 +185,11 @@ public class Oyster2Factory {
 	private Ontology workflowOntology;
 	
 	/**
+	 * the superOyster registry (if specified).
+	 */
+	private Ontology superOysterRegistry=null;
+	
+	/**
 	 * the uri of mapping Description Ontology.
 	 */
 	private String mappingDescOntologyURI;
@@ -236,6 +241,8 @@ public class Oyster2Factory {
 	private boolean workflowSupport=false;
 	
 	private int TIMEOUT=120000;
+	
+	private String superOysterIP=null; //Storage is local or in other Oyster node? DEFAUL=NULL=LOCAL
 	//LOGGER
 	//Create a console handler
     private ConsoleHandler handler = new ConsoleHandler();
@@ -372,33 +379,37 @@ public class Oyster2Factory {
 			
 			if ((!localRegistryFile.exists())
 					|| (localRegistryFile.length() <= 0)) {
-				/* For the second file */ 
-				
-				if (!localRegistryFile.getParentFile().exists())
-					localRegistryFile.getParentFile().mkdir();
-				
-				localRegistryFile.createNewFile();
-				resolver.registerReplacement(Constants.LocalRegistryURI,
-						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
-				
 				
 				/* For the 1 file  
 				resolver.registerReplacement(Constants.LocalRegistryURI,
 						"file:///"+serializeFileName(store.getString(Constants.LocalRegistry)));
 				*/
-				localRegistryURI = Constants.LocalRegistryURI;				
-				connection.setOntologyResolver(resolver);
 				
+				/* For the second file */ 
 				
-				this.localRegistryOntology = connection.createOntology(
+				if (getSuperOysterIP()==null){
+					if (!localRegistryFile.getParentFile().exists())
+						localRegistryFile.getParentFile().mkdir();
+				
+					localRegistryFile.createNewFile();
+					resolver.registerReplacement(Constants.LocalRegistryURI,
+						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
+				
+					localRegistryURI = Constants.LocalRegistryURI;				
+					connection.setOntologyResolver(resolver);
+				
+					this.localRegistryOntology = connection.createOntology(
 						localRegistryURI, new HashMap<String, Object>());
 				
-				this.topicOntology = connection.openOntology(topicOntologyURI,
-						new HashMap<String, Object>());
+					this.localRegistryOntology.addOntologyProperty(
+						Constants.VERSIONINFO, Integer.toString(1));
+				}
 				
 				/*
 				 * NOT NECESSARY, AND PERFORMANCE INCREASES DRAMATICALLY!
 				 *
+				this.topicOntology = connection.openOntology(
+						topicOntologyURI, new HashMap<String, Object>());
 				this.peerDescOntology = connection.openOntology(
 						peerDescOntologyURI, new HashMap<String, Object>());
 				this.mappingDescOntology = connection.openOntology(
@@ -412,30 +423,30 @@ public class Oyster2Factory {
 				this.localRegistryOntology.addToImports(owlChangeOntology);
 				this.localRegistryOntology.addToImports(topicOntology);
 				this.localRegistryOntology.addToImports(workflowOntology);
-				*/
-				this.localRegistryOntology.addOntologyProperty(
-						Constants.VERSIONINFO, Integer.toString(1));
 				
 				this.mInformer = new AdvertInformer();
-				//Rule subTopicRule = this.mInformer.createSubTopicRule(topicOntology);
-				//this.mInformer.addRule(this.localRegistryOntology, subTopicRule);
+				Rule subTopicRule = this.mInformer.createSubTopicRule(topicOntology);
+				this.mInformer.addRule(this.localRegistryOntology, subTopicRule);
+				*/
 				
 			} else {
-				/* For the second file */ 
-				resolver.registerReplacement(Constants.LocalRegistryURI,
-						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
-				localRegistryURI = Constants.LocalRegistryURI;
-				
 				/* For the 1 file  
 				localRegistryURI=resolver.registerOntology("file:///"
 						+ serializeFileName(store
 								.getString(Constants.LocalRegistry)));
 				*/
 				
-				connection.setOntologyResolver(resolver);
-				this.localRegistryOntology = connection.openOntology(
-						localRegistryURI, new HashMap<String, Object>());
+				/* For the second file */ 
 				
+				if (getSuperOysterIP()==null){
+					resolver.registerReplacement(Constants.LocalRegistryURI,
+						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
+					localRegistryURI = Constants.LocalRegistryURI;
+				
+					connection.setOntologyResolver(resolver);
+					this.localRegistryOntology = connection.openOntology(
+						localRegistryURI, new HashMap<String, Object>());
+				}
 				
 			}
 
@@ -475,6 +486,10 @@ public class Oyster2Factory {
 		
 		this.mInformer = new AdvertInformer();
 		this.mLocalRegistry = new LocalExpertiseRegistry();
+		
+		if (getSuperOysterIP()!=null)
+			this.superOysterRegistry = mInformer.openRemoteRegistry(getSuperOysterIP());
+		
 		mInformer.init();
 		mLocalRegistry.init();
 		String uid = mInformer.getLocalUID();
@@ -482,23 +497,26 @@ public class Oyster2Factory {
 		GUID localGUID = GUID.getGUID(uid);
 		try {
 			mLocalHost = new XMLOyster2Host(localGUID, InetAddress
-					.getLocalHost(), 1099);
+				.getLocalHost(), 1099);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();	
 			retInit=1;
 			return;
 		}
 		
-		if ((mProperties.getString(Constants.LocalPeerName) != null)
+		if (getSuperOysterIP()==null){
+			if ((mProperties.getString(Constants.LocalPeerName) != null)
 				&& (mProperties.getString(Constants.LocalPeerName).length() > 0))
-			mInformer.setLocalPeer(mProperties.getString(Constants.LocalPeerName),
+				mInformer.setLocalPeer(mProperties.getString(Constants.LocalPeerName),
 					uid, mLocalHost.getAddress(), mProperties
 							.getString(Constants.LocalPeerType));
-		if ((mProperties.getString(Constants.BootStrapPeerName) != null)
+			if ((mProperties.getString(Constants.BootStrapPeerName) != null)
 				&& (mProperties.getString(Constants.BootStrapPeerName).length() > 0))
-			mInformer.addBootPeer(mProperties.getString(Constants.BootStrapPeerName),
+				mInformer.addBootPeer(mProperties.getString(Constants.BootStrapPeerName),
 					mProperties.getString(Constants.BootStrapPeerUID), mProperties
 							.getString(Constants.BootStrapPeerIP));
+		}
+		
 		Entity typeRoot = KAON2Manager.factory().owlClass(
 				typeOntology.getOntologyURI()
 						+ mProperties.getString(Constants.TypeOntologyRoot));
@@ -515,7 +533,8 @@ public class Oyster2Factory {
 			mExchangeInitiatorThread.setDaemon(true);
 			mExchangeInitiatorThread.start();
 		}else{
-			mInformer.updateLocalIP();
+			if (getSuperOysterIP()==null)
+				mInformer.updateLocalIP();
 		}
 	}
 	
@@ -765,14 +784,17 @@ public class Oyster2Factory {
 	}
 
 	public Ontology getLocalHostOntology() {
+		if (getSuperOysterIP()!=null) //To add super oyster functionality
+				return superOysterRegistry;//mInformer.openRemoteRegistry(getSuperOyster());
 		return localRegistryOntology;
 		//1++
 	}
 
 	public File getLocalRegistryFile() {
+		if (getSuperOysterIP()!=null) //To add super oyster functionality
+			return null;
 		return this.localRegistryFile;
 	}
-
 
 	public String getPeerDescOntologyURI() {
 		return this.peerDescOntologyURI;
@@ -898,9 +920,20 @@ public class Oyster2Factory {
     {
 		this.TIMEOUT=t;
     }
+	
 	public int getQueryTimeOut()
     {
 		return this.TIMEOUT;
+    }
+	
+	public void setSuperOysterIP(String t)
+    {
+		this.superOysterIP=t;
+    }
+	
+	public String getSuperOysterIP()
+    {
+		return this.superOysterIP;
     }
 }
 
