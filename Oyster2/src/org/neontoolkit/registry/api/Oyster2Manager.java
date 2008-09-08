@@ -113,7 +113,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * registry. It allows to configure the peer behaviour and provides the 
  * means to display results
  * @author Raul Palma
- * @version 2.0, March 2008
+ * @version 2.2, September 2008
  */
 public class Oyster2Manager{
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -131,6 +131,16 @@ public class Oyster2Manager{
 		System.out.println("Created new Manager");
 	    }
 
+	/**
+	 * Set the IP address of the superOyster node 
+	 * where information will be stored
+	 * @param t the ip of the oyster node 
+	 * default=null; null=local;
+	 */
+	public static void setSuperOyster(String t)
+    {
+		mOyster2.setSuperOysterIP(t);
+    }
 	/**
 	 * Set the timeOut for queries.
 	 * @param t time in miliseconds 
@@ -769,7 +779,7 @@ public class Oyster2Manager{
 			mOyster2.getConnection().closeOntologies(cOntos);
 			
 		} catch (Exception e) {
-			System.out.println("Oyster2Manager.OMV2RDF error "+e);
+			e.printStackTrace();
 		}
 	}
 	
@@ -1420,7 +1430,7 @@ public class Oyster2Manager{
 				}
 			}
 		}catch(Exception ignore){
-			System.out.println("here in getdatasetevent");
+			//System.out.println("here in getdatasetevent");
 		}
 		
 		return changes;
@@ -1494,7 +1504,7 @@ public class Oyster2Manager{
 				}
 			}
 		}catch(Exception ignore){
-			System.out.println("here in getdatasetstring");
+			//System.out.println("here in getdatasetstring");
 		}
 		if (temp.length()>0)
 			local = "\t"+name+": "+temp+"\n";
@@ -1518,7 +1528,8 @@ public class Oyster2Manager{
 				        method.invoke(null, new Object[] { argum });
 				        Thread.sleep(500);
 					} catch (Exception ex) {
-				        System.out.println(ex.getMessage()+"couldnt start KAON2 server...");
+				        System.out.println("couldnt start KAON2 server...");
+				        ex.printStackTrace();
 				        closeConnection();
 					}
 				}else{
@@ -1535,7 +1546,7 @@ public class Oyster2Manager{
 				return false;
 			}
 	    } catch (Exception e) {
-	    	System.out.println("Oyster2Manager.newConnection error "+e);
+	    	e.printStackTrace();
 	    	return false;
 		}
 	    return true;

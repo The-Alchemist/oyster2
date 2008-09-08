@@ -79,7 +79,7 @@ import org.semanticweb.kaon2.api.owl.elements.Individual;
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
  * @author Raul Palma
- * @version 2.0, March 2008
+ * @version 2.2, September 2008
  */
 public class Oyster2Connection {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -1273,6 +1273,21 @@ public class Oyster2Connection {
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
 			wMgmt.rejectToDraft(changeURI, p, null);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+	}
+	/**
+	 * Delete an element permanently from the ontology. 
+	 * This action sends the change to deleted state
+	 * @param changeURI is the URI of the change that
+	 * the ontology editor approves to be deleted
+	 * @param p is the editor approving the permanent
+	 * delelition of the element.
+	 */
+	public void delete(String changeURI, OMVPerson p){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			wMgmt.delete(changeURI, p, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}

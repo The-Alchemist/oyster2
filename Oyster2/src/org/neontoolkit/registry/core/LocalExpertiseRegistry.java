@@ -390,7 +390,8 @@ public class LocalExpertiseRegistry {
 			save();
 		}
 		
-		public void save()throws Exception{    
+		public void save()throws Exception{
+			if (localRegistryFile!=null)
         		localOntologyRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
         		//localRegistry.persist();
         }

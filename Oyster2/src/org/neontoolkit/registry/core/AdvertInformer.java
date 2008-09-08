@@ -1410,7 +1410,8 @@ public class AdvertInformer{
   }
   
   public void save(Ontology ontology)throws Exception{
-	  ontology.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+	  if (localRegistryFile!=null)
+		  ontology.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
   }
   
   public void persist(Ontology ontology)throws Exception{

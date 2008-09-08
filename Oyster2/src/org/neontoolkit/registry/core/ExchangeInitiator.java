@@ -74,6 +74,8 @@ public class ExchangeInitiator implements Runnable{
 		//Ontology localRegistry = mKaonP2P.getLocalRegistryOntology();
 		Ontology localRegistry = mOyster2.getLocalHostOntology();
 		Ontology remoteRegistry = null;
+		Individual lPeer= localInformer.getLocalPeerIndiv(localRegistry);
+		
 		try{
 			Collection peers = peerSet.values();
 			Iterator it = peers.iterator(); 
@@ -81,15 +83,17 @@ public class ExchangeInitiator implements Runnable{
 			while(it.hasNext()){
 				if (mShutdownFlag) return;
 				String IP = it.next().toString();
-				mOyster2.getLogger().info("rendezvous peers IP: "+IP);
-				remoteRegistry = localInformer.openRemoteRegistry(IP);
-				if (remoteRegistry!=null){
-					//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
-					localInformer.informerIP(remoteRegistry,localRegistry, IP);
-					localInformer.updateRegistry(remoteRegistry,localRegistry); //NOT NECESSARY (BUT TO FORCE EXCHANGE IN THE NEXT CALL WITH NEW PEERS)...
-				}
-				else {
-					//System.out.println("Didn't find rendezvousPeers peer on randomExchange");
+				if (!IP.equalsIgnoreCase(localInformer.getPeerIP(localRegistry, lPeer))){
+					mOyster2.getLogger().info("rendezvous peers IP: "+IP);
+					remoteRegistry = localInformer.openRemoteRegistry(IP);
+					if (remoteRegistry!=null){
+						//System.out.println("remoteOpened: "+remoteRegistry.getPhysicalURI());
+						localInformer.informerIP(remoteRegistry,localRegistry, IP);
+						localInformer.updateRegistry(remoteRegistry,localRegistry); //NOT NECESSARY (BUT TO FORCE EXCHANGE IN THE NEXT CALL WITH NEW PEERS)...
+					}
+					else {
+						//System.out.println("Didn't find rendezvousPeers peer on randomExchange");
+					}
 				}
 			}
 		}catch(Exception e){
@@ -123,12 +127,13 @@ public class ExchangeInitiator implements Runnable{
 		Ontology localRegistry = localInformer.getLocalRegistry();
 		Ontology remoteRegistry = null;
 		String IP= "";
+		Individual lPeer = localInformer.getLocalPeerIndiv(localRegistry);
 		try{
 			Iterator it = peerList.iterator(); 
 			while(it.hasNext()){
 				if (mShutdownFlag) return;
 				Individual peerIndiv = (Individual)it.next();
-				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry) &&	!mOyster2.isOfflinePeer(peerIndiv.getURI())){
+				if(peerIndiv!=lPeer &&	!mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					IP = localInformer.getPeerIP(localRegistry,peerIndiv);
 					mOyster2.getLogger().info("Attempt to connect with peer: "+IP+" from exchange process");
 					remoteRegistry = localInformer.openRemoteRegistry(IP);

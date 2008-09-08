@@ -44,10 +44,21 @@ public class ChangeTests {
         
 		
 		//NEW CONNECTION
-		Oyster2Manager.setSimplePeer(true);
+		
+		//Normal Test
 		Oyster2Manager.setWorkflowSupport(true);
 		Oyster2Manager.setLogEnabled(true);
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
+		
+		
+		/*
+		//Super oyster node test
+		Oyster2Manager.setWorkflowSupport(true);
+		Oyster2Manager.setLogEnabled(true);
+		Oyster2Manager.setSuperOyster("138.100.11.159");
+		Oyster2Manager.setSimplePeer(true);
+		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false);
+		*/
 		
 		if (oyster2Conn==null) shutdown();
 		
@@ -70,6 +81,14 @@ public class ChangeTests {
 		se.setHasRole(Constants.SubjectExpert);
 		
 		//SCENARIOS
+		if (args[0].equalsIgnoreCase("20")){
+			OMVOntology ot = new OMVOntology();
+			ot.setURI("http://www.ida.liu.se/~daele/Ontubi.owl");
+			ot.setResourceLocator("");
+			oyster2Conn.startTracking(ot);
+			System.out.println("here");
+		}
+		
 		if (args[0].equalsIgnoreCase("18")){
 			oyster2Conn.submitToBeApproved("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=http://www.fao.org/aims/aos/fi/species_v1.0.owl;change=57D5D0D58A6FFA7E071F9DEE995163DC8079368C",se);			
 		}

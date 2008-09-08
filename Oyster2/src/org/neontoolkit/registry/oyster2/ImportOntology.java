@@ -613,7 +613,7 @@ public class ImportOntology {
 					if (changes.size()>0){ 
 						targetRegistry.applyChanges(changes);
 						targetRegistry.persist();
-						if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+						if (registry==null && localRegistryFile!=null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 					}
 					changes.clear();
 					if (how==4){
@@ -1048,7 +1048,7 @@ public class ImportOntology {
 			}
 			targetRegistry.applyChanges(changes);
 			targetRegistry.persist();
-			if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+			if (registry==null && localRegistryFile!=null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 			return true;
 			//mInformer.updateRegistryVersion(targetRegistry);
 		}catch(Exception e){
@@ -1203,7 +1203,7 @@ public class ImportOntology {
 					if (changes.size()>0){ 
 						targetRegistry.applyChanges(changes);
 						targetRegistry.persist();
-						if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+						if (registry==null && localRegistryFile!=null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 					}
 					changes.clear();
 					if (what==4){
@@ -1377,7 +1377,7 @@ public class ImportOntology {
 			}
 			targetRegistry.applyChanges(changes);
 			targetRegistry.persist();
-			if (registry==null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
+			if (registry==null && localRegistryFile!=null) targetRegistry.saveOntology(OntologyFileFormat.OWL_RDF,localRegistryFile,"ISO-8859-1");
 			return true;
 			//mInformer.updateRegistryVersion(targetRegistry);
 		}catch(Exception e){
