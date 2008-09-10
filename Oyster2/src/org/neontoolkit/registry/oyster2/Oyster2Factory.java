@@ -489,7 +489,7 @@ public class Oyster2Factory {
 		this.mLocalRegistry = new LocalExpertiseRegistry();
 		
 		if (getSuperOysterIP()!=null)
-			this.superOysterRegistry = mInformer.openRemoteRegistry(getSuperOysterIP());
+			openSuperOyster();
 		
 		mInformer.init();
 		mLocalRegistry.init();
@@ -946,5 +946,9 @@ public class Oyster2Factory {
     {
 		return this.pushChangesToOysterIP;
     }
+	
+	public void openSuperOyster(){
+		this.superOysterRegistry = mInformer.openRemoteRegistry(getSuperOysterIP());
+	}
 }
 

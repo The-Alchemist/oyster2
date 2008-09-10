@@ -885,8 +885,8 @@ public class WorkflowManagement {
 			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
 			Individual oIndividual = KAON2Manager.factory().individual(c.getURI()+";action="+actions[i]);
 			try {
-				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
-					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], localRegistry);
+				if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], targetRegistry);
 					replyActions.add(reply);
 				}
 			} catch (KAON2Exception e) {
