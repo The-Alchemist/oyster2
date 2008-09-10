@@ -71,14 +71,16 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * @version 2.2, September 2008
  */
 public class ChangeManagement {
-	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
-	private ImportOntology IOntology= new ImportOntology();
-	private static Ontology localRegistry = mOyster2.getLocalHostOntology();
+	static Oyster2Factory mOyster2;// = Oyster2Factory.sharedInstance();
+	private ImportOntology IOntology;//= new ImportOntology();
+	private static Ontology localRegistry;// = mOyster2.getLocalHostOntology();
 	
 	
 	public ChangeManagement()
     {
-	
+		mOyster2 = Oyster2Factory.sharedInstance();
+		IOntology= new ImportOntology();
+		localRegistry = mOyster2.getLocalHostOntology();
     }
 	
 	/**
