@@ -211,7 +211,7 @@ public class ProcessAxiomIndividuals{
 			}
 		}
 	  }catch(Exception e){
-			System.out.println(e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" "+e.toString()+" Problem in processAxiomIndividual");
+			e.printStackTrace();
 	  }
 	  onProcess.remove(axiomIndividual);
 	  if (reply instanceof ClassAxiom || reply instanceof DataPropertyAxiom || reply instanceof Declaration || reply instanceof EntityAnnotation || reply instanceof Fact || reply instanceof ObjectPropertyAxiom)
@@ -231,8 +231,8 @@ public class ProcessAxiomIndividuals{
 		  try{
 			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.URI)) {axiomReply.setURI(value);return axiomReply;}
 		  }catch(Exception e){
-				System.out.println(e.toString()+" Search Problem in createOMVAtomicChange");
-			}
+				e.printStackTrace();
+		  }
 		return axiomReply;
 	}
 

@@ -83,7 +83,7 @@ public class ChangeSynchronization {
 				}
 			}
 		}catch(Exception e){
-			System.out.println(e+" "+e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" error! when connect to remote peers in synchonizing changes,some peer may not start the server!");
+			e.printStackTrace();
 		}
 		System.out.println("finished change synchronization...");
 		mOyster2.getLogger().info("finished change synchronization...");
@@ -188,11 +188,16 @@ public class ChangeSynchronization {
 	
 	public synchronized static void PushChangesToPeer(Ontology remoteRegistry,Individual ontoindiv, Ontology targetOntology){
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",remoteRegistry);
-		mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-		mOyster2.openSuperOyster();
-		ChangeManagement cMgmtSO = new ChangeManagement();
-		if (!cMgmtSO.isTracked(mainOntoReply)) cMgmtSO.startTracking(mainOntoReply);
-		mOyster2.setSuperOysterIP(null);
+		try{
+			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+			mOyster2.openSuperOyster();
+			ChangeManagement cMgmtSO = new ChangeManagement();
+			if (!cMgmtSO.isTracked(mainOntoReply)) cMgmtSO.startTracking(mainOntoReply);
+			mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
+		}
 		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
 			String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
 			List<OMVChange> list;
@@ -202,39 +207,49 @@ public class ChangeSynchronization {
 			else{
 				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
 			}
-			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-			ChangeManagement cMgmtSOEnd = new ChangeManagement();
-			mOyster2.getLogger().info("will copy ..."+list.size());
-			for (int i=list.size()-1;i>=0;i--){
-				OMVChange c = (OMVChange)list.get(i);
-				mOyster2.getLogger().info("will copy ..."+c.getURI());
-				cMgmtSOEnd.register(c);
-			}
-			mOyster2.setSuperOysterIP(null);
+			try{
+				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+				ChangeManagement cMgmtSOEnd = new ChangeManagement();
+				mOyster2.getLogger().info("will copy ..."+list.size());
+				for (int i=list.size()-1;i>=0;i--){
+					OMVChange c = (OMVChange)list.get(i);
+					mOyster2.getLogger().info("will copy ..."+c.getURI());
+					cMgmtSOEnd.register(c);
+				}
+				mOyster2.setSuperOysterIP(null);
+			}catch(Exception e){
+				mOyster2.setSuperOysterIP(null);
+				e.printStackTrace();
+			}	
 		}
 		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
-		mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-		WorkflowManagement wMgmtSOEnd = new WorkflowManagement();
-		for (Action ac : listActions){
-			boolean ins = false;
-			for (Action acLocal : listActionsLocal){
-				if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
-					ins = true;
-			}
-			if (!ins){
-				if (ac instanceof EntityAction){
-					mOyster2.getLogger().info("will copy action..."+ac.getURI());
-					if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+		try{
+			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+			WorkflowManagement wMgmtSOEnd = new WorkflowManagement();
+			for (Action ac : listActions){
+				boolean ins = false;
+				for (Action acLocal : listActionsLocal){
+					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+						ins = true;
+				}
+				if (!ins){
+					if (ac instanceof EntityAction){
+						mOyster2.getLogger().info("will copy action..."+ac.getURI());
+						if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+					}
 				}
 			}
+			mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
 		}
-		mOyster2.setSuperOysterIP(null);
 	}
 }
 

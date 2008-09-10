@@ -247,7 +247,7 @@ public class ProcessChangeIndividuals{
 			}
 		}
 	  }catch(Exception e){
-			System.out.println(e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" "+e.toString()+" Problem in processAxiomIndividual");
+			e.printStackTrace();
 	  }
 	  onProcess.remove(changeIndividual);
 	  if (reply instanceof OMVAtomicChange || reply instanceof OMVCompositeChange || reply instanceof OMVEntityChange) return reply;
@@ -301,7 +301,7 @@ public class ProcessChangeIndividuals{
 			return changeReply;
 		}
 	  }catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVChange");
+		  e.printStackTrace();
 	  }
 	  return changeReply;
 	}
@@ -317,7 +317,7 @@ public class ProcessChangeIndividuals{
 				return changeReply;
 		  }
 	  }catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVAtomicChange");
+			e.printStackTrace();
 	  }
 	  return changeReply;
 	}
@@ -330,7 +330,7 @@ public class ProcessChangeIndividuals{
 				return changeReply;
 			}
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVAtomicChange");
+			e.printStackTrace();
 		}
 		return changeReply;
 	}
@@ -348,7 +348,7 @@ public class ProcessChangeIndividuals{
 				return changeReply;
 			}
 		}catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVAtomicChange");
+			e.printStackTrace();
 		}
 		return changeReply;
 	}

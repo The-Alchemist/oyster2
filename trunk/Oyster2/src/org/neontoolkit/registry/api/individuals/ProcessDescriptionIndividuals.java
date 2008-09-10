@@ -153,7 +153,7 @@ public class ProcessDescriptionIndividuals{
 			}
 		}
 	  }catch(Exception e){
-			System.out.println(e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" "+e.toString()+" Problem in processAxiomIndividual");
+			e.printStackTrace();
 	  }
 	  onProcess.remove(descriptionIndividual);
 	  if (reply instanceof DataAllValuesFrom || reply instanceof DataExactCardinality || reply instanceof DataHasValue || reply instanceof DataMaxCardinality || reply instanceof DataMinCardinality || reply instanceof DataSomeValuesFrom ||

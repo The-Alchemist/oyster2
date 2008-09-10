@@ -122,7 +122,7 @@ public class ProcessActionIndividuals{
 			}
 		}
 	  }catch(Exception e){
-			System.out.println(e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" "+e.toString()+" Problem in processAxiomIndividual");
+			e.printStackTrace();
 	  }
 	  onProcess.remove(actionIndividual);
 	  if (reply instanceof Action || reply instanceof EntityAction || reply instanceof OntologyAction) return reply;
@@ -155,7 +155,7 @@ public class ProcessActionIndividuals{
 			return actionReply;
 		}
 	  }catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createAction");
+			e.printStackTrace();
 	  }
 	  return actionReply;
 	}
@@ -168,7 +168,7 @@ public class ProcessActionIndividuals{
 					return actionReply;
 				}
 		  }catch(Exception e){
-				System.out.println(e.toString()+" Search Problem in createEntityAction");
+				e.printStackTrace();
 		  }
 		  return actionReply;
 	}
@@ -188,7 +188,7 @@ public class ProcessActionIndividuals{
 					return actionReply;
 			  }
 		  }catch(Exception e){
-				System.out.println(e.toString()+" Search Problem in createOntologyAction");
+				e.printStackTrace();
 		  }
 		  return actionReply;
 	}
@@ -219,7 +219,7 @@ public class ProcessActionIndividuals{
 					return actionReply;
 			  }
 		  }catch(Exception e){
-				System.out.println(e.toString()+" Search Problem in createPublishAction");
+				e.printStackTrace();
 		  }
 		  return actionReply;
 	}
