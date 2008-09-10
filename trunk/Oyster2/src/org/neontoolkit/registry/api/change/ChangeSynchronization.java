@@ -51,7 +51,6 @@ public class ChangeSynchronization {
 		mOyster2.getLogger().info("starting change synchronization...");
 		Collection ontologySetLocal = localInformer.getTrackedOntologies(localRegistry,localInformer.getLocalPeer());
 		Ontology pushRegistry = null;
-		if (mOyster2.getPushChangesToOysterIP()!=null) pushRegistry=localInformer.openRemoteRegistry(mOyster2.getPushChangesToOysterIP()); 
 		try{
 			Iterator it = peerList.iterator(); 
 			while(it.hasNext()){
@@ -59,14 +58,13 @@ public class ChangeSynchronization {
 				if(peerIndiv!=localInformer.getLocalPeerIndiv(localRegistry) &&	!mOyster2.isOfflinePeer(peerIndiv.getURI())){
 					Iterator itOnto = ontologySetLocal.iterator();
 					while (itOnto.hasNext()){
-						Individual ontoindiv = (Individual)itOnto.next();				
+						Individual ontoindiv = (Individual)itOnto.next();
 						if(localRegistry.containsAxiom(KAON2Manager.factory().objectPropertyMember(trackOntology,peerIndiv,ontoindiv),true)){
 							IP = localInformer.getPeerIP(localRegistry,peerIndiv);
 							mOyster2.getLogger().info("Attempt to synchronize changes with peer: "+IP);
 							remoteRegistry = localInformer.openRemoteRegistry(IP);
 							if (remoteRegistry!=null){
 								SyncrhonizeChangesWithRegistry(remoteRegistry,ontoindiv,localRegistry);
-								if (mOyster2.getPushChangesToOysterIP()!=null)	PushChangesToPeer(localRegistry, ontoindiv, pushRegistry);
 							}
 							else{
 								mOyster2.addOfflinePeer(peerIndiv.getURI());
@@ -75,6 +73,14 @@ public class ChangeSynchronization {
 					}
 				}
 				else localInformer.updateLocalRegistry();
+			}
+			if (mOyster2.getPushChangesToOysterIP()!=null)	{
+				pushRegistry = localInformer.openRemoteRegistry(mOyster2.getPushChangesToOysterIP());
+				Iterator itOnto = ontologySetLocal.iterator();
+				while (itOnto.hasNext()){
+					Individual ontoindiv = (Individual)itOnto.next();
+					PushChangesToPeer(localRegistry, ontoindiv, pushRegistry);
+				}
 			}
 		}catch(Exception e){
 			System.out.println(e+" "+e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" error! when connect to remote peers in synchonizing changes,some peer may not start the server!");
@@ -173,6 +179,7 @@ public class ChangeSynchronization {
 	public synchronized static void PushChangesToPeer(Ontology remoteRegistry,Individual ontoindiv, Ontology targetOntology){
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",remoteRegistry);
 		mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+		mOyster2.openSuperOyster();
 		if (!cMgmt.isTracked(mainOntoReply)) cMgmt.startTracking(mainOntoReply);
 		mOyster2.setSuperOysterIP(null);
 		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
