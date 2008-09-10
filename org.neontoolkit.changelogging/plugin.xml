@@ -36,7 +36,28 @@
                class="org.neontoolkit.changelogging.menu.Track"
                id="org.neontoolkit.changelogging.menu.track"
                label="Track"/>
+         <action
+               class="org.neontoolkit.changelogging.menu.Syncrhonize"
+               definitionId="org.neontoolkit.changelogging.popup.sync"
+               id="org.neontoolkit.changelogging.menu.syncrhonize"
+               label="Syncrhonize">
+         </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.neontoolkit.changelogging.popup.sync"
+            name="org.neontoolkit.changelogging.popup.sync">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.neontoolkit.changelogging.popup.sync"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+8">
+      </key>
    </extension>
 
 </plugin>
