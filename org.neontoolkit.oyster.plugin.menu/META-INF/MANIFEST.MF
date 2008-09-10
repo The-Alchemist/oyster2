@@ -7,6 +7,7 @@ Bundle-Activator: org.neontoolkit.oyster.plugin.menu.MenuActivator
 Bundle-Vendor: UPM
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.neontoolkit.registry.api
+ org.neontoolkit.registry.api,
+ com.ontoprise.ontostudio.gui
 Eclipse-LazyStart: true
 Export-Package: org.neontoolkit.oyster.plugin.menu.actions
