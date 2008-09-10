@@ -243,6 +243,7 @@ public class Oyster2Factory {
 	private int TIMEOUT=120000;
 	
 	private String superOysterIP=null; //Storage is local or in other Oyster node? DEFAUL=NULL=LOCAL
+	private String pushChangesToOysterIP=null; //push changes to other Oyster node? DEFAUL=NULL=NOPUSH
 	//LOGGER
 	//Create a console handler
     private ConsoleHandler handler = new ConsoleHandler();
@@ -934,6 +935,16 @@ public class Oyster2Factory {
 	public String getSuperOysterIP()
     {
 		return this.superOysterIP;
+    }
+	
+	public void setPushChangesToOysterIP(String t)
+    {
+		this.pushChangesToOysterIP=t;
+    }
+	
+	public String getPushChangesToOysterIP()
+    {
+		return this.pushChangesToOysterIP;
     }
 }
 

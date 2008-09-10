@@ -476,6 +476,11 @@ public class AxiomProperties{
 					tProperties.addFirst(prop);
 				}
 			}
+			if (t.getAnnotationProperty()!=null) {
+				String nl = t.getAnnotationProperty();
+				OntologyProperty prop = new OntologyProperty(Constants.annotationProperty, nl);
+				tProperties.addFirst(prop);
+			}
 		}
 		if (m instanceof ClassAssertion){
 			ClassAssertion t = (ClassAssertion)m;

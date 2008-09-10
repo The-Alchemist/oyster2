@@ -142,6 +142,16 @@ public class Oyster2Manager{
 		mOyster2.setSuperOysterIP(t);
     }
 	/**
+	 * Set the IP address of the Oyster node 
+	 * where changes will be pushed
+	 * @param t the ip of the oyster node 
+	 * default=null; null=nopush;
+	 */
+	public static void setPushChangesToOysterIP(String t)
+    {
+		mOyster2.setPushChangesToOysterIP(t);
+    }
+	/**
 	 * Set the timeOut for queries.
 	 * @param t time in miliseconds 
 	 * default=120000 (2 minutes)
@@ -537,7 +547,7 @@ public class Oyster2Manager{
 			return "\t"+getData(getOWLEntityString(((Declaration)a).getEntity()),"entity");
 		}
 		else if (a instanceof EntityAnnotation) {
-			return "\t"+getData(getOWLEntityString(((EntityAnnotation)a).getEntity()),"entity")+"\t"+getDataSetString(((EntityAnnotation)a).getEntityAnnotation(),"entityAnnotation",100);
+			return "\t"+getData(getOWLEntityString(((EntityAnnotation)a).getEntity()),"entity")+"\t"+getDataSetString(((EntityAnnotation)a).getEntityAnnotation(),"entityAnnotation",100)+"\t"+getData(((EntityAnnotation)a).getAnnotationProperty(),"AnnotationProperty");
 		}
 		else if (a instanceof ClassAssertion) {
 			return "\t"+getData(getDescriptionString(((ClassAssertion)a).getOWLClass()),"OWLClass")+"\t"+getData(getOWLEntityString(((ClassAssertion)a).getIndividual()),"individual");
