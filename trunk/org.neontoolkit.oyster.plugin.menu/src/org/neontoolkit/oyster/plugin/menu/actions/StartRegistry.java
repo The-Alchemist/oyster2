@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -13,6 +14,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.registry.api.Oyster2Manager;
 import org.neontoolkit.registry.util.EntryDetailSerializer;
+
+import com.ontoprise.ontostudio.gui.GuiPlugin;
 
 /**
  * Our sample action implements workbench action delegate.
@@ -30,6 +33,11 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	public static boolean success=false;
 	public static Oyster2Connection connection=null;
 	public static Process serverProcess = null;
+	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
+	private String sOyster = "";
+	private String pOyster = "";
+	
+	
 	/**
 	 * The constructor.
 	 */
@@ -55,11 +63,13 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 					try {
 						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"OysterUtil.jar";
 						monitor.worked(10);
-						if(serverProcess==null) {
+						sOyster = _store.getString("SUPEROYSTER");
+						pOyster = _store.getString("PUSHOYSTER");
+						if(serverProcess==null && !superOysterStorage()) {
 							System.out.println("executing the server...");
 							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neontoolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
 						}
-						if(serverProcess==null){
+						if(serverProcess==null && !superOysterStorage()){
 							MessageDialog.openInformation(
 									window.getShell(),
 									"Menu Plug-in",
@@ -67,13 +77,15 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						}
 						else{	
 							monitor.worked(20);
-							File tFile = new File("O2serverfiles/localRegistry.owl"); //FIXED FOR NOW...
-							if ((!tFile.exists())
-									|| (tFile.length() <= 0)) {
-								System.out.println("waiting 30S...");
-								Thread.sleep(30000);
+							if (!superOysterStorage()){
+								File tFile = new File("O2serverfiles/localRegistry.owl"); //FIXED FOR NOW...
+								if ((!tFile.exists())
+										|| (tFile.length() <= 0)) {
+									System.out.println("waiting 30S...");
+									Thread.sleep(30000);
+								}
+								else Thread.sleep(7000);
 							}
-							else Thread.sleep(7000);
 							monitor.worked(30);
 							startOysterSilent();
 							if (!success) {
@@ -161,6 +173,10 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 		Oyster2Manager.setSimplePeer(true);
 		Oyster2Manager.setWorkflowSupport(true);
 		Oyster2Manager.setLogEnabled(false);
+		if (superOysterStorage())
+			Oyster2Manager.setSuperOyster(sOyster);
+		if (pushOysterStorage())
+			Oyster2Manager.setPushChangesToOysterIP(pOyster);
 		connection = Oyster2Manager.newConnection(false);
 		if (connection!=null){
 			System.out.println("new connection...");
@@ -169,6 +185,18 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 			//ignore here
 		}
 		return success;
+	}
+	
+	private boolean superOysterStorage(){
+		if (sOyster!=null && !sOyster.equalsIgnoreCase("") && sOyster.length()>1)
+			return true;
+		else return false;
+	}
+	
+	private boolean pushOysterStorage(){
+		if (pOyster!=null && !pOyster.equalsIgnoreCase("") && pOyster.length()>1)
+			return true;
+		else return false;
 	}
 	
 	public void stopOyster(){

@@ -27,5 +27,13 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.neontoolkit.oyster.plugin.menu.storage"
+            id="org.neontoolkit.oyster.plugin.menu.storage"
+            name="Oyster Storage Preference">
+      </page>
+   </extension>
 
 </plugin>
