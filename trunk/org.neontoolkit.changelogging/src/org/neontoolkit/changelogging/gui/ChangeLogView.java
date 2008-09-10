@@ -47,8 +47,10 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Addition;
 
-public class ChangeLogView extends ViewPart {
 
+public class ChangeLogView extends ViewPart {
+	
+	
 	class Sorter extends ViewerSorter {
 		public int compare(Viewer viewer, Object e1, Object e2) {
 			try {
@@ -238,7 +240,7 @@ public class ChangeLogView extends ViewPart {
 	public ChangeLogView() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		int style = SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
@@ -255,7 +257,11 @@ public class ChangeLogView extends ViewPart {
 		final Button button = new Button(composite, SWT.NONE);
 		button.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				OWLChangeListener.oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
+				//sOyster = _store.getString("SUPEROYSTER");
+				//if (!superOysterStorage()){
+				//	OWLChangeListener.oyster2Conn.syncrhonizeChangesWithKnownPeersNow();
+					//reflect changes in navigator
+				//}
 				treeViewer.setInput(new Object());
 				tableViewer.setInput(new Object());
 			}

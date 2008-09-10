@@ -34,6 +34,7 @@ public class Track extends Action implements IObjectActionDelegate {
     
     public static Oyster2Connection oyster2Conn = null;
     private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
+	//private String sOyster = "";
 
     
 	private Shell shell;
@@ -68,6 +69,13 @@ public class Track extends Action implements IObjectActionDelegate {
 
 	}
 
+	/*
+	private boolean superOysterStorage(){
+		if (sOyster!=null && !sOyster.equalsIgnoreCase("") && sOyster.length()>1)
+			return true;
+		else return false;
+	}
+	*/
 	public void run(IAction action) {
 		// TODO Auto-generated method stub
 

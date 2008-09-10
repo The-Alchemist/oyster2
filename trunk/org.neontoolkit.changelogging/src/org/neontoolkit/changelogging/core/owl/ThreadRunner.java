@@ -274,14 +274,14 @@ public class ThreadRunner implements Runnable {
 							DataAllValuesFrom o = new DataAllValuesFrom();
 							o.addDataProperties(new DataProperty(args.get(3)));
 							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectAllValuesFrom o = new ObjectAllValuesFrom();
 							o.setObjectProperty(new ObjectProperty(args.get(3)));
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -294,14 +294,14 @@ public class ThreadRunner implements Runnable {
 							DataSomeValuesFrom o = new DataSomeValuesFrom();
 							o.addDataProperties(new DataProperty(args.get(3)));
 							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectSomeValuesFrom o = new ObjectSomeValuesFrom();
 							o.setObjectProperty(new ObjectProperty(args.get(3)));
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -314,15 +314,15 @@ public class ThreadRunner implements Runnable {
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
 							o.setDataRange(new Datatype(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectMinCardinality o = new ObjectMinCardinality();
 							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -337,15 +337,15 @@ public class ThreadRunner implements Runnable {
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
 							o.setDataRange(new Datatype(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectMaxCardinality o = new ObjectMaxCardinality();
 							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -360,15 +360,15 @@ public class ThreadRunner implements Runnable {
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
 							o.setDataRange(new Datatype(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectExactCardinality o = new ObjectExactCardinality();
 							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 							o.setCardinality(new Integer(args.get(3)));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -382,14 +382,14 @@ public class ThreadRunner implements Runnable {
 							DataHasValue o = new DataHasValue();
 							o.setDataProperty(new DataProperty(args.get(3)));
 							o.setConstant(args.get(4).replace("]", ""));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}else{
 							ObjectHasValue o = new ObjectHasValue();
 							o.setObjectProperty(new ObjectProperty(args.get(3)));
 							o.setValue(new Individual(args.get(4).replace("]", "")));
-							subC.setSubClass(o);
+							subC.setSuperClass(o);
 						}
-						subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(subC);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -422,6 +422,7 @@ public class ThreadRunner implements Runnable {
 			}else{
 				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
 							DataAllValuesFrom o = new DataAllValuesFrom();
 							o.addDataProperties(new DataProperty(args.get(3)));
@@ -433,7 +434,6 @@ public class ThreadRunner implements Runnable {
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -441,6 +441,7 @@ public class ThreadRunner implements Runnable {
 				}
 				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
 							DataSomeValuesFrom o = new DataSomeValuesFrom();
 							o.addDataProperties(new DataProperty(args.get(3)));
@@ -452,7 +453,6 @@ public class ThreadRunner implements Runnable {
 							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -460,6 +460,7 @@ public class ThreadRunner implements Runnable {
 				}
 				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
 							DataMinCardinality o = new DataMinCardinality();
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
@@ -473,7 +474,6 @@ public class ThreadRunner implements Runnable {
 							o.setCardinality(new Integer(args.get(3)));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -483,6 +483,7 @@ public class ThreadRunner implements Runnable {
 				}
 				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
 							DataMaxCardinality o = new DataMaxCardinality();
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
@@ -496,7 +497,6 @@ public class ThreadRunner implements Runnable {
 							o.setCardinality(new Integer(args.get(3)));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -506,6 +506,7 @@ public class ThreadRunner implements Runnable {
 				}
 				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
 							DataExactCardinality o = new DataExactCardinality();
 							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
@@ -519,7 +520,6 @@ public class ThreadRunner implements Runnable {
 							o.setCardinality(new Integer(args.get(3)));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -529,6 +529,7 @@ public class ThreadRunner implements Runnable {
 				}
 				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
 					try {
+						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
 							DataHasValue o = new DataHasValue();
 							o.setDataProperty(new DataProperty(args.get(3)));
@@ -540,7 +541,6 @@ public class ThreadRunner implements Runnable {
 							o.setValue(new Individual(args.get(4).replace("]", "")));
 							ec.addEquivalentClasses(o);
 						}
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
 						atomicChange.setAppliedAxiom(ec);
 					} catch (KAON2Exception e) {
 						e.printStackTrace();
@@ -605,12 +605,13 @@ public class ThreadRunner implements Runnable {
 			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
 			oyster2Conn.register(classEntity);
 		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_ANN)){ 
+		else if(args.get(0).equals(Constants.ACTION_CLASS_ANN)){  
 			// 1 = annotationProperty, 2=annotated entity, 3= value
 			EntityAnnotation ec = new EntityAnnotation();
 			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(1));
+			ot.setURI(args.get(2));
 			ec.setEntity(ot);
+			ec.setAnnotationProperty(args.get(1));
 			ec.addEntityAnnotation(args.get(3));
 			atomicChange.setAppliedAxiom(ec);
 			
@@ -828,8 +829,9 @@ public class ThreadRunner implements Runnable {
 			// 1 = annotationProperty, 2=annotated entity, 3= value
 			EntityAnnotation ec = new EntityAnnotation();
 			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(1));
+			ot.setURI(args.get(2));
 			ec.setEntity(ot);
+			ec.setAnnotationProperty(args.get(1));
 			ec.addEntityAnnotation(args.get(3));
 			atomicChange.setAppliedAxiom(ec);
 			
@@ -962,8 +964,9 @@ public class ThreadRunner implements Runnable {
 			// 1 = annotationProperty, 2=annotated entity, 3= value
 			EntityAnnotation ec = new EntityAnnotation();
 			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(1));
+			ot.setURI(args.get(2));
 			ec.setEntity(ot);
+			ec.setAnnotationProperty(args.get(1));
 			ec.addEntityAnnotation(args.get(3));
 			atomicChange.setAppliedAxiom(ec);
 			
@@ -1070,8 +1073,9 @@ public class ThreadRunner implements Runnable {
 			// 1 = annotationProperty, 2=annotated entity, 3= value
 			EntityAnnotation ec = new EntityAnnotation();
 			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(1));
+			ot.setURI(args.get(2));
 			ec.setEntity(ot);
+			ec.setAnnotationProperty(args.get(1));
 			ec.addEntityAnnotation(args.get(3));
 			atomicChange.setAppliedAxiom(ec);
 			
