@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.1 $".replace('$', ' ').trim() + " (" + "$Date: 2008-06-27 10:06:34 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.2 $".replace('$', ' ').trim() + " (" + "$Date: 2008-09-10 01:25:42 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -341,6 +341,7 @@ public class Constants {
 	public static final String superDataProperty = "superDataProperty";
 	public static final String entity = "entity";
 	public static final String entityAnnotation = "entityAnnotation";
+	public static final String annotationProperty = "annotationProperty";
 	public static final String individual = "individual";
 	public static final String sourceIndividual = "sourceIndividual";
 	public static final String targetValue = "targetValue";

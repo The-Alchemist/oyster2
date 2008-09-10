@@ -642,6 +642,10 @@ public class ProcessAxiomIndividuals{
 				axiomreply.addEntityAnnotation(value);
 				return axiomreply;
 			}
+			if (URI.equalsIgnoreCase(Constants.OWLODMURI+Constants.annotationProperty)) { 		
+				axiomreply.setAnnotationProperty(value);
+				return axiomreply;
+			}
 		}catch(Exception e){
 				e.printStackTrace();
 		}

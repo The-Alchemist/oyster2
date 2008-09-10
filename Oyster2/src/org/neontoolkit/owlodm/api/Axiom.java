@@ -361,12 +361,14 @@ public class Axiom {
 	public static class EntityAnnotation extends Axiom{
 		OWLEntity entity;
 		Set<String> entityAnnotation = new HashSet<String>();
+		String annotationProperty;
 		
 		public EntityAnnotation(){
 	    }
 		public void append(EntityAnnotation element){				
 			if (this.getEntity()==null && element.getEntity()!=null) {this.setEntity(element.getEntity());return;}
 			if (element.getEntityAnnotation().size()>0) {this.getEntityAnnotation().addAll(element.getEntityAnnotation());return;}
+			if (this.getAnnotationProperty()==null && element.getAnnotationProperty()!=null) {this.setAnnotationProperty(element.getAnnotationProperty());return;}
 	    }
 		public OWLEntity getEntity()
 		{
@@ -387,6 +389,14 @@ public class Axiom {
 		public void removeEntityAnnotation(String oldEntityAnnotation)
 		{
 			this.entityAnnotation.remove(oldEntityAnnotation);
+		}
+		public String getAnnotationProperty()
+		{
+			return this.annotationProperty;
+		}		
+		public void setAnnotationProperty(String newEntity)
+		{
+			this.annotationProperty=newEntity;
 		}
 	}
 	
