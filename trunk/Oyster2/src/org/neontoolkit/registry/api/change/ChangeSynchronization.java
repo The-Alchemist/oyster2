@@ -97,7 +97,7 @@ public class ChangeSynchronization {
 			List<Action> listActions;
 			if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
 				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
-				listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, startsHere);
+				listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 			}
 			else{
 				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
@@ -110,15 +110,23 @@ public class ChangeSynchronization {
 				cMgmt.register(c);
 			}
 			mOyster2.getLogger().info("will copy actions..."+list.size());
+			List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
 			for (Action ac : listActions){
-				if (ac instanceof EntityAction){
-					mOyster2.getLogger().info("will copy action..."+ac.getURI());
-					if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+				boolean ins = false;
+				for (Action acLocal : listActionsLocal){
+					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+						ins = true;
+				}
+				if (!ins){
+					if (ac instanceof EntityAction){
+						mOyster2.getLogger().info("will copy action..."+ac.getURI());
+						if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+					}
 				}
 			}
 		}	
@@ -146,7 +154,7 @@ public class ChangeSynchronization {
 						List<Action> listActions;
 						if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
 							list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
-							listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, startsHere);
+							listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 						}
 						else{
 							list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
@@ -159,15 +167,23 @@ public class ChangeSynchronization {
 							cMgmt.register(c);
 						}
 						mOyster2.getLogger().info("will copy actions..."+list.size());
+						List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
 						for (Action ac : listActions){
-							if (ac instanceof EntityAction){
-								mOyster2.getLogger().info("will copy action..."+ac.getURI());
-								if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+							boolean ins = false;
+							for (Action acLocal : listActionsLocal){
+								if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+									ins = true;
+							}
+							if (!ins){
+								if (ac instanceof EntityAction){
+									mOyster2.getLogger().info("will copy action..."+ac.getURI());
+									if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
+									else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
+									else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
+									else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
+									else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
+									else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+								}
 							}
 						}
 					}
@@ -180,7 +196,8 @@ public class ChangeSynchronization {
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",remoteRegistry);
 		mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
 		mOyster2.openSuperOyster();
-		if (!cMgmt.isTracked(mainOntoReply)) cMgmt.startTracking(mainOntoReply);
+		ChangeManagement cMgmtSO = new ChangeManagement();
+		if (!cMgmtSO.isTracked(mainOntoReply)) cMgmtSO.startTracking(mainOntoReply);
 		mOyster2.setSuperOysterIP(null);
 		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
 			String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
@@ -188,29 +205,39 @@ public class ChangeSynchronization {
 			List<Action> listActions;
 			if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
 				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
-				listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, startsHere);
+				listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 			}
 			else{
 				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
 				listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 			}
+			List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
 			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+			ChangeManagement cMgmtSOEnd = new ChangeManagement();
+			WorkflowManagement wMgmtSOEnd = new WorkflowManagement();
 			mOyster2.getLogger().info("will copy ..."+list.size());
 			for (int i=list.size()-1;i>=0;i--){
 				OMVChange c = (OMVChange)list.get(i);
 				mOyster2.getLogger().info("will copy ..."+c.getURI());
-				cMgmt.register(c);
+				cMgmtSOEnd.register(c);
 			}
 			mOyster2.getLogger().info("will copy actions..."+list.size());
 			for (Action ac : listActions){
-				if (ac instanceof EntityAction){
-					mOyster2.getLogger().info("will copy action..."+ac.getURI());
-					if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+				boolean ins = false;
+				for (Action acLocal : listActionsLocal){
+					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+						ins = true;
+				}
+				if (!ins){
+					if (ac instanceof EntityAction){
+						mOyster2.getLogger().info("will copy action..."+ac.getURI());
+						if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+					}
 				}
 			}
 			mOyster2.setSuperOysterIP(null);
