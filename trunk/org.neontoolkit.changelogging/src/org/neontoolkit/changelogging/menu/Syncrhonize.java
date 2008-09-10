@@ -46,7 +46,7 @@ public class Syncrhonize extends Action implements IObjectActionDelegate {
 			if(oyster2Conn != null){
 				try {
 					//reflect changes in navigator
-					executor.execute(new ReflectInNavigatorThread());
+					executor.execute(new ReflectInNavigatorThread(shell));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
