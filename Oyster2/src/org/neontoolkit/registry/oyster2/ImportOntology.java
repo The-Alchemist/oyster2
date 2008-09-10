@@ -84,6 +84,7 @@ public class ImportOntology {
 	
 	private void extractFormat(Ontology ontologyImported){
 		try{
+			localRegistry = mOyster2.getLocalHostOntology();
 			OntologyFormatting oFormat = ontologyImported.getOntologyFormatting();
 			if (oFormat.getFormatName()!= null && oFormat.getFormatName()!=""){
 				OntologyProperty prop = new OntologyProperty(Constants.hasOntologySyntax, oFormat.getFormatName());
@@ -130,6 +131,7 @@ public class ImportOntology {
 	}
 	
 	private void extractHeader(Map<String,Set<String>> index) {
+	 localRegistry = mOyster2.getLocalHostOntology();
         // Print each entry from the concordance to the output file.
 	 String values=null;
      Set entries = index.entrySet();  
@@ -371,6 +373,8 @@ public class ImportOntology {
 	 * @param registry the targetOntology to apply axioms. Null=localRegistry
 	 */
 	public boolean addConceptToRegistry(int how,List properties, int which, Ontology registry){
+		localRegistry = mOyster2.getLocalHostOntology();
+		localRegistryFile = mOyster2.getLocalRegistryFile();
 		Ontology targetRegistry;
 		if (registry!=null) targetRegistry=registry;
 		else targetRegistry = localRegistry;
@@ -1082,6 +1086,8 @@ public class ImportOntology {
 	 * 
 	 */
 	public boolean addImportOntologyToRegistry(List properties, int what, Ontology registry){
+		localRegistry = mOyster2.getLocalHostOntology();
+		localRegistryFile = mOyster2.getLocalRegistryFile();
 		Ontology targetRegistry;
 		if (registry!=null) targetRegistry=registry;
 		else targetRegistry = localRegistry;

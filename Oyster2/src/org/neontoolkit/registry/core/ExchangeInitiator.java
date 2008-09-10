@@ -97,7 +97,7 @@ public class ExchangeInitiator implements Runnable{
 				}
 			}
 		}catch(Exception e){
-			System.out.println("error! when connect to remote rendezvous peers in randomExchangeInitor,some peer may not start the server!");
+			e.printStackTrace();
 		}
 	}
 	
@@ -150,7 +150,7 @@ public class ExchangeInitiator implements Runnable{
 			}
 			mOyster2.updateOfflinePeerList();
 		}catch(Exception e){
-			System.out.println(e+" "+e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" error! when connect to remote peers in randomExchangeInitor,some peer may not start the server!");
+			e.printStackTrace();
 		}
 		
 	}

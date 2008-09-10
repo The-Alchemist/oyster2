@@ -153,7 +153,7 @@ public class ProcessOMVIndividuals{
 			}
 		}
 	  }catch(Exception e){
-			System.out.println(e.getMessage()+" "+e.getCause()+" "+e.getStackTrace()+" "+e.toString()+" Search Problem in processIndividual");
+			e.printStackTrace();
 	  }
 	  onProcess.remove(ontoIndiv);
 	  if (whichClass.equalsIgnoreCase("ontology")) return mainOntoReply;
@@ -506,7 +506,7 @@ public class ProcessOMVIndividuals{
 			mainOntoReply.setHasOntologyState(value);return mainOntoReply;
 		}
 	  }catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVOntology");
+			e.printStackTrace();
 	  }
 	  return mainOntoReply;
 	}
@@ -600,7 +600,7 @@ public class ProcessOMVIndividuals{
 			return partyReply;
 		}
 	  }catch(Exception e){
-			System.out.println(e.toString()+" Search Problem in createOMVParty");
+			e.printStackTrace();
 	  }
 	  return partyReply;
 	}
