@@ -75,7 +75,7 @@ public class ProcessDescriptionIndividuals{
 			else if (whichClass.equalsIgnoreCase("ObjectOneOf")) reply = new ObjectOneOf();
 			else if (whichClass.equalsIgnoreCase("ObjectSomeValuesFrom")) reply = new ObjectSomeValuesFrom();
 			else if (whichClass.equalsIgnoreCase("ObjectUnionOf")) reply = new ObjectUnionOf();
-			else if (whichClass.equalsIgnoreCase("OWLClass")) reply = new OWLClass(descriptionIndividual.getURI());
+			else if (whichClass.equalsIgnoreCase("OWLClass")) {reply=null;reply = new OWLClass(descriptionIndividual.getURI());}
 						
 			Collection keySet = dataPropertyMap.keySet();
 			Iterator keys = keySet.iterator();
