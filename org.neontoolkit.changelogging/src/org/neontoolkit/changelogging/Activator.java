@@ -47,4 +47,5 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+	
 }

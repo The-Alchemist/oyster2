@@ -73,15 +73,12 @@ import org.neontoolkit.owlodm.api.OWLEntity.DataProperty;
 import org.neontoolkit.owlodm.api.OWLEntity.Datatype;
 import org.neontoolkit.owlodm.api.OWLEntity.Individual;
 import org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty;
-import org.semanticweb.kaon2.api.Cursor;
-import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent;
 import org.semanticweb.kaon2.api.OntologyManager;
-import org.semanticweb.kaon2.api.Request;
 import org.semanticweb.kaon2.api.owl.axioms.DataPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.elements.DataPropertyExpression;
@@ -393,12 +390,12 @@ public class ApplyChangesFromLogToNTK {
 										for (String diT : axT.getEntityAnnotation()){
 											constantValue=constantValue+" "+diT;
 										}
-										String entityType=getEntityType(entity,targetRegistry);
-										if (entityType.equalsIgnoreCase("OWLClass")) ddm = KAON2Manager.factory().owlClass(entity);
-										else if (entityType.equalsIgnoreCase("DataProperty")) ddm = KAON2Manager.factory().dataProperty(entity);
-										else if (entityType.equalsIgnoreCase("ObjectProperty")) ddm = KAON2Manager.factory().objectProperty(entity);
-										else if (entityType.equalsIgnoreCase("Individual")) ddm = KAON2Manager.factory().individual(entity);
-										else if (entityType.equalsIgnoreCase("Datatype")) ddm = KAON2Manager.factory().datatype(entity);
+										constantValue=constantValue.replace("%20", " ");
+										if (oeoy instanceof OWLClass) ddm = KAON2Manager.factory().owlClass(entity);
+										else if (oeoy instanceof DataProperty) ddm = KAON2Manager.factory().dataProperty(entity);
+										else if (oeoy instanceof ObjectProperty) ddm = KAON2Manager.factory().objectProperty(entity);
+										else if (oeoy instanceof Individual) ddm = KAON2Manager.factory().individual(entity);
+										else if (oeoy instanceof Datatype) ddm = KAON2Manager.factory().datatype(entity);
 										if (constantValue.length()>1 && ddm!=null && annoProp!=null){
 											constantValue=constantValue.substring(1);
 											app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(constantValue));
@@ -407,6 +404,7 @@ public class ApplyChangesFromLogToNTK {
 									
 									//check wether it is a valid axiom
 									if (app==null) return;
+									System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
 									//Add or remove axiom
 									if (tt instanceof Addition){	
 										changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));
@@ -570,29 +568,32 @@ public class ApplyChangesFromLogToNTK {
 		return ddm;
 	}
 	
-	public static String getEntityType(String name, Ontology changedOnto)  {
-		try{
-	        Request<Entity> entityRequest=changedOnto.createEntityRequest();
-	        Cursor<Entity> cursor=entityRequest.openCursor();
-	        while (cursor.hasNext()) {
-	            Entity entity=cursor.next();
-	            if (name.equalsIgnoreCase(Namespaces.guessLocalName(entity.getURI()))){ 
-	            	if (entity instanceof org.semanticweb.kaon2.api.owl.elements.DataProperty)
-	            		return "DataProperty";
-	            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.ObjectProperty)
-	            		return "ObjectProperty";
-	            	else if (entity instanceof OWLClass)
-	            		return "OWLClass";
-	            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.Datatype)
-	            		return "Datatype";
-	            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.Individual)
-	            		return "Individual";
-	            }
-	        }
-		}
-	    catch (KAON2Exception e) {
-	    	System.err.println(e + " in checkdataproperty()");
-	    }
-	    return "";
-	}
 }
+
+/*
+private static String getEntityType(String name, Ontology changedOnto)  {
+	try{
+        Request<Entity> entityRequest=changedOnto.createEntityRequest();
+        Cursor<Entity> cursor=entityRequest.openCursor();
+        while (cursor.hasNext()) {
+            Entity entity=cursor.next();
+            if (name.equalsIgnoreCase(Namespaces.guessLocalName(entity.getURI()))){ 
+            	if (entity instanceof org.semanticweb.kaon2.api.owl.elements.DataProperty)
+            		return "DataProperty";
+            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.ObjectProperty)
+            		return "ObjectProperty";
+            	else if (entity instanceof OWLClass)
+            		return "OWLClass";
+            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.Datatype)
+            		return "Datatype";
+            	else if (entity instanceof org.semanticweb.kaon2.api.owl.elements.Individual)
+            		return "Individual";
+            }
+        }
+	}
+    catch (KAON2Exception e) {
+    	System.err.println(e + " in checkdataproperty()");
+    }
+    return "";
+}
+*/

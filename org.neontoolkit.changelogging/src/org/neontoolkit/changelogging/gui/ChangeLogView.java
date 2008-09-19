@@ -50,7 +50,6 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Addit
 
 public class ChangeLogView extends ViewPart {
 	
-	
 	class Sorter extends ViewerSorter {
 		public int compare(Viewer viewer, Object e1, Object e2) {
 			try {
@@ -95,8 +94,6 @@ public class ChangeLogView extends ViewPart {
 					StringBuffer desc = new StringBuffer();
 					desc.append(entry.getPredicate());
 					desc.append("----");
-//					desc.append(entry.getModule());
-//					desc.append("----");
 					for(int i=0; i<entry.getArguments().length; i++){
 						desc.append(entry.getArguments()[i]);
 						desc.append("----");
@@ -107,7 +104,6 @@ public class ChangeLogView extends ViewPart {
 			}else if(element instanceof OMVChange){				
 				OMVChange change = (OMVChange)element;
 				
-					
 				if(columnIndex == 0){
 					return change.getDate();	// + " " + change.getTime();
 				}else if(columnIndex == 1){
@@ -177,9 +173,7 @@ public class ChangeLogView extends ViewPart {
 					OWLChangeListener listener = listners.get(index);
 					return listener.getChanges().toArray(new OMVChange[]{});
 				}
-				
 			}
-			
 			return new Object[]{};
 			
 		}

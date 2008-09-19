@@ -5,9 +5,12 @@ package org.neontoolkit.changelogging.core.owl;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.core.OMVPerson;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange;
@@ -58,6 +61,7 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveObjectProperty;
+import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Addition;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Removal;
@@ -104,6 +108,7 @@ import org.neontoolkit.owlodm.api.Description.DataHasValue;
 import org.neontoolkit.owlodm.api.Description.DataMaxCardinality;
 import org.neontoolkit.owlodm.api.Description.DataMinCardinality;
 import org.neontoolkit.owlodm.api.Description.DataSomeValuesFrom;
+import org.neontoolkit.owlodm.api.Description.OWLClass;
 import org.neontoolkit.owlodm.api.Description.ObjectAllValuesFrom;
 import org.neontoolkit.owlodm.api.Description.ObjectExactCardinality;
 import org.neontoolkit.owlodm.api.Description.ObjectHasValue;
@@ -122,6 +127,7 @@ import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
 import org.neontoolkit.changelogging.core.Constants;
+import org.neontoolkit.changelogging.menu.ApplyChangesFromLogToNTK;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
@@ -134,986 +140,1008 @@ public class ThreadRunner implements Runnable {
 	public static Oyster2Connection oyster2Conn = StartRegistry.connection;//null;
 	private Ontology changedOntology;
 	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
+	private Shell shell;
 	
-	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto){
+	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto, Shell arg){
 		cType=cTypeX;
 		args=argsX;
 		omvOnto=o;
 		changedOntology=changedOnto;
+		shell=arg;
 	}
 	
 		
 	public void run() {
-		OMVAtomicChange atomicChange = null;
-		
-		//System.out.println("changeType: "+cType);
-		//System.out.println("axiom: "+args.get(0));
-		//System.out.println("num of args "+ (args.size()-1));
-		
-		String date_time = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
-		
-		if(cType.equals(ChangeType.ADD)){
-			atomicChange = new Addition();
-		}else if(cType.equals(ChangeType.REMOVE)){
-			atomicChange = new Removal();
-		}
-		if(atomicChange == null)	return;
-			
-		atomicChange.setDate(date_time);
-		atomicChange.setAppliedToOntology(omvOnto);
-		
-		
-		OMVPerson se = new OMVPerson();
-		/*
-		se.setFirstName("System");
-		try {
-			se.setLastName(InetAddress.getLocalHost().getHostName());
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		se.setHasRole(org.neontoolkit.registry.oyster2.Constants.SubjectExpert);
-		*/
-		try{
-			String role = _store.getString("ROLE"); 
-			String firstname = _store.getString("USER_FIRSTNAME");
-			String lastname = _store.getString("USER_LASTNAME");
-			se.setFirstName(firstname);
-			se.setLastName(lastname);
-			se.setHasRole(role);
-			if (se.getLastName()==null || se.getFirstName()==null ||  se.getLastName().equalsIgnoreCase("") || se.getFirstName().equalsIgnoreCase("")) return;
-		}
-		catch(Exception e){
-			return;
-		}
-		atomicChange.addHasAuthor(se);
-		
-		if(args.get(0).equals(Constants.ACTION_CLASS) ){
-			Declaration declaration = new Declaration();
-			declaration.setEntity(new org.neontoolkit.owlodm.api.Description.OWLClass (args.get(1)));
-			atomicChange.setAppliedAxiom(declaration);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OntologyChange classEntity = new OntologyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddClass();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveClass();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if (args.get(0).equals(Constants.ACTION_OBPROPERTY)){
-			Declaration declaration = new Declaration();
-			
-			declaration.setEntity(new ObjectProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(declaration);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OntologyChange classEntity = new OntologyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if (args.get(0).equals(Constants.ACTION_DAPROPERTY)){
-			Declaration declaration = new Declaration();
-			
-			declaration.setEntity(new DataProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(declaration);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OntologyChange classEntity = new OntologyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDataProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDataProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if (args.get(0).equals(Constants.ACTION_ANPROPERTY)){  // SHOULD TAKE CARE OF THIS ONE
-			Declaration declaration = new Declaration();
-			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(1));
-			
-			declaration.setEntity(ot);
-			atomicChange.setAppliedAxiom(declaration);
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_SUBOF)){
-			SubClassOf subC = new SubClassOf();
-			if (args.size()<=3){
-				subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-				subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-				atomicChange.setAppliedAxiom(subC);
-			}else{
-				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){						
-							DataAllValuesFrom o = new DataAllValuesFrom();
-							o.addDataProperties(new DataProperty(args.get(3)));
-							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							subC.setSuperClass(o);
-						}else{
-							ObjectAllValuesFrom o = new ObjectAllValuesFrom();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-					
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
-							DataSomeValuesFrom o = new DataSomeValuesFrom();
-							o.addDataProperties(new DataProperty(args.get(3)));
-							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							subC.setSuperClass(o);
-						}else{
-							ObjectSomeValuesFrom o = new ObjectSomeValuesFrom();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}	
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataMinCardinality o = new DataMinCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}else{
-							ObjectMinCardinality o = new ObjectMinCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataMaxCardinality o = new DataMaxCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}else{
-							ObjectMaxCardinality o = new ObjectMaxCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}					
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataExactCardinality o = new DataExactCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}else{
-							ObjectExactCardinality o = new ObjectExactCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
-					try {
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
-							DataHasValue o = new DataHasValue();
-							o.setDataProperty(new DataProperty(args.get(3)));
-							o.setConstant(args.get(4).replace("]", ""));
-							subC.setSuperClass(o);
-						}else{
-							ObjectHasValue o = new ObjectHasValue();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setValue(new Individual(args.get(4).replace("]", "")));
-							subC.setSuperClass(o);
-						}
-						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						atomicChange.setAppliedAxiom(subC);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			ClassChange classEntity = new ClassChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddSubClassOf();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveSubClassOf();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_EQ)){
-			EquivalentClasses ec = new EquivalentClasses();
-			
-			if (args.size()<=3){
-				ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-				ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-				atomicChange.setAppliedAxiom(ec);
-			}else{
-				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
-							DataAllValuesFrom o = new DataAllValuesFrom();
-							o.addDataProperties(new DataProperty(args.get(3)));
-							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectAllValuesFrom o = new ObjectAllValuesFrom();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
-							DataSomeValuesFrom o = new DataSomeValuesFrom();
-							o.addDataProperties(new DataProperty(args.get(3)));
-							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectSomeValuesFrom o = new ObjectSomeValuesFrom();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataMinCardinality o = new DataMinCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectMinCardinality o = new ObjectMinCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataMaxCardinality o = new DataMaxCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectMaxCardinality o = new ObjectMaxCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
-							DataExactCardinality o = new DataExactCardinality();
-							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-							o.setDataRange(new Datatype(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectExactCardinality o = new ObjectExactCardinality();
-							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-							o.setCardinality(new Integer(args.get(3)));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (NumberFormatException e) {
-						e.printStackTrace();
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
-					try {
-						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
-							DataHasValue o = new DataHasValue();
-							o.setDataProperty(new DataProperty(args.get(3)));
-							o.setConstant(args.get(4).replace("]", ""));
-							ec.addEquivalentClasses(o);
-						}else{
-							ObjectHasValue o = new ObjectHasValue();
-							o.setObjectProperty(new ObjectProperty(args.get(3)));
-							o.setValue(new Individual(args.get(4).replace("]", "")));
-							ec.addEquivalentClasses(o);
-						}
-						atomicChange.setAppliedAxiom(ec);
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			EquivalentClassChange classEntity = new EquivalentClassChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddEquivalentClass();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveEquivalentClass();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJ)){
-			DisjointClasses ec = new DisjointClasses();
-			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			DisjointClassChange classEntity = new DisjointClassChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDisjointClass();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDisjointClass();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJUN)){ //HOW TO USE IT???
-			DisjointUnion ec = new DisjointUnion();
-			ec.setUnionClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			DisjointUnionChange classEntity = new DisjointUnionChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDisjointUnion();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDisjointUnion();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_CLASS_ANN)){  
-			// 1 = annotationProperty, 2=annotated entity, 3= value
-			EntityAnnotation ec = new EntityAnnotation();
-			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(2));
-			ec.setEntity(ot);
-			ec.setAnnotationProperty(args.get(1));
-			ec.addEntityAnnotation(args.get(3));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
-			if (atomicChange instanceof Addition){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-				else return;
-			}else if (atomicChange instanceof Removal){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-				else return;
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_DOMAIN)){
-			ObjectPropertyDomain oPD = new ObjectPropertyDomain();
-			oPD.setObjectProperty(new ObjectProperty(args.get(1)));
-			oPD.setDomain(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-			atomicChange.setAppliedAxiom(oPD);
+		shell.getDisplay().asyncExec(new Runnable () {
+            public void run () {
+            	OMVAtomicChange atomicChange = null;
+        		//System.out.println("changeType: "+cType);
+        		//System.out.println("axiom: "+args.get(0));
+        		//System.out.println("num of args "+ (args.size()-1));
+        		
+        		String date_time = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+        		if(cType.equals(ChangeType.ADD)){
+        			atomicChange = new Addition();
+        		}else if(cType.equals(ChangeType.REMOVE)){
+        			atomicChange = new Removal();
+        		}
+        		if(atomicChange == null)	return;
+        			
+        		atomicChange.setDate(date_time);
+        		atomicChange.setAppliedToOntology(omvOnto);
+        		
+        		
+        		OMVPerson se = new OMVPerson();
+        		try{
+        			String role = _store.getString("ROLE"); 
+        			String firstname = _store.getString("USER_FIRSTNAME");
+        			String lastname = _store.getString("USER_LASTNAME");
+        			se.setFirstName(firstname);
+        			se.setLastName(lastname);
+        			se.setHasRole(role);
+        			if (se.getLastName()==null || se.getFirstName()==null ||  se.getLastName().equalsIgnoreCase("") || se.getFirstName().equalsIgnoreCase("")) return;
+        		}
+        		catch(Exception e){
+        			return;
+        		}
+        		atomicChange.addHasAuthor(se);
+        		
+        		if(args.get(0).equals(Constants.ACTION_CLASS) ){
+        			Declaration declaration = new Declaration();
+        			declaration.setEntity(new org.neontoolkit.owlodm.api.Description.OWLClass (args.get(1)));
+        			atomicChange.setAppliedAxiom(declaration);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OntologyChange classEntity = new OntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddClass();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveClass();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if (args.get(0).equals(Constants.ACTION_OBPROPERTY)){
+        			Declaration declaration = new Declaration();
+        			
+        			declaration.setEntity(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(declaration);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OntologyChange classEntity = new OntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if (args.get(0).equals(Constants.ACTION_DAPROPERTY)){
+        			Declaration declaration = new Declaration();
+        			
+        			declaration.setEntity(new DataProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(declaration);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OntologyChange classEntity = new OntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDataProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if (args.get(0).equals(Constants.ACTION_ANPROPERTY)){  // SHOULD TAKE CARE OF THIS ONE
+        			Declaration declaration = new Declaration();
+        			OWLEntity ot = new OWLEntity();
+        			ot.setURI(args.get(1));
+        			
+        			declaration.setEntity(ot);
+        			atomicChange.setAppliedAxiom(declaration);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_CLASS_SUBOF)){
+        			SubClassOf subC = new SubClassOf();
+        			if (args.size()<=3){
+        				subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        				subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        				atomicChange.setAppliedAxiom(subC);
+        			}else{
+        				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){						
+        							DataAllValuesFrom o = new DataAllValuesFrom();
+        							o.addDataProperties(new DataProperty(args.get(3)));
+        							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectAllValuesFrom o = new ObjectAllValuesFrom();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        					
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
+        							DataSomeValuesFrom o = new DataSomeValuesFrom();
+        							o.addDataProperties(new DataProperty(args.get(3)));
+        							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectSomeValuesFrom o = new ObjectSomeValuesFrom();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}	
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataMinCardinality o = new DataMinCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectMinCardinality o = new ObjectMinCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataMaxCardinality o = new DataMaxCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectMaxCardinality o = new ObjectMaxCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}					
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataExactCardinality o = new DataExactCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectExactCardinality o = new ObjectExactCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
+        					try {
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
+        							DataHasValue o = new DataHasValue();
+        							o.setDataProperty(new DataProperty(args.get(3)));
+        							o.setConstant(args.get(4).replace("]", ""));
+        							subC.setSuperClass(o);
+        						}else{
+        							ObjectHasValue o = new ObjectHasValue();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setValue(new Individual(args.get(4).replace("]", "")));
+        							subC.setSuperClass(o);
+        						}
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        			}
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			ClassChange classEntity = new ClassChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddSubClassOf();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveSubClassOf();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_CLASS_EQ)){
+        			EquivalentClasses ec = new EquivalentClasses();
+        			
+        			if (args.size()<=3){
+        				ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        				ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        				atomicChange.setAppliedAxiom(ec);
+        			}else{
+        				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
+        							DataAllValuesFrom o = new DataAllValuesFrom();
+        							o.addDataProperties(new DataProperty(args.get(3)));
+        							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectAllValuesFrom o = new ObjectAllValuesFrom();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
+        							DataSomeValuesFrom o = new DataSomeValuesFrom();
+        							o.addDataProperties(new DataProperty(args.get(3)));
+        							o.setDataRange(new Datatype(args.get(4).replace("]", "")));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectSomeValuesFrom o = new ObjectSomeValuesFrom();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataMinCardinality o = new DataMinCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectMinCardinality o = new ObjectMinCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataMaxCardinality o = new DataMaxCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectMaxCardinality o = new ObjectMaxCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
+        							DataExactCardinality o = new DataExactCardinality();
+        							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
+        							o.setDataRange(new Datatype(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectExactCardinality o = new ObjectExactCardinality();
+        							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
+        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							o.setCardinality(new Integer(args.get(3)));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (NumberFormatException e) {
+        						e.printStackTrace();
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
+        							DataHasValue o = new DataHasValue();
+        							o.setDataProperty(new DataProperty(args.get(3)));
+        							o.setConstant(args.get(4).replace("]", ""));
+        							ec.addEquivalentClasses(o);
+        						}else{
+        							ObjectHasValue o = new ObjectHasValue();
+        							o.setObjectProperty(new ObjectProperty(args.get(3)));
+        							o.setValue(new Individual(args.get(4).replace("]", "")));
+        							ec.addEquivalentClasses(o);
+        						}
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (KAON2Exception e) {
+        						e.printStackTrace();
+        					}
+        				}
+        			}
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			EquivalentClassChange classEntity = new EquivalentClassChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddEquivalentClass();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveEquivalentClass();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJ)){
+        			DisjointClasses ec = new DisjointClasses();
+        			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			DisjointClassChange classEntity = new DisjointClassChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDisjointClass();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDisjointClass();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJUN)){ //HOW TO USE IT???
+        			DisjointUnion ec = new DisjointUnion();
+        			ec.setUnionClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        			ec.addDisjointClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			DisjointUnionChange classEntity = new DisjointUnionChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDisjointUnion();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDisjointUnion();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_CLASS_ANN)){  
+        			// 1 = annotationProperty, 2=annotated entity, 3= value
+        			EntityAnnotation ec = new EntityAnnotation();
+        			OWLClass ot = new OWLClass(args.get(2));
+        			//ot.setURI(args.get(2));
+        			ec.setEntity(ot);
+        			ec.setAnnotationProperty(args.get(1));
+        			ec.addEntityAnnotation(args.get(3));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
+        				else return;
+        			}else if (atomicChange instanceof Removal){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
+        				else return;
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_DOMAIN)){
+        			ObjectPropertyDomain oPD = new ObjectPropertyDomain();
+        			oPD.setObjectProperty(new ObjectProperty(args.get(1)));
+        			oPD.setDomain(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        			atomicChange.setAppliedAxiom(oPD);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddObjectPropertyDomain();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveObjectPropertyDomain();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-			
-			
-		}else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_RANGE)){
-			ObjectPropertyRange oPR = new ObjectPropertyRange();
-			oPR.setObjectProperty(new ObjectProperty(args.get(1)));
-			oPR.setRange(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-			atomicChange.setAppliedAxiom(oPR);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddObjectPropertyRange();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveObjectPropertyRange();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-			
-		}else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SUBOF)){
-			SubObjectPropertyOf subOP = new SubObjectPropertyOf();
-			subOP.addSubObjectProperties(new ObjectProperty(args.get(1)));
-			subOP.setSuperObjectProperty(new ObjectProperty(args.get(2)));
-			atomicChange.setAppliedAxiom(subOP);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddObjectPropertyDomain();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveObjectPropertyDomain();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        			
+        			
+        		}else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_RANGE)){
+        			ObjectPropertyRange oPR = new ObjectPropertyRange();
+        			oPR.setObjectProperty(new ObjectProperty(args.get(1)));
+        			oPR.setRange(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        			atomicChange.setAppliedAxiom(oPR);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddObjectPropertyRange();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveObjectPropertyRange();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        			
+        		}else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SUBOF)){
+        			SubObjectPropertyOf subOP = new SubObjectPropertyOf();
+        			subOP.addSubObjectProperties(new ObjectProperty(args.get(1)));
+        			subOP.setSuperObjectProperty(new ObjectProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(subOP);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddSubObjectPropertyOf();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveSubObjectPropertyOf();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_EQ)){
-			EquivalentObjectProperties oPE = new EquivalentObjectProperties();
-			oPE.addEquivalentObjectProperties(new ObjectProperty(args.get(1)));
-			oPE.addEquivalentObjectProperties(new ObjectProperty(args.get(2)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddSubObjectPropertyOf();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveSubObjectPropertyOf();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_EQ)){
+        			EquivalentObjectProperties oPE = new EquivalentObjectProperties();
+        			oPE.addEquivalentObjectProperties(new ObjectProperty(args.get(1)));
+        			oPE.addEquivalentObjectProperties(new ObjectProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddEquivalentObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveEquivalentObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_FUNC)){
-			FunctionalObjectProperty oPE = new FunctionalObjectProperty();
-			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddEquivalentObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveEquivalentObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_FUNC)){
+        			FunctionalObjectProperty oPE = new FunctionalObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddFunctionalObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveFunctionalObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1)); 
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INVFUNC)){
-			InverseFunctionalObjectProperty oPE = new InverseFunctionalObjectProperty();
-			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddFunctionalObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveFunctionalObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INVFUNC)){
+        			InverseFunctionalObjectProperty oPE = new InverseFunctionalObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddInverseFunctionalObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveInverseFunctionalObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1)); 
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_TRA)){
-			TransitiveObjectProperty oPE = new TransitiveObjectProperty();
-			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddInverseFunctionalObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveInverseFunctionalObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_TRA)){
+        			TransitiveObjectProperty oPE = new TransitiveObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddTransitiveObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveTransitiveObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1)); 
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SYM)){
-			SymmetricObjectProperty oPE = new SymmetricObjectProperty();
-			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddTransitiveObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveTransitiveObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SYM)){
+        			SymmetricObjectProperty oPE = new SymmetricObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				
-				classEntity = new AddSymmetricObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveSymmetricObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1)); 
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INV)){
-			InverseObjectProperties oPE = new InverseObjectProperties();
-			oPE.addInverseObjectProperties(new ObjectProperty(args.get(1)));
-			oPE.addInverseObjectProperties(new ObjectProperty(args.get(2)));
-			atomicChange.setAppliedAxiom(oPE);
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				
+        				classEntity = new AddSymmetricObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveSymmetricObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INV)){
+        			InverseObjectProperties oPE = new InverseObjectProperties();
+        			oPE.addInverseObjectProperties(new ObjectProperty(args.get(1)));
+        			oPE.addInverseObjectProperties(new ObjectProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(oPE);
 
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddInverseObjectProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveInverseObjectProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_ANN)){ 
-			// 1 = annotationProperty, 2=annotated entity, 3= value
-			EntityAnnotation ec = new EntityAnnotation();
-			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(2));
-			ec.setEntity(ot);
-			ec.setAnnotationProperty(args.get(1));
-			ec.addEntityAnnotation(args.get(3));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
-			if (atomicChange instanceof Addition){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-				else return;
-			}else if (atomicChange instanceof Removal){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-				else return;
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddInverseObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveInverseObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_ANN)){ 
+        			// 1 = annotationProperty, 2=annotated entity, 3= value
+        			EntityAnnotation ec = new EntityAnnotation();
+        			ObjectProperty ot = new ObjectProperty(args.get(2));
+        			//ot.setURI(args.get(2));
+        			ec.setEntity(ot);
+        			ec.setAnnotationProperty(args.get(1));
+        			ec.addEntityAnnotation(args.get(3));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
+        				else return;
+        			}else if (atomicChange instanceof Removal){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
+        				else return;
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		
+        		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_DOMAIN)){
+        			DataPropertyDomain dPD = new DataPropertyDomain();
+        			dPD.setDataProperty(new DataProperty(args.get(1)));
+        			dPD.setDomain(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
+        			atomicChange.setAppliedAxiom(dPD);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDataPropertyDomain();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDataPropertyDomain();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        			
+        		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_RANGE)){
+        			DataPropertyRange dPR = new DataPropertyRange();
+        			dPR.setDataProperty(new DataProperty(args.get(1)));
+        			dPR.setRange(new Datatype(args.get(2)));
+        			atomicChange.setAppliedAxiom(dPR);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDataPropertyRange();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDataPropertyRange();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_EQ)){
+        			EquivalentDataProperties dPE = new EquivalentDataProperties();
+        			dPE.addDataProperties(new DataProperty(args.get(1)));
+        			dPE.addDataProperties(new DataProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(dPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddEquivalentDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveEquivalentDataProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2)); //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_SUBOF)){
+        			SubDataPropertyOf subDP = new SubDataPropertyOf();
+        			subDP.setSubDataProperty(new DataProperty(args.get(1)));
+        			subDP.setSuperDataProperty(new DataProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddSubDataPropertyOf();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveSubDataPropertyOf();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_FUNC)){
+        			FunctionalDataProperty oPE = new FunctionalDataProperty();
+        			oPE.setDataProperty(new DataProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddFunctionalDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveFunctionalDataProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_ANN)){ 
+        			// 1 = annotationProperty, 2=annotated entity, 3= value
+        			EntityAnnotation ec = new EntityAnnotation();
+        			DataProperty ot = new DataProperty(args.get(2));
+        			//ot.setURI(args.get(2));
+        			ec.setEntity(ot);
+        			ec.setAnnotationProperty(args.get(1));
+        			ec.addEntityAnnotation(args.get(3));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
+        				else return;
+        			}else if (atomicChange instanceof Removal){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
+        				else return;
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		
+        		else if (args.get(0).equals(Constants.ACTION_INDIVIDUAL)){
+        			
+        			Declaration declaration = new Declaration();
+        			declaration.setEntity(new Individual(args.get(1)));
+        			atomicChange.setAppliedAxiom(declaration);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_MEM)){
+        			ClassAssertion subDP = new ClassAssertion();
+        			subDP.setIndividual(new Individual(args.get(2)));
+        			subDP.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			
+        			OntologyChange classEntity = new OntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddIndividual();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveIndividual();
+        			}
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId()); //WE ASSUME LAST CHANGE WAS THE ADDINDIVIDUAL
+        			oyster2Conn.register(atomicChange);
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_SAM)){
+        			SameIndividual subDP = new SameIndividual();
+        			subDP.addSameIndividuals(new Individual(args.get(2)));
+        			subDP.addSameIndividuals(new Individual(args.get(1)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddSameIndividual();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveSameIndividual();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_DIF)){
+        			DifferentIndividuals subDP = new DifferentIndividuals();
+        			subDP.addDifferentIndividuals(new Individual(args.get(2)));
+        			subDP.addDifferentIndividuals(new Individual(args.get(1)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDifferentIndividual();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDifferentIndividual();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_ANN)){ 
+        			// 1 = annotationProperty, 2=annotated entity, 3= value
+        			EntityAnnotation ec = new EntityAnnotation();
+        			Individual ot = new Individual(args.get(2));
+        			//ot.setURI(args.get(2));
+        			ec.setEntity(ot);
+        			ec.setAnnotationProperty(args.get(1));
+        			ec.addEntityAnnotation(args.get(3));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
+        				else return;
+        			}else if (atomicChange instanceof Removal){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
+        				else return;
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else{
+        			return;
+        		}
+        		//Check if failed registration
+        		if (oyster2Conn.getLastChangeId()==null){
+        			List<OMVChange> listToApply = new LinkedList<OMVChange>();
+        			OMVAtomicChange undo = null;
+        			if (atomicChange instanceof Addition){
+        				undo = new Removal();
+        			}
+        			else if (atomicChange instanceof Removal){
+        				undo = new Addition();
+        			}
+        			for (OMVPerson p : atomicChange.getHasAuthor()) undo.addHasAuthor(p);
+        			if (atomicChange.getAppliedAxiom()!=null) undo.setAppliedAxiom(atomicChange.getAppliedAxiom());
+        			if (atomicChange.getAppliedToOntology()!=null) undo.setAppliedToOntology(atomicChange.getAppliedToOntology());
+        			for (String cc : atomicChange.getCauseChange()) undo.addCauseChange(cc);
+        			if (atomicChange.getCost()!=null) undo.setCost(atomicChange.getCost());
+        			if (atomicChange.getDate()!=null) undo.setDate(atomicChange.getDate());
+        			if (atomicChange.getHasPreviousChange()!=null) undo.setHasPreviousChange(atomicChange.getHasPreviousChange());
+        			if (atomicChange.getPriority()!=null) undo.setPriority(atomicChange.getPriority());
+        			if (atomicChange.getRelevance()!=null) undo.setRelevance(atomicChange.getRelevance());
+        			if (atomicChange.getTime()!=null) undo.setTime(atomicChange.getTime());
+        			if (atomicChange.getURI()!=null) undo.setURI(atomicChange.getURI());
+        			if (atomicChange.getVersion()!=null) undo.setVersion(atomicChange.getVersion());
+        			listToApply.add(undo);
+        			if (atomicChange.getAppliedAxiom() instanceof ClassAssertion){ //The only complex operation we have
+        				Declaration declaration = new Declaration();
+        				declaration.setEntity(((ClassAssertion)atomicChange.getAppliedAxiom()).getIndividual());
+        				undo.setAppliedAxiom(declaration);
+        				listToApply.add(undo);
+        			}
+        			ApplyChangesFromLogToNTK.applyChanges(listToApply, atomicChange.getAppliedToOntology());
+
+        			MessageDialog.openError(
+    						shell,
+    						"Change Capturing Error",
+    						"The operation could not be performed. Verify you have permission!");
+        		}
 		
-		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_DOMAIN)){
-			DataPropertyDomain dPD = new DataPropertyDomain();
-			dPD.setDataProperty(new DataProperty(args.get(1)));
-			dPD.setDomain(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
-			atomicChange.setAppliedAxiom(dPD);
-
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDataPropertyDomain();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDataPropertyDomain();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-			
-		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_RANGE)){
-			DataPropertyRange dPR = new DataPropertyRange();
-			dPR.setDataProperty(new DataProperty(args.get(1)));
-			dPR.setRange(new Datatype(args.get(2)));
-			atomicChange.setAppliedAxiom(dPR);
-
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDataPropertyRange();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDataPropertyRange();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_EQ)){
-			EquivalentDataProperties dPE = new EquivalentDataProperties();
-			dPE.addDataProperties(new DataProperty(args.get(1)));
-			dPE.addDataProperties(new DataProperty(args.get(2)));
-			atomicChange.setAppliedAxiom(dPE);
-
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddEquivalentDataProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveEquivalentDataProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2)); //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_SUBOF)){
-			SubDataPropertyOf subDP = new SubDataPropertyOf();
-			subDP.setSubDataProperty(new DataProperty(args.get(1)));
-			subDP.setSuperDataProperty(new DataProperty(args.get(2)));
-			atomicChange.setAppliedAxiom(subDP);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddSubDataPropertyOf();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveSubDataPropertyOf();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_FUNC)){
-			FunctionalDataProperty oPE = new FunctionalDataProperty();
-			oPE.setDataProperty(new DataProperty(args.get(1)));
-			atomicChange.setAppliedAxiom(oPE);
-
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddFunctionalDataProperty();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveFunctionalDataProperty();
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1)); 
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_ANN)){ 
-			// 1 = annotationProperty, 2=annotated entity, 3= value
-			EntityAnnotation ec = new EntityAnnotation();
-			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(2));
-			ec.setEntity(ot);
-			ec.setAnnotationProperty(args.get(1));
-			ec.addEntityAnnotation(args.get(3));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
-			if (atomicChange instanceof Addition){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-				else return;
-			}else if (atomicChange instanceof Removal){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-				else return;
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
 		
-		else if (args.get(0).equals(Constants.ACTION_INDIVIDUAL)){
-			
-			Declaration declaration = new Declaration();
-			declaration.setEntity(new Individual(args.get(1)));
-			atomicChange.setAppliedAxiom(declaration);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-		}
-		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_MEM)){
-			ClassAssertion subDP = new ClassAssertion();
-			subDP.setIndividual(new Individual(args.get(2)));
-			subDP.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
-			atomicChange.setAppliedAxiom(subDP);
-			
-			changeList.add(atomicChange);
-			
-			OntologyChange classEntity = new OntologyChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddIndividual();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveIndividual();
-			}
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId()); //WE ASSUME LAST CHANGE WAS THE ADDINDIVIDUAL
-			oyster2Conn.register(atomicChange);
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(1));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_SAM)){
-			SameIndividual subDP = new SameIndividual();
-			subDP.addSameIndividuals(new Individual(args.get(2)));
-			subDP.addSameIndividuals(new Individual(args.get(1)));
-			atomicChange.setAppliedAxiom(subDP);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			OWLIndividualChange classEntity = new OWLIndividualChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddSameIndividual();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveSameIndividual();
-			}			
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_DIF)){
-			DifferentIndividuals subDP = new DifferentIndividuals();
-			subDP.addDifferentIndividuals(new Individual(args.get(2)));
-			subDP.addDifferentIndividuals(new Individual(args.get(1)));
-			atomicChange.setAppliedAxiom(subDP);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			OWLIndividualChange classEntity = new OWLIndividualChange();
-			if (atomicChange instanceof Addition){
-				classEntity = new AddDifferentIndividual();
-			}else if (atomicChange instanceof Removal){
-				classEntity = new RemoveDifferentIndividual();
-			}			
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_ANN)){ 
-			// 1 = annotationProperty, 2=annotated entity, 3= value
-			EntityAnnotation ec = new EntityAnnotation();
-			OWLEntity ot = new OWLEntity();
-			ot.setURI(args.get(2));
-			ec.setEntity(ot);
-			ec.setAnnotationProperty(args.get(1));
-			ec.addEntityAnnotation(args.get(3));
-			atomicChange.setAppliedAxiom(ec);
-			
-			changeList.add(atomicChange);
-			oyster2Conn.register(atomicChange);
-			
-			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
-			if (atomicChange instanceof Addition){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-				else return;
-			}else if (atomicChange instanceof Removal){
-				String t=Namespaces.guessLocalName(args.get(1));
-				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
-				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-				else return;
-			}
-			classEntity.setAppliedToOntology(omvOnto);
-			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
-			classEntity.addHasRelatedEntity(args.get(2));
-			classEntity.addHasAuthor(se);
-			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
-			oyster2Conn.register(classEntity);
-		}
-		else{
-			return;
-		}
-//		String date = String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + 
-//						String.valueOf(Calendar.getInstance().get(Calendar.MONTH)) + 
-//						String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-//		String time = String.valueOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + 
-//						String.valueOf(Calendar.getInstance().get(Calendar.MINUTE)) + 
-//						String.valueOf(Calendar.getInstance().get(Calendar.SECOND));
-		
-		
-		
-		//oyster2Conn.register(atomicChange);
+            }
+        });	
 	}
 	
 	
@@ -1147,4 +1175,24 @@ if(args.get(0).equals(Constants.ACTION_CLASS)){
 		changeList.add(atomicChange);
 	}			
 }
+
+*/
+
+//String date = String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + 
+//String.valueOf(Calendar.getInstance().get(Calendar.MONTH)) + 
+//String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
+//String time = String.valueOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + 
+//String.valueOf(Calendar.getInstance().get(Calendar.MINUTE)) + 
+//String.valueOf(Calendar.getInstance().get(Calendar.SECOND));
+
+
+/*
+se.setFirstName("System");
+try {
+	se.setLastName(InetAddress.getLocalHost().getHostName());
+} catch (UnknownHostException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+se.setHasRole(org.neontoolkit.registry.oyster2.Constants.SubjectExpert);
 */

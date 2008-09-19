@@ -20,3 +20,4 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/jdom.jar
+Export-Package: org.neontoolkit.changelogging.menu
