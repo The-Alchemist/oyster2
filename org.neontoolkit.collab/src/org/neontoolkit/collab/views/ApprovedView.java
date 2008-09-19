@@ -39,6 +39,8 @@ import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
 import org.neontoolkit.workflow.api.Action.EntityAction.Insert;
+import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeApproved;
+import org.neontoolkit.workflow.api.Action.EntityAction.Update;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
@@ -226,7 +228,7 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 			}
 			for(TableItem item : selectedItems){
 				item.setText(this.STATUS_COLUMN, "ToBeApproved");
-				executor.execute(new RejectToBeApprovedThread(item.getText(this.CHANGE_URI), currentPerson));
+				executor.execute(new RejectToBeApprovedThread(item.getText(this.CHANGE_URI), currentPerson, shell));
 				//oyster2Conn.rejectToBeApproved(item.getText(this.CHANGE_URI), currentPerson);
 			}
 			selectedItems.clear();
@@ -267,7 +269,7 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 			for (Action action : acs){
 				if (action instanceof EntityAction){
 					EntityAction eaction = (EntityAction) action;
-					if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && (eaction instanceof Insert))
+					if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && ((eaction instanceof Insert) || (eaction instanceof Update)))
 						inverse = true;
 				}
 			}
@@ -315,27 +317,40 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 	public class RejectToBeApprovedThread implements Runnable {
 		String changeURI;
 		OMVPerson person;
-		public RejectToBeApprovedThread(String p1, OMVPerson p2){
+		Shell shellIn=null;
+		
+		public RejectToBeApprovedThread(String p1, OMVPerson p2, Shell s){
 			changeURI = p1;
 			person = p2;
+			shellIn = s;
 		}
 		public void run() {
-			OMVChange change = oyster2Conn.getChange(changeURI);
-			boolean inverse=false;
-			List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
-			for (Action action : acs){
-				if (action instanceof EntityAction){
-					EntityAction eaction = (EntityAction) action;
-					if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && (eaction instanceof Insert))
-						inverse = true;
+			shell.getDisplay().asyncExec(new Runnable () {
+				public void run () {
+					OMVChange change = oyster2Conn.getChange(changeURI);
+					boolean inverse=false;
+					List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
+					for (Action action : acs){
+						if (action instanceof EntityAction){
+							EntityAction eaction = (EntityAction) action;
+							if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && (eaction instanceof SendToBeApproved))
+								inverse = true;
+						}
+					}
+					
+					if (!inverse){
+						MessageDialog
+						.openError(
+								shellIn,
+								"Information",
+								"Operation not available: change was not in to be approved state");
+						//System.out.println("Operation not available: change didnt start with an insert/update");
+						return;
+					}
+					oyster2Conn.rejectToBeApproved(changeURI, person);
 				}
-			}
-			
-			if (!inverse){
-				System.out.println("Operation not available: change didnt start with an insert");
-				return;
-			}
-			oyster2Conn.rejectToBeApproved(changeURI, person);
+			});
+
 		}
 		
 	}
