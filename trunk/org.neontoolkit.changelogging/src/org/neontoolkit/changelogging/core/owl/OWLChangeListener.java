@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.eclipse.swt.widgets.Shell;
+import org.neontoolkit.changelogging.menu.Track;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
+import org.semanticweb.kaon2.api.Axiom;
 import org.semanticweb.kaon2.api.BulkChangeEvent;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.Namespaces;
@@ -20,6 +24,8 @@ import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
 import org.semanticweb.kaon2.api.logic.Term;
 import org.semanticweb.kaon2.api.owl.elements.Annotation;
 
+import com.ontoprise.ontostudio.gui.GuiPlugin;
+
 public class OWLChangeListener implements OntologyListener {
 	public static Oyster2Connection oyster2Conn = StartRegistry.connection;//null;
 	private Ontology monitoredOnto = null;
@@ -27,50 +33,52 @@ public class OWLChangeListener implements OntologyListener {
 	private boolean isChanged = false;
 	private List<OMVAtomicChange> changeList = new ArrayList<OMVAtomicChange>();
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
-
+	private Shell shell;
+	private boolean isCollab;
 	
-	public OWLChangeListener(Ontology onto, OMVOntology o){
+	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c){
 		monitoredOnto = onto;
 		omvOnto=o;
+		shell = GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+		isCollab=c;
 	}
 	
 	public Ontology getMonitoredOntology(){
 		return monitoredOnto;
-	}
-	
-	public static boolean startOyster(){			
-		if(oyster2Conn == null)
-			return false;
-		return true;
-	}
-
-	public static void stopOyster(){
-		//for(OMVOntology omv : omvOntoList)
-		//	oyster2Conn.stopTracking(omv);
 	}
 
 	public List<OMVChange> getChanges(){
 		List<OMVChange> changes = new ArrayList<OMVChange>();
 	
 		if(oyster2Conn != null){
-			//for(int i=changeList.size()-1; i>=0; i--)
-			//	changes.add(changeList.get(i));
 			changes.addAll(oyster2Conn.getChanges(omvOnto, null));
 		}
 		return changes;
 	}
-	
-	
+		
 	public void ontologyUpdated(Ontology changedOnto, Ontology sourceOnto,
 			List<OntologyChangeEvent> changes, Set<Entity> added, Set<Entity> removed) {
+		String selElement = Track.getSelectedElement();
 		isChanged = true;
 		
 		for (int i=0;i<changes.size();i++){
 			ChangeType changeType = changes.get(i).getChangeType();
 			StringBuffer sb = new StringBuffer();
-			changes.get(i).getAxiom().toString(sb, new Namespaces());
+			Axiom ax = changes.get(i).getAxiom();
+			
+			ax.toString(sb, new Namespaces());
 			sb.deleteCharAt(sb.indexOf("["));
 			sb.deleteCharAt(sb.indexOf("]"));
+			
+			if (sb.indexOf("\"")>0){
+				int start = sb.indexOf("\"");
+				if (sb.indexOf("\"", start+1)>0){
+					int end = sb.indexOf("\"", start+1);
+					String value = sb.substring(start+1, end);
+					value = value.replace(" ", "%20");
+					sb.replace(start, end+1, value);
+				}
+			}
 			
 			List<String> args = new ArrayList<String>();
 			while(sb.length()>0){
@@ -84,12 +92,33 @@ public class OWLChangeListener implements OntologyListener {
 					args.add(arg);
 				}
 			}
-			ThreadRunner tr = new ThreadRunner(changeType, args, omvOnto, changedOnto);
-			executor.execute(tr); 			//applyChange(changeType, args);
+			
+			boolean doIt=false;
+			if (isCollab){
+				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
+				else if (args.size()>2 && args.get(2) != null && args.get(2).equalsIgnoreCase(selElement)) doIt=true;
+				else if (args.size()>3 && args.get(3) != null && args.get(3).equalsIgnoreCase(selElement)) doIt=true;
+				else if (args.size()>4 && args.get(4) != null && args.get(4).equalsIgnoreCase(selElement)) doIt=true;
+				else if (Track.getAddedIndividual()) {doIt=true;Track.resetAddedIndividual();}
+				else if (changes.size()>1) {doIt=true; System.out.println("finally a complex operation");}
+			}
+			else doIt=true;
+			
+			if (doIt){
+				ThreadRunner tr = new ThreadRunner(changeType, args, omvOnto, changedOnto, shell);
+				executor.execute(tr); 			//applyChange(changeType, args);
+			}
+			else{
+				System.out.println("didnt log this change: "+getSerial(args)+ " elementselected had: "+selElement);
+			}
 		}
 	}
 	
-	
+	private String getSerial(List<String> args){
+		String see="";
+		for (String as : args) see+=" "+as;
+		return see;
+	}
 	
 	public boolean hasChanges(){
 		return isChanged;
@@ -175,5 +204,18 @@ if(args.get(0).equals(Constants.ACTION_CLASS)){
 		atomicChange.setAppliedAxiom(sco);
 		changeList.add(atomicChange);
 	}			
+}
+*/
+
+/*
+
+try {
+if(changedOnto.containsAxiom(ax,true)){
+	System.out.println("ya esta");
+	return;
+}
+} catch (KAON2Exception e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
 }
 */

@@ -27,11 +27,6 @@ public class PreShutdown implements IPreShutdownListener {
 		if(modifiedOntos.size() == 0)
 			return true;
 		
-//		SaveDialog saveDialog = new SaveDialog(
-//		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
-//		saveDialog.setInitialSelections(modifiedOntos.toArray(new Ontology[]{}));
-//		saveDialog.open();
-//		Object[] results = saveDialog.getResult();
 		SaveListDialog sDialog = new SaveListDialog(
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), modifiedOntos);
 		sDialog.setInitialElementSelections(modifiedOntos);
@@ -70,9 +65,9 @@ public class PreShutdown implements IPreShutdownListener {
 		for(Ontology onto : Track.FlogicList.keySet())
 			if(Track.FlogicList.get(onto).hasChanges())
 				modifiedOntos.add(onto);
-		for(Ontology onto : Track.OWLList.keySet())
-			if(Track.OWLList.get(onto).hasChanges())
-				modifiedOntos.add(onto);
+		//for(Ontology onto : Track.OWLList.keySet())
+		//	if(Track.OWLList.get(onto).hasChanges())
+		//		modifiedOntos.add(onto);
 	}
 }
 

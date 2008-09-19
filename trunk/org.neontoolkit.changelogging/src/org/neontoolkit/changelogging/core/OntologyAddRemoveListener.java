@@ -37,8 +37,7 @@ public class OntologyAddRemoveListener implements OntologyModifiedListener {
 
 
 
-	public void dirtyChanged(IOntologyContainer container, String ontology,
-			boolean dirty) {
+	public void dirtyChanged(IOntologyContainer container, String ontology, boolean dirty) {
 		if(!dirty)
 			return;
 		int currentOntologyNum = 0;
@@ -81,7 +80,7 @@ public class OntologyAddRemoveListener implements OntologyModifiedListener {
 						}else if(DatamodelPlugin.getDefault().getProjectOntologyLanguage(
 								projects[i]).equals("OWL")){
 							
-							OWLChangeListener listener = new OWLChangeListener(onto, null);
+							OWLChangeListener listener = new OWLChangeListener(onto, null,false);
 							onto.addOntologyListener(listener);
 							Track.OWLList.put(onto, listener);
 						}
