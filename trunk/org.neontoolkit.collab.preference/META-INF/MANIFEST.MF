@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WorkfllowPreference Plug-in
+Bundle-SymbolicName: org.neontoolkit.collab.preference;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.neontoolkit.collab.preference.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.neontoolkit.oyster.plugin.menu,
+ com.ontoprise.ontostudio.gui,
+ org.neontoolkit.registry.api
+Eclipse-LazyStart: true
+Bundle-Vendor: UKARL
