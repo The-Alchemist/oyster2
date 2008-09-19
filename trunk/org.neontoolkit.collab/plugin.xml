@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.neontoolkit.collab.views.category"
+            name="Workflow">
+      </category>
+      <view
+            category="org.neontoolkit.collab.views.category"
+            class="org.neontoolkit.collab.views.DraftView"
+            id="org.neontoolkit.collab.view1"
+            name="Draft View">
+      </view>
+      <view
+            category="org.neontoolkit.collab.views.category"
+            class="org.neontoolkit.collab.views.ApprovedView"
+            id="org.neontoolkit.collab.view2"
+            name="Approved View">
+      </view>
+      <view
+            category="org.neontoolkit.collab.views.category"
+            class="org.neontoolkit.collab.views.ToBeApprovedView"
+            id="org.neontoolkit.collab.view3"
+            name="To Be Approved View">
+      </view>
+      <view
+            category="org.neontoolkit.collab.views.category"
+            class="org.neontoolkit.collab.views.ToBeDeletedView"
+            id="org.neontoolkit.collab.view4"
+            name="To Be Deleted View">
+      </view>
+   </extension>
+
+</plugin>
