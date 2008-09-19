@@ -40,6 +40,7 @@ import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
 import org.neontoolkit.workflow.api.Action.EntityAction.Insert;
+import org.neontoolkit.workflow.api.Action.EntityAction.Update;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
@@ -277,12 +278,13 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 		public void run() {
 			OMVChange change = oyster2Conn.getChange(changeURI);
 			
+			
 			boolean noinverse=false;
 			List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
 			for (Action action : acs){
 				if (action instanceof EntityAction){
 					EntityAction eaction = (EntityAction) action;
-					if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && (eaction instanceof Insert))
+					if (eaction.getRelatedChange().equalsIgnoreCase(changeURI) && ((eaction instanceof Insert) || (eaction instanceof Update)))
 						noinverse = true;
 				}
 			}
