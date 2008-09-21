@@ -149,32 +149,44 @@ public class Track extends Action implements IObjectActionDelegate {
                 		selectedDT = selectedElement;
                 	}
                 	else if (((TreeSelection)event.getSelection()).getFirstElement() instanceof ClazzFolderTreeElement){
-                		if (del) selectedElement=selectedClass;
-                		else selectedElement="";
+                		selectedElement=selectedClass;
+                		selectedOB="";selectedDP="";selectedAP="";selectedDT="";
+                		//if (del) selectedElement=selectedClass;
+                		//else selectedElement="";
                 	}
                 	else if (((TreeSelection)event.getSelection()).getFirstElement() instanceof ObjectPropertyFolderTreeElement){
-                		if (del) selectedElement=selectedOB;
-                		else selectedElement="";
+                		selectedElement=selectedOB;
+                		selectedClass="";selectedDP="";selectedAP="";selectedDT="";
+                		//if (del) selectedElement=selectedOB;
+                		//else selectedElement="";
                 	}
                 	else if (((TreeSelection)event.getSelection()).getFirstElement() instanceof DataPropertyFolderTreeElement){
-                		if (del) selectedElement=selectedDP;
-                		else selectedElement="";
+                		selectedElement=selectedDP;
+                		selectedClass="";selectedOB="";selectedAP="";selectedDT="";
+                		//if (del) selectedElement=selectedDP;
+                		//else selectedElement="";
                 	}
                 	else if (((TreeSelection)event.getSelection()).getFirstElement() instanceof AnnotationPropertyFolderTreeElement){
-                		if (del) selectedElement=selectedAP;
-                		else selectedElement="";
+                		selectedElement=selectedAP;
+                		selectedClass="";selectedOB="";selectedDP="";selectedDT="";
+                		//if (del) selectedElement=selectedAP;
+                		//else selectedElement="";
                 	}
                 	else if (((TreeSelection)event.getSelection()).getFirstElement() instanceof DatatypeFolderTreeElement){
-                		if (del) selectedElement=selectedDT;
-                		else selectedElement="";
+                		selectedElement=selectedDT;
+                		selectedClass="";selectedOB="";selectedDP="";selectedAP="";
+                		//if (del) selectedElement=selectedDT;
+                		//else selectedElement="";
                 	}
                 	else{
                 		selectedElement="";
                 	}
                 	del = false;
+                	//System.out.println("element selected has: "+selectedElement);
                 }
             	else if (((TreeSelection)event.getSelection()).size()==0){
                 	del = true;
+                	//System.out.println("elemented selected deleted");
                 }
                 else if (((TreeSelection)event.getSelection()).size()>1){
                 	selectedElement ="";
@@ -279,7 +291,7 @@ public class Track extends Action implements IObjectActionDelegate {
 			
 			boolean collab = false;
 			if (ontology.getPhysicalURI().startsWith("collab")) collab=true;
-			OWLChangeListener listener = new OWLChangeListener(ontology, o, collab);
+			OWLChangeListener listener = new OWLChangeListener(ontology, o, collab,moduleId, project);
 			ontology.addOntologyListener(listener);
 			Track.OWLList.put(ontology, listener);
 		}

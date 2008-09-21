@@ -80,7 +80,7 @@ public class OntologyAddRemoveListener implements OntologyModifiedListener {
 						}else if(DatamodelPlugin.getDefault().getProjectOntologyLanguage(
 								projects[i]).equals("OWL")){
 							
-							OWLChangeListener listener = new OWLChangeListener(onto, null,false);
+							OWLChangeListener listener = new OWLChangeListener(onto, null,false,"","");
 							onto.addOntologyListener(listener);
 							Track.OWLList.put(onto, listener);
 						}

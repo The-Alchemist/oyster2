@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.changelogging.menu.Track;
 import org.neontoolkit.omv.api.core.OMVOntology;
@@ -23,7 +22,6 @@ import org.semanticweb.kaon2.api.OntologyListener;
 import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
 import org.semanticweb.kaon2.api.logic.Term;
 import org.semanticweb.kaon2.api.owl.elements.Annotation;
-
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
 public class OWLChangeListener implements OntologyListener {
@@ -35,12 +33,16 @@ public class OWLChangeListener implements OntologyListener {
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 	private Shell shell;
 	private boolean isCollab;
+	//private String project;
+    //private String moduleId;
 	
-	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c){
+	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c, String m, String p){
 		monitoredOnto = onto;
 		omvOnto=o;
 		shell = GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		isCollab=c;
+		//moduleId=m;
+		//project=p;
 	}
 	
 	public Ontology getMonitoredOntology(){
@@ -59,7 +61,18 @@ public class OWLChangeListener implements OntologyListener {
 	public void ontologyUpdated(Ontology changedOnto, Ontology sourceOnto,
 			List<OntologyChangeEvent> changes, Set<Entity> added, Set<Entity> removed) {
 		String selElement = Track.getSelectedElement();
+		boolean itIs=false;
 		isChanged = true;
+		
+		//System.out.println("size: "+changes.size()+ " selected element "+selElement);
+		if (isCollab && changes.size()>1) {
+			StringBuffer sbmm = new StringBuffer();
+			for (OntologyChangeEvent mm : changes){
+				Axiom axmm = mm.getAxiom();
+				axmm.toString(sbmm, new Namespaces());
+				if (sbmm.indexOf(selElement)>0) itIs=true;
+			}
+		}
 		
 		for (int i=0;i<changes.size();i++){
 			ChangeType changeType = changes.get(i).getChangeType();
@@ -92,7 +105,7 @@ public class OWLChangeListener implements OntologyListener {
 					args.add(arg);
 				}
 			}
-			
+			//System.out.println("going to check this axiom: "+getSerial(args));
 			boolean doIt=false;
 			if (isCollab){
 				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
@@ -100,11 +113,11 @@ public class OWLChangeListener implements OntologyListener {
 				else if (args.size()>3 && args.get(3) != null && args.get(3).equalsIgnoreCase(selElement)) doIt=true;
 				else if (args.size()>4 && args.get(4) != null && args.get(4).equalsIgnoreCase(selElement)) doIt=true;
 				else if (Track.getAddedIndividual()) {doIt=true;Track.resetAddedIndividual();}
-				else if (changes.size()>1) {doIt=true; System.out.println("finally a complex operation");}
+				else if (changes.size()>1) {if (itIs) doIt=true;}
 			}
 			else doIt=true;
 			
-			if (doIt){
+			if (doIt){				
 				ThreadRunner tr = new ThreadRunner(changeType, args, omvOnto, changedOnto, shell);
 				executor.execute(tr); 			//applyChange(changeType, args);
 			}

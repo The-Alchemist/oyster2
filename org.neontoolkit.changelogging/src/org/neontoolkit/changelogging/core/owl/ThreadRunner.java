@@ -305,7 +305,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}	
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast") || args.get(2).replace("[", "").equalsIgnoreCase("dataAtLeast")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMinCardinality o = new DataMinCardinality();
@@ -328,7 +328,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost") || args.get(2).replace("[", "").equalsIgnoreCase("dataAtMost")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMaxCardinality o = new DataMaxCardinality();
@@ -351,7 +351,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}					
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly") || args.get(2).replace("[", "").equalsIgnoreCase("dataExactly")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataExactCardinality o = new DataExactCardinality();
@@ -374,7 +374,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue") || args.get(2).replace("[", "").equalsIgnoreCase("dataHasValue")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
         							DataHasValue o = new DataHasValue();
@@ -456,7 +456,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atLeast") || args.get(2).replace("[", "").equalsIgnoreCase("dataAtLeast")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
@@ -479,7 +479,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("atMost") || args.get(2).replace("[", "").equalsIgnoreCase("dataAtMost")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
@@ -502,7 +502,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("exactly") || args.get(2).replace("[", "").equalsIgnoreCase("dataExactly")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
@@ -525,7 +525,7 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("hasValue") || args.get(2).replace("[", "").equalsIgnoreCase("dataHasValue")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
@@ -1014,7 +1014,20 @@ public class ThreadRunner implements Runnable {
         			}else if (atomicChange instanceof Removal){
         				classEntity = new RemoveIndividual();
         			}
-        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId()); //WE ASSUME LAST CHANGE WAS THE ADDINDIVIDUAL
+        			String lastChange = oyster2Conn.getLastChangeId();
+        			//classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId()); //WE ASSUME LAST CHANGE WAS THE ADDINDIVIDUAL
+        			if (lastChange!=null){
+        				OMVChange lastChangeO = oyster2Conn.getChange(lastChange);
+        				if ((lastChangeO != null) && (lastChangeO instanceof OMVAtomicChange)){
+        					OMVAtomicChange oac = (OMVAtomicChange)lastChangeO;
+        					if ((oac.getAppliedAxiom() !=null) && (oac.getAppliedAxiom() instanceof Declaration)){
+        						Declaration d = (Declaration)oac.getAppliedAxiom();
+        						if ((d.getEntity()!=null) && (d.getEntity() instanceof Individual)){
+        							classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        						}
+        					}
+        				}
+        			}
         			oyster2Conn.register(atomicChange);
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -1132,11 +1145,13 @@ public class ThreadRunner implements Runnable {
         				listToApply.add(undo);
         			}
         			ApplyChangesFromLogToNTK.applyChanges(listToApply, atomicChange.getAppliedToOntology());
-
+        			String see="";
+        			for (String as : args) see+=" "+as;
+        			System.out.println("args: "+see);
         			MessageDialog.openError(
     						shell,
     						"Change Capturing Error",
-    						"The operation could not be performed. Verify you have permission!");
+    						"The operation could not be performed. (Could be incorrect permission)!");
         		}
 		
 		
