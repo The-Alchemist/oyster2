@@ -64,6 +64,13 @@ public class ChangeLogView extends ViewPart {
 						return 1;
 					
 				}else if(e1 instanceof OMVChange && e2 instanceof OMVChange){
+					String uriPrev1=((OMVChange)e1).getHasPreviousChange();
+					String uriPrev2=((OMVChange)e2).getHasPreviousChange();
+					if (uriPrev1 ==null) return -1;
+					else if (uriPrev2==null) return 1;
+					else if (uriPrev1.equalsIgnoreCase(((OMVChange)e2).getURI())) return 1;
+					else if (uriPrev2.equalsIgnoreCase(((OMVChange)e1).getURI())) return -1;
+					
 					String timeStamp1 = ((OMVChange)e1).getDate();
 					String timeStamp2 = ((OMVChange)e2).getDate();
 					Date date1 = DateFormat.getDateTimeInstance().parse(timeStamp1);
@@ -363,3 +370,12 @@ public class ChangeLogView extends ViewPart {
 		else return ""; 
 	}
 }
+
+//String timeStamp1 = ((OMVChange)e1).getDate();
+//String timeStamp2 = ((OMVChange)e2).getDate();
+//Date date1 = DateFormat.getDateTimeInstance().parse(timeStamp1);
+//Date date2 = DateFormat.getDateTimeInstance().parse(timeStamp2);
+//if(date1.before(date2))
+//	return -1;
+//else if(date1.after(date2))
+//	return 1;

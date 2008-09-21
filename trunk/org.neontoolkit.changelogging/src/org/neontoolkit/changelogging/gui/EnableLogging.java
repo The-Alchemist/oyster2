@@ -57,7 +57,7 @@ public class EnableLogging implements IWorkbenchWindowActionDelegate {
 									projects[i]).getOntologies();
 							for(Ontology onto : ontos){
 								
-								OWLChangeListener listener = new OWLChangeListener(onto, null, false);
+								OWLChangeListener listener = new OWLChangeListener(onto, null, false,"","");
 								onto.addOntologyListener(listener);
 								Track.OWLList.put(onto, listener);
 							}
