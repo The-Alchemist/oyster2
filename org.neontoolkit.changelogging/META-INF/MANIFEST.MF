@@ -16,8 +16,7 @@ Require-Bundle: org.eclipse.ui,
  com.ontoprise.ontostudio.owl.gui,
  org.neontoolkit.registry.api,
  org.neontoolkit.oyster.plugin.menu,
- org.neontoolkit.collab.preference,
- com.ontoprise.ontostudio.owl.model
+ org.neontoolkit.collab.preference
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/jdom.jar
