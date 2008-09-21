@@ -1,6 +1,11 @@
 package org.neontoolkit.collab.views;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -188,7 +193,8 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 						//System.out.println("onto : "+onto.getURI());
 						changes.clear();
 						//get the changes to be approved
-						changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.ApprovedState));			
+						changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.ApprovedState));
+						Collections.sort(changes, TIME_ORDER);
 						for(OMVChange change : changes){
 							String state = oyster2Conn.getChangeState(change.getURI());					
 							if(state.equals(Constants.ApprovedState)){
@@ -354,5 +360,19 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 		}
 		
 	}
-
+	
+	static final Comparator<OMVChange> TIME_ORDER =
+        new Comparator<OMVChange>() {
+		public int compare(OMVChange e1, OMVChange e2) {
+			try {
+				Date d1=DateFormat.getDateTimeInstance().parse(e1.getDate());
+				Date d2=DateFormat.getDateTimeInstance().parse(e2.getDate());
+				return d1.compareTo(d2);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return 0;
+		}
+	};
 }
