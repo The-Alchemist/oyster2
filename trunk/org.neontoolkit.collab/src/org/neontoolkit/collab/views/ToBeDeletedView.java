@@ -117,13 +117,13 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 		//first column
 		TableColumn uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Ontology"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
+		uSetNrColumn.setWidth(columnWidth-25);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
-		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
-		uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
-		uSetNrColumn.setAlignment(SWT.LEFT);
+		//uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
+		//uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
+		//uSetNrColumn.setWidth(columnWidth);
+		//uSetNrColumn.setAlignment(SWT.LEFT);
 				
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Change Type"); //$NON-NLS-1$
@@ -142,12 +142,17 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 		
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Time"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth+50);
+		uSetNrColumn.setWidth(columnWidth+20);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Status"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
+		uSetNrColumn.setWidth(columnWidth-35);
+		uSetNrColumn.setAlignment(SWT.LEFT);
+		
+		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
+		uSetNrColumn.setText("Last Action"); //$NON-NLS-1$
+		uSetNrColumn.setWidth(columnWidth+55);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
 		acceptDeletionButton = new Button(composite, SWT.PUSH);
@@ -187,7 +192,6 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 					OMVPerson currentPerson = OysterTools.getCurrentUser(_store);
 					List<OMVChange> changes = new ArrayList<OMVChange>();
 					for(OMVOntology onto : oyster2Conn.getOntologiesWithChanges()){
-						//System.out.println("onto : "+onto.getURI());
 						changes.clear();
 						//get the changes to be approved
 						changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.ToBeDeletedState));	
@@ -207,11 +211,20 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 								if(state.indexOf("#")!=-1)
 				                	state = state.substring(state.indexOf("#")+1);
 								String relatedEntity = Namespaces.guessLocalName(oyster2Conn.getRelatedEntity(change.getURI()));
+								
+								Action ac = oyster2Conn.getLastChangeAction(change);
+    			                String acText ="";
+    			                if (ac!=null) {
+    			                	if (ac.getPerformedBy()!=null){
+    			                		OMVPerson per = ac.getPerformedBy();
+    			                		acText=ac.getClass().getSimpleName()+ " by "+per.getFirstName()+ " " +per.getLastName();
+    			                	}
+    			                }
 								item.setText(new String[]{
-									onto.getURI().toString(),
-									change.getURI(), change.getClass().getSimpleName(),
+									onto.getURI().toString(), //change.getURI(), 
+									change.getClass().getSimpleName(),
 									relatedEntity,
-									persons, change.getDate(),	state	});
+									persons, change.getDate(),	state, acText	});
 								if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.Validator) || state.equals(Constants.ApprovedState)){
 									item.setForeground(grayColor);
 								}
@@ -233,7 +246,6 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 						"Only "+Constants.Validator+" can control this view!");
 				return;
 			} else {
-				//WorkflowManagement wMgmt= new WorkflowManagement();
 				for(TableItem item : selectedItems){
 					item.setText(this.STATUS_COLUMN, "Deleted");
 					executor.execute(new DestroyThread(item.getText(this.CHANGE_URI), currentPerson));
