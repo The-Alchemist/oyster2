@@ -34,6 +34,7 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.registry.oyster2.Constants;
+import org.semanticweb.kaon2.api.Namespaces;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
@@ -195,10 +196,11 @@ public class ToBeApprovedView extends ViewPart implements SelectionListener {
 								TableItem item = new TableItem(resTable, SWT.NONE);
 								if(state.indexOf("#")!=-1)
 				                	state = state.substring(state.indexOf("#")+1);
+								String relatedEntity = Namespaces.guessLocalName(oyster2Conn.getRelatedEntity(change.getURI()));
 								item.setText(new String[]{
 									onto.getURI().toString(),
 									change.getURI(), change.getClass().getSimpleName(),
-									oyster2Conn.getRelatedEntity(change.getURI()),
+									relatedEntity,
 									persons, change.getDate(),	state	});
 								if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.Validator) || state.equals(Constants.ApprovedState))
 									item.setForeground(grayColor);

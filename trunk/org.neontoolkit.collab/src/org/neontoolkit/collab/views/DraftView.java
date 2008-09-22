@@ -42,6 +42,7 @@ import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.registry.oyster2.Constants;
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 import org.neontoolkit.changelogging.menu.*;
+import org.semanticweb.kaon2.api.Namespaces;
 
 
 public class DraftView extends ViewPart 
@@ -207,10 +208,11 @@ implements SelectionListener {
     			                TableItem item = new TableItem(resTable, SWT.NONE);	 
     			                if(state.indexOf("#")!=-1)
     			                	state = state.substring(state.indexOf("#")+1);
+    			                String relatedEntity = Namespaces.guessLocalName(oyster2Conn.getRelatedEntity(change.getURI()));
     							item.setText(new String[]{
     								onto.getURI().toString(),
     								change.getURI(), change.getClass().getSimpleName(),
-    								oyster2Conn.getRelatedEntity(change.getURI()),
+    								relatedEntity,
     								persons, change.getDate(),	state	});					    					
     							if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) || !isCurrentUser || state.equals(Constants.ApprovedState))
     								item.setForeground(grayColor);
