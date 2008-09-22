@@ -1,6 +1,7 @@
 package org.neontoolkit.changelogging.core.owl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -54,6 +55,7 @@ public class OWLChangeListener implements OntologyListener {
 	
 		if(oyster2Conn != null){
 			changes.addAll(oyster2Conn.getChanges(omvOnto, null));
+			Collections.reverse(changes);
 		}
 		return changes;
 	}

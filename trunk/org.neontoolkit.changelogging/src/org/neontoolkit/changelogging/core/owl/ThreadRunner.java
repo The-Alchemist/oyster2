@@ -1138,11 +1138,19 @@ public class ThreadRunner implements Runnable {
         			if (atomicChange.getURI()!=null) undo.setURI(atomicChange.getURI());
         			if (atomicChange.getVersion()!=null) undo.setVersion(atomicChange.getVersion());
         			listToApply.add(undo);
+        			
         			if (atomicChange.getAppliedAxiom() instanceof ClassAssertion){ //The only complex operation we have
         				Declaration declaration = new Declaration();
         				declaration.setEntity(((ClassAssertion)atomicChange.getAppliedAxiom()).getIndividual());
-        				undo.setAppliedAxiom(declaration);
-        				listToApply.add(undo);
+        				OMVAtomicChange undoDeclareIndividual=null;
+        				if (undo instanceof Addition) undoDeclareIndividual=new Addition();
+        				else if (undo instanceof Removal) undoDeclareIndividual=new Removal();
+        				if (undoDeclareIndividual!=null){
+        					List<OMVChange> listToApplyIndividual = new LinkedList<OMVChange>();
+        					undoDeclareIndividual.setAppliedAxiom(declaration);
+        					listToApplyIndividual.add(undoDeclareIndividual);
+        					ApplyChangesFromLogToNTK.applyChanges(listToApplyIndividual, atomicChange.getAppliedToOntology());
+        				}
         			}
         			ApplyChangesFromLogToNTK.applyChanges(listToApply, atomicChange.getAppliedToOntology());
         			String see="";

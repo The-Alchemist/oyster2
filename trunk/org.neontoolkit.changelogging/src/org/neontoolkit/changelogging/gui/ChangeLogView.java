@@ -64,6 +64,7 @@ public class ChangeLogView extends ViewPart {
 						return 1;
 					
 				}else if(e1 instanceof OMVChange && e2 instanceof OMVChange){
+					//System.out.println(((OMVChange)e1).getURI()+ "is compared against: "+((OMVChange)e2).getURI());
 					String uriPrev1=((OMVChange)e1).getHasPreviousChange();
 					String uriPrev2=((OMVChange)e2).getHasPreviousChange();
 					if (uriPrev1 ==null) return -1;
@@ -124,21 +125,12 @@ public class ChangeLogView extends ViewPart {
 					else return getChangeConcept(change);
 						
 				}else if(columnIndex == 2){
-//					OMVAtomicChange aChange = (OMVAtomicChange) change;	
-//					Axiom axiom = aChange.getAppliedAxiom();
-//					return axiom.toString();
 					List<OMVChange> list = new LinkedList<OMVChange>();
 					list.add(change);
 					String text = Oyster2Manager.serializeOMVChanges(list);
-					//System.out.println(text);
-					//text = text.replace("\n", System.getProperty("line.separator"));
-					//text = text.replace("\t", " ");
 					text.trim();
-					text=text.substring(0, text.length()-2);
-					
+					text=text.substring(0, text.length()-2);					
 					return text;
-//					String s = change.getPriority();
-//					return s;
 				}
 			}
 			
@@ -292,7 +284,7 @@ public class ChangeLogView extends ViewPart {
 		tree.setLayoutData(gd_tree);
 
 		tableViewer = new TableViewer(composite, style);
-		tableViewer.setSorter(new Sorter());
+		//tableViewer.setSorter(new Sorter());
 		tableViewer.setLabelProvider(new TableLabelProvider());
 		tableViewer.setContentProvider(new ContentProvider());
 		tableViewer.setInput(new Object());
