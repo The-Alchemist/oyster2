@@ -1348,6 +1348,35 @@ public class Oyster2Connection {
 			System.out.println("Wofkflow support is not enabled");
 		return null;
 	}
+	
+	/**
+	 * Gets the last action applied to the change
+	 * @param c is the change for which we want to get the last action
+	 * @return the change action.
+	 */
+	public Action getLastChangeAction(OMVChange c){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getLastChangeAction(c);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	
+	/**
+	 * Gets all the action applied to the change in chronological order
+	 * @param c is the change for which we want to get the last action
+	 * @return the list of change actions.
+	 */
+	public List<Action> getChangeActions(OMVChange c){
+		if (mOyster2.getWorkflowSupport()){
+			WorkflowManagement wMgmt= new WorkflowManagement();
+			return wMgmt.getChangeActions(c);
+		}else
+			System.out.println("Wofkflow support is not enabled");
+		return null;
+	}
+	
 	/**
 	 * Gets the ontology state
 	 * @param o is the ontology for which we want to get its state

@@ -4,8 +4,11 @@ package org.neontoolkit.registry.api.workflow;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -923,6 +926,35 @@ public class WorkflowManagement {
 		return replyAction;
 	}
 	
+	public List<Action> getChangeActions(OMVChange o){	
+		String [] actions = {"Delete", "Insert", "Update", "RejectToApproved", "RejectToBeApproved", "RejectToDraft", "SendToApproved", "SendToBeApproved", "SendToBeDeleted"};
+		List<Action> replyAction = new LinkedList<Action>();
+		String tURN=o.getURI();
+		
+		
+		for (int i=0; i<actions.length;i++){
+			//System.out.println("trying with action: "+actions[i]);
+			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
+			Individual oIndividual = KAON2Manager.factory().individual(tURN+";action="+actions[i]);
+			try {
+				if(localRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
+					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], localRegistry);
+					replyAction.add(reply);
+				}
+			} catch (KAON2Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		Collections.sort(replyAction, TIME_ORDER);
+		return replyAction;
+	}
+	
+	public Action getLastChangeAction(OMVChange o){	
+		List<Action> replyAction = getChangeActions(o);
+		return replyAction.get(replyAction.size()-1);
+	}
+	
 	public Action getOntologyAction(OMVOntology o){
 		String [] actions = {"MoveToDraft", "MoveToBeApproved", "Approval", "Publish"};
 		Action replyAction = null;
@@ -1227,6 +1259,21 @@ public class WorkflowManagement {
 		if (a.getClass().getSimpleName()!=null && a.getClass().getSimpleName()!="") return a.getClass().getSimpleName();
 		else return ""; 
 	}
+	
+	static final Comparator<Action> TIME_ORDER =
+        new Comparator<Action>() {
+		public int compare(Action e1, Action e2) {
+			try {
+				Date d1=DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(e1.getTimestamp());
+				Date d2=DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(e2.getTimestamp());
+				return d1.compareTo(d2);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return 0;
+		}
+	};
 }
 	
 
