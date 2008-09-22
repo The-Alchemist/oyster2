@@ -40,6 +40,8 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Remov
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.registry.oyster2.Constants;
+import org.neontoolkit.workflow.api.Action;
+
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 import org.neontoolkit.changelogging.menu.*;
 import org.semanticweb.kaon2.api.Namespaces;
@@ -113,13 +115,13 @@ implements SelectionListener {
 		//first column
 		TableColumn uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Ontology"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
+		uSetNrColumn.setWidth(columnWidth-25);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
-		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
-		uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
-		uSetNrColumn.setAlignment(SWT.LEFT);
+		//uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
+		//uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
+		//uSetNrColumn.setWidth(columnWidth);
+		//uSetNrColumn.setAlignment(SWT.LEFT);
 				
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Change Type"); //$NON-NLS-1$
@@ -138,12 +140,17 @@ implements SelectionListener {
 		
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Time"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth+50);
+		uSetNrColumn.setWidth(columnWidth+20);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Status"); //$NON-NLS-1$
-		uSetNrColumn.setWidth(columnWidth);
+		uSetNrColumn.setWidth(columnWidth-35);
+		uSetNrColumn.setAlignment(SWT.LEFT);
+		
+		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
+		uSetNrColumn.setText("Last Action"); //$NON-NLS-1$
+		uSetNrColumn.setWidth(columnWidth+55);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
 		removeChangeButton = new Button(composite, SWT.PUSH);
@@ -170,6 +177,7 @@ implements SelectionListener {
 	public void widgetSelected(SelectionEvent e) {
 		
 		if(e.getSource().equals(refreshButton)){
+			//executor.execute(new Refresh(shell));
 			shell.getDisplay().asyncExec(new Runnable () {
 				public void run () {
 					if(oyster2Conn==null)
@@ -186,7 +194,6 @@ implements SelectionListener {
     					changes.clear();
     					changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.DraftState));
     					//changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.ApprovedState));
-    					//System.out.println("onto : "+onto.getURI()+" (changes = "+changes.size());
     					Collections.sort(changes, TIME_ORDER);
     					for(OMVChange change : changes){
     						String state = oyster2Conn.getChangeState(change.getURI());
@@ -209,11 +216,20 @@ implements SelectionListener {
     			                if(state.indexOf("#")!=-1)
     			                	state = state.substring(state.indexOf("#")+1);
     			                String relatedEntity = Namespaces.guessLocalName(oyster2Conn.getRelatedEntity(change.getURI()));
+    			                
+    			                Action ac = oyster2Conn.getLastChangeAction(change);
+    			                String acText ="";
+    			                if (ac!=null) {
+    			                	if (ac.getPerformedBy()!=null){
+    			                		OMVPerson per = ac.getPerformedBy();
+    			                		acText=ac.getClass().getSimpleName()+ " by "+per.getFirstName()+ " " +per.getLastName();
+    			                	}
+    			                }
     							item.setText(new String[]{
-    								onto.getURI().toString(),
-    								change.getURI(), change.getClass().getSimpleName(),
+    								onto.getURI().toString(), // change.getURI(),
+    								change.getClass().getSimpleName(),
     								relatedEntity,
-    								persons, change.getDate(),	state	});					    					
+    								persons, change.getDate(),	state, acText	});					    					
     							if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) || !isCurrentUser || state.equals(Constants.ApprovedState))
     								item.setForeground(grayColor);
     						}
@@ -222,7 +238,6 @@ implements SelectionListener {
     				}
 				}
 			});
-		
 		} else if (e.getSource().equals(toBeApprovedButton)){
 			
 			OMVPerson currentPerson = OysterTools.getCurrentUser(_store);
@@ -256,10 +271,8 @@ implements SelectionListener {
 				return;
 			} 
 			
-			//ChangeManagement cMgmt= new ChangeManagement();
 			HashSet<TableItem> validItems = new HashSet<TableItem>();
 			for(TableItem item : selectedItems){
-				//System.out.println("author: "+item.getText(this.AUTHOR_COLUMN));
 				String authors = item.getText(this.AUTHOR_COLUMN);
 				if(authors.indexOf(currentPerson.getFirstName()+" "+currentPerson.getLastName())!=-1){
 					validItems.add(item);
@@ -359,5 +372,77 @@ implements SelectionListener {
 		}
 	};
 	
-	
 }
+
+/*
+public class Refresh implements Runnable {
+	Shell shell;
+	public Refresh(Shell p1){
+		shell = p1;
+	}
+	public void run() {
+		shell.getDisplay().asyncExec(new Runnable () {
+			public void run () {
+				if(oyster2Conn==null)
+					oyster2Conn = StartRegistry.connection;
+				
+				if(oyster2Conn==null || !StartRegistry.getState())
+					return;
+				
+				resTable.removeAll();
+				selectedItems.clear();
+				OMVPerson currentPerson = OysterTools.getCurrentUser(_store);
+				List<OMVChange> changes = new ArrayList<OMVChange>();
+				for(OMVOntology onto : oyster2Conn.getOntologiesWithChanges()){				
+					changes.clear();
+					changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.DraftState));
+					//changes.addAll(oyster2Conn.getChangesWithState(onto, Constants.ApprovedState));
+					//System.out.println("onto : "+onto.getURI()+" (changes = "+changes.size());
+					Collections.sort(changes, TIME_ORDER);
+					for(OMVChange change : changes){
+						String state = oyster2Conn.getChangeState(change.getURI());
+						if(state.equals(Constants.DraftState) || state.equals(Constants.ApprovedState)){
+							String persons = "";
+							boolean isCurrentUser = false;
+							for(OMVPerson person : change.getHasAuthor()){						
+								persons += person.getFirstName()+" "+person.getLastName()+", ";		
+								if(person.getFirstName().equalsIgnoreCase(currentPerson.getFirstName()) && 
+										person.getLastName().equalsIgnoreCase(currentPerson.getLastName())){
+									isCurrentUser = true;
+									break;
+								}
+							}				
+							
+							if(persons.length()>0)
+								persons = persons.substring(0, persons.length()-2);						
+							
+			                TableItem item = new TableItem(resTable, SWT.NONE);	 
+			                if(state.indexOf("#")!=-1)
+			                	state = state.substring(state.indexOf("#")+1);
+			                String relatedEntity = Namespaces.guessLocalName(oyster2Conn.getRelatedEntity(change.getURI()));
+			                
+			                Action ac = oyster2Conn.getLastChangeAction(change);
+			                String acText ="";
+			                if (ac!=null) {
+			                	if (ac.getPerformedBy()!=null){
+			                		OMVPerson per = ac.getPerformedBy();
+			                		acText=ac.getClass().getSimpleName()+ " by "+per.getFirstName()+ " " +per.getLastName();
+			                	}
+			                }
+							item.setText(new String[]{
+								onto.getURI().toString(),
+								change.getURI(), change.getClass().getSimpleName(),
+								relatedEntity,
+								persons, change.getDate(),	state, acText	});					    					
+							if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) || !isCurrentUser || state.equals(Constants.ApprovedState))
+								item.setForeground(grayColor);
+						}
+							
+					}
+				}
+			}
+		});
+	}
+}
+*/
+
