@@ -931,7 +931,6 @@ public class WorkflowManagement {
 		List<Action> replyAction = new LinkedList<Action>();
 		String tURN=o.getURI();
 		
-		
 		for (int i=0; i<actions.length;i++){
 			//System.out.println("trying with action: "+actions[i]);
 			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
@@ -952,7 +951,9 @@ public class WorkflowManagement {
 	
 	public Action getLastChangeAction(OMVChange o){	
 		List<Action> replyAction = getChangeActions(o);
-		return replyAction.get(replyAction.size()-1);
+		if (replyAction.size()>0)
+			return replyAction.get(replyAction.size()-1);
+		return null;
 	}
 	
 	public Action getOntologyAction(OMVOntology o){
