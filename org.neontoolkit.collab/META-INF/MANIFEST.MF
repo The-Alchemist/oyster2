@@ -6,9 +6,10 @@ Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.collab.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.neontoolkit.registry.api,
  org.neontoolkit.changelogging,
  com.ontoprise.ontostudio.gui,
- org.neontoolkit.oyster.plugin.menu
+ org.neontoolkit.oyster.plugin.menu,
+ datamodelBase,
+ org.neontoolkit.registry.api
 Eclipse-LazyStart: true
 Bundle-Vendor: UKARL & UPM
