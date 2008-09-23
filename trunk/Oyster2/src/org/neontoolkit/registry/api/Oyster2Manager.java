@@ -134,7 +134,7 @@ public class Oyster2Manager{
 	/**
 	 * Specify if automatic syncrhonization is on/off 
 	 * @param t true=on;false=off 
-	 * default=false;
+	 * default=true;
 	 */
 	public static void setAutomaticSyncrhonization(boolean t)
     {
