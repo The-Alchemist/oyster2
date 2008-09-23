@@ -34,6 +34,7 @@ public class StartServer {
 		opt.getSet().addOption("caching", Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("workflowSupport", Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("debug", Multiplicity.ZERO_OR_ONE);
+		opt.getSet().addOption("noAutomaticSync", Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("startKAON2", Multiplicity.ZERO_OR_ONE).addOption("KAON2Path", Separator.EQUALS, Multiplicity.ZERO_OR_ONE).addOption("serverRootPath", Separator.EQUALS, Multiplicity.ZERO_OR_ONE);
 		opt.getSet().addOption("preferenceFile", Separator.EQUALS, Multiplicity.ZERO_OR_ONE);
 		if (args.length>0 && !opt.check(false, false))  {
@@ -55,6 +56,10 @@ public class StartServer {
 		if (opt.getSet().isSet("debug")) {
 			  // React to option -debug
 			  mOyster2.setLogEnabled(true);
+		}
+		if (opt.getSet().isSet("noAutomaticSync")) {
+			  // React to option -noAutomaticSync
+			  mOyster2.setAutomaticSyncrhonization(false);
 		}
 		if (opt.getSet().isSet("startKAON2")) {
 			  // React to option -startKAON2
@@ -85,7 +90,7 @@ public class StartServer {
     }
 	
 	private static void help(){
-		System.out.println("Usage: StartServer [-isSimple ][-caching ][-workflowSupport ][-debug ][-startKAON2 [-KAON2Path=<kaon2path> -serverRootPath=<serverpath>]] [-preferenceFile=<prefFile>]");
+		System.out.println("Usage: StartServer [-isSimple ][-caching ][-workflowSupport ][-debug ][-noAutomaticSync ][-startKAON2 [-KAON2Path=<kaon2path> -serverRootPath=<serverpath>]] [-preferenceFile=<prefFile>]");
 		System.exit(1);
 	}
 	

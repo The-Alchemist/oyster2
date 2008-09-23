@@ -131,7 +131,7 @@ public class ChangeSynchronization {
 	
 	public synchronized static void SyncrhonizeChangesWithPeer(Ontology remoteRegistry,Individual peerIndiv,Ontology targetOntology){
 		Collection ontologySetRemote = localInformer.getTrackedOntologies(remoteRegistry,peerIndiv);
-		Collection ontologySetLocal = localInformer.getTrackedOntologies(targetOntology,peerIndiv);
+		Collection ontologySetLocal = localInformer.getTrackedOntologies(targetOntology,localInformer.getLocalPeer()); //localInformer.getTrackedOntologies(targetOntology,peerIndiv);
 		
 		mOyster2.getLogger().info("starting syncrhonize with peer...");
 		Iterator it = ontologySetLocal.iterator();
@@ -186,8 +186,8 @@ public class ChangeSynchronization {
 		}
 	}
 	
-	public synchronized static void PushChangesToPeer(Ontology remoteRegistry,Individual ontoindiv, Ontology targetOntology){
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",remoteRegistry);
+	public synchronized static void PushChangesToPeer(Ontology localRegistryFrom,Individual ontoindiv, Ontology targetOntology){
+		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",localRegistryFrom);
 		try{
 			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
 			mOyster2.openSuperOyster();
@@ -198,14 +198,14 @@ public class ChangeSynchronization {
 			mOyster2.setSuperOysterIP(null);
 			e.printStackTrace();
 		}
-		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
+		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, localRegistryFrom)){
 			String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
 			List<OMVChange> list;
 			if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
-				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
+				list=cMgmt.getTrackedChanges(mainOntoReply, localRegistryFrom, startsHere);
 			}
 			else{
-				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
+				list=cMgmt.getTrackedChanges(mainOntoReply, localRegistryFrom, null);
 			}
 			try{
 				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
@@ -222,7 +222,7 @@ public class ChangeSynchronization {
 				e.printStackTrace();
 			}	
 		}
-		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
+		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, localRegistryFrom, null);
 		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
 		try{
 			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());

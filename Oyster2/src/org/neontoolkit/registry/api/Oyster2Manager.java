@@ -132,6 +132,15 @@ public class Oyster2Manager{
 	    }
 
 	/**
+	 * Specify if automatic syncrhonization is on/off 
+	 * @param t true=on;false=off 
+	 * default=false;
+	 */
+	public static void setAutomaticSyncrhonization(boolean t)
+    {
+		mOyster2.setAutomaticSyncrhonization(t);
+    }
+	/**
 	 * Set the IP address of the superOyster node 
 	 * where information will be stored
 	 * @param t the ip of the oyster node 

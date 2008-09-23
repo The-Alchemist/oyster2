@@ -846,13 +846,14 @@ public class AdvertInformer{
     				//System.out.println(targetOntology.getOntologyURI()+" already contains: "+domainIndiv.getURI());
     			}
         	}
-    		
-    		//SYNCHRONIZE CHANGES
-    		mOyster2.getLogger().info("remoteOntologyRegistry ..."+remoteOntologyRegistry.getPhysicalURI());
-    		mOyster2.getLogger().info("targetOntology ..."+targetOntology.getPhysicalURI());
-    		if (targetOntology==mOyster2.getLocalHostOntology())
-    			ChangeSynchronization.SyncrhonizeChangesWithPeer(remoteOntologyRegistry, peerIndiv, targetOntology);
     		targetOntology.persist();
+    		if (mOyster2.getAutomaticSyncrhonization()){
+    			//SYNCHRONIZE CHANGES
+    			mOyster2.getLogger().info("remoteOntologyRegistry ..."+remoteOntologyRegistry.getPhysicalURI());
+    			mOyster2.getLogger().info("targetOntology ..."+targetOntology.getPhysicalURI());
+    			if (targetOntology==mOyster2.getLocalHostOntology())
+    				ChangeSynchronization.SyncrhonizeChangesWithPeer(remoteOntologyRegistry, peerIndiv, targetOntology);
+    		}
     	}catch(Exception e){
     		e.printStackTrace();
     	}
@@ -1198,23 +1199,26 @@ public class AdvertInformer{
   		  while(remotePeer.hasNext()){
   			  String peerGUID = (String) remotePeer.next();
   			  if(!peerGUID.equals(this.getLocalUID())){  			  
-  				  Individual peerIndiv =(Individual) remotePeerSet.get(peerGUID);
-  				  if(!localGUIDs.contains(peerGUID)){
-  					  //System.out.println("local registry doesn't contain: "+peerGUID+". The peer that will be added is: "+peerIndiv);
+  				  Individual peerIndiv =(Individual) remotePeerSet.get(peerGUID);  
+  				  Individual lPeer = getLocalPeerIndiv(localOntologyRegistry);
+  				  if (lPeer.getURI().equalsIgnoreCase(peerIndiv.getURI())){
+  					  if(!localGUIDs.contains(peerGUID)){
+  						  //System.out.println("local registry doesn't contain: "+peerGUID+". The peer that will be added is: "+peerIndiv);
   					  
-  					  //I DONT WANT TO ADD A PEER OFFLINE
-  					  //Ontology remoteOntologyRegistrytoAdd = null;
-  					  //String IP= "";
-  					  //IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
-  					  //remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
-  					  //if (remoteOntologyRegistrytoAdd!=null)
+  						  //I DONT WANT TO ADD A PEER OFFLINE
+  						  //Ontology remoteOntologyRegistrytoAdd = null;
+  						  //String IP= "";
+  						  //IP = getPeerIP(remoteOntologyRegistry,peerIndiv);
+  						  //remoteOntologyRegistrytoAdd = openRemoteRegistry(IP);
+  						  //if (remoteOntologyRegistrytoAdd!=null)
   						  addExpertisePeer(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
-  					  //else
-  						//  System.out.println("Peer was not reachable when trying to add it, so it was not added");
-  				  }
-  				  else{
-  					  //System.out.println("local registry already contain: "+peerGUID+". The peer that will be updated is: "+peerIndiv);
-  					  updatePeerAttributes(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
+  						  //else
+  						  //  System.out.println("Peer was not reachable when trying to add it, so it was not added");
+  					  }
+  					  else{
+  						  //System.out.println("local registry already contain: "+peerGUID+". The peer that will be updated is: "+peerIndiv);
+  						  updatePeerAttributes(remoteOntologyRegistry,peerIndiv,localOntologyRegistry);
+  					  }
   				  }
   			  }
   		  }

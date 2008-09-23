@@ -244,6 +244,7 @@ public class Oyster2Factory {
 	
 	private String superOysterIP=null; //Storage is local or in other Oyster node? DEFAUL=NULL=LOCAL
 	private String pushChangesToOysterIP=null; //push changes to other Oyster node? DEFAUL=NULL=NOPUSH
+	private boolean automaticSyncrhonization=true; //push changes to other Oyster node? DEFAUL=NULL=NOPUSH
 	//LOGGER
 	//Create a console handler
     private ConsoleHandler handler = new ConsoleHandler();
@@ -949,6 +950,15 @@ public class Oyster2Factory {
 	
 	public void openSuperOyster(){
 		this.superOysterRegistry = mInformer.openRemoteRegistry(getSuperOysterIP());
+	}
+	
+	public boolean getAutomaticSyncrhonization()
+    {
+		return this.automaticSyncrhonization;
+    }
+	
+	public void setAutomaticSyncrhonization(boolean t){
+		this.setAutomaticSyncrhonization(t);
 	}
 }
 
