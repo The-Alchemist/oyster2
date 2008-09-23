@@ -958,7 +958,7 @@ public class Oyster2Factory {
     }
 	
 	public void setAutomaticSyncrhonization(boolean t){
-		this.setAutomaticSyncrhonization(t);
+		this.automaticSyncrhonization=t;
 	}
 }
 
