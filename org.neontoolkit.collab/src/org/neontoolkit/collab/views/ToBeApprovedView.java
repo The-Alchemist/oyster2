@@ -110,10 +110,10 @@ public class ToBeApprovedView extends ViewPart implements SelectionListener {
 		uSetNrColumn.setWidth(columnWidth-25);
 		uSetNrColumn.setAlignment(SWT.LEFT);
 		
-		//uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
-		//uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
-		//uSetNrColumn.setWidth(columnWidth);
-		//uSetNrColumn.setAlignment(SWT.LEFT);
+		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
+		uSetNrColumn.setText("Change URI"); //$NON-NLS-1$
+		uSetNrColumn.setWidth(0);
+		uSetNrColumn.setAlignment(SWT.LEFT);
 				
 		uSetNrColumn = new TableColumn(resTable, SWT.LEFT);
 		uSetNrColumn.setText("Change Type"); //$NON-NLS-1$
@@ -212,7 +212,7 @@ public class ToBeApprovedView extends ViewPart implements SelectionListener {
     			                	}
     			                }
 								item.setText(new String[]{
-									onto.getURI().toString(), //change.getURI(), 
+									onto.getURI().toString(), change.getURI(), 
 									change.getClass().getSimpleName(),
 									relatedEntity,
 									persons, change.getDate(),	state, acText	});
