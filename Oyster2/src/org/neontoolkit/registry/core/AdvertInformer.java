@@ -1201,7 +1201,7 @@ public class AdvertInformer{
   			  if(!peerGUID.equals(this.getLocalUID())){  			  
   				  Individual peerIndiv =(Individual) remotePeerSet.get(peerGUID);  
   				  Individual lPeer = getLocalPeerIndiv(localOntologyRegistry);
-  				  if (lPeer.getURI().equalsIgnoreCase(peerIndiv.getURI())){
+  				  if (!lPeer.getURI().equalsIgnoreCase(peerIndiv.getURI())){
   					  if(!localGUIDs.contains(peerGUID)){
   						  //System.out.println("local registry doesn't contain: "+peerGUID+". The peer that will be added is: "+peerIndiv);
   					  
