@@ -67,7 +67,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						pOyster = _store.getString("PUSHOYSTER");
 						if(serverProcess==null && !superOysterStorage()) {
 							System.out.println("executing the server...");
-							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neontoolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2");
+							serverProcess = Runtime.getRuntime().exec("java -cp "+ EntryDetailSerializer.QUOTE + o2File + EntryDetailSerializer.QUOTE + " org.neontoolkit.registry.oyster2.server.StartServer -workflowSupport -startKAON2 -noAutomaticSync");
 						}
 						if(serverProcess==null && !superOysterStorage()){
 							MessageDialog.openInformation(
