@@ -37,6 +37,7 @@ public class Test {
 		
 		//NEW CONNECTION
 		Oyster2Manager.setLogEnabled(true);
+		Oyster2Manager.setAutomaticSyncrhonization(false);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.getConnection();
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
