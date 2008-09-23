@@ -36,6 +36,7 @@ public class Test {
 		kritem.setURI("http://daml.umbc.edu/ontologies/topic-ont#Top/Reference/Knowledge_Management/Knowledge_Representation");
 		
 		//NEW CONNECTION
+		Oyster2Manager.setLogEnabled(true);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.getConnection();
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
