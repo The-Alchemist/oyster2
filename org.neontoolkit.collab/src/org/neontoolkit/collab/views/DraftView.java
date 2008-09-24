@@ -286,7 +286,7 @@ implements SelectionListener {
 						"Are you sure to delete this changes?");
 				if(answer){
 					for(TableItem item : validItems){
-						executor.execute(new DeleteThread(item.getText(this.CHANGE_URI)));
+						executor.execute(new DeleteThread(item.getText(this.CHANGE_URI),currentPerson));
 						//oyster2Conn.remove(oyster2Conn.getChange(item.getText(this.CHANGE_URI)));
 					    resTable.remove(resTable.indexOf(item));
 					}
@@ -318,8 +318,9 @@ implements SelectionListener {
 	public class DeleteThread implements Runnable {
 		String changeURI;
 		OMVPerson person;
-		public DeleteThread(String p1){
+		public DeleteThread(String p1, OMVPerson p2){
 			changeURI = p1;
+			person=p2;
 		}
 		public void run() {
 			OMVChange change = oyster2Conn.getChange(changeURI);
@@ -352,7 +353,9 @@ implements SelectionListener {
 				listToApply.add(changeInv);
 			}
 			ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
-			oyster2Conn.remove(change);
+			//oyster2Conn.remove(change); 
+			//do not loose the change
+			oyster2Conn.delete(changeURI, person);
 		}
 		
 	}

@@ -40,7 +40,6 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Addit
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Removal;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
-import org.neontoolkit.registry.api.workflow.WorkflowManagement;
 import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
@@ -282,8 +281,7 @@ public class ToBeDeletedView extends ViewPart implements SelectionListener {
 			person = p2;
 		}
 		public void run() {
-			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.delete(changeURI, person, null);
+			oyster2Conn.delete(changeURI, person);
 		}
 		
 	}
