@@ -19,6 +19,7 @@ import org.neontoolkit.workflow.api.Action.EntityAction.RejectToBeApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.RejectToDraft;
 import org.neontoolkit.workflow.api.Action.EntityAction.SendToApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeApproved;
+import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeDeleted;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
@@ -124,6 +125,7 @@ public class ChangeSynchronization {
 					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
 					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
 					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+					else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
 				}
 			}
 		}
@@ -178,6 +180,7 @@ public class ChangeSynchronization {
 								else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
 								else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
 								else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+								else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
 							}
 						}
 					}
@@ -242,6 +245,7 @@ public class ChangeSynchronization {
 						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
 						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
 						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
+						else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
 					}
 				}
 			}
