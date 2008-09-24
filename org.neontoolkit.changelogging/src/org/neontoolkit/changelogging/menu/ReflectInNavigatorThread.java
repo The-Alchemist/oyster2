@@ -2,6 +2,7 @@ package org.neontoolkit.changelogging.menu;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,8 +14,20 @@ import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
 import org.neontoolkit.registry.api.Oyster2Manager;
+import org.neontoolkit.workflow.api.Action;
+import org.neontoolkit.workflow.api.Action.EntityAction;
+import org.neontoolkit.workflow.api.Action.EntityAction.Delete;
+import org.neontoolkit.workflow.api.Action.EntityAction.Insert;
+import org.neontoolkit.workflow.api.Action.EntityAction.RejectToApproved;
+import org.neontoolkit.workflow.api.Action.EntityAction.RejectToDraft;
+import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeDeleted;
+import org.neontoolkit.workflow.api.Action.EntityAction.Update;
 import org.neontoolkit.omv.api.core.*;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Addition;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Removal;
 
 public class ReflectInNavigatorThread implements Runnable {
 	public static Oyster2Connection oyster2Conn = null;
@@ -108,6 +121,7 @@ public class ReflectInNavigatorThread implements Runnable {
 				System.out.println("To Apply (adding to existing changes of the ontology):");
 				System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 				ApplyChangesFromLogToNTK.applyChanges(toApply,t.getAppliedToOntology());
+				reflectRequiredActions(toApply);
 			}
 		}
 		//Here reflect changes to ontologies that didnt have changes before syncrhonization but now they have
@@ -122,9 +136,167 @@ public class ReflectInNavigatorThread implements Runnable {
 					System.out.println("To Apply (initial set of changes for the ontology):");
 					System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
+					reflectRequiredActions(toApply);
 				}
 			}
 		}
+	}
+	
+	
+	
+	public void reflectRequiredActions(List<OMVChange> listChanges){
+		for (OMVChange c : listChanges){
+			if (c instanceof OMVEntityChange){
+				List<Action> listActions = oyster2Conn.getChangeActions(c);
+				for (Action ac : listActions){
+					if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
+						Action prev=listActions.get(listActions.size()-2);
+							if (prev!=null && (prev instanceof Insert || prev instanceof Update || prev instanceof RejectToDraft) )
+								applyActionDelete(c); 
+					}
+					else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
+						if (listActions.size()>1)
+							applyActionSendToBeDeleted(c);
+						
+					}
+					else if (ac instanceof RejectToApproved){
+						applyActionRejectToApproved(c);
+					}
+						
+				}
+			}
+		}
+	}
+	
+	public void applyActionDelete(OMVChange change){
+		//OMVChange change = oyster2Conn.getChange(changeURI);
+		Set<OMVAtomicChange> aChanges = oyster2Conn.getAtomicChanges((OMVEntityChange)change);
+		List<OMVChange> listToApply = new LinkedList<OMVChange>();
+		for (OMVAtomicChange ac : aChanges){
+			OMVAtomicChange changeInv=null;
+			if (ac instanceof Addition){
+				changeInv=new Removal();
+			}
+			else if (ac instanceof Removal){
+				changeInv=new Addition();		
+			}
+			else {
+				System.out.println("sth strange");
+				return;
+			}
+			for (OMVPerson p : ac.getHasAuthor()) changeInv.addHasAuthor(p);
+			if (ac.getAppliedAxiom()!=null) changeInv.setAppliedAxiom(ac.getAppliedAxiom());
+			if (ac.getAppliedToOntology()!=null) changeInv.setAppliedToOntology(ac.getAppliedToOntology());
+			for (String cc : ac.getCauseChange()) changeInv.addCauseChange(cc);
+			if (ac.getCost()!=null) changeInv.setCost(ac.getCost());
+			if (ac.getDate()!=null) changeInv.setDate(ac.getDate());
+			if (ac.getHasPreviousChange()!=null) changeInv.setHasPreviousChange(ac.getHasPreviousChange());
+			if (ac.getPriority()!=null) changeInv.setPriority(ac.getPriority());
+			if (ac.getRelevance()!=null) changeInv.setRelevance(ac.getRelevance());
+			if (ac.getTime()!=null) changeInv.setTime(ac.getTime());
+			if (ac.getURI()!=null) changeInv.setURI(ac.getURI());
+			if (ac.getVersion()!=null) changeInv.setVersion(ac.getVersion());
+			listToApply.add(changeInv);
+		}
+		ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+	}
+	
+	public void applyActionSendToBeDeleted (OMVChange change){
+		//OMVChange change = oyster2Conn.getChange(changeURI);
+		
+		boolean inverse=false;
+		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
+		for (Action action : acs){
+			if (action instanceof EntityAction){
+				EntityAction eaction = (EntityAction) action;
+				if (eaction.getRelatedChange().equalsIgnoreCase(change.getURI()) && ((eaction instanceof Insert) || (eaction instanceof Update)))
+					inverse = true;
+			}
+		}
+		
+		Set<OMVAtomicChange> aChanges = oyster2Conn.getAtomicChanges((OMVEntityChange)change);
+		List<OMVChange> listToApply = new LinkedList<OMVChange>();
+		for (OMVAtomicChange ac : aChanges){
+			OMVAtomicChange changeInv=null;
+			if (ac instanceof Addition){
+				if (inverse)
+					changeInv=new Removal();
+				else
+					changeInv=new Addition();
+			}
+			else if (ac instanceof Removal){
+				if (inverse)
+					changeInv=new Addition();
+				else
+					changeInv=new Removal();
+			}
+			else {
+				System.out.println("sth strange");
+				return;
+			}
+			for (OMVPerson p : ac.getHasAuthor()) changeInv.addHasAuthor(p);
+			if (ac.getAppliedAxiom()!=null) changeInv.setAppliedAxiom(ac.getAppliedAxiom());
+			if (ac.getAppliedToOntology()!=null) changeInv.setAppliedToOntology(ac.getAppliedToOntology());
+			for (String cc : ac.getCauseChange()) changeInv.addCauseChange(cc);
+			if (ac.getCost()!=null) changeInv.setCost(ac.getCost());
+			if (ac.getDate()!=null) changeInv.setDate(ac.getDate());
+			if (ac.getHasPreviousChange()!=null) changeInv.setHasPreviousChange(ac.getHasPreviousChange());
+			if (ac.getPriority()!=null) changeInv.setPriority(ac.getPriority());
+			if (ac.getRelevance()!=null) changeInv.setRelevance(ac.getRelevance());
+			if (ac.getTime()!=null) changeInv.setTime(ac.getTime());
+			if (ac.getURI()!=null) changeInv.setURI(ac.getURI());
+			if (ac.getVersion()!=null) changeInv.setVersion(ac.getVersion());
+			listToApply.add(changeInv);
+		}
+		ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+	}
+	
+	public void applyActionRejectToApproved (OMVChange change){
+		boolean noinverse=false;
+		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
+		for (Action action : acs){
+			if (action instanceof EntityAction){
+				EntityAction eaction = (EntityAction) action;
+				if (eaction.getRelatedChange().equalsIgnoreCase(change.getURI()) && ((eaction instanceof Insert) || (eaction instanceof Update)))
+					noinverse = true;
+			}
+		}
+		
+		Set<OMVAtomicChange> aChanges = oyster2Conn.getAtomicChanges((OMVEntityChange)change);
+		List<OMVChange> listToApply = new LinkedList<OMVChange>();
+		for (OMVAtomicChange ac : aChanges){
+			OMVAtomicChange changeInv=null;
+			if (ac instanceof Addition){
+				if (!noinverse)
+					changeInv=new Removal();
+				else
+					changeInv=new Addition();
+			}
+			else if (ac instanceof Removal){
+				if (!noinverse)
+					changeInv=new Addition();
+				else
+					changeInv=new Removal();
+			}
+			else {
+				System.out.println("sth strange");
+				return;
+			}
+			for (OMVPerson p : ac.getHasAuthor()) changeInv.addHasAuthor(p);
+			if (ac.getAppliedAxiom()!=null) changeInv.setAppliedAxiom(ac.getAppliedAxiom());
+			if (ac.getAppliedToOntology()!=null) changeInv.setAppliedToOntology(ac.getAppliedToOntology());
+			for (String cc : ac.getCauseChange()) changeInv.addCauseChange(cc);
+			if (ac.getCost()!=null) changeInv.setCost(ac.getCost());
+			if (ac.getDate()!=null) changeInv.setDate(ac.getDate());
+			if (ac.getHasPreviousChange()!=null) changeInv.setHasPreviousChange(ac.getHasPreviousChange());
+			if (ac.getPriority()!=null) changeInv.setPriority(ac.getPriority());
+			if (ac.getRelevance()!=null) changeInv.setRelevance(ac.getRelevance());
+			if (ac.getTime()!=null) changeInv.setTime(ac.getTime());
+			if (ac.getURI()!=null) changeInv.setURI(ac.getURI());
+			if (ac.getVersion()!=null) changeInv.setVersion(ac.getVersion());
+			listToApply.add(changeInv);
+		}
+		ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
 	}
 	
 	private String getOntologyID(OMVOntology o){
