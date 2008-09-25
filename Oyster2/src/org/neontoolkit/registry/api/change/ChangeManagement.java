@@ -196,11 +196,11 @@ public class ChangeManagement {
 					//CHECK ROLES AND NEXT STATES
 					boolean success=false;
 					if (o instanceof ClassChange || o instanceof OWLClassChange || o instanceof IndividualChange || o instanceof OWLIndividualChange || o instanceof PropertyChange || o instanceof OWLObjectPropertyChange || o instanceof OWLDataPropertyChange || o instanceof AnnotationPropertyChange){
-						success=wMgmt.update(tURN,editor,o.getAppliedToOntology());
+						success=wMgmt.update(tURN,editor,o.getAppliedToOntology(), null);
 					}else if (o instanceof AddClass || o instanceof AddIndividual || o instanceof AddProperty || o instanceof AddDatatype ){
-						success=wMgmt.insert(tURN,editor,o.getAppliedToOntology());
+						success=wMgmt.insert(tURN,editor,o.getAppliedToOntology(), null);
 					}else if (o instanceof RemoveClass || o instanceof RemoveIndividual || o instanceof RemoveProperty || o instanceof RemoveDatatype ){
-						success=wMgmt.submitToBeDeleted(tURN,editor,o.getAppliedToOntology());
+						success=wMgmt.submitToBeDeleted(tURN,editor,o.getAppliedToOntology(), null);
 					}
 					//mOyster2.getLogger().info("Finished registering workflow action");
 					//Set entity state ->Automatically
