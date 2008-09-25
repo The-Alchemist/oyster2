@@ -1,9 +1,14 @@
 package org.neontoolkit.changelogging.menu;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,11 +51,14 @@ public class ReflectInNavigatorThread implements Runnable {
             			try {
             				//Get the last changeid from log
             				Set<String> ids = new HashSet<String>();
+            				Map<OMVOntology,String> timestamps = new HashMap<OMVOntology,String>();
             				oyster2Conn = StartRegistry.connection;
             				Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
-            				Iterator<OMVOntology> it = tOntos.iterator();
-            				while (it.hasNext()){
-            					ids.add(oyster2Conn.getLastChangeIdFromLog((OMVOntology)it.next()));
+            				for (OMVOntology onto: tOntos){
+            					ids.add(oyster2Conn.getLastChangeIdFromLog(onto));
+            					List<Action> allActions=oyster2Conn.getEntityActionsHistory(onto, null);
+            					if (allActions.size()>0) timestamps.put(onto,((Action)allActions.get(allActions.size()-1)).getTimestamp());
+            					else timestamps.put(onto,"");
             				}
             				monitor.worked(20);
             				//Syncrhonize changes
@@ -77,7 +85,9 @@ public class ReflectInNavigatorThread implements Runnable {
             		            				monitor.worked(40);
             		            				System.out.println("Finished. Ready to reflect in navigator "+System.currentTimeMillis());
             		            				reflect(ids, tOntos);
-            		            				monitor.worked(40);
+            		            				monitor.worked(20);
+            		            				reflectActions(timestamps);
+            		            				monitor.worked(20);
             		            			}	
             		            		} catch (Exception e) {
             		            			e.printStackTrace();
@@ -89,7 +99,9 @@ public class ReflectInNavigatorThread implements Runnable {
             		        	monitor.worked(40);
             		        	System.out.println("No Running syncthread. Ready to reflect in navigator");
             		        	reflect(ids, tOntos);
-            		        	monitor.worked(40);
+            		        	monitor.worked(20);
+	            				reflectActions(timestamps);
+	            				monitor.worked(20);
             		        }
             			}catch (Exception e) {
             				// TODO Auto-generated catch block
@@ -112,8 +124,7 @@ public class ReflectInNavigatorThread implements Runnable {
 	}
 	
 	public void reflect(Set<String> p1, Set<OMVOntology> p2){
-		//First reflect changes to ontologies that already HAD changes before syncrhonization
-		
+		//First reflect changes to ontologies that already HAD changes before syncrhonization		
 		for (String id : p1){
 			OMVChange t = oyster2Conn.getChange(id);
 			List<OMVChange> toApply = oyster2Conn.getChanges(t.getAppliedToOntology(), id);
@@ -121,7 +132,6 @@ public class ReflectInNavigatorThread implements Runnable {
 				System.out.println("To Apply (adding to existing changes of the ontology):");
 				System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 				ApplyChangesFromLogToNTK.applyChanges(toApply,t.getAppliedToOntology());
-				reflectRequiredActions(toApply);
 			}
 		}
 		//Here reflect changes to ontologies that didnt have changes before syncrhonization but now they have
@@ -136,35 +146,62 @@ public class ReflectInNavigatorThread implements Runnable {
 					System.out.println("To Apply (initial set of changes for the ontology):");
 					System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
-					reflectRequiredActions(toApply);
+				}
+			}
+		}
+	}
+	
+	public void reflectActions(Map<OMVOntology, String> timestamps){
+		Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
+		for (OMVOntology o1 : tOntos){
+			List<Action> allActions=oyster2Conn.getEntityActionsHistory(o1, null);
+			if (allActions.size()>0){ //ontology has actions
+				if (timestamps.get(o1)!=""){ //ontology had actions
+					Date oldDate;
+					try {
+						oldDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(timestamps.get(o1));
+						List<Action> listAcToApply = new LinkedList<Action>();
+						for (Action acToApply: allActions){
+							Date acDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(acToApply.getTimestamp());
+							if (acDate.after(oldDate)) listAcToApply.add(acToApply);
+						}
+						reflectRequiredActions(listAcToApply);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}					
+				}
+				else{ //ontology didnt have actions
+					reflectRequiredActions(allActions);
 				}
 			}
 		}
 	}
 	
 	
-	
-	public void reflectRequiredActions(List<OMVChange> listChanges){
-		for (OMVChange c : listChanges){
-			if (c instanceof OMVEntityChange){
-				List<Action> listActions = oyster2Conn.getChangeActions(c);
-				for (Action ac : listActions){
-					if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
+	public void reflectRequiredActions(List<Action> listActions){
+		for (Action ac : listActions){
+			try{
+				if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
+					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
+					if (listActions.size()>1){
 						Action prev=listActions.get(listActions.size()-2);
 							if (prev!=null && (prev instanceof Insert || prev instanceof Update || prev instanceof RejectToDraft) )
-								applyActionDelete(c); 
+								applyActionDelete(c);
 					}
-					else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
-						if (listActions.size()>1)
-							applyActionSendToBeDeleted(c);
-						
-					}
-					else if (ac instanceof RejectToApproved){
-						applyActionRejectToApproved(c);
-					}
-						
 				}
-			}
+				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
+					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
+					if (listActions.size()>1)
+						applyActionSendToBeDeleted(c);		
+				}
+				else if (ac instanceof RejectToApproved){
+					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
+					applyActionRejectToApproved(c);
+				}
+			} catch(Exception e){
+				e.printStackTrace();
+			}			
 		}
 	}
 	
@@ -319,3 +356,30 @@ public class ReflectInNavigatorThread implements Runnable {
 		return tURN;
 	}
 }
+
+
+/*
+public void AAreflectRequiredActions(List<OMVChange> listChanges){
+	for (OMVChange c : listChanges){
+		if (c instanceof OMVEntityChange){
+			List<Action> listActions = oyster2Conn.getChangeActions(c);
+			for (Action ac : listActions){
+				if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
+					Action prev=listActions.get(listActions.size()-2);
+						if (prev!=null && (prev instanceof Insert || prev instanceof Update || prev instanceof RejectToDraft) )
+							applyActionDelete(c); 
+				}
+				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
+					if (listActions.size()>1)
+						applyActionSendToBeDeleted(c);
+					
+				}
+				else if (ac instanceof RejectToApproved){
+					applyActionRejectToApproved(c);
+				}
+					
+			}
+		}
+	}
+}
+*/
