@@ -131,7 +131,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state 
 		//set draft state to ontology
@@ -208,7 +208,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -299,7 +299,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if neccesary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -367,7 +367,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -433,7 +433,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);	
@@ -517,7 +517,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -589,7 +589,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -657,7 +657,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
@@ -725,7 +725,7 @@ public class WorkflowManagement {
 		String concept=getActionConcept(obj);
 		OntologyProperty tProp = new OntologyProperty(Constants.name, concept);
 		pList.add(tProp);
-		IOntology.addConceptToRegistry(1,pList,60, null);
+		IOntology.addConceptToRegistry(0,pList,60, null);
 		
 		//update ontology state if necessary
 		updateOntologyState(mainOntoReply,p,nextState);
