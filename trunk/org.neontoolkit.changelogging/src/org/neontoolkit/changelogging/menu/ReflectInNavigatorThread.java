@@ -156,7 +156,7 @@ public class ReflectInNavigatorThread implements Runnable {
 		for (OMVOntology o1 : tOntos){
 			List<Action> allActions=oyster2Conn.getEntityActionsHistory(o1, null);
 			if (allActions.size()>0){ //ontology has actions
-				if (timestamps.get(o1)!=""){ //ontology had actions
+				if (timestamps.size()>0 && timestamps.get(o1)!=null && timestamps.get(o1)!=""){ //ontology had actions
 					Date oldDate;
 					try {
 						oldDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(timestamps.get(o1));
