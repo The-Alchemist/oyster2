@@ -231,7 +231,7 @@ public class ChangeSynchronization {
 				e.printStackTrace();
 			}	
 		}
-		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, localRegistryFrom, null);
+		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, localRegistryFrom, null); 
 		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
 		try{
 			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());

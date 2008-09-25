@@ -919,6 +919,8 @@ public class WorkflowManagement {
 			}
 		  }
 		}
+		//THE EXPECTED ORDER IS FROM OLDER TO NEWEST AND BY DEFAULT IS REVERSE
+		Collections.reverse(replyActions);
 		return replyActions;
 	}
 	public Action getChangeAction(OMVChange o){
