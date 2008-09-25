@@ -14,12 +14,14 @@ import org.neontoolkit.registry.oyster2.Oyster2Factory;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
 import org.neontoolkit.workflow.api.Action.EntityAction.Delete;
+import org.neontoolkit.workflow.api.Action.EntityAction.Insert;
 import org.neontoolkit.workflow.api.Action.EntityAction.RejectToApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.RejectToBeApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.RejectToDraft;
 import org.neontoolkit.workflow.api.Action.EntityAction.SendToApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeApproved;
 import org.neontoolkit.workflow.api.Action.EntityAction.SendToBeDeleted;
+import org.neontoolkit.workflow.api.Action.EntityAction.Update;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
@@ -113,19 +115,21 @@ public class ChangeSynchronization {
 		for (Action ac : listActions){
 			boolean ins = false;
 			for (Action acLocal : listActionsLocal){
-				if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+				if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
 					ins = true;
 			}
 			if (!ins){
 				if (ac instanceof EntityAction){
 					mOyster2.getLogger().info("will copy action..."+ac.getURI());
-					if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
-					else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
+					if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
+					else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
+					else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
+					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
+					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
+					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
+					else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
+					else if (ac instanceof Insert) wMgmt.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
+					else if (ac instanceof Update) wMgmt.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
 				}
 			}
 		}
@@ -168,19 +172,21 @@ public class ChangeSynchronization {
 					for (Action ac : listActions){
 						boolean ins = false;
 						for (Action acLocal : listActionsLocal){
-							if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+							if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
 								ins = true;
 						}
 						if (!ins){
 							if (ac instanceof EntityAction){
 								mOyster2.getLogger().info("will copy action..."+ac.getURI());
-								if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
-								else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
+								if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
+								else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
+								else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
+								else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
+								else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
+								else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
+								else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
+								else if (ac instanceof Insert) wMgmt.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
+								else if (ac instanceof Update) wMgmt.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
 							}
 						}
 					}
@@ -233,19 +239,21 @@ public class ChangeSynchronization {
 			for (Action ac : listActions){
 				boolean ins = false;
 				for (Action acLocal : listActionsLocal){
-					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()))
+					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
 						ins = true;
 				}
 				if (!ins){
 					if (ac instanceof EntityAction){
 						mOyster2.getLogger().info("will copy action..."+ac.getURI());
-						if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply);
-						else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply);
+						if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
+						else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
+						else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
+						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
+						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
+						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
+						else if (ac instanceof SendToBeDeleted) wMgmtSOEnd.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
+						else if (ac instanceof Insert) wMgmtSOEnd.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
+						else if (ac instanceof Update) wMgmtSOEnd.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
 					}
 				}
 			}

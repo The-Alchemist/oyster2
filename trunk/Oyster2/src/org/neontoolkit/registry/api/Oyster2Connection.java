@@ -1206,7 +1206,7 @@ public class Oyster2Connection {
 	public void submitToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToBeApproved(changeURI, p, null);
+			wMgmt.submitToBeApproved(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1218,7 +1218,7 @@ public class Oyster2Connection {
 	public void submitToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToApproved(changeURI, p, null);
+			wMgmt.submitToApproved(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1231,7 +1231,7 @@ public class Oyster2Connection {
 	public void submitToBeDeleted(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.submitToBeDeleted(changeURI, p, null);
+			wMgmt.submitToBeDeleted(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1244,7 +1244,7 @@ public class Oyster2Connection {
 	public void rejectToBeApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToBeApproved(changeURI, p, null);
+			wMgmt.rejectToBeApproved(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1258,7 +1258,7 @@ public class Oyster2Connection {
 	public void rejectToApproved(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToApproved(changeURI, p, null);
+			wMgmt.rejectToApproved(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1272,7 +1272,7 @@ public class Oyster2Connection {
 	public void rejectToDraft(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.rejectToDraft(changeURI, p, null);
+			wMgmt.rejectToDraft(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}
@@ -1287,7 +1287,7 @@ public class Oyster2Connection {
 	public void delete(String changeURI, OMVPerson p){
 		if (mOyster2.getWorkflowSupport()){
 			WorkflowManagement wMgmt= new WorkflowManagement();
-			wMgmt.delete(changeURI, p, null);
+			wMgmt.delete(changeURI, p, null, null);
 		}else
 			System.out.println("Wofkflow support is not enabled");
 	}

@@ -75,7 +75,7 @@ public class WorkflowManagement {
 
 	//ADDING ACTIONS
 	@SuppressWarnings("unchecked")
-	public boolean insert(String changeURI, OMVPerson p, OMVOntology o){
+	public boolean insert(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;} 
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)) {System.out.println("Only subject experts are allowed to insert elements...");return false;}
@@ -118,9 +118,12 @@ public class WorkflowManagement {
 		Insert obj = new Insert();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
+		
 		List pList = new LinkedList();
 		pList.clear();
 		pList=WorkflowProperties.getActionProperties(obj);
@@ -136,7 +139,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public boolean delete(String changeURI, OMVPerson p, OMVOntology o){
+	public boolean delete(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to delete elements...");return false;}
@@ -192,8 +195,10 @@ public class WorkflowManagement {
 		Delete obj = new Delete();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -210,7 +215,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public boolean update(String changeURI, OMVPerson p, OMVOntology o){
+	public boolean update(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to update elements...");return false;}
@@ -281,8 +286,10 @@ public class WorkflowManagement {
 		Update obj = new Update();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -299,7 +306,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public void submitToBeApproved(String changeURI, OMVPerson p, OMVOntology o){
+	public void submitToBeApproved(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert)) {System.out.println("Only subject experts are allowed to send elements to be approved...");return;}
@@ -347,8 +354,10 @@ public class WorkflowManagement {
 		SendToBeApproved obj = new SendToBeApproved();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -364,7 +373,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void submitToApproved(String changeURI, OMVPerson p, OMVOntology o){
+	public void submitToApproved(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to approve elements...");return;}
@@ -411,8 +420,10 @@ public class WorkflowManagement {
 		SendToApproved obj = new SendToApproved();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -428,7 +439,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);	
 	}
 	@SuppressWarnings("unchecked")
-	public boolean submitToBeDeleted(String changeURI, OMVPerson p, OMVOntology o){
+	public boolean submitToBeDeleted(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return false;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) && !p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only subject experts and validators are allowed to send elements to be deleted...");return false;}
@@ -493,8 +504,10 @@ public class WorkflowManagement {
 		SendToBeDeleted obj = new SendToBeDeleted();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -511,7 +524,7 @@ public class WorkflowManagement {
 		return true;
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToBeApproved(String changeURI, OMVPerson p, OMVOntology o){
+	public void rejectToBeApproved(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to be approved...");return;}
@@ -563,9 +576,11 @@ public class WorkflowManagement {
 		RejectToBeApproved obj = new RejectToBeApproved();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
-		obj.setTimestamp(sNow);	
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
+		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
 		pList.clear();
@@ -580,7 +595,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToApproved(String changeURI, OMVPerson p, OMVOntology o){
+	public void rejectToApproved(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to approved...");return;}
@@ -629,8 +644,10 @@ public class WorkflowManagement {
 		RejectToApproved obj = new RejectToApproved();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
@@ -646,7 +663,7 @@ public class WorkflowManagement {
 		updateOntologyState(mainOntoReply,p,nextState);
 	}
 	@SuppressWarnings("unchecked")
-	public void rejectToDraft(String changeURI, OMVPerson p, OMVOntology o){
+	public void rejectToDraft(String changeURI, OMVPerson p, OMVOntology o, String timestamp){
 		if (p==null || p.getFirstName()==null || p.getLastName()==null || p.getHasRole()==null) {System.out.println("Workflow support requires to specify the ontology editor and its role...");return;}
 		//checking editor role permissions
 		if (!p.getHasRole().equalsIgnoreCase(Constants.Validator)) {System.out.println("Only validators are allowed to reject elements and send them to draft...");return;}
@@ -695,8 +712,10 @@ public class WorkflowManagement {
 		RejectToDraft obj = new RejectToDraft();
 		obj.setRelatedChange(changeURI);
 		if (p!=null) obj.setPerformedBy(p);
-		Date now = new Date();
-		String sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(now);
+		
+		String sNow="";
+		if (timestamp==null)	sNow = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(new Date());
+		else	sNow=timestamp;
 		obj.setTimestamp(sNow);
 		
 		List pList = new LinkedList();
