@@ -1,5 +1,6 @@
 package org.neontoolkit.changelogging.menu;
 
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -51,14 +52,17 @@ public class ReflectInNavigatorThread implements Runnable {
             			try {
             				//Get the last changeid from log
             				Set<String> ids = new HashSet<String>();
-            				Map<OMVOntology,String> timestamps = new HashMap<OMVOntology,String>();
+            				Map<String,String> timestamps = new HashMap<String,String>();
             				oyster2Conn = StartRegistry.connection;
             				Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
             				for (OMVOntology onto: tOntos){
             					ids.add(oyster2Conn.getLastChangeIdFromLog(onto));
             					List<Action> allActions=oyster2Conn.getEntityActionsHistory(onto, null);
-            					if (allActions.size()>0) timestamps.put(onto,((Action)allActions.get(allActions.size()-1)).getTimestamp());
-            					else timestamps.put(onto,"");
+            					if (allActions.size()>0) {
+            						Action lastAction = (Action)allActions.get(allActions.size()-1);
+            						timestamps.put(getOntologyID(onto),lastAction.getTimestamp());
+            					}
+            					else timestamps.put(getOntologyID(onto),"");
             				}
             				monitor.worked(20);
             				//Syncrhonize changes
@@ -151,15 +155,16 @@ public class ReflectInNavigatorThread implements Runnable {
 		}
 	}
 	
-	public void reflectActions(Map<OMVOntology, String> timestamps){
+	public void reflectActions(Map<String, String> timestamps){
 		Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
 		for (OMVOntology o1 : tOntos){
 			List<Action> allActions=oyster2Conn.getEntityActionsHistory(o1, null);
 			if (allActions.size()>0){ //ontology has actions
-				if (timestamps.size()>0 && timestamps.get(o1)!=null && timestamps.get(o1)!=""){ //ontology had actions
+				String ontoId=getOntologyID(o1);
+				if (timestamps.size()>0 && timestamps.get(ontoId)!=null && timestamps.get(ontoId)!=""){ //ontology had actions
 					Date oldDate;
 					try {
-						oldDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(timestamps.get(o1));
+						oldDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(timestamps.get(ontoId));
 						List<Action> listAcToApply = new LinkedList<Action>();
 						for (Action acToApply: allActions){
 							Date acDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(acToApply.getTimestamp());
@@ -181,6 +186,7 @@ public class ReflectInNavigatorThread implements Runnable {
 	
 	public void reflectRequiredActions(List<Action> listActions){
 		for (Action ac : listActions){
+			System.out.println("checking if apply action: "+ac.getURI());
 			try{
 				if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
 					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
@@ -191,12 +197,12 @@ public class ReflectInNavigatorThread implements Runnable {
 					}
 				}
 				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
-					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
+					OMVChange c = oyster2Conn.getChange(((SendToBeDeleted)ac).getRelatedChange());
 					if (listActions.size()>1)
 						applyActionSendToBeDeleted(c);		
 				}
 				else if (ac instanceof RejectToApproved){
-					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
+					OMVChange c = oyster2Conn.getChange(((RejectToApproved)ac).getRelatedChange());
 					applyActionRejectToApproved(c);
 				}
 			} catch(Exception e){
@@ -242,7 +248,7 @@ public class ReflectInNavigatorThread implements Runnable {
 		//OMVChange change = oyster2Conn.getChange(changeURI);
 		
 		boolean inverse=false;
-		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
+		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null); //DONT CARE ORDER
 		for (Action action : acs){
 			if (action instanceof EntityAction){
 				EntityAction eaction = (EntityAction) action;
@@ -290,7 +296,7 @@ public class ReflectInNavigatorThread implements Runnable {
 	
 	public void applyActionRejectToApproved (OMVChange change){
 		boolean noinverse=false;
-		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null);
+		List<Action> acs= oyster2Conn.getEntityActionsHistory(change.getAppliedToOntology(), null); //DONT CARE ORDER
 		for (Action action : acs){
 			if (action instanceof EntityAction){
 				EntityAction eaction = (EntityAction) action;
