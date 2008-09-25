@@ -109,7 +109,7 @@ System.out.println(Oyster2Manager
 	
 	public void getChangesIds(Oyster2Connection oyster2Conn, OMVOntology onto){
 		Set<String> ids = oyster2Conn.getChangesIds(onto);
-		Iterator idT = ids.iterator();
+		Iterator<String> idT = ids.iterator();
 		while (idT.hasNext()) {
 			System.out.println("change id: " + (String) idT.next());
 		}
@@ -117,7 +117,7 @@ System.out.println(Oyster2Manager
 
 	public void getAtomicChanges(Oyster2Connection oyster2Conn, OMVOntology onto){
 		Set<OMVChange> changes=oyster2Conn.getChanges(onto, new OMVEntityChange(), null);
-		Iterator it = changes.iterator();
+		Iterator<OMVChange> it = changes.iterator();
 		System.out.println("Atomic Changes: ");
 		while (it.hasNext()){
 			OMVChange t = (OMVChange)it.next();
@@ -131,7 +131,7 @@ System.out.println(Oyster2Manager
 	public void sendToBeApprovedChanges(Oyster2Connection oyster2Conn, 
 			OMVOntology onto, OMVPerson person){
 		Set<OMVChange> changes=oyster2Conn.getChanges(onto, new OMVEntityChange(), null);
-		Iterator it = changes.iterator();
+		Iterator<OMVChange> it = changes.iterator();
 		while (it.hasNext()){
 			OMVChange t = (OMVChange)it.next();
 			oyster2Conn.submitToBeApproved(t.getURI(),person);

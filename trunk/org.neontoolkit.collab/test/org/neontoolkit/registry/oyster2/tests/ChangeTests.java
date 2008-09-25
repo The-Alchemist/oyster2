@@ -158,7 +158,7 @@ public class ChangeTests {
 		
 		if (args[0].equalsIgnoreCase("5")){
 			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), null);
-			Iterator it = changes.iterator();
+			Iterator<OMVChange> it = changes.iterator();
 			System.out.println("Atomic Changes: ");
 			while (it.hasNext()){
 				OMVChange t = (OMVChange)it.next();
@@ -172,7 +172,7 @@ public class ChangeTests {
 		
 		if (args[0].equalsIgnoreCase("4")){
 			Set<OMVChange> changes=oyster2Conn.getChanges(faoOntology, new OMVEntityChange(), null);
-			Iterator it = changes.iterator();
+			Iterator<OMVChange> it = changes.iterator();
 			while (it.hasNext()){
 				OMVChange t = (OMVChange)it.next();
 				oyster2Conn.submitToBeApproved(t.getURI(),se);
@@ -238,7 +238,7 @@ public class ChangeTests {
 			System.out.println("fears state: "+oyster2Conn.getEntityState(faoOntology,"http://www.fao.org/aims/aos/fi/species_v1.0.owl#fears"));
 			
 			Set<String> ids = oyster2Conn.getChangesIds(faoOntology);
-			Iterator idT=ids.iterator();
+			Iterator<String> idT=ids.iterator();
 			while (idT.hasNext()){
 				System.out.println("change id: "+(String)idT.next());
 			}
