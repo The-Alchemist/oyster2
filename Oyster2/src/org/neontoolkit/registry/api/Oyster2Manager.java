@@ -131,6 +131,15 @@ public class Oyster2Manager{
 		System.out.println("Created new Manager");
 	    }
 
+	
+	/**
+	 * Gets Oyster properties  
+	 * @return the properties.
+	 */
+	public static Properties getOysterProperties()
+    {
+		return mprop;
+    }
 	/**
 	 * Specify if automatic syncrhonization is on/off 
 	 * @param t true=on;false=off 
