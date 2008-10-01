@@ -21,9 +21,9 @@
                id="org.neontoolkit.oyster.plugin.menu.actions.StartRegistry"
                label="&amp;Start Registry"
                menubarPath="registryMenu/sampleGroup"
-               style="push"
+               style="radio"
                toolbarPath="sampleGroup"
-               tooltip="NeOn Registry">
+               tooltip="Oyster Registry">
          </action>
       </actionSet>
    </extension>
