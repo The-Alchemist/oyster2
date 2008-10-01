@@ -2,7 +2,6 @@ package org.neontoolkit.collab.preference;
 
 import java.util.Iterator;
 import java.util.Set;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -172,7 +171,7 @@ public class CollabPreferencePage extends PreferencePage implements
 	}
 
 	public void init(IWorkbench workbench) {
-
+		//new Thread(new AddStatus(workbench.getActiveWorkbenchWindow().getShell(),"No user logged-in")).start();
 	}
 	
     protected void performApply() {      
@@ -214,6 +213,7 @@ public class CollabPreferencePage extends PreferencePage implements
 			        _store.setValue(ROLE, hasRole);
 			        statusText.setText(firstname+" "+lastname+" ("+hasRole+") logged in.");
 			        oyster2Conn.replace(samePerson);
+			        
 				} else {
 					//ask user to register
 					boolean flag = MessageDialog.openConfirm(this.getShell(),
@@ -235,7 +235,7 @@ public class CollabPreferencePage extends PreferencePage implements
 	        firstnameText.setText("");
 	        lastnameText.setText("");
 	        roleText.setText("");
-			
+	        
 		} else if(e.getSource().equals(registerButton)){
 			String firstname = newFirstnameText.getText().trim();
 			String lastname = newLastnameText.getText().trim();
@@ -278,7 +278,7 @@ public class CollabPreferencePage extends PreferencePage implements
 			        oyster2Conn.replace(person);
 			        statusText.setText(firstname+" "+lastname+" ("+person.getHasRole()+") logged in.");
 			        System.out.println("Current user is: "+person.getFirstName()+" ("+person.getHasRole()+")");
-			        			        
+			        
 			        MessageDialog
 					.openInformation(
 							this.getShell(),
