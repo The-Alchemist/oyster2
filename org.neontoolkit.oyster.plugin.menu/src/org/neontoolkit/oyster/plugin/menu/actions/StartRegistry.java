@@ -131,12 +131,13 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						"Are you sure you want to stop Oyster?");
 			if (ans){
 				stopOyster();
-				serverProcess.destroy();
-				try {
-					serverProcess.waitFor();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if(serverProcess!=null && !superOysterStorage()) {
+					try {
+						serverProcess.destroy();
+						serverProcess.waitFor();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				serverProcess = null;
 				start = !start;
@@ -218,7 +219,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	}
 	
 	public void stopOyster(){
-		Job job = new Job("Closing import wizard session...") {
+		Job job = new Job("Stopping the registry...") {
 			protected IStatus run(IProgressMonitor monitor) {
 					connection=null;
 					Oyster2Manager.closeConnection();
