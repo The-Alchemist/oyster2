@@ -399,6 +399,9 @@ public class ApplyChangesFromLogToNTK {
 										else if (oeoy instanceof Datatype) ddm = KAON2Manager.factory().datatype(entity);
 										if (constantValue.length()>1 && ddm!=null && annoProp!=null){
 											constantValue=constantValue.substring(1);
+											String localN=Namespaces.guessLocalName(annoProp); //cannot use reserved names as values in ontology
+						        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+						        				annoProp="http://www.w3.org/2000/01/rdf-schema#"+localN;
 											app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(constantValue));
 										}
 									}

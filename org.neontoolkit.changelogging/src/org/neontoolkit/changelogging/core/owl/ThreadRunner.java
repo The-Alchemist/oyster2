@@ -610,7 +610,11 @@ public class ThreadRunner implements Runnable {
         			OWLClass ot = new OWLClass(args.get(2));
         			//ot.setURI(args.get(2));
         			ec.setEntity(ot);
-        			ec.setAnnotationProperty(args.get(1));
+        			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
+        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+        				ec.setAnnotationProperty(localN);
+        			else
+        				ec.setAnnotationProperty(args.get(1));
         			ec.addEntityAnnotation(args.get(3));
         			atomicChange.setAppliedAxiom(ec);
         			
@@ -622,12 +626,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				else return;
+        				// else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				else return;
+        				// else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -830,7 +834,11 @@ public class ThreadRunner implements Runnable {
         			ObjectProperty ot = new ObjectProperty(args.get(2));
         			//ot.setURI(args.get(2));
         			ec.setEntity(ot);
-        			ec.setAnnotationProperty(args.get(1));
+        			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
+        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+        				ec.setAnnotationProperty(localN);
+        			else
+        				ec.setAnnotationProperty(args.get(1));
         			ec.addEntityAnnotation(args.get(3));
         			atomicChange.setAppliedAxiom(ec);
         			
@@ -842,12 +850,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				else return;
+        				//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				else return;
+        				//else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -965,7 +973,11 @@ public class ThreadRunner implements Runnable {
         			DataProperty ot = new DataProperty(args.get(2));
         			//ot.setURI(args.get(2));
         			ec.setEntity(ot);
-        			ec.setAnnotationProperty(args.get(1));
+        			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
+        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+        				ec.setAnnotationProperty(localN);
+        			else
+        				ec.setAnnotationProperty(args.get(1));
         			ec.addEntityAnnotation(args.get(3));
         			atomicChange.setAppliedAxiom(ec);
         			
@@ -977,12 +989,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				else return;
+        				//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				else return;
+        				//else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -1087,7 +1099,11 @@ public class ThreadRunner implements Runnable {
         			Individual ot = new Individual(args.get(2));
         			//ot.setURI(args.get(2));
         			ec.setEntity(ot);
-        			ec.setAnnotationProperty(args.get(1));
+        			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
+        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+        				ec.setAnnotationProperty(localN);
+        			else
+        				ec.setAnnotationProperty(args.get(1));
         			ec.addEntityAnnotation(args.get(3));
         			atomicChange.setAppliedAxiom(ec);
         			
@@ -1099,12 +1115,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				else return;
+        				//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				else return;
+        				//else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
