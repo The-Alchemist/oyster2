@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Oyster NeOn Toolkit Plugin
+Bundle-Name: Oyster Import Wizard Plugin
 Bundle-SymbolicName: org.neontoolkit.oyster.plugin.iwizard;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.neontoolkit.oyster.plugin.iwizard.RegistryActivator
 Bundle-Vendor: UPM
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: org.eclipse.ui, 
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  datamodel,
