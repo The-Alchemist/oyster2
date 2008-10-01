@@ -7,7 +7,8 @@
 
 package org.neontoolkit.changelogging.gui;
 
-import org.neontoolkit.changelogging.menu.Track;
+import org.neontoolkit.changelogging.gui.actions.Track;
+
 import com.ontoprise.ontostudio.gui.navigator.EditorEvent;
 import com.ontoprise.ontostudio.gui.navigator.IEditorListener;
 import com.ontoprise.ontostudio.owl.gui.navigator.clazz.ClazzTreeElement;

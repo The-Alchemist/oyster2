@@ -1,4 +1,4 @@
-package org.neontoolkit.changelogging.gui;
+package org.neontoolkit.changelogging.gui.shutdown;
 
 import java.util.List;
 

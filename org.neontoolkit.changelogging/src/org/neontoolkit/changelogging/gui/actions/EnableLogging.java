@@ -1,4 +1,4 @@
-package org.neontoolkit.changelogging.gui;
+package org.neontoolkit.changelogging.gui.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
@@ -15,7 +15,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.neontoolkit.changelogging.core.OntologyAddRemoveListener;
 import org.neontoolkit.changelogging.core.flogic.FlogicChangeListener;
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
-import org.neontoolkit.changelogging.menu.Track;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.Ontology;
 
@@ -57,7 +56,7 @@ public class EnableLogging implements IWorkbenchWindowActionDelegate {
 									projects[i]).getOntologies();
 							for(Ontology onto : ontos){
 								
-								OWLChangeListener listener = new OWLChangeListener(onto, null, false,"","");
+								OWLChangeListener listener = new OWLChangeListener(onto, null, false,"","", Display.getDefault().getActiveShell());
 								onto.addOntologyListener(listener);
 								Track.OWLList.put(onto, listener);
 							}
