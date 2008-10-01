@@ -1,4 +1,4 @@
-package org.neontoolkit.changelogging.menu;
+package org.neontoolkit.changelogging.gui.actions;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.neontoolkit.changelogging.core.ReflectInNavigatorThread;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
 

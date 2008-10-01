@@ -3,9 +3,10 @@ package org.neontoolkit.changelogging.core;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.widgets.Display;
 import org.neontoolkit.changelogging.core.flogic.FlogicChangeListener;
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
-import org.neontoolkit.changelogging.menu.Track;
+import org.neontoolkit.changelogging.gui.actions.Track;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.Ontology;
 
@@ -80,7 +81,7 @@ public class OntologyAddRemoveListener implements OntologyModifiedListener {
 						}else if(DatamodelPlugin.getDefault().getProjectOntologyLanguage(
 								projects[i]).equals("OWL")){
 							
-							OWLChangeListener listener = new OWLChangeListener(onto, null,false,"","");
+							OWLChangeListener listener = new OWLChangeListener(onto, null,false,"","", Display.getDefault().getActiveShell());
 							onto.addOntologyListener(listener);
 							Track.OWLList.put(onto, listener);
 						}

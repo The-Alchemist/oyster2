@@ -1,7 +1,10 @@
 package org.neontoolkit.changelogging;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.neontoolkit.changelogging.gui.AddStatus;
 import org.osgi.framework.BundleContext;
+
+import com.ontoprise.ontostudio.gui.GuiPlugin;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -18,6 +21,7 @@ public class Activator extends AbstractUIPlugin {
 	 * The constructor
 	 */
 	public Activator() {
+		new Thread(new AddStatus(GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell())).start();
 	}
 
 	/*

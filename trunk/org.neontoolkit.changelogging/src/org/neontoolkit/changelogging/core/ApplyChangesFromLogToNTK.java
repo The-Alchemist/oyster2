@@ -1,4 +1,4 @@
-package org.neontoolkit.changelogging.menu;
+package org.neontoolkit.changelogging.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
+import org.neontoolkit.changelogging.gui.actions.Track;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
@@ -401,26 +402,26 @@ public class ApplyChangesFromLogToNTK {
 											app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(constantValue));
 										}
 									}
-									
-									//check wether it is a valid axiom
-									if (app==null) return;
-									System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
-									//Add or remove axiom
-									if (tt instanceof Addition){	
-										changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));
-									}else{
-										changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.REMOVE));
+
+									if (app!=null) {//check wether it is a valid axiom
+										System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
+										//Add or remove axiom
+										if (tt instanceof Addition){	
+											changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));
+										}else{
+											changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.REMOVE));
+										}
+										//Apply axiom
+										OWLChangeListener listener=Track.OWLList.get(targetRegistry);
+										targetRegistry.removeOntologyListener(listener);
+										try {
+											targetRegistry.applyChanges(changes);
+											targetRegistry.persist();
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+										targetRegistry.addOntologyListener(listener);
 									}
-									//Apply axiom
-									OWLChangeListener listener=Track.OWLList.get(targetRegistry);
-									targetRegistry.removeOntologyListener(listener);
-									try {
-										targetRegistry.applyChanges(changes);
-										targetRegistry.persist();
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-									targetRegistry.addOntologyListener(listener);
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();

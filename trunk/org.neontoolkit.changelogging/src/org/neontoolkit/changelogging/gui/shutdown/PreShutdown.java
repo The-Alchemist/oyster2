@@ -1,4 +1,4 @@
-package org.neontoolkit.changelogging.gui;
+package org.neontoolkit.changelogging.gui.shutdown;
 
 
 import java.util.ArrayList;
@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.ui.PlatformUI;
 import org.neontoolkit.changelogging.core.flogic.FlogicChangeListener;
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
-import org.neontoolkit.changelogging.menu.Track;
+import org.neontoolkit.changelogging.gui.actions.Track;
 import org.semanticweb.kaon2.api.Ontology;
 
 import com.ontoprise.ontostudio.gui.IPreShutdownListener;

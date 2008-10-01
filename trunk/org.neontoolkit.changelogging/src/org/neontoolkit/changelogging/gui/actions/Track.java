@@ -1,10 +1,13 @@
-package org.neontoolkit.changelogging.menu;
+package org.neontoolkit.changelogging.gui.actions;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,8 +23,10 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
+import org.neontoolkit.changelogging.core.StatusItem;
 import org.neontoolkit.changelogging.core.flogic.FlogicChangeListener;
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
+import org.neontoolkit.changelogging.gui.AddStatus;
 import org.neontoolkit.changelogging.gui.NTKNavigatorListener;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.Ontology;
@@ -70,6 +75,8 @@ public class Track extends Action implements IObjectActionDelegate {
 	private static String selectedDT="";
 	static boolean addInd = false;
 	boolean del = false;
+	boolean rep=false;
+	public static StatusItem statusLineItem = new StatusItem("item");
 	
 	public Track() {
 		addNTKListener();
@@ -241,39 +248,53 @@ public class Track extends Action implements IObjectActionDelegate {
 			this.shell=arg;
 		}
 		public void run() {
-			shell.getDisplay().asyncExec(new Runnable () {
-				public void run () {
-					OMVOntology o = new OMVOntology();
-					o.setURI(ontoURI);
-					o.setResourceLocator("");
-					
-					OntologyManager connection = DatamodelPlugin.getDefault().getKaon2Connection(project);
-					try {
-						Ontology ontology = connection.getOntology(ontoURI);
-						if (!oyster2Conn.isTracked(o)){
-							addTrack(ontology, o);
-						}
-						else{
-							if (!Track.OWLList.containsKey(ontology)){
-								addTrack(ontology,o);
-							}
-							else{
-								boolean ans=MessageDialog.openQuestion(
-									shell,
-									"Change Capturing Component",
-									"This ontology is already being tracked. Do you want to stop tracking it?");
-								if (ans) {
-									oyster2Conn.stopTracking(o);
-									OWLChangeListener listener = Track.OWLList.remove(ontology);
-									ontology.removeOntologyListener(listener);
-								}
-							}
-						}
-					} catch (KAON2Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
+			shell.getDisplay().asyncExec(new Runnable() {
+		           public void run() {
+		        	   Job exportJob = new Job("Tracking ...") {
+			   	        	protected IStatus run(IProgressMonitor monitor) {
+			   	        		monitor.beginTask("Tracking ...", 100);
+			   	        		try {
+			   	        			OMVOntology o = new OMVOntology();
+			   						o.setURI(ontoURI);
+			   						o.setResourceLocator("");
+			   						OntologyManager connection = DatamodelPlugin.getDefault().getKaon2Connection(project);
+			   						try {
+			   							Ontology ontology = connection.getOntology(ontoURI);
+			   							if (!oyster2Conn.isTracked(o)){
+			   								addTrack(ontology, o);
+			   							}
+			   							else{
+			   								if (!Track.OWLList.containsKey(ontology)){
+			   									addTrack(ontology,o);
+			   								}
+			   								else{
+			   									openQuestion("This ontology is already being tracked. Do you want to stop tracking it?"); 
+			   									if (rep) {
+			   										oyster2Conn.stopTracking(o);
+			   										OWLChangeListener listener = Track.OWLList.remove(ontology);
+			   										ontology.removeOntologyListener(listener);
+			   										new Thread(new AddStatus(shell)).start();
+			   									}
+			   								}
+			   							}
+			   						} catch (KAON2Exception e) {
+			   							openMessage("Track failed");
+			   							e.printStackTrace();
+			   						}
+			   	        		}catch (Exception e) {
+			   	            		openMessage("Track failed");
+			   	            		e.printStackTrace();
+			   	            	}	
+			   	            	finally{
+			   	            		monitor.done();
+			   	            	}
+			   	            	return Status.OK_STATUS;
+			   	         	}
+			   			};
+			   	        exportJob.setUser(true);
+			   	    	exportJob.schedule();	        		
+		           }
+			});					
 		}
 		
 		private void addTrack(Ontology ontology, OMVOntology o){
@@ -281,19 +302,39 @@ public class Track extends Action implements IObjectActionDelegate {
 			String firstname = _store.getString("USER_FIRSTNAME");
 			String lastname = _store.getString("USER_LASTNAME");
 			if (lastname==null || firstname==null || role==null || lastname.equalsIgnoreCase("") || firstname.equalsIgnoreCase("") || role.equalsIgnoreCase("")) {
-				MessageDialog.openError(
-						shell,
-						"Change Capturing Component",
-						"You have to be logged-in first...");
+				openMessage("You have to be logged-in first...");
 				return;
 			}
 			oyster2Conn.startTracking(o);
 			
 			boolean collab = false;
 			if (ontology.getPhysicalURI().startsWith("collab")) collab=true;
-			OWLChangeListener listener = new OWLChangeListener(ontology, o, collab,moduleId, project);
+			OWLChangeListener listener = new OWLChangeListener(ontology, o, collab, moduleId, project, shell);
 			ontology.addOntologyListener(listener);
 			Track.OWLList.put(ontology, listener);
-		}
+			new Thread(new AddStatus(shell)).start();
+		}	
 	}
+	
+	public void openMessage(final String mess){
+		shell.getDisplay().asyncExec(new Runnable() {
+	           public void run() {
+	        	   MessageDialog.openInformation(
+           				shell,
+           				"Change Capturing Component",
+           				mess);
+	            }
+		});
+	}
+	public void openQuestion(final String mess){
+		shell.getDisplay().syncExec(new Runnable() {
+	           public void run() {
+	        	   rep=MessageDialog.openQuestion(
+           				shell,
+           				"Change Capturing Component",
+           				mess);
+	            }
+		});
+	}
+		
 }

@@ -11,7 +11,7 @@
    </extension>
    <extension
          point="com.ontoprise.ontostudio.gui.preShutdown">
-      <listener class="org.neontoolkit.changelogging.gui.PreShutdown"/>
+      <listener class="org.neontoolkit.changelogging.gui.shutdown.PreShutdown"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -33,14 +33,14 @@
             id="org.neontoolkit.changelogging.menu"
             objectClass="com.ontoprise.ontostudio.owl.gui.navigator.ontology.OntologyTreeElement">
          <action
-               class="org.neontoolkit.changelogging.menu.Track"
+               class="org.neontoolkit.changelogging.gui.actions.Track"
                id="org.neontoolkit.changelogging.menu.track"
-               label="Track"/>
+               label="Log Changes"/>
          <action
-               class="org.neontoolkit.changelogging.menu.Syncrhonize"
+               class="org.neontoolkit.changelogging.gui.actions.Syncrhonize"
                definitionId="org.neontoolkit.changelogging.popup.sync"
                id="org.neontoolkit.changelogging.menu.syncrhonize"
-               label="Syncrhonize">
+               label="Synchronize">
          </action>
       </objectContribution>
    </extension>

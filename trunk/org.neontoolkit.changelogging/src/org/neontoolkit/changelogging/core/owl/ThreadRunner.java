@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -126,8 +127,8 @@ import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
+import org.neontoolkit.changelogging.core.ApplyChangesFromLogToNTK;
 import org.neontoolkit.changelogging.core.Constants;
-import org.neontoolkit.changelogging.menu.ApplyChangesFromLogToNTK;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
@@ -159,7 +160,7 @@ public class ThreadRunner implements Runnable {
         		//System.out.println("axiom: "+args.get(0));
         		//System.out.println("num of args "+ (args.size()-1));
         		
-        		String date_time = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+        		String date_time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime());
         		if(cType.equals(ChangeType.ADD)){
         			atomicChange = new Addition();
         		}else if(cType.equals(ChangeType.REMOVE)){
@@ -203,7 +204,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if (args.get(0).equals(Constants.ACTION_OBPROPERTY)){
@@ -224,7 +225,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if (args.get(0).equals(Constants.ACTION_DAPROPERTY)){
@@ -245,7 +246,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if (args.get(0).equals(Constants.ACTION_ANPROPERTY)){  // SHOULD TAKE CARE OF THIS ONE
@@ -407,7 +408,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_CLASS_EQ)){
@@ -558,7 +559,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJ)){
@@ -579,7 +580,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_CLASS_DISJUN)){ //HOW TO USE IT???
@@ -600,7 +601,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_CLASS_ANN)){  
@@ -632,7 +633,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		
@@ -654,7 +655,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         			
         			
@@ -676,7 +677,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         			
         		}else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SUBOF)){
@@ -697,7 +698,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_EQ)){
@@ -718,7 +719,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_FUNC)){
@@ -738,7 +739,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1)); 
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INVFUNC)){
@@ -758,7 +759,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1)); 
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_TRA)){
@@ -778,7 +779,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1)); 
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_SYM)){
@@ -799,7 +800,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1)); 
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_INV)){
@@ -820,7 +821,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));  //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_ANN)){ 
@@ -852,7 +853,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		
@@ -874,7 +875,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         			
         		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_RANGE)){
@@ -895,7 +896,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_EQ)){
         			EquivalentDataProperties dPE = new EquivalentDataProperties();
@@ -915,7 +916,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2)); //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_SUBOF)){
         			SubDataPropertyOf subDP = new SubDataPropertyOf();
@@ -935,7 +936,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_FUNC)){
@@ -955,7 +956,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1)); 
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_ANN)){ 
@@ -987,7 +988,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		
@@ -1033,7 +1034,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(1));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_SAM)){
@@ -1055,7 +1056,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_DIF)){
@@ -1077,7 +1078,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_ANN)){ 
@@ -1109,7 +1110,7 @@ public class ThreadRunner implements Runnable {
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
         			classEntity.addHasRelatedEntity(args.get(2));
         			classEntity.addHasAuthor(se);
-        			classEntity.setDate(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()));
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
         		else{

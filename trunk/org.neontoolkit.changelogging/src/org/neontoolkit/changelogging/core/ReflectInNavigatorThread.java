@@ -1,8 +1,9 @@
-package org.neontoolkit.changelogging.menu;
+package org.neontoolkit.changelogging.core;
 
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,11 +109,7 @@ public class ReflectInNavigatorThread implements Runnable {
 	            				monitor.worked(20);
             		        }
             			}catch (Exception e) {
-            				// TODO Auto-generated catch block
-            				MessageDialog.openInformation(
-            						shell,
-            						"Change Capturing Plug-in",
-            						"Synchronization failed");
+            				openMessage("Synchronization failed");
             				e.printStackTrace();
             			}	
             			finally{
@@ -133,11 +130,13 @@ public class ReflectInNavigatorThread implements Runnable {
 			OMVChange t = oyster2Conn.getChange(id);
 			List<OMVChange> toApply = oyster2Conn.getChanges(t.getAppliedToOntology(), id);
 			if (toApply!=null && toApply.size()>0){
+				Collections.reverse(toApply);
 				System.out.println("To Apply (adding to existing changes of the ontology):");
 				System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 				ApplyChangesFromLogToNTK.applyChanges(toApply,t.getAppliedToOntology());
 			}
 		}
+		System.out.println();
 		//Here reflect changes to ontologies that didnt have changes before syncrhonization but now they have
 		Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
 		for (OMVOntology o1 : tOntos){
@@ -147,6 +146,7 @@ public class ReflectInNavigatorThread implements Runnable {
 			if (!already){
 				List<OMVChange> toApply = oyster2Conn.getChanges(o1,null);
 				if (toApply!=null && toApply.size()>0){
+					Collections.reverse(toApply);
 					System.out.println("To Apply (initial set of changes for the ontology):");
 					System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
@@ -170,38 +170,72 @@ public class ReflectInNavigatorThread implements Runnable {
 							Date acDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(acToApply.getTimestamp());
 							if (acDate.after(oldDate)) listAcToApply.add(acToApply);
 						}
-						reflectRequiredActions(listAcToApply);
+						reflectRequiredActions(listAcToApply,allActions);
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}					
 				}
 				else{ //ontology didnt have actions
-					reflectRequiredActions(allActions);
+					reflectRequiredActions(allActions,allActions);
 				}
 			}
 		}
 	}
 	
 	
-	public void reflectRequiredActions(List<Action> listActions){
-		for (Action ac : listActions){
-			System.out.println("checking if apply action: "+ac.getURI());
+	public void reflectRequiredActions(List<Action> listApplyActions, List<Action> allActions){
+		for (Action ac : listApplyActions){
 			try{
 				if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
+					System.out.println("checking if apply delete action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
-					if (listActions.size()>1){
-						Action prev=listActions.get(listActions.size()-2);
+					if (listApplyActions.size()>1){
+						List<Action> prevAsso = new LinkedList<Action>();
+						Date deleteDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(((Delete)ac).getTimestamp());
+						for (Action temp : allActions){ //GET THE PREVIOUS ACTIONS TO DELETE TO THE SAME CHANGE
+							if (temp instanceof EntityAction) {
+								String associated=((EntityAction)temp).getRelatedChange();
+								if (((Delete)ac).getRelatedChange().equalsIgnoreCase(associated)){
+									Date deleteAssoDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(((EntityAction)temp).getTimestamp());
+									if (deleteAssoDate.before(deleteDate))
+										prevAsso.add(temp);
+								}
+							}
+						}
+						if (prevAsso.size()>0){ //CHECK WHAT KIND OF ACTION WAS THE EXACT PREVIOUS ONE
+							System.out.println("checking if apply delete action - previous action: "+prevAsso.get(prevAsso.size()-1));
+							Action prev =prevAsso.get(prevAsso.size()-1); //=listApplyActions.get(listApplyActions.size()-2);
 							if (prev!=null && (prev instanceof Insert || prev instanceof Update || prev instanceof RejectToDraft) )
 								applyActionDelete(c);
+						}
 					}
 				}
-				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IS THE ONLY ACTION (IT MEANS IT WAS DELETED FROM NAVIGATOR STRAIGHT)
+				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IT WAS DELETED FROM NAVIGATOR STRAIGHT
+					System.out.println("checking if apply sendtobedeleted action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((SendToBeDeleted)ac).getRelatedChange());
-					if (listActions.size()>1)
-						applyActionSendToBeDeleted(c);		
+					List<Action> prevAsso = new LinkedList<Action>();
+					Date sendToBeDeletedDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(((SendToBeDeleted)ac).getTimestamp());
+					for (Action temp : allActions){ //GET THE PREVIOUS ACTIONS TO SENDTOBEDELETED TO THE SAME CHANGE
+						if (temp instanceof EntityAction) {
+							String associated=((EntityAction)temp).getRelatedChange();
+							if (((SendToBeDeleted)ac).getRelatedChange().equalsIgnoreCase(associated)){
+								Date deleteAssoDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(((EntityAction)temp).getTimestamp());
+								if (deleteAssoDate.before(sendToBeDeletedDate))
+									prevAsso.add(temp);
+							}
+						}
+					}
+					boolean apply=false;
+					if (prevAsso.size()>0){ //CHECK WHAT KIND OF ACTIONS HAS THIS CHANGE ASSOCIATED
+						for (Action prev : prevAsso)
+							if (prev instanceof Insert || prev instanceof Update) apply=true;
+							
+					}
+					if (apply) applyActionSendToBeDeleted(c);
 				}
 				else if (ac instanceof RejectToApproved){
+					System.out.println("checking if apply rejecttoapproved action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((RejectToApproved)ac).getRelatedChange());
 					applyActionRejectToApproved(c);
 				}
@@ -360,6 +394,16 @@ public class ReflectInNavigatorThread implements Runnable {
 			tURN=tURN.replace(" ", "_");
 		}
 		return tURN;
+	}
+	public void openMessage(final String mess){
+		shell.getDisplay().asyncExec(new Runnable() {
+	           public void run() {
+	        	   MessageDialog.openInformation(
+           				shell,
+           				"Change Capturing Plug-in",
+           				mess);
+	            }
+		});
 	}
 }
 

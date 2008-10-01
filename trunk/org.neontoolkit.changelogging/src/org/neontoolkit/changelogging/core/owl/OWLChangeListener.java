@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.eclipse.swt.widgets.Shell;
-import org.neontoolkit.changelogging.menu.Track;
+import org.neontoolkit.changelogging.gui.actions.Track;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
@@ -23,7 +23,6 @@ import org.semanticweb.kaon2.api.OntologyListener;
 import org.semanticweb.kaon2.api.OntologyChangeEvent.ChangeType;
 import org.semanticweb.kaon2.api.logic.Term;
 import org.semanticweb.kaon2.api.owl.elements.Annotation;
-import com.ontoprise.ontostudio.gui.GuiPlugin;
 
 public class OWLChangeListener implements OntologyListener {
 	public static Oyster2Connection oyster2Conn = StartRegistry.connection;//null;
@@ -37,10 +36,10 @@ public class OWLChangeListener implements OntologyListener {
 	//private String project;
     //private String moduleId;
 	
-	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c, String m, String p){
+	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c, String m, String p, Shell s){
 		monitoredOnto = onto;
 		omvOnto=o;
-		shell = GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
+		shell = s;//GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		isCollab=c;
 		//moduleId=m;
 		//project=p;
