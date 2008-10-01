@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Location</title>
+	<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
+	
+</head>
+
+<body>
+The geographical location of a party. To keep things simple we use only
+DatatypeProperties instead of introducing classes for country, street, etc.
+<br>
+<table border="1">
+<tr><th>Name</th><th>Range</th><th>Cardinality</th><th>Description</th></tr>
+<tr><td>country</td> <td>xsd:string</td>	<td>0:1</td> <td>The name of the country</td> </tr>
+<tr><td>state</td> <td>xsd:string</td>	<td>0:1</td> <td>The state of a country</td> </tr>
+<tr><td>city</td> <td>xsd:string</td>	<td>0:1</td> <td>Name of the city (and zip code)</td> </tr>
+<tr><td>street</td> <td>xsd:string</td>	<td>0:1</td> <td>Name of the street, and number (address)</td> </tr>
+
+</table>
+</body>
+</html>

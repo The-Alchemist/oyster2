@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>OntologyDomain</title>
+	<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
+	
+</head>
+
+<body>
+Typically, the domain refers to established topic hierarchies
+such as the general purpose topic hierarchy DMOZ or the domain
+specific topic hierarchy ACM for the computer science domain.
+<br>
+<table border="1">
+<tr><th>Name</th><th>Range</th><th>Cardinality</th><th>Description</th></tr>
+<tr><td>URI</td> <td>xsd:string</td>	<td>1:1</td> <td>The URI of the ontology domain</td> </tr>
+<tr><td>name</td> <td>xsd:string</td>	<td>1:1</td> <td>The name by which an ontology domain is formally known</td> </tr>
+<tr><td>isSubdomainOf</td> <td>omv:OntologyDomain</td>	<td>0:1</td>
+<td>Specifies the domain topic of which this domain topic is a sub domain.
+Typically, the domain can refer to established topic hierarchies
+such as the general purpose topic hierarchy DMOZ or the domain
+specific topic hierarchy ACM for the computer science domain</td> </tr>
+
+</table>
+</body>
+</html>
+

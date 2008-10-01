@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.3"?>
+<?eclipse version="3.2"?>
 <plugin>
+
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -52,6 +53,11 @@
             id="org.neontoolkit.oyster2.client.gui.Oyster2Perspective"
             name="Oyster2"/>
    </extension>
+   
+   
+	<extension point="org.eclipse.help.toc"> 
+		<toc extradir="resources/html" primary="true" file="resources/xml/toc.xml"/> 
+	</extension> 
 
 
 </plugin>

@@ -1,0 +1,44 @@
+<toc label="NeOn Toolkit Oyster GUI Help">
+	 <topic label="Introduction" href="resources/html/Introduction/intro.html">
+	 	 <topic label="OMV: Ontology Metadata Vocabulary" href="resources/html/Introduction/OMV.html">
+	 	 	<topic label="Terminology" href="resources/html/Introduction/terminology.html"></topic>
+	 	 	<topic label="OMV Core classes">
+		 	 	<topic label="Ontology" href="resources/html/Introduction/Ontology.html"/>
+		 	 	<topic label="OntologyType" href="resources/html/Introduction/OntologyType.html"/>
+		 	 	<topic label="LicenseModel" href="resources/html/Introduction/LicenseModel.html"/>
+		 	 	<topic label="OntologyEngineeringMethodology" href="resources/html/Introduction/OntologyEngineeringMethodology.html"/>
+		 	 	<topic label="OntologyEngineeringTool" href="resources/html/Introduction/OntologyEngineeringTool.html"/>
+		 	 	<topic label="OntologySyntax" href="resources/html/Introduction/OntologySyntax.html"/>
+		 	 	<topic label="OntologyLanguage" href="resources/html/Introduction/OntologyLanguage.html"/>
+		 	 	<topic label="KnowledgeRepresentationParadigm" href="resources/html/Introduction/KnowledgeRepresentationParadigm.html"/>
+		 	 	<topic label="FormalityLevel" href="resources/html/Introduction/FormalityLevel.html"/>
+		 	 	<topic label="OntologyTask" href="resources/html/Introduction/OntologyTask.html"/>
+		 	 	<topic label="OntologyDomain" href="resources/html/Introduction/OntologyDomain.html"/>
+		 	 	<topic label="Party" href="resources/html/Introduction/Party.html"/>
+		 	 	<topic label="Person" href="resources/html/Introduction/Person.html"/>
+		 	 	<topic label="Organization" href="resources/html/Introduction/Organization.html"/>
+		 	 	<topic label="Location" href="resources/html/Introduction/Location.html"/>
+		 	 </topic>
+	 	 </topic>
+	 	 <topic label="Oyster" href="resources/html/Introduction/Oyster.html"></topic>
+ 	</topic>
+ 	<topic label="Selecting a server" href="resources/html/SelectServer.html"></topic>
+ 	<topic label="Searching for metadata">
+ 		<topic label="Guide" href="resources/html/SearchMetadataGuide.html"></topic>
+ 		<topic label="Importing ontologies" href="resources/html/OntologyImportGuide.html"></topic>
+ 	</topic>
+ 	
+ 	<topic label="Submitting metadata">
+ 		<topic label="Guide" href="resources/html/SubmitMetadataGuide.html"></topic>
+ 	</topic>
+ 	
+ 	<topic label="Updating metadata">
+ 		<topic label="Guide" href="resources/html/UpdateMetadataGuide.html"></topic>
+ 	</topic>
+ 	
+ 	<topic label="Deleting metadata">
+ 		<topic label="Guide" href="resources/html/DeleteMetadataGuide.html"></topic>
+ 	</topic>
+ 	
+ 	
+</toc>

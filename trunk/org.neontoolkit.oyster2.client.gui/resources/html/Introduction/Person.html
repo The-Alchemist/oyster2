@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Person</title>
+	<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
+	
+</head>
+
+<body>
+A named individual.
+<br>
+<table border="1">
+<tr><th>Name</th><th>Range</th><th>Cardinality</th><th>Description</th></tr>
+<tr><td>firstname</td> <td>xsd:string</td>	<td>1:1</td> <td>The first name of a person</td> </tr>
+<tr><td>lastname</td> <td>xsd:string</td>	<td>1:1</td> <td>The surname of a person</td> </tr>
+
+<tr><td>email</td> <td>xsd:string</td>	<td>1:n</td> <td>The email address of a person</td> </tr>
+
+<tr><td>phoneNumber</td> <td>xsd:string</td>	<td>1:1</td> <td>The phone number of a person</td> </tr>
+<tr><td>isContactPerson</td> <td>omv:Organisation</td>	<td>0:n</td> <td>Instance is contact person of an organisation</td> </tr>
+<tr><td>faxNumber</td> <td>xsd:string</td>	<td>1:1</td> <td>The fax number of a person</td> </tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Ontology</title>
+	<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
+	
+</head>
+
+<body>
+This class represents metadata about ontologies themselves.
+<br>
+<table border="1">
+<tr><th>Name</th><th>Range</th><th>Cardinality</th><th>Description</th></tr>
+<tr><td>URI</td> <td>xsd:string</td><td>1:1</td><td>The URI of the ontology which is described by this metadata.
+It serves as a logical identifer and is not necessarily
+the physical location </td> </tr>
+
+<tr><td> name</td>  <td>xsd:string </td>	<td>1:n</td> <td>The name by which an ontology is formally known</td> </tr>
+<tr><td> acronym</td> <td>xsd:string </td>	<td>1:1</td> <td> A short name by which an ontology is formally known</td> </tr>
+<tr><td>description</td> <td>xsd:string</td>	<td>1:1</td> <td>Free text description of an ontology</td> </tr>
+<tr><td>documentation</td> <td>xsd:string</td>	<td>0:1</td> <td>URL for further documentation</td> </tr>
+<tr><td>notes</td> <td>xsd:string</td>	<td>0:1</td> <td>Describes additional information about the ontology that
+is not included somewhere else (e.g. information that you do
+not want to include in the documentation)</td> </tr>
+<tr><td>keywords</td> <td>xsd:string</td>	<td>0:n</td> <td>List of keywords related to an ontology</td> </tr>
+<tr><td>keyclasses</td> <td>xsd:string</td>	<td>0:n</td> <td>Indicates what the central/best represented classes of
+the ontology are</td> </tr>
+<tr><td>status</td> <td>xsd:string</td>	<td>0:1</td> <td>It specifies the tracking information for the contents of the
+ontology</td> </tr>
+<tr><td>creationDate</td> <td>xsd:date</td>	<td>1:1</td> <td>Date when the ontology was initially created.</td> </tr>
+<tr><td>modificationDate</td> <td>xsd:date</td>	<td>0:1</td> <td>Date of the last modification made to the ontology</td> </tr>
+<tr><td>hasContributor</td> <td>omv:Party</td>	<td>0:n</td> <td>Contributors to the creation of the ontology</td> </tr>
+<tr><td>hasCreator</td> <td>omv:Party</td>	<td>1:n</td> <td>Main responsible for the creation of the ontology</td> </tr>
+<tr><td>usedOntologyEngineeringTool</td> <td>omv:OntologyEngineeringTool</td>	<td>0:n</td> <td>Information about tool used to create the ontology</td> </tr>
+<tr><td>usedOntologyEngineeringMethodology</td> <td>omv:OntologyEngineeringMethodology</td>	<td>0:n</td> <td>Information about the method model used to create the ontology</td> </tr>
+<tr><td>usedKnowledgeRepresentationParadigm</td> <td>omv:KnowledgeRepresentationParadigm</td>	<td>0:n</td> <td>Information about the paradigm model used to create the ontology</td> </tr>
+<tr><td>endorsedBy</td> <td>omv:Party</td>	<td>0:n</td> <td>Indicates the parties (i.e. organisations, people) that have
+expressed support or approval to the this ontology.</td> </tr>
+<tr><td>hasDomain</td> <td><omv:OntologyDomain</td>	<td>0:n</td> <td>Specifies the domain topic of an ontology</td> </tr>
+<tr><td>isOfType</td> <td>omv:OntologyType</td>	<td>1:1</td> <td>The nature of the content of the ontology</td> </tr>
+<tr><td>naturalLanguage</td> <td>xsd:string</td>	<td>0:n</td> <td>The language of the content of the ontology,
+i.e. English, German, etc.</td> </tr>
+<tr><td>designedforOntologyTask</td> <td>omv:OntologyTask</td>	<td>0:n</td> <td>Declares for which purpose the ontology was originally designed</td> </tr>
+<tr><td>hasFormalityLevel</td> <td>omv:FormalityLevel</td>	<td>0:1</td> <td>Level of formality of the ontology</td> </tr>
+<tr><td>knownUsage</td> <td>xsd:string</td>	<td>0:n</td> <td>The applications where the ontology
+is being used</td> </tr>
+<tr><td>hasOntologyLanguage</td> <td>omv:OntologyLanguage</td>	<td>1:1</td> <td>Specifies the ontology language</td> </tr>
+<tr><td>hasOntologySyntax</td> <td>omv:OntologySyntax</td>	<td>1:1</td> <td>It specifies the presentation syntax for the ontology language</td> </tr>
+<tr><td>isConsistentAccordingToReasoner</td> <td>xsd:boolean</td>	<td>0:1</td> <td>Indicates whether a reasoner has classified the ontology
+correctly</td> </tr>
+<tr><td>expressiveness</td> <td>xsd:string</td>	<td>0:1</td> <td>Indicates the expressiveness of the language used by the
+ontology (that could be expressed in terms of the underlying DL,
+e.g. ALCN(D), SHIF(D), etc.)</td> </tr>
+<tr><td>resourceLocator</td> <td>xsd:string</td>	<td>1:n</td> <td>The location where the ontology can be found.
+It should be accessible via a URL</td> </tr>
+<tr><td>version</td> <td>xsd:string</td>	<td>1:1</td> <td>Specifies the version information of the ontology. It is highly recommended the use
+of a well defined numbering schema for the version information
+(e.g. X.Y.Z where X is a major release, Y is minor release
+and Z is a revision number)</td> </tr>
+<tr><td>hasLicense</td> <td>omv:LicenseModel</td>	<td>0:1</td> <td>Underlying license model</td> </tr>
+<tr><td>useImports</td> <td>omv:Ontology</td>	<td>0:n</td> <td>References another ontology metadata instance that
+describes an ontology containing definitions, whose
+meaning is considered to be part of the meaning of the
+ontology described by this ontology metadata instance. Each reference consists of a URI</td> </tr>
+<tr><td>hasPriorVersion</td> <td>omv:Ontology</td>	<td>0:1</td> <td>Contains a reference to another ontology metadata instance</td> </tr>
+<tr><td>isBackwardCompatibleWith</td> <td>omv:Ontology</td>	<td>0:n</td> <td>This property identifies the ontology metadata instance
+which describes an ontology that is a compatible prior
+version of the ontology described by this ontology metadata
+instance</td> </tr>
+<tr><td>isIncompatibleWith</td> <td>omv:Ontology</td>	<td>0:n</td> <td>This property indicates that the described ontology is a later
+version of the ontology described by the metadata specified,
+but is not backward compatible with it. It can be used to
+explicitly state that ontology cannot upgrade to use the new
+version without checking whether changes are required.</td> </tr>
+<tr><td>containsTBox</td> <td>xsd:boolean</td>	<td>0:1</td> <td>Indicates if the ontology contains assertions about
+concepts (e.g. subsumption, equivalence)</td> </tr>
+
+<tr><td>containsRBox</td> <td>xsd:boolean</td>	<td>0:1</td> <td>Indicates if the ontology contains assertions about roles
+(properties) and role hierarchies (e.g. subsumption, equivalence,
+transitivity)</td> </tr>
+
+<tr><td>containsABox</td> <td>xsd:boolean</td>	<td>0:1</td> <td>Indicates if the ontology contains role assertions between
+individuals and membership assertions (e.g. concept instantiation
+, role instantiation)</td> </tr>
+<tr><td>numberOfClasses</td> <td>xsd:unsignedLong</td>	<td>1:1</td> <td>number of classes in the ontology</td> </tr>
+<tr><td>numberOfProperties</td> <td>xsd:unsignedLong</td>	<td>1:1</td> <td>number of properties in the ontology</td> </tr>
+<tr><td>numberOfIndividuals</td> <td>xsd:unsignedLong</td>	<td>1:1</td> <td>number of individuals in the ontology</td> </tr>
+<tr><td>numberOfAxioms</td> <td>xsd:unsignedLong</td>	<td>1:1</td> <td>number of axioms in the ontology</td> </tr>
+
+</table>
+
+</body>
+</html>
+
+<tr><td></td> <td></td>	<td></td> <td></td> </tr>
+

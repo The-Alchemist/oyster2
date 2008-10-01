@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>Party</title>
+	<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
+	
+</head>
+
+<body>
+A party is a person or an organization.
+<br>
+<table border="1">
+<tr><th>Name</th><th>Range</th><th>Cardinality</th><th>Description</th></tr>
+<tr><td>isLocatedAt</td> <td>omv:Location</td>	<td>0:n</td> <td>The geographical location of a party</td> </tr>
+
+<tr><td>developesOntologyEngineeringTool</td> <td>omv:OntologyEngineeringTool</td>	<td>0:n</td>
+	<td>References a tool developed by a party</td> </tr>
+<tr><td>developesOntologyLanguage</td> <td>omv:OntologyLanguage</td>	<td>0:n</td> 
+<td>References an ontology language developed by a party</td> </tr>
+
+<tr><td>developesOntologySyntax</td> <td>omv:OntologySyntax</td>	<td>0:n</td> 
+<td>References an ontology syntax developed by a party</td> </tr>
+
+<tr><td>specifiesKnowledgeRepresentationParadigm</td> <td>omv:KnowledgeRepresentationParadigm</td>	<td>0:n</td>
+<td>References an KR paradigm specified or defined by a party</td> </tr>
+
+<tr><td>definesOntologyType</td> <td>omv:OntologyType</td>	<td>0:n</td>
+<td>Reference an ontology type defined by a party</td> </tr>
+
+<tr><td>developesOntologyEngineeringMethodology</td> <td>omv:OntologyEngineeringMethodology</td>	<td>0:n</td>
+<td>References a ontology engineering method developed by a party</td> </tr>
+
+<tr><td>specifiesLicense</td> <td>omv:LicenseModel</td>	<td>0:n</td> <td>References a license specified by a party</td> </tr>
+<tr><td>hasAffiliatedParty</td> <td>omv:Party</td>	<td>0:n</td> <td>References another party that is affiliated with the instance</td> </tr>
+
+
+<tr><td>createsOntology</td> <td>omv:Ontology</td>	<td>0:n</td> <td>References an ontology created by a party</td> </tr>
+
+<tr><td>contributesToOntology</td> <td>omv:Ontology</td> <td>0:n</td>
+<td>References an ontology a party made contributions to</td> </tr>
+
+
+</table>
+</body>
+</html>
+
