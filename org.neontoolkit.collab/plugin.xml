@@ -10,24 +10,28 @@
       <view
             category="org.neontoolkit.collab.views.category"
             class="org.neontoolkit.collab.views.DraftView"
+            icon="icons/draftViewIco.GIF"
             id="org.neontoolkit.collab.view1"
             name="Draft View">
       </view>
       <view
             category="org.neontoolkit.collab.views.category"
             class="org.neontoolkit.collab.views.ApprovedView"
+            icon="icons/approvedViewIco.GIF"
             id="org.neontoolkit.collab.view2"
             name="Approved View">
       </view>
       <view
             category="org.neontoolkit.collab.views.category"
             class="org.neontoolkit.collab.views.ToBeApprovedView"
+            icon="icons/toBeApprovedIco.GIF"
             id="org.neontoolkit.collab.view3"
             name="To Be Approved View">
       </view>
       <view
             category="org.neontoolkit.collab.views.category"
             class="org.neontoolkit.collab.views.ToBeDeletedView"
+            icon="icons/toBeDeletedViewIco.GIF"
             id="org.neontoolkit.collab.view4"
             name="To Be Deleted View">
       </view>
