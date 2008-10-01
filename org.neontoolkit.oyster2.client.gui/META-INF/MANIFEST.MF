@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Oyster2 GUI
 Bundle-SymbolicName: org.neontoolkit.oyster2.client.gui;singleton:=true
-Bundle-Version: 1.0.0
-Bundle-ClassPath: 
+Bundle-Version: 1.0.1
+Bundle-ClassPath: oyster2-gui.jar,
  lib/activation-1.1.jar,
  lib/axiom-api-1.2.5.jar,
  lib/axiom-dom-1.2.5.jar,
@@ -36,6 +36,6 @@ Require-Bundle: org.eclipse.ui,
  datamodel,
  datamodelBase,
  util,
- com.ontoprise.dependencies,
- org.neontoolkit.registry.api
+ org.neontoolkit.registry.api,
+ org.junit4
 Eclipse-LazyStart: true

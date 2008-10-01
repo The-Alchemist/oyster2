@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>The search feature</title>
+	<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+	
+</head>
+<body class="bodynormal">
+<h1>The search feature</h1>
+<p>
+The search feature can be used from the Oyster perspective, using the search view. In fact, it will make use of at least
+another view (the search results view), so although it's possible to open the search view from any perspective
+it's recommended to use it while in the Oyster perspective, to avoid cluttering the NeOn Toolkit interface with too
+many views.
+</p>
+<p>
+The search view has to sections:
+<dl>
+<dt>The configuration section.<dd>This section allows the user to select the target server that will receive the queries,
+the omv class which instances you are looking for, and select the attributes used to perform the query</dd></dt>
+<dt>The parameters section.<dd>This section is meant to receive the query parameters. These parameters
+are property values that must be present in the instances returned by the query.</dd></dt>
+</dl>
+</p>
+<img src="images/searchViewDetail.jpg"/>
+<h2>The configuration section</h2>
+<p>
+<img src="images/searchViewConfigSection.jpg"/><br>
+As it was said earlier, here are the following controls:
+<ol>
+<li>Server selection combo (see <a href="SelectServer.html">server selection</a>).</li>
+<li>Server selection list edition button</li>
+<li>OMV class selection combo. It allows to select the class of the instances to be looked for</li>
+<li>Attribute selection button. This allows to select which attributes from the OMV class are to
+be used in the query.</li>
+<li>Start button. This starts the search with the given query parameters</li>
+</ol>
+</p>
+<h3>Selecting query parameters</h3>
+<p>
+Once the omv class is selected, the "select attributes" button will show a list of
+the attributes of the selected class.
+<br>
+<img src="images/selectAttributes.jpg"/><br>
+<br>
+The main controls of the attribute selection dialog are:
+<dl><dt>Template selection combo.<dd> Lets the user select between a predefined list of templates.
+Selecting a template will check the attributes of the template, and uncheck others.</dd></dt>
+<dt>Select all and Deselect all buttons. <dd> They mark every property as selected or clears
+the selection, respectively.</dd></dt>
+<dt>The attributes section. <dd> Lets the user check or uncheck properties individually.</dd></dt>
+</dl>
+Once the property selection has been changed by pressing the "Ok" button in the attribute
+selection dialog, the changes will be reflected instantly in the fields section of the search view.
+</p>
+<h2>The fields section</h2>
+Within the fields section are located the different input controls to allow the user specify query parameters.
+Depending on the type of parameter there will be a different control, with it's own way of accepting such
+parameters. Here is an enumeration of the controls that may appear:
+<ul>
+<li>The combo input field. It is used for parameters that will accept a single string or boolean value. The
+combo will hold values used in previous queries if it needs a string value, or the values "true" and "false"
+for boolean parameters. It has also a combo to let the user specify the comparator of the parameter.
+<br>
+<img src="images/searchViewComboField.jpg"/><br>
+<br>
+</li>
+<li>The table input field. This control is used when the parameter accepts multiple values. In this cases, the matching
+results will have all values in the property. To add a value it's necessary to use first the "Add" button, and
+then edit the inserted row, which has two fields, a string one for the value, and a combo for the filter type.<br>
+<img src="images/searchViewTableField.jpg"/><br>
+<br>
+</li>
+<li>The date input field. Similar to the combo field, it has a button which will bring up a dialog to select
+a date. It's heavily recommended to use the dialog instead of typing the date directly, due to the fact
+that the server will accept only a particular date format, and the user may type it wrongly.
+<br>
+<img src="images/searchViewDateField1.jpg"/><br>
+The date field.
+<br><br>
+<img src="images/searchViewDateFieldDialog.jpg"/><br>
+The date selection dialog.
+<br><br>
+</li>
+<li>The domain field. Since the URI of a DMOZ topic is rather long, there is a control dedicated to this kind of
+input. It shows the hierarchy of DMOZ topics (in fact, it shows only their labels to the user), and lets the user
+select any number of them (holding the SHIFT key).<br>
+<img src="images/searchViewDomainField.jpg"/><br>
+</li>
+</ul>
+</p>
+<h2>The search results view</h2>
+<p>
+When the results are returned they are shown in the Search Results View. If there are no results at all, it
+will only display a message saying that no results were found. On the other hand, if there are any results, they will
+be displayed in a table, where each row is an instance of the class, and each column a property.
+</p>
+
+<img src="images/searchResultsView.jpg"/><br>
+
+
+<p>Once the results are shown, the user may take any of the following actions:
+<ul>
+<li>See the details of any instance on another view. If the user clicks twice on any result other view will show
+RDF text describing the selected result.</li>
+
+<li>In the context menu (brought up by using the right mouse button over any result) the user may choose to
+<a href="UpdateMetadataGuide.html">update</a> it.</li>
+
+<li> The user may also select to <a href="DeleteMetadataGuide.html">delete</a> the selected result.</li>
+
+<li> When the results are ontologies, the context menu allows the user to 
+<a href="OntologyImportGuide.html">import an ontology</a> into an existing project.</li> 
+</body>
+</html>
