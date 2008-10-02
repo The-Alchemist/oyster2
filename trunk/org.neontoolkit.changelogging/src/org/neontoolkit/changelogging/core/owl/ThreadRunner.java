@@ -388,7 +388,6 @@ public class ThreadRunner implements Runnable {
         							String cleanValue=args.get(4).replace("]", "");
         							if (cleanValue.indexOf("^^")>0)
         								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
-        							System.out.println("cleanValue = "+cleanValue);
         							o.setConstant(cleanValue);
         							subC.setSuperClass(o);
         						}else{
@@ -544,7 +543,6 @@ public class ThreadRunner implements Runnable {
         							String cleanValue=args.get(4).replace("]", "");
         							if (cleanValue.indexOf("^^")>0)
         								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
-        							System.out.println("cleanValue = "+cleanValue);
         							o.setConstant(cleanValue);
         							ec.addEquivalentClasses(o);
         						}else{
