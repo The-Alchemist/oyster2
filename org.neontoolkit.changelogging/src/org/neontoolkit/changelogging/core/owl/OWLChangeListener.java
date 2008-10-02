@@ -86,8 +86,6 @@ public class OWLChangeListener implements OntologyListener {
 		    			sb.deleteCharAt(sb.indexOf("["));
 		    			sb.deleteCharAt(sb.indexOf("]"));
 		    			
-		    			System.out.println("how it is: "+sb);
-		    			
 		    			if (sb.indexOf("\"")>0){
 		    				int start = sb.indexOf("\"");
 		    				if (sb.indexOf("\"", start+1)>0){
