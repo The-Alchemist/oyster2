@@ -159,6 +159,12 @@ public class ThreadRunner implements Runnable {
         		//System.out.println("changeType: "+cType);
         		//System.out.println("axiom: "+args.get(0));
         		//System.out.println("num of args "+ (args.size()-1));
+            	try{
+            		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+            	}catch(Exception e){
+            		e.printStackTrace();
+            	}
+
         		
         		String date_time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime());
         		if(cType.equals(ChangeType.ADD)){
@@ -1178,8 +1184,6 @@ public class ThreadRunner implements Runnable {
     						"Change Capturing Error",
     						"The operation could not be performed. (Could be incorrect permission)!");
         		}
-		
-		
             }
         });	
 	}
