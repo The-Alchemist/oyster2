@@ -8,7 +8,6 @@ import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
@@ -386,7 +385,11 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
         							DataHasValue o = new DataHasValue();
         							o.setDataProperty(new DataProperty(args.get(3)));
-        							o.setConstant(args.get(4).replace("]", ""));
+        							String cleanValue=args.get(4).replace("]", "");
+        							if (cleanValue.indexOf("^^")>0)
+        								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
+        							System.out.println("cleanValue = "+cleanValue);
+        							o.setConstant(cleanValue);
         							subC.setSuperClass(o);
         						}else{
         							ObjectHasValue o = new ObjectHasValue();
@@ -538,7 +541,11 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
         							DataHasValue o = new DataHasValue();
         							o.setDataProperty(new DataProperty(args.get(3)));
-        							o.setConstant(args.get(4).replace("]", ""));
+        							String cleanValue=args.get(4).replace("]", "");
+        							if (cleanValue.indexOf("^^")>0)
+        								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
+        							System.out.println("cleanValue = "+cleanValue);
+        							o.setConstant(cleanValue);
         							ec.addEquivalentClasses(o);
         						}else{
         							ObjectHasValue o = new ObjectHasValue();
@@ -1187,8 +1194,6 @@ public class ThreadRunner implements Runnable {
             }
         });	
 	}
-	
-	
 }
 
 //private static List<OMVOntology> omvOntoList = new ArrayList<OMVOntology>();
