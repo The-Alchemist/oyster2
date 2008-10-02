@@ -95,7 +95,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 									if (!readLocally)
 										Thread.sleep(7000);
 									else
-										Thread.sleep(1000);
+										Thread.sleep(5000);
 								}
 							}
 							monitor.worked(30);
