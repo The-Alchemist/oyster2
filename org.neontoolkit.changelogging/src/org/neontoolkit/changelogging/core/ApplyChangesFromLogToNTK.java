@@ -416,14 +416,16 @@ public class ApplyChangesFromLogToNTK {
 										}
 										//Apply axiom
 										OWLChangeListener listener=Track.OWLList.get(targetRegistry);
-										targetRegistry.removeOntologyListener(listener);
+										if (listener !=null)
+											targetRegistry.removeOntologyListener(listener);
 										try {
 											targetRegistry.applyChanges(changes);
 											targetRegistry.persist();
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
-										targetRegistry.addOntologyListener(listener);
+										if (listener !=null)
+											targetRegistry.addOntologyListener(listener);
 									}
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
