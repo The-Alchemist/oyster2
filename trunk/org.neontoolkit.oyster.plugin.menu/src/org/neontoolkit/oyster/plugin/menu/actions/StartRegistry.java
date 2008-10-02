@@ -89,7 +89,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 									if (!readLocally){
 										System.out.println("waiting 30S...");
 										Thread.sleep(30000);
-									}else Thread.sleep(5000);
+									}else Thread.sleep(7000);
 								}
 								else {
 									if (!readLocally)
