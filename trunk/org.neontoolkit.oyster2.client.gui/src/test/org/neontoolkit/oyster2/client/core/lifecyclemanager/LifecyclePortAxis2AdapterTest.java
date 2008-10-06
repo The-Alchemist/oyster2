@@ -41,6 +41,8 @@ public class LifecyclePortAxis2AdapterTest {
 	private final static String CONFIGURATION_FILENAME = 
 		"LifecyclePortAxis2AdapterTestSubmit.properties";
 
+	private final static String REMOVE_IDENTIFIERS = "remove.identifiers";
+	
 	private final static String TESTS_KEY = "tests";
 
 	private String adaptersFolder = "submitAdapterFiles";
@@ -51,6 +53,9 @@ public class LifecyclePortAxis2AdapterTest {
 	private final static String EXPECTED_RESULT_KEY =".result";
 
 	private List<String> submittedObjectsIds = null;
+
+	//key for objects to be submitted in the remove test
+	private static final String SUBMIT_KEY = "submit.objects";
 	
 	public static junit.framework.Test suite() {
 		return new JUnit4TestAdapter(LifecyclePortAxis2AdapterTest.class);
@@ -198,7 +203,40 @@ public class LifecyclePortAxis2AdapterTest {
 	 */
 	@Test
 	public void testRemoveObjectsRequest() {
-		fail("Not yet implemented");
+		LifecyclePortAxis2Adapter lifecyclePort = 
+			new LifecyclePortAxis2Adapter();
+		lifecyclePort.setTargetService("http://localhost:8080/axis2/services/NeOnRegistryOMVOyster");
+		lifecyclePort.setTimeoutInMiliseconds(4 * 60 * 1000);
+		
+			
+		PropertiesConfiguration configuration = null;
+		String path = Activator.getDefault().getResourcesDir() +
+		File.separator + "testFiles" + File.separator + CONFIGURATION_FILENAME;
+		try {
+			configuration = new PropertiesConfiguration(path);
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		List<RegistryObjectType> objects = new LinkedList<RegistryObjectType>();
+		String [] objectNames = configuration.getStringArray(SUBMIT_KEY);
+		RegistryObjectType registryObject = null;
+		try {
+			for (String thisObject : objectNames) {
+				registryObject = 
+					SubmitRegistryObjectsMapBuilder.getRegistryObject(configuration,thisObject);
+				objects.add(registryObject);
+			}
+			String result = lifecyclePort.submitObjectsRequest(objects);
+			Assert.assertEquals("Success", result);
+		}
+		catch (Exception e) {
+			Assert.fail(e.getMessage());
+		}
+		// now to the test
+		List<String> objectsToBeRemoved = configuration.getList(REMOVE_IDENTIFIERS);
+		String result = SubmitRemoveObjects.remove(objectsToBeRemoved);
+		Assert.assertEquals("Success", result);
 	}
 
 }
