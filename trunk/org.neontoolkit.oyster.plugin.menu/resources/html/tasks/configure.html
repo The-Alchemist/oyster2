@@ -1,0 +1,60 @@
+﻿
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>The configuration of the startup</title>
+</head>
+
+<body>
+
+<P><span lang="en-gb">The</span> configuration of the startup parameters of the registry can be done from 
+the Oyster storage preference page (Figure6): </P>
+<DIV class="thumb tnone">
+<DIV class=thumbinner style="WIDTH: 452px">
+	<IMG 
+class=thumbimage height=390 alt=Figure6 
+src="../figs/450px-MenuPreferences.png" width=450 
+border=0> 
+<DIV class=thumbcaption>
+<DIV class=magnify style="FLOAT: right"></DIV>Figure6</DIV></DIV></DIV><A name=Covered_Activities></A>
+
+<br>
+&nbsp;It provides the following 
+  configuration options: 
+  <UL>
+    <LI><B><a href="../concepts/superNode.html">Super Node</a> IP</B>: This option allows to configure the IP address of 
+    a "super" node that will be used by the registry to store/retrieve the 
+    metadata. Any node in the network running <a href="../concepts/oyster.html">Oyster</a> can be configured as the 
+    "super" node, however in general this is a node running
+	<a href="../concepts/oyster.html">Oyster</a> in server 
+    mode. Usually this option is configured when the user will be working with a 
+    NTK collaboration server; 
+    <LI><B><a href="../concepts/pushNode.html">Push Node</a> IP</B>: This option allows to configure the IP address of a 
+    specific node in the network to which changes will be push propagated every 
+    time the <a href="../concepts/synchronization.html">Syncrhonization</a> process is invoked. Usually this option is 
+    configured when users are working collaborative on the development of 
+    ontologies in a totally distributed environment (i.e. users are working with 
+    local copies of the same ontology and there is no NTK collaboration server) 
+    to ensure that every node in the network interested in the same ontology 
+    will be able to pull propagate changes from other nodes even if the nodes go 
+    offline; 
+    <LI><B>Read ontologies locally</B>: This option allows to specify that the 
+    ontologies necessary to start the registry (e.g. OMV and related) are loaded 
+    from the local filesystem. By default ontologies are loaded from the 
+    internet and therefore it takes a little bit longer to start the registry. 
+    If this option is selected, the user should ensure that the required 
+    ontologies are available in the O2ServerFiles directory within the NTK 
+    working directory (i.e. where the NeOn_Toolkit.exe file is located). Users 
+    can download the pack of ontologies from <A class="external free" 
+    title=http://oyster2.ontoware.org/ontologiesPack 
+    href="http://oyster2.ontoware.org/ontologiesPack" 
+    rel=nofollow>http://oyster2.ontoware.org/ontologiesPack</A>. 
+    <LI><B>Reset <a href="../concepts/oyster.html">Oyster</a></B>: This options allows the user to reset
+	<a href="../concepts/oyster.html">Oyster</a> i.e. 
+    delete the current information and settings. To apply this action, the user 
+    should ensure that the registry is not running.</LI></UL>
+
+</body>
+
+</html>
