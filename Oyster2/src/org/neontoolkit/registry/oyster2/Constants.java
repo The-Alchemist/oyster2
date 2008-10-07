@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.2 $".replace('$', ' ').trim() + " (" + "$Date: 2008-09-10 01:25:42 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.3 $".replace('$', ' ').trim() + " (" + "$Date: 2008-10-07 23:50:31 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -222,6 +222,8 @@ public class Constants {
 	public static final String removeObjectPropertyConcept = "RemoveObjectProperty";
 	public static final String addDatatypeConcept = "AddDatatype";
 	public static final String removeDatatypeConcept = "RemoveDatatype";
+	public static final String addAnnotationPropertyConcept = "AddAnnotationProperty";
+	public static final String removeAnnotationPropertyConcept = "RemoveAnnotationProperty";
 	
 	public static final String addAsymmetricObjectPropertyConcept = "AddAsymmetricObjectProperty";
 	public static final String removeAsymmetricObjectPropertyConcept = "RemoveAsymmetricObjectProperty";

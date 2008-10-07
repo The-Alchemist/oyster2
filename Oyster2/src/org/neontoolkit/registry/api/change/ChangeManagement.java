@@ -21,7 +21,9 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDatatype;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDatatype;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChangeSpecification;
@@ -197,9 +199,9 @@ public class ChangeManagement {
 					boolean success=false;
 					if (o instanceof ClassChange || o instanceof OWLClassChange || o instanceof IndividualChange || o instanceof OWLIndividualChange || o instanceof PropertyChange || o instanceof OWLObjectPropertyChange || o instanceof OWLDataPropertyChange || o instanceof AnnotationPropertyChange){
 						success=wMgmt.update(tURN,editor,o.getAppliedToOntology(), null);
-					}else if (o instanceof AddClass || o instanceof AddIndividual || o instanceof AddProperty || o instanceof AddDatatype ){
+					}else if (o instanceof AddClass || o instanceof AddIndividual || o instanceof AddProperty || o instanceof AddDatatype || o instanceof AddAnnotationProperty ){
 						success=wMgmt.insert(tURN,editor,o.getAppliedToOntology(), null);
-					}else if (o instanceof RemoveClass || o instanceof RemoveIndividual || o instanceof RemoveProperty || o instanceof RemoveDatatype ){
+					}else if (o instanceof RemoveClass || o instanceof RemoveIndividual || o instanceof RemoveProperty || o instanceof RemoveDatatype || o instanceof RemoveAnnotationProperty){
 						success=wMgmt.submitToBeDeleted(tURN,editor,o.getAppliedToOntology(), null);
 					}
 					//mOyster2.getLogger().info("Finished registering workflow action");
