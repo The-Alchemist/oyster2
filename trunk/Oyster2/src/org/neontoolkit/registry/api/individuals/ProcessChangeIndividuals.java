@@ -66,9 +66,11 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.SymmetricObjectPropertyChange.RemoveSymmetricObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.AddTransitiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.RemoveTransitiveObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveObjectProperty;
@@ -163,6 +165,8 @@ public class ProcessChangeIndividuals{
 			else if (whichClass.equalsIgnoreCase("RemoveDataProperty")) reply = new RemoveDataProperty();
 			else if (whichClass.equalsIgnoreCase("AddDatatype")) reply = new AddDatatype();
 			else if (whichClass.equalsIgnoreCase("RemoveDatatype")) reply = new RemoveDatatype();
+			else if (whichClass.equalsIgnoreCase("AddAnnotationProperty")) reply = new AddAnnotationProperty();
+			else if (whichClass.equalsIgnoreCase("RemoveAnnotationProperty"))  reply = new RemoveAnnotationProperty();
 			else if (whichClass.equalsIgnoreCase("AddAsymmetricObjectProperty")) reply = new AddAsymmetricObjectProperty();
 			else if (whichClass.equalsIgnoreCase("RemoveAsymmetricObjectProperty")) reply = new RemoveAsymmetricObjectProperty();
 			else if (whichClass.equalsIgnoreCase("AddDisjointObjectProperty")) reply = new AddDisjointObjectProperty();
