@@ -17,4 +17,16 @@
       
    </extension>
 
+	<!-- ==========Help extension================ -->
+
+    <extension point="org.eclipse.help.toc">
+        <toc file="resources/xml/book.xml" primary="true" />
+    </extension>
+
+    <extension point="org.eclipse.help.toc">
+        <toc file="resources/xml/toc_Concepts.xml" />
+        <toc file="resources/xml/toc_Tasks.xml" />
+    </extension>
+	
+
 </plugin>
