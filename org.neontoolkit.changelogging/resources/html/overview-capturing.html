@@ -1,0 +1,58 @@
+﻿
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>The purpose of the Oyster menu p</title>
+</head>
+
+<body>
+
+<p>The purpose of this plug-in is to capture ontology changes from the
+NTK editor and log them into <a href="concepts/oyster.html">Oyster</a> distributed registry. This plug-in
+also allows users to visualize the history of ontology changes.
+Additionally, this plug-in is in charge of applying changes received
+from other clients to the same ontology after <a href="concepts/oyster.html">Oyster</a>
+<a href="concepts/synchronization.html">synchronizes</a> the
+changes in the distributed environment. Finally, this plug-in allows
+users to request <a href="concepts/oyster.html">Oyster</a> to start the
+<a href="concepts/synchronization.html">synchronization</a> process.
+Specifically it provides the following functionalities: </p>
+<ul><li> <b>Start/Stop Ontology Logging</b>: This functionality is
+available from the option "Log Changes" in the pop-up menu of the
+ontology objects in the NTK editor. When an ontology is being logged,
+the plug-in performs the following tasks on the background:
+<ul><li> <b>Capture Ontology Changes</b>: Every change from the NTK editor is captured.
+</li><li> <b>Transform Ontology Changes</b>: Every change in the editor is transformed into instances of the change representation model (Change Ontology).
+</li><li> <b>Register Ontology Changes</b>: The instances of the change ontology are registered into
+	<a href="concepts/oyster.html">Oyster</a> distributed registry.
+</li></ul>
+</li><li> <b>Visualize Ontology Changes</b>: This functionality is
+available from the "Change Log View" provided by the plug-in. From this
+view, users can visualize the ontologies that are being logged and for
+each of them, the history of changes sorted in chronological order. The
+list of changes is displayed in a table that shows the most relevant
+information (e.g. author of the change, time of the change, type of the
+change, etc.) and when a change is selected the complete information is
+displayed in the interface.
+</li><li> <b>Start <a href="concepts/synchronization.html">Synchronization</a></b>: This functionality is
+available from the option "Synchronize" in the pop-up menu of the
+ontology objects in the NTK editor. When this option is selected, the
+plug-in performs the following tasks on the background:
+<ul><li> <b>Launch <a href="concepts/synchronization.html">Synchronization</a> Process</b>: This task request
+	<a href="concepts/oyster.html">Oyster</a> to start the
+	<a href="concepts/synchronization.html">Synchronization</a> process.
+</li><li> <b>Apply Changes Received</b>: After the
+	<a href="concepts/synchronization.html">synchronization</a>
+finishes, the plug-in applies locally (if necessary) changes received
+from other clients to the same ontology. When changes are applied
+locally, they are reflected in the NTK editor updating the local
+ontology with the changes received.
+</li></ul>
+</li></ul>
+<A 
+name=User_Documentation></A>
+
+</body>
+
+</html>

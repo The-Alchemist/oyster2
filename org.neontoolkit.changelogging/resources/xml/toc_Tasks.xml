@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Tasks">
+    <topic label="Start/Stop Ontology Logging" href="resources/html/tasks/start_stop_logging.html"/>
+    <topic label="Visualize Ontology Changes" href="resources/html/tasks/visualize.html"/>
+		<topic label="Start Synchronization " href="resources/html/tasks/startSync.html"/>    
+</toc>

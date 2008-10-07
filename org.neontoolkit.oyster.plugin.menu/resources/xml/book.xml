@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="Oyster-menu Plugin Help">
+    <topic label="Overview" href="resources/html/overview-menu.html"/>
+    <topic label="Concepts">
+        <link toc="resources/xml/toc_Concepts.xml"/>
+    </topic>
+    <topic label="Tasks">
+        <link toc="resources/xml/toc_Tasks.xml"/>
+    </topic>
+</toc>
