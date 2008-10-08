@@ -154,17 +154,6 @@ public class OMVOWLChange extends OMVChange{
 				}
 				
 			}
-			public static class AddAnnotationProperty extends OWLOntologyChange{
-				public AddAnnotationProperty(){
-					
-				}
-				
-			}
-			public static class RemoveAnnotationProperty extends OWLOntologyChange{
-				public RemoveAnnotationProperty(){
-					
-				}
-			}
 			public static class AddObjectProperty extends AddProperty{
 				public AddObjectProperty(){
 					

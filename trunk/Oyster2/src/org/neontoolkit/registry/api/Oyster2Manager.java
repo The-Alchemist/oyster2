@@ -650,6 +650,7 @@ public class Oyster2Manager{
 		if (a instanceof org.neontoolkit.owlodm.api.OWLEntity.Individual) return getData(((org.neontoolkit.owlodm.api.OWLEntity.Individual)a).getURI(),"individual");
 		if (a instanceof org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty) return getData(((org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty)a).getURI(),"objectProperty");
 		if (a instanceof Description) return getDescriptionString((Description)a);
+		if (a.getURI()!=null) return getData(a.getURI(),"OWLEntity"); 
 		return null;
 	}
 	

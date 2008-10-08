@@ -417,10 +417,20 @@ public class OMVChange {
 				public AddProperty(){
 					
 				}
+				public static class AddAnnotationProperty extends AddProperty{
+					public AddAnnotationProperty(){
+						
+					}
+				}
 			}
 			public static class RemoveProperty extends OntologyChange{
 				public RemoveProperty(){
 					
+				}
+				public static class RemoveAnnotationProperty extends RemoveProperty{
+					public RemoveAnnotationProperty(){
+						
+					}
 				}
 			}
 		}
