@@ -66,11 +66,9 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.SymmetricObjectPropertyChange.RemoveSymmetricObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.AddTransitiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.RemoveTransitiveObjectProperty;
-import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddObjectProperty;
-import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveAnnotationProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveObjectProperty;
@@ -98,6 +96,8 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.Ontol
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddIndividual;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveClass;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveIndividual;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddProperty.AddAnnotationProperty;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveProperty.RemoveAnnotationProperty;
 import org.neontoolkit.owlodm.api.Axiom;
 import org.neontoolkit.registry.oyster2.Constants;
 
