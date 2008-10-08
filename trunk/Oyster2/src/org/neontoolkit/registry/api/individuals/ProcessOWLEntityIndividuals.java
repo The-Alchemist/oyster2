@@ -29,7 +29,7 @@ public class ProcessOWLEntityIndividuals{
      OWLEntity reply=new OWLEntity();
      
      
-     if  (!whichClass.equalsIgnoreCase("DataProperty") && !whichClass.equalsIgnoreCase("Datatype") && !whichClass.equalsIgnoreCase("Individual") && !whichClass.equalsIgnoreCase("ObjectProperty")){
+     if  (!whichClass.equalsIgnoreCase("DataProperty") && !whichClass.equalsIgnoreCase("Datatype") && !whichClass.equalsIgnoreCase("Individual") && !whichClass.equalsIgnoreCase("ObjectProperty") && !whichClass.equalsIgnoreCase("OWLEntity")){ 
     	 reply = ProcessDescriptionIndividuals.processDescriptionIndividual(OWLEntityIndividual, whichClassFull, ontologySearch);
     	 return reply;
      }
@@ -44,7 +44,7 @@ public class ProcessOWLEntityIndividuals{
     				 if (whichClass.equalsIgnoreCase("DataProperty")) reply = new org.neontoolkit.owlodm.api.OWLEntity.DataProperty(OWLEntityIndividual.getURI());
     				 else if (whichClass.equalsIgnoreCase("Datatype")) reply = new Datatype(OWLEntityIndividual.getURI());
     				 else if (whichClass.equalsIgnoreCase("Individual")) reply = new org.neontoolkit.owlodm.api.OWLEntity.Individual(OWLEntityIndividual.getURI());
-    				 else if (whichClass.equalsIgnoreCase("ObjectProperty")) reply = new org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty(OWLEntityIndividual.getURI());			
+    				 else if (whichClass.equalsIgnoreCase("ObjectProperty")) reply = new org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty(OWLEntityIndividual.getURI());
 			
     				 Collection keySet = dataPropertyMap.keySet();
     				 Iterator keys = keySet.iterator();
@@ -69,7 +69,10 @@ public class ProcessOWLEntityIndividuals{
     		 onProcess.remove(OWLEntityIndividual);
     		 if (reply instanceof org.neontoolkit.owlodm.api.OWLEntity.DataProperty || reply instanceof Datatype || reply instanceof org.neontoolkit.owlodm.api.OWLEntity.Individual || reply instanceof org.neontoolkit.owlodm.api.OWLEntity.ObjectProperty )
     			 return reply;
-    		 else return null; 
+    		 else {
+    			 if (reply.getURI()!=null) return reply; //for the trick
+    			 else return null; 
+    		 }
     	 }
     	 else{
     		 reply.setURI(OWLEntityIndividual.getURI());
