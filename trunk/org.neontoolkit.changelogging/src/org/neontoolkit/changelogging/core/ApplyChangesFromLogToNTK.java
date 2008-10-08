@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
 import org.neontoolkit.changelogging.gui.actions.Track;
 import org.neontoolkit.omv.api.core.OMVOntology;
@@ -84,10 +83,11 @@ import org.semanticweb.kaon2.api.owl.axioms.DataPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.elements.DataPropertyExpression;
 import org.semanticweb.kaon2.api.owl.elements.DataRange;
-
 import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
 
 public class ApplyChangesFromLogToNTK {
+	public static String xsd="http://www.w3.org/2001/XMLSchema#";
+	public static String localURI="http://localhost/";
 	public static void applyChanges(List<OMVChange> p1, OMVOntology o){
 		OntologyManager connection;		
 		try {
@@ -172,8 +172,17 @@ public class ApplyChangesFromLogToNTK {
 										else if (oeoy instanceof ObjectProperty){
 											ddm = KAON2Manager.factory().objectProperty(((ObjectProperty)oeoy).getURI());
 										}
-										if (ddm!=null)
+										else { //TRICK: ANNOTATIONS ARE LOGGED AS OWLENTITY
+											String cleanValue=oeoy.getURI();
+											if (cleanValue.indexOf("?Annotation")>0){
+												cleanValue=cleanValue.substring(0, cleanValue.indexOf("?Annotation"));
+												ddm = KAON2Manager.factory().annotationProperty(cleanValue);
+											}
+										}
+										if (ddm!=null){
 											app = KAON2Manager.factory().declaration(ddm);
+										}
+											
 									}
 									else if (ax instanceof DataPropertyAxiom){
 										if (ax instanceof DataPropertyDomain){
@@ -331,8 +340,23 @@ public class ApplyChangesFromLogToNTK {
 											DataPropertyAssertion axT = (DataPropertyAssertion)ax;
 											org.semanticweb.kaon2.api.owl.elements.DataProperty dp= KAON2Manager.factory().dataProperty(axT.getDataProperty().getURI());
 											org.semanticweb.kaon2.api.owl.elements.Individual in = KAON2Manager.factory().individual(axT.getSourceIndividual().getURI());
-											if (dp!=null && in!=null)
-												app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(axT.getTargetValue()));
+											if (dp!=null && in!=null){
+												String cleanValue=axT.getTargetValue();
+												cleanValue=cleanValue.replace("%20", " ");
+												if (cleanValue.indexOf("???")>0){
+													String dataName=cleanValue.substring(cleanValue.indexOf("???")+3,cleanValue.length());
+													cleanValue=Namespaces.guessLocalName(cleanValue.substring(0, cleanValue.indexOf("???")));//cleanValue=cleanValue.replace("??", "^^");
+													if (dataName!=null)
+														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(getObject(dataName,cleanValue)));
+													else
+														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+												}	
+												else{
+													if (cleanValue.indexOf(localURI)>=0)
+														cleanValue=cleanValue.substring(localURI.length(), cleanValue.length());
+													app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+												}
+											}
 										}
 										else if (ax instanceof DifferentIndividuals){
 											DifferentIndividuals axT = (DifferentIndividuals)ax;
@@ -348,8 +372,23 @@ public class ApplyChangesFromLogToNTK {
 											NegativeDataPropertyAssertion axT = (NegativeDataPropertyAssertion)ax;
 											org.semanticweb.kaon2.api.owl.elements.DataProperty dp= KAON2Manager.factory().dataProperty(axT.getDataProperty().getURI());
 											org.semanticweb.kaon2.api.owl.elements.Individual in = KAON2Manager.factory().individual(axT.getSourceIndividual().getURI());
-											if (dp!=null && in!=null)
-												app = KAON2Manager.factory().negativeDataPropertyMember(dp, in, KAON2Manager.factory().constant(axT.getTargetValue()));
+											if (dp!=null && in!=null){
+												String cleanValue=axT.getTargetValue();
+												cleanValue=cleanValue.replace("%20", " ");
+												if (cleanValue.indexOf("???")>0){
+													String dataName=cleanValue.substring(cleanValue.indexOf("???")+3,cleanValue.length());
+													cleanValue=Namespaces.guessLocalName(cleanValue.substring(0, cleanValue.indexOf("???")));//cleanValue=cleanValue.replace("??", "^^");
+													if (dataName!=null)
+														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(getObject(dataName,cleanValue)));
+													else
+														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+												}	
+												else{
+													if (cleanValue.indexOf(localURI)>=0)
+														cleanValue=cleanValue.substring(localURI.length(), cleanValue.length());
+													app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+												}
+											}	
 										}
 										else if (ax instanceof NegativeObjectPropertyAssertion){
 											NegativeObjectPropertyAssertion axT = (NegativeObjectPropertyAssertion)ax;
@@ -396,7 +435,7 @@ public class ApplyChangesFromLogToNTK {
 										else if (oeoy instanceof DataProperty) ddm = KAON2Manager.factory().dataProperty(entity);
 										else if (oeoy instanceof ObjectProperty) ddm = KAON2Manager.factory().objectProperty(entity);
 										else if (oeoy instanceof Individual) ddm = KAON2Manager.factory().individual(entity);
-										else if (oeoy instanceof Datatype) ddm = KAON2Manager.factory().datatype(entity);
+										else if (oeoy instanceof Datatype) ddm = KAON2Manager.factory().datatype(xsd+entity); //assuming xsd for datatypes;
 										if (constantValue.length()>1 && ddm!=null && annoProp!=null){
 											constantValue=constantValue.substring(1);
 											String localN=Namespaces.guessLocalName(annoProp); //cannot use reserved names as values in ontology
@@ -407,7 +446,7 @@ public class ApplyChangesFromLogToNTK {
 									}
 
 									if (app!=null) {//check wether it is a valid axiom
-										System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
+										//System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
 										//Add or remove axiom
 										if (tt instanceof Addition){	
 											changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));
@@ -470,8 +509,23 @@ public class ApplyChangesFromLogToNTK {
 			}
 			else if (oeoy instanceof DataHasValue){
 				DataHasValue dav = (DataHasValue)oeoy;
-				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI()); 
-				ddm = KAON2Manager.factory().dataHasValue(dp, KAON2Manager.factory().constant(dav.getConstant()));
+				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI());
+				String cleanValue=dav.getConstant();
+				cleanValue=cleanValue.replace("%20", " ");
+				if (cleanValue.indexOf("???")>0){
+					String dataName=cleanValue.substring(cleanValue.indexOf("???")+3,cleanValue.length());
+					cleanValue=Namespaces.guessLocalName(cleanValue.substring(0, cleanValue.indexOf("???")));//cleanValue=cleanValue.replace("??", "^^");
+					if (dataName!=null)
+						ddm = KAON2Manager.factory().dataHasValue(dp, KAON2Manager.factory().constant(getObject(dataName,cleanValue)));
+					else
+						ddm = KAON2Manager.factory().dataHasValue(dp, KAON2Manager.factory().constant(cleanValue));
+				}	
+				else{
+					if (cleanValue.indexOf(localURI)>=0)
+						cleanValue=cleanValue.substring(localURI.length(), cleanValue.length());
+					ddm = KAON2Manager.factory().dataHasValue(dp, KAON2Manager.factory().constant(cleanValue));
+				}
+				//ddm = KAON2Manager.factory().dataHasValue(dp, KAON2Manager.factory().constant(cleanValue));
 			}
 			else if (oeoy instanceof DataMaxCardinality){
 				DataMaxCardinality dav = (DataMaxCardinality)oeoy;
@@ -572,6 +626,34 @@ public class ApplyChangesFromLogToNTK {
 		return ddm;
 	}
 	
+	public static Object getObject (String dataName, String cleanValue){
+		Object transformedValue;
+		if(dataName.equalsIgnoreCase(xsd+"float")) transformedValue=new Float(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"boolean")) transformedValue=new Boolean(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"dateTime")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"nonNegativeInteger")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"positiveInteger")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"string")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"time")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"byte")) transformedValue=new Byte(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"date")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"decimal")) transformedValue=new Float(cleanValue); //is not working
+		else if(dataName.equalsIgnoreCase(xsd+"double")) transformedValue=new Double(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"int")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"integer")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"Literal")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"long")) transformedValue=new Long(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"negativeInteger")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"normalizedString")) transformedValue=new String(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"positiveInteger")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"short")) transformedValue=new Short(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"unsignedByte")) transformedValue=new Byte(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"unsignedInt")) transformedValue=new Integer(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"unsignedShort")) transformedValue=new Short(cleanValue);
+		else if(dataName.equalsIgnoreCase(xsd+"anyURI")) transformedValue=new String(cleanValue); //Not sure what is the type in kaon
+		else transformedValue=new String(cleanValue);
+		return transformedValue;
+	}
 }
 
 /*

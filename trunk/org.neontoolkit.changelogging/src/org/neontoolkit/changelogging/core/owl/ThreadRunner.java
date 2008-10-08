@@ -29,6 +29,8 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.DataPropertyDomainChange.RemoveDataPropertyDomain;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.DataPropertyRangeChange.AddDataPropertyRange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.DataPropertyRangeChange.RemoveDataPropertyRange;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.DisjointDataPropertyChange.AddDisjointDataProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.DisjointDataPropertyChange.RemoveDisjointDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.EquivalentDataPropertyChange.AddEquivalentDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.EquivalentDataPropertyChange.RemoveEquivalentDataProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.FunctionalDataPropertyChange.AddFunctionalDataProperty;
@@ -37,8 +39,16 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange.SubDataPropertyOfChange.RemoveSubDataPropertyOf;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.DifferentIndividualChange.AddDifferentIndividual;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.DifferentIndividualChange.RemoveDifferentIndividual;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.IndividualDataPropertyChange.AddIndividualDataProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.IndividualDataPropertyChange.RemoveIndividualDataProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.IndividualObjectPropertyChange.AddInvidivualObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.IndividualObjectPropertyChange.RemoveInvidualObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.SameIndividualChange.AddSameIndividual;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange.SameIndividualChange.RemoveSameIndividual;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.AsymmetricObjectPropertyChange.AddAsymmetricObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.AsymmetricObjectPropertyChange.RemoveAsymmetricObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.DisjointObjectPropertyChange.AddDisjointObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.DisjointObjectPropertyChange.RemoveDisjointObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.EquivalentObjectPropertyChange.AddEquivalentObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.EquivalentObjectPropertyChange.RemoveEquivalentObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.FunctionalObjectPropertyChange.AddFunctionalObjectProperty;
@@ -47,10 +57,14 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.InverseFunctionalObjectPropertyChange.RemoveInverseFunctionalObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.InverseObjectPropertyChange.AddInverseObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.InverseObjectPropertyChange.RemoveInverseObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.IrreflexiveObjectPropertyChange.AddIrreflexiveObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.IrreflexiveObjectPropertyChange.RemoveIrreflexiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ObjectPropertyDomainChange.AddObjectPropertyDomain;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ObjectPropertyDomainChange.RemoveObjectPropertyDomain;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ObjectPropertyRangeChange.AddObjectPropertyRange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ObjectPropertyRangeChange.RemoveObjectPropertyRange;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ReflexiveObjectPropertyChange.AddReflexiveObjectProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.ReflexiveObjectPropertyChange.RemoveReflexiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.SubObjectPropertyOfChange.AddSubObjectPropertyOf;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.SubObjectPropertyOfChange.RemoveSubObjectPropertyOf;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.SymmetricObjectPropertyChange.AddSymmetricObjectProperty;
@@ -78,6 +92,8 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.Ontol
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddIndividual;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveClass;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveIndividual;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.AddProperty.AddAnnotationProperty;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange.OntologyChange.RemoveProperty.RemoveAnnotationProperty;
 import org.neontoolkit.owlodm.api.OWLEntity;
 import org.neontoolkit.owlodm.api.Axiom.Declaration;
 import org.neontoolkit.owlodm.api.Axiom.EntityAnnotation;
@@ -87,18 +103,27 @@ import org.neontoolkit.owlodm.api.Axiom.ClassAxiom.EquivalentClasses;
 import org.neontoolkit.owlodm.api.Axiom.ClassAxiom.SubClassOf;
 import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.DataPropertyDomain;
 import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.DataPropertyRange;
+import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.DisjointDataProperties;
 import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.EquivalentDataProperties;
 import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.FunctionalDataProperty;
 import org.neontoolkit.owlodm.api.Axiom.DataPropertyAxiom.SubDataPropertyOf;
 import org.neontoolkit.owlodm.api.Axiom.Fact.ClassAssertion;
+import org.neontoolkit.owlodm.api.Axiom.Fact.DataPropertyAssertion;
 import org.neontoolkit.owlodm.api.Axiom.Fact.DifferentIndividuals;
+import org.neontoolkit.owlodm.api.Axiom.Fact.NegativeDataPropertyAssertion;
+import org.neontoolkit.owlodm.api.Axiom.Fact.NegativeObjectPropertyAssertion;
+import org.neontoolkit.owlodm.api.Axiom.Fact.ObjectPropertyAssertion;
 import org.neontoolkit.owlodm.api.Axiom.Fact.SameIndividual;
+import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.AsymmetricObjectProperty;
+import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.DisjointObjectProperties;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.EquivalentObjectProperties;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.FunctionalObjectProperty;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.InverseFunctionalObjectProperty;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.InverseObjectProperties;
+import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.IrreflexiveObjectProperty;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyDomain;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ObjectPropertyRange;
+import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.ReflexiveObjectProperty;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SubObjectPropertyOf;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.SymmetricObjectProperty;
 import org.neontoolkit.owlodm.api.Axiom.ObjectPropertyAxiom.TransitiveObjectProperty;
@@ -141,6 +166,7 @@ public class ThreadRunner implements Runnable {
 	private Ontology changedOntology;
 	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
 	private Shell shell;
+	public static String localURI="http://localhost/";
 	
 	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto, Shell arg){
 		cType=cTypeX;
@@ -257,13 +283,25 @@ public class ThreadRunner implements Runnable {
         		else if (args.get(0).equals(Constants.ACTION_ANPROPERTY)){  // SHOULD TAKE CARE OF THIS ONE
         			Declaration declaration = new Declaration();
         			OWLEntity ot = new OWLEntity();
-        			ot.setURI(args.get(1));
+        			ot.setURI(args.get(1)+"?Annotation");  //TRICK
         			
         			declaration.setEntity(ot);
         			atomicChange.setAppliedAxiom(declaration);
         			changeList.add(atomicChange);
         			oyster2Conn.register(atomicChange);
         			
+        			OntologyChange classEntity = new OntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddAnnotationProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveAnnotationProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
         		}
         		else if(args.get(0).equals(Constants.ACTION_CLASS_SUBOF)){
         			SubClassOf subC = new SubClassOf();
@@ -386,9 +424,9 @@ public class ThreadRunner implements Runnable {
         							DataHasValue o = new DataHasValue();
         							o.setDataProperty(new DataProperty(args.get(3)));
         							String cleanValue=args.get(4).replace("]", "");
-        							if (cleanValue.indexOf("^^")>0)
-        								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
-        							o.setConstant(cleanValue);
+        							if (cleanValue.indexOf("^^<")>0)
+        								cleanValue=cleanValue.replace("^^<", "???").substring(0, cleanValue.length()-1);//cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));	
+        							o.setConstant(localURI+cleanValue);
         							subC.setSuperClass(o);
         						}else{
         							ObjectHasValue o = new ObjectHasValue();
@@ -541,9 +579,9 @@ public class ThreadRunner implements Runnable {
         							DataHasValue o = new DataHasValue();
         							o.setDataProperty(new DataProperty(args.get(3)));
         							String cleanValue=args.get(4).replace("]", "");
-        							if (cleanValue.indexOf("^^")>0)
-        								cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));
-        							o.setConstant(cleanValue);
+        							if (cleanValue.indexOf("^^<")>0)
+        								cleanValue=cleanValue.replace("^^<", "???").substring(0, cleanValue.length()-1);//cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));	
+        							o.setConstant(localURI+cleanValue);
         							ec.addEquivalentClasses(o);
         						}else{
         							ObjectHasValue o = new ObjectHasValue();
@@ -637,12 +675,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				// else return;
+        				else classEntity = new AddComment();// else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				// else return;
+        				else classEntity = new RemoveComment();// else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -839,6 +877,87 @@ public class ThreadRunner implements Runnable {
         			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_ASY)){ //HOW TO USE IT IN NTK
+        			AsymmetricObjectProperty oPE = new AsymmetricObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddAsymmetricObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveAsymmetricObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_DIS)){ //HOW TO USE IT IN NTK
+        			DisjointObjectProperties oPE = new DisjointObjectProperties();
+        			oPE.addDisjointObjectProperties(new ObjectProperty(args.get(1)));
+        			oPE.addDisjointObjectProperties(new ObjectProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(oPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDisjointObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDisjointObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2)); //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST) 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_IRR)){ //HOW TO USE IT IN NTK
+        			IrreflexiveObjectProperty oPE = new IrreflexiveObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddIrreflexiveObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveIrreflexiveObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_REF)){ //HOW TO USE IT IN NTK
+        			ReflexiveObjectProperty oPE = new ReflexiveObjectProperty();
+        			oPE.setObjectProperty(new ObjectProperty(args.get(1)));
+        			atomicChange.setAppliedAxiom(oPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLObjectPropertyChange classEntity = new OWLObjectPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddReflexiveObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveReflexiveObjectProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1)); 
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
         		else if(args.get(0).equals(Constants.ACTION_OBPROPERTY_ANN)){ 
         			// 1 = annotationProperty, 2=annotated entity, 3= value
         			EntityAnnotation ec = new EntityAnnotation();
@@ -861,12 +980,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				//else return;
+        				else classEntity = new AddComment();//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				//else return;
+        				else classEntity = new RemoveComment();//else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -978,6 +1097,27 @@ public class ThreadRunner implements Runnable {
         			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
+        		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_DIS)){ //HOW TO USE IT IN NTK?
+        			DisjointDataProperties dPE = new DisjointDataProperties();
+        			dPE.addDataProperties(new DataProperty(args.get(1)));
+        			dPE.addDataProperties(new DataProperty(args.get(2)));
+        			atomicChange.setAppliedAxiom(dPE);
+
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLDataPropertyChange classEntity = new OWLDataPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDisjointDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDisjointDataProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2)); //THIS IS PROBABLY ERROR (DIFFERENT FROM THE REST)
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
         		else if(args.get(0).equals(Constants.ACTION_DAPROPERTY_ANN)){ 
         			// 1 = annotationProperty, 2=annotated entity, 3= value
         			EntityAnnotation ec = new EntityAnnotation();
@@ -1000,12 +1140,12 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				//else return;
+        				else classEntity = new AddComment();//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				//else return;
+        				else classEntity = new RemoveComment();//else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -1104,6 +1244,104 @@ public class ThreadRunner implements Runnable {
         			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
         			oyster2Conn.register(classEntity);
         		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_DATAASSERTION)){
+        			DataPropertyAssertion subDP = new DataPropertyAssertion();
+        			subDP.setDataProperty(new DataProperty(args.get(1)));
+        			subDP.setSourceIndividual(new Individual(args.get(2)));
+        			String cleanValue=args.get(3);
+        			if (cleanValue.indexOf("^^<")>0)
+						cleanValue=cleanValue.replace("^^<", "???").substring(0, cleanValue.length()-1);//cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));	
+        			subDP.setTargetValue(localURI+cleanValue);
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddIndividualDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveIndividualDataProperty();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_OBJECTASSERTION)){
+        			ObjectPropertyAssertion subDP = new ObjectPropertyAssertion();
+        			subDP.setObjectProperty(new ObjectProperty(args.get(1)));
+        			subDP.setSourceIndividual(new Individual(args.get(2)));
+        			subDP.setTargetIndividual(new Individual(args.get(3)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddInvidivualObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveInvidualObjectProperty();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_NEGDATAASSERTION)){ //HOW TO USE IT IN NTK?
+        			NegativeDataPropertyAssertion subDP = new NegativeDataPropertyAssertion();
+        			subDP.setDataProperty(new DataProperty(args.get(1)));
+        			subDP.setSourceIndividual(new Individual(args.get(2)));
+        			String cleanValue=args.get(3);
+        			if (cleanValue.indexOf("^^<")>0)
+						cleanValue=cleanValue.replace("^^<", "???").substring(0, cleanValue.length()-1);//cleanValue=cleanValue.substring(0, cleanValue.indexOf("^^"));	
+        			subDP.setTargetValue(localURI+cleanValue);
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddIndividualDataProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveIndividualDataProperty();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_NEGOBJECTASSERTION)){ //HOW TO USE IT IN NTK?
+        			NegativeObjectPropertyAssertion subDP = new NegativeObjectPropertyAssertion();
+        			subDP.setObjectProperty(new ObjectProperty(args.get(1)));
+        			subDP.setSourceIndividual(new Individual(args.get(2)));
+        			subDP.setTargetIndividual(new Individual(args.get(3)));
+        			atomicChange.setAppliedAxiom(subDP);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			OWLIndividualChange classEntity = new OWLIndividualChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddInvidivualObjectProperty();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveInvidualObjectProperty();
+        			}			
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
         		else if(args.get(0).equals(Constants.ACTION_INDIVIDUAL_ANN)){ 
         			// 1 = annotationProperty, 2=annotated entity, 3= value
         			EntityAnnotation ec = new EntityAnnotation();
@@ -1126,12 +1364,50 @@ public class ThreadRunner implements Runnable {
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
-        				//else return;
+        				else classEntity = new AddComment();//else return;
         			}else if (atomicChange instanceof Removal){
         				String t=Namespaces.guessLocalName(args.get(1));
         				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
         				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
-        				//else return;
+        				else classEntity = new RemoveComment();//else return;
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(2));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if(args.get(0).equals(Constants.ACTION_DATYPE_ANN)){  
+        			// 1 = annotationProperty, 2=annotated entity, 3= value
+        			EntityAnnotation ec = new EntityAnnotation();
+        			
+        			Datatype ot;
+        			String localNE=Namespaces.guessLocalName(args.get(2)); //cannot use reserved names as values in ontology
+        			ot = new Datatype(localNE);
+        			ec.setEntity(ot);
+        			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
+        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
+        				ec.setAnnotationProperty(localN);
+        			else
+        				ec.setAnnotationProperty(args.get(1));
+        			ec.addEntityAnnotation(args.get(3));
+        			atomicChange.setAppliedAxiom(ec);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			
+        			AnnotationPropertyChange classEntity = new AnnotationPropertyChange();
+        			if (atomicChange instanceof Addition){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new AddComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new AddLabel();
+        				else classEntity = new AddComment();// else return;
+        			}else if (atomicChange instanceof Removal){
+        				String t=Namespaces.guessLocalName(args.get(1));
+        				if (t.equalsIgnoreCase("comment")) classEntity = new RemoveComment();
+        				else if (t.equalsIgnoreCase("label")) classEntity = new RemoveLabel();
+        				else classEntity = new RemoveComment();// else return;
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -1141,6 +1417,9 @@ public class ThreadRunner implements Runnable {
         			oyster2Conn.register(classEntity);
         		}
         		else{
+            		String see="";
+        			for (String as : args) see+=" "+as;
+        			System.out.println("didnt log: "+see);
         			return;
         		}
         		//Check if failed registration

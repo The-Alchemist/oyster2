@@ -56,12 +56,13 @@ public class Constants {
 	public static final String ACTION_INDIVIDUAL_MEM = "classMember";
 	public static final String ACTION_INDIVIDUAL_SAM = "same";
 	public static final String ACTION_INDIVIDUAL_DIF = "different";
-	public static final String ACTION_INDIVIDUAL_ANN = "individualAnnotation";
+	public static final String ACTION_INDIVIDUAL_DATAASSERTION = "dataMember";
+	public static final String ACTION_INDIVIDUAL_OBJECTASSERTION = "objectMember";
+	public static final String ACTION_INDIVIDUAL_ANN = "individualAnnotation";	
+	public static final String ACTION_INDIVIDUAL_NEGDATAASSERTION = "negativeDataMember"; //NOT WORKING IN NTK
+	public static final String ACTION_INDIVIDUAL_NEGOBJECTASSERTION = "negativeObjectMember"; //NOT WORKING IN NTK
 	
-	public static final String ACTION_INDIVIDUAL_DA = "individualDataProperty"; //NOT WORKING IN NTK
-	public static final String ACTION_INDIVIDUAL_OB = "individualObjectProperty"; //NOT WORKING IN NTK
-	public static final String ACTION_INDIVIDUAL_NEGDA = "individualNegativeDataProperty"; //NOT WORKING IN NTK
-	public static final String ACTION_INDIVIDUAL_NEGOB = "individualNegativeObjectProperty"; //NOT WORKING IN NTK
+	public static final String ACTION_DATYPE_ANN = "datatypeAnnotation";
 	
 	public static final String OWL_THINGS = "OWL_Things";
 }
