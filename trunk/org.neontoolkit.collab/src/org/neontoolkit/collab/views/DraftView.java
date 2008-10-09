@@ -361,7 +361,11 @@ public class DraftView extends ViewPart implements SelectionListener {
 					   	     				}
 					   	     			}
 					   	     			monitor.worked(20/changeURIs.size());
-					   	     			ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+					   	     			try{
+					   	     				ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+					   	     			}catch(Exception e){
+					   	     				//ignore
+					   	     			}
 					   	     			//oyster2Conn.remove(change); 
 					   	     			//do not loose the change
 					   	     			monitor.worked(20/changeURIs.size());

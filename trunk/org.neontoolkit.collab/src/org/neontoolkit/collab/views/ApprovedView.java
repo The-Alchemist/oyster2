@@ -322,7 +322,11 @@ public class ApprovedView extends ViewPart implements SelectionListener {
 					   	     				listToApply.add(changeInv);
 					   	     			}
 					   	     			monitor.worked(20/changeURIs.size());
-					   	     			ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+					   	     			try{
+					   	     				ApplyChangesFromLogToNTK.applyChanges(listToApply, change.getAppliedToOntology());
+					   	     			}catch(Exception e){
+					   	     				//ignore
+					   	     			}
 					   	     			oyster2Conn.submitToBeDeleted(cURI, person);
 					   	     			monitor.worked(20/changeURIs.size());
 			   	        			}
