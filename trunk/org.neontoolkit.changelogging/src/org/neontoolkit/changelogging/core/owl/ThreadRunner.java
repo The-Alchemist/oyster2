@@ -1473,7 +1473,7 @@ public class ThreadRunner implements Runnable {
         		else{
             		String see="";
         			for (String as : args) see+=" "+as;
-        			System.out.println("didnt log: "+see);
+        			System.out.println("didnt log (no change operation available!): "+see);
         			return;
         		}
         		//Check if failed registration
