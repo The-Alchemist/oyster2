@@ -167,6 +167,8 @@ public class ThreadRunner implements Runnable {
 	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
 	private Shell shell;
 	public static String localURI="http://localhost/";
+	public static String rdfsLiteral=localURI+"Literal";//www.w3.org/2000/01/rdf-schema#
+	public static String owlThing=localURI+"Thing";//http://www.w3.org/2002/07/owl#
 	
 	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto, Shell arg){
 		cType=cTypeX;
@@ -178,18 +180,15 @@ public class ThreadRunner implements Runnable {
 	
 		
 	public void run() {
-		shell.getDisplay().asyncExec(new Runnable () {
-            public void run () {
+			try{
             	OMVAtomicChange atomicChange = null;
-        		//System.out.println("changeType: "+cType);
-        		//System.out.println("axiom: "+args.get(0));
-        		//System.out.println("num of args "+ (args.size()-1));
+        		
             	try{
             		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             	}catch(Exception e){
+            		OWLChangeListener.working--;
             		e.printStackTrace();
             	}
-
         		
         		String date_time = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime());
         		if(cType.equals(ChangeType.ADD)){
@@ -214,6 +213,7 @@ public class ThreadRunner implements Runnable {
         			if (se.getLastName()==null || se.getFirstName()==null ||  se.getLastName().equalsIgnoreCase("") || se.getFirstName().equalsIgnoreCase("")) return;
         		}
         		catch(Exception e){
+        			OWLChangeListener.working--;
         			return;
         		}
         		atomicChange.addHasAuthor(se);
@@ -310,7 +310,7 @@ public class ThreadRunner implements Runnable {
         				subC.setSuperClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
         				atomicChange.setAppliedAxiom(subC);
         			}else{
-        				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
+        				if (args.get(2).replace("[", "").equalsIgnoreCase("all") || args.get(2).replace("[", "").equalsIgnoreCase("dataAll")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){						
         							DataAllValuesFrom o = new DataAllValuesFrom();
@@ -326,11 +326,12 @@ public class ThreadRunner implements Runnable {
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         					
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some") || args.get(2).replace("[", "").equalsIgnoreCase("dataSome")){
         					try {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
         							DataSomeValuesFrom o = new DataSomeValuesFrom();
@@ -346,6 +347,7 @@ public class ThreadRunner implements Runnable {
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}	
         				}
@@ -354,21 +356,29 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMinCardinality o = new DataMinCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}else{
         							ObjectMinCardinality o = new ObjectMinCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -377,21 +387,29 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMaxCardinality o = new DataMaxCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}else{
         							ObjectMaxCardinality o = new ObjectMaxCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}					
         				}
@@ -400,21 +418,29 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataExactCardinality o = new DataExactCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}else{
         							ObjectExactCardinality o = new ObjectExactCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							subC.setSuperClass(o);
         						}
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -437,6 +463,7 @@ public class ThreadRunner implements Runnable {
         						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						atomicChange.setAppliedAxiom(subC);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -465,7 +492,7 @@ public class ThreadRunner implements Runnable {
         				ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(2)));
         				atomicChange.setAppliedAxiom(ec);
         			}else{
-        				if (args.get(2).replace("[", "").equalsIgnoreCase("all")){
+        				if (args.get(2).replace("[", "").equalsIgnoreCase("all") || args.get(2).replace("[", "").equalsIgnoreCase("dataAll")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
@@ -481,10 +508,11 @@ public class ThreadRunner implements Runnable {
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
-        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some")){
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("some") || args.get(2).replace("[", "").equalsIgnoreCase("dataSome")){
         					try {
         						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(3)), true)){
@@ -500,6 +528,7 @@ public class ThreadRunner implements Runnable {
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -509,20 +538,28 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMinCardinality o = new DataMinCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}else{
         							ObjectMinCardinality o = new ObjectMinCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -532,20 +569,28 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataMaxCardinality o = new DataMaxCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}else{
         							ObjectMaxCardinality o = new ObjectMaxCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -555,20 +600,28 @@ public class ThreadRunner implements Runnable {
         						if (changedOntology.containsEntity(KAON2Manager.factory().dataProperty(args.get(4).replace("]", "")), true)){
         							DataExactCardinality o = new DataExactCardinality();
         							o.setDataProperty(new DataProperty(args.get(4).replace("]", "")));
-        							o.setDataRange(new Datatype(args.get(1)));
+        							if (args.size()>5)
+        								o.setDataRange(new Datatype(args.get(5).replace("]", "")));
+        							else
+        								o.setDataRange(new Datatype(rdfsLiteral));//o.setDataRange(new Datatype(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}else{
         							ObjectExactCardinality o = new ObjectExactCardinality();
         							o.setObjectProperty(new ObjectProperty(args.get(4).replace("]", "")));
-        							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        							if (args.size()>5)
+        								o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(5).replace("]", "")));
+            						else
+            							o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(owlThing));//o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
         							o.setCardinality(new Integer(args.get(3)));
         							ec.addEquivalentClasses(o);
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (NumberFormatException e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -591,6 +644,7 @@ public class ThreadRunner implements Runnable {
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
         				}
@@ -1468,57 +1522,11 @@ public class ThreadRunner implements Runnable {
     						"Change Capturing Error",
     						"The operation could not be performed. (Could be incorrect permission)!");
         		}
-            }
-        });	
+        		OWLChangeListener.working--;
+            }catch(Exception e){
+        		OWLChangeListener.working--;
+        		e.printStackTrace();
+        	}	
 	}
 }
 
-//private static List<OMVOntology> omvOntoList = new ArrayList<OMVOntology>();
-
-
-//if(oyster2Conn != null){
-//	omvOnto = new OMVOntology();
-//	omvOnto.setURI(monitoredOnto.getOntologyURI());
-//	omvOnto.setResourceLocator("");//monitoredOnto.getPhysicalURI());
-//	oyster2Conn.startTracking(omvOnto);
-//}
-//omvOnto.addName(Namespaces.guessLocalName(monitoredOnto.getOntologyURI()));
-//omvOntoList.add(omvOnto);
-
-
-/*
-if(args.get(0).equals(Constants.ACTION_CLASS)){
-	if(args.get(2).equals(Constants.OWL_THINGS)){ // create or remove an OWLClass
-		Declaration declaration = new Declaration();
-		declaration.setEntity(args.get(1));
-		atomicChange.setAppliedAxiom(declaration);
-		changeList.add(atomicChange);
-	}else{										  // create or remove a subClassOf relation
-		SubClassOf sco = new SubClassOf();
-		sco.setSubClass(args.get(1));
-		sco.setSuperClass(args.get(2));
-		atomicChange.setAppliedAxiom(sco);
-		changeList.add(atomicChange);
-	}			
-}
-
-*/
-
-//String date = String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)) + 
-//String.valueOf(Calendar.getInstance().get(Calendar.MONTH)) + 
-//String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
-//String time = String.valueOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + 
-//String.valueOf(Calendar.getInstance().get(Calendar.MINUTE)) + 
-//String.valueOf(Calendar.getInstance().get(Calendar.SECOND));
-
-
-/*
-se.setFirstName("System");
-try {
-	se.setLastName(InetAddress.getLocalHost().getHostName());
-} catch (UnknownHostException e) {
-	// TODO Auto-generated catch block
-	e.printStackTrace();
-}
-se.setHasRole(org.neontoolkit.registry.oyster2.Constants.SubjectExpert);
-*/

@@ -3,13 +3,12 @@ package org.neontoolkit.changelogging.gui.shutdown;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 import org.neontoolkit.changelogging.core.flogic.FlogicChangeListener;
 import org.neontoolkit.changelogging.core.owl.OWLChangeListener;
 import org.neontoolkit.changelogging.gui.actions.Track;
 import org.semanticweb.kaon2.api.Ontology;
-
 import com.ontoprise.ontostudio.gui.IPreShutdownListener;
 
 /* 
@@ -21,8 +20,16 @@ import com.ontoprise.ontostudio.gui.IPreShutdownListener;
 
 public class PreShutdown implements IPreShutdownListener {
 	private List<Ontology> modifiedOntos = new ArrayList<Ontology>();
-
 	public boolean isShutdownOK() {
+		if (OWLChangeListener.working>0) {
+			boolean answer = MessageDialog.openQuestion(
+       				PlatformUI.getWorkbench().getDisplay().getActiveShell(),
+       				"Change Capturing Plug-in",
+       				"NTK has "+ OWLChangeListener.working+" pending changes to log. Are you ABSOLUTLY sure you want to quit (and abort)?");
+			if (!answer) 
+				return false;
+		}
+		
 		init();
 		if(modifiedOntos.size() == 0)
 			return true;
@@ -43,9 +50,8 @@ public class PreShutdown implements IPreShutdownListener {
 		}
 		
 		try {
-			for(FlogicChangeListener listener : flistener){		
-				listener.getChangeLogger().persist();
-			}			
+			for(FlogicChangeListener listener : flistener)		
+				listener.getChangeLogger().persist();			
 		}catch (Exception e) {
 			e.printStackTrace();
 			return true;
