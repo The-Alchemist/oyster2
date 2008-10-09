@@ -136,7 +136,6 @@ public class ReflectInNavigatorThread implements Runnable {
 				ApplyChangesFromLogToNTK.applyChanges(toApply,t.getAppliedToOntology());
 			}
 		}
-		System.out.println();
 		//Here reflect changes to ontologies that didnt have changes before syncrhonization but now they have
 		Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
 		for (OMVOntology o1 : tOntos){

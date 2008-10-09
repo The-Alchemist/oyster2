@@ -70,7 +70,7 @@ public class OWLChangeListener implements OntologyListener {
 	public void ontologyUpdated(final Ontology changedOnto,final Ontology sourceOnto,
 			final List<OntologyChangeEvent> changes,final Set<Entity> added,final Set<Entity> removed) {
 		
-		System.out.println("size: "+changes.size()+ " selected element "+Track.getSelectedElement());
+		//System.out.println("size: "+changes.size()+ " selected element "+Track.getSelectedElement());
 		shell.getDisplay().asyncExec(new Runnable() {
 	           public void run() {
 	        	   Job exportJob = new Job("Logging changes...") {
@@ -130,7 +130,7 @@ public class OWLChangeListener implements OntologyListener {
 	        		    					args.add(arg);
 	        		    				}
 	        		    			}
-	        		    			System.out.println("going to check this axiom: "+getSerial(args));
+	        		    			//System.out.println("going to check this axiom: "+getSerial(args));
 	        		    			boolean doIt=false;
 	        		    			if (isCollab){
 	        		    				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
