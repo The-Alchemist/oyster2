@@ -65,7 +65,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 				protected IStatus run(IProgressMonitor monitor) {
 					monitor.beginTask("Starting registry...(The first time please wait few minutes)", 100);
 					try {
-						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"org.neontoolkit.registry.api_2.2.0.jar";
+						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"org.neontoolkit.registry.api_2.3.0.jar";
 						monitor.worked(10);
 						sOyster = _store.getString("SUPEROYSTER");
 						pOyster = _store.getString("PUSHOYSTER");
@@ -83,12 +83,12 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						else{	
 							monitor.worked(20);
 							if (!superOysterStorage()){
-								File tFile = new File("O2serverfiles/localRegistry.owl"); //FIXED FOR NOW...
+								File tFile = new File("server/localRegistry.owl"); //FIXED FOR NOW...
 								if ((!tFile.exists())
 										|| (tFile.length() <= 0)) {
 									if (!readLocally){
-										System.out.println("waiting 30S...");
-										Thread.sleep(30000);
+										System.out.println("waiting 10S..."); //30s
+										Thread.sleep(10000);
 									}else Thread.sleep(7000);
 								}
 								else {
