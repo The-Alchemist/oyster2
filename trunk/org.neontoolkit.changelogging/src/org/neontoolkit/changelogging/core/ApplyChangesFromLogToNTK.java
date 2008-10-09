@@ -81,13 +81,18 @@ import org.semanticweb.kaon2.api.OntologyChangeEvent;
 import org.semanticweb.kaon2.api.OntologyManager;
 import org.semanticweb.kaon2.api.owl.axioms.DataPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyAttribute;
+import org.semanticweb.kaon2.api.owl.elements.DataCardinality;
 import org.semanticweb.kaon2.api.owl.elements.DataPropertyExpression;
 import org.semanticweb.kaon2.api.owl.elements.DataRange;
+import org.semanticweb.kaon2.api.owl.elements.ObjectCardinality;
+
 import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
 
 public class ApplyChangesFromLogToNTK {
 	public static String xsd="http://www.w3.org/2001/XMLSchema#";
 	public static String localURI="http://localhost/";
+	public static String owlThing=localURI+"Thing";
+	public static String rdfsLiteral=localURI+"Literal";
 	public static void applyChanges(List<OMVChange> p1, OMVOntology o){
 		OntologyManager connection;		
 		try {
@@ -446,7 +451,7 @@ public class ApplyChangesFromLogToNTK {
 									}
 
 									if (app!=null) {//check wether it is a valid axiom
-										//System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
+										System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
 										//Add or remove axiom
 										if (tt instanceof Addition){	
 											changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));
@@ -490,7 +495,11 @@ public class ApplyChangesFromLogToNTK {
 			if (oeoy instanceof org.neontoolkit.owlodm.api.Description.OWLClass){
 				//org.semanticweb.kaon2.api.owl.elements.OWLEntity ddm = KAON2Manager.factory().owlClass(((org.neontoolkit.owlodm.api.Description.OWLClass)oeoy).getURI());
 				//app = KAON2Manager.factory().declaration(ddm);
-				ddm = KAON2Manager.factory().owlClass(((org.neontoolkit.owlodm.api.Description.OWLClass)oeoy).getURI());
+				String classURI=((org.neontoolkit.owlodm.api.Description.OWLClass)oeoy).getURI();
+				if (classURI.equalsIgnoreCase(owlThing))
+					ddm = KAON2Manager.factory().owlClass(org.semanticweb.kaon2.api.owl.elements.OWLClass.OWL_THING);
+				else
+					ddm = KAON2Manager.factory().owlClass(classURI);
 			}
 			else if (oeoy instanceof DataAllValuesFrom){
 				DataAllValuesFrom dav = (DataAllValuesFrom)oeoy;
@@ -503,9 +512,13 @@ public class ApplyChangesFromLogToNTK {
 			}
 			else if (oeoy instanceof DataExactCardinality){
 				DataExactCardinality dav = (DataExactCardinality)oeoy;
-				DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
-				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI()); 
-				ddm = KAON2Manager.factory().dataCardinality(dav.getCardinality(), dav.getCardinality(), dp, dr);
+				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI());
+				if (!dav.getDataRange().getURI().equalsIgnoreCase(rdfsLiteral)){
+					DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.EXACT, dav.getCardinality(), dp, dr);
+				}
+				else
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.EXACT, dav.getCardinality(), dp, KAON2Manager.factory().rdfsLiteral()); 
 			}
 			else if (oeoy instanceof DataHasValue){
 				DataHasValue dav = (DataHasValue)oeoy;
@@ -529,15 +542,23 @@ public class ApplyChangesFromLogToNTK {
 			}
 			else if (oeoy instanceof DataMaxCardinality){
 				DataMaxCardinality dav = (DataMaxCardinality)oeoy;
-				DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
-				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI()); 
-				ddm = KAON2Manager.factory().dataCardinality(-1, dav.getCardinality(), dp, dr);
+				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI());
+				if (!dav.getDataRange().getURI().equalsIgnoreCase(rdfsLiteral)){
+					DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.MAXIMUM, dav.getCardinality(), dp, dr);
+				}
+				else
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.MAXIMUM, dav.getCardinality(), dp, KAON2Manager.factory().rdfsLiteral());
 			}
 			else if (oeoy instanceof DataMinCardinality){
 				DataMinCardinality dav = (DataMinCardinality)oeoy;
-				DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
-				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI()); 
-				ddm = KAON2Manager.factory().dataCardinality(dav.getCardinality(),-1, dp, dr);
+				org.semanticweb.kaon2.api.owl.elements.DataProperty dp = KAON2Manager.factory().dataProperty(dav.getDataProperty().getURI());
+				if (!dav.getDataRange().getURI().equalsIgnoreCase(rdfsLiteral)){
+					DataRange dr = KAON2Manager.factory().dataRange(dav.getDataRange().getURI(), new Namespaces());
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.MINIMUM, dav.getCardinality(), dp, dr);
+				}
+				else
+					ddm = KAON2Manager.factory().dataCardinality(DataCardinality.MINIMUM,dav.getCardinality(), dp, KAON2Manager.factory().rdfsLiteral());
 			}
 			else if (oeoy instanceof DataSomeValuesFrom){
 				DataSomeValuesFrom dav = (DataSomeValuesFrom)oeoy;
@@ -563,8 +584,12 @@ public class ApplyChangesFromLogToNTK {
 			else if (oeoy instanceof ObjectExactCardinality){
 				ObjectExactCardinality dav = (ObjectExactCardinality)oeoy;
 				org.semanticweb.kaon2.api.owl.elements.ObjectProperty op = KAON2Manager.factory().objectProperty(dav.getObjectProperty().getURI());
-				org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
-				ddm = KAON2Manager.factory().objectCardinality(dav.getCardinality(), dav.getCardinality(), op, owlClassIn);
+				if (!dav.getOWLClass().getURI().equalsIgnoreCase(owlThing)){
+					org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.EXACT, dav.getCardinality(), op, owlClassIn);
+				}
+				else
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.EXACT, dav.getCardinality(), op, KAON2Manager.factory().owlClass(org.semanticweb.kaon2.api.owl.elements.OWLClass.OWL_THING)); 
 			}
 			else if (oeoy instanceof ObjectExistsSelf){
 				ObjectExistsSelf dav = (ObjectExistsSelf)oeoy;
@@ -588,14 +613,22 @@ public class ApplyChangesFromLogToNTK {
 			else if (oeoy instanceof ObjectMaxCardinality){
 				ObjectMaxCardinality dav = (ObjectMaxCardinality)oeoy;
 				org.semanticweb.kaon2.api.owl.elements.ObjectProperty op = KAON2Manager.factory().objectProperty(dav.getObjectProperty().getURI());
-				org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
-				ddm = KAON2Manager.factory().objectCardinality(-1, dav.getCardinality(), op, owlClassIn);
+				if (!dav.getOWLClass().getURI().equalsIgnoreCase(owlThing)){
+					org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.MAXIMUM, dav.getCardinality(), op, owlClassIn);
+				}
+				else
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.MAXIMUM,dav.getCardinality(), op, KAON2Manager.factory().owlClass(org.semanticweb.kaon2.api.owl.elements.OWLClass.OWL_THING)); 
 			}
 			else if (oeoy instanceof ObjectMinCardinality){
 				ObjectMinCardinality dav = (ObjectMinCardinality)oeoy;
 				org.semanticweb.kaon2.api.owl.elements.ObjectProperty op = KAON2Manager.factory().objectProperty(dav.getObjectProperty().getURI());
-				org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
-				ddm = KAON2Manager.factory().objectCardinality(dav.getCardinality(), -1, op, owlClassIn);
+				if (!dav.getOWLClass().getURI().equalsIgnoreCase(owlThing)){
+					org.semanticweb.kaon2.api.owl.elements.Description owlClassIn=transformDescription(dav.getOWLClass());
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.MINIMUM, dav.getCardinality(), op, owlClassIn);
+				}
+				else
+					ddm = KAON2Manager.factory().objectCardinality(ObjectCardinality.MINIMUM,dav.getCardinality(), op, KAON2Manager.factory().owlClass(org.semanticweb.kaon2.api.owl.elements.OWLClass.OWL_THING)); 
 			}
 			else if (oeoy instanceof ObjectOneOf){
 				ObjectOneOf dav = (ObjectOneOf)oeoy;
