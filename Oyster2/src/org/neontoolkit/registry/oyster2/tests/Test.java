@@ -37,7 +37,7 @@ public class Test {
 		
 		//NEW CONNECTION
 		Oyster2Manager.setLogEnabled(true);
-		Oyster2Manager.setAutomaticSyncrhonization(false);
+		//Oyster2Manager.setAutomaticSyncrhonization(false);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.getConnection();
 		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
@@ -47,7 +47,7 @@ public class Test {
 		if (oyster2Conn==null) shutdown();
 		
 		//HERE WE TEST IMPORT METHOD
-		oyster2Conn.importOntology("F:\\myTestWatson.owl");//wine.rdf");
+		oyster2Conn.importOntology("F:\\wine.rdf");//"F:\\myTestWatson.owl");
 		
 		//IMPORTED ONTOLOGY
 		OMVOntology newOnto1 = new OMVOntology();

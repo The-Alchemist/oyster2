@@ -250,6 +250,7 @@ public class Oyster2Factory {
     private ConsoleHandler handler = new ConsoleHandler();
 	private Logger logger = Logger.getLogger("org.neon_toolkit.registry.Logging");
 	private boolean logEnabled=false;
+	private boolean shadowCopy=false; //KEEP SECOND FILE??? NO!!!!
 
 
 	/**
@@ -390,21 +391,47 @@ public class Oyster2Factory {
 				/* For the second file */ 
 				
 				if (getSuperOysterIP()==null){
-					if (!localRegistryFile.getParentFile().exists())
-						localRegistryFile.getParentFile().mkdir();
-				
-					localRegistryFile.createNewFile();
-					resolver.registerReplacement(Constants.LocalRegistryURI,
-						"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
-				
-					localRegistryURI = Constants.LocalRegistryURI;				
-					connection.setOntologyResolver(resolver);
-				
-					this.localRegistryOntology = connection.createOntology(
-						localRegistryURI, new HashMap<String, Object>());
-				
-					this.localRegistryOntology.addOntologyProperty(
-						Constants.VERSIONINFO, Integer.toString(1));
+					if (shadowCopy){ //ORIGINAL
+						if (!localRegistryFile.getParentFile().exists())
+							localRegistryFile.getParentFile().mkdir();
+						localRegistryFile.createNewFile();
+						
+						resolver.registerReplacement(Constants.LocalRegistryURI,
+								"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
+						
+						localRegistryURI = Constants.LocalRegistryURI;				
+						connection.setOntologyResolver(resolver);
+						
+						this.localRegistryOntology = connection.createOntology(
+							localRegistryURI, new HashMap<String, Object>());
+						
+						this.localRegistryOntology.addOntologyProperty(
+							Constants.VERSIONINFO, Integer.toString(1));
+					}
+					else{  //THIS ONE IS THE ONLY ONE THAT WILL BE USED (IF SET FALSE THE SHADOW COPY)
+						resolver.registerReplacement(Constants.LocalRegistryURI,
+								"kaon2rmi://localhost?" + Constants.LocalRegistryURI);
+						
+						localRegistryURI = Constants.LocalRegistryURI;				
+						connection.setOntologyResolver(resolver);
+						
+						try{//TRY TO OPEN ONTOLOGY
+							this.localRegistryOntology = connection.openOntology(
+								localRegistryURI, new HashMap<String, Object>());
+						}catch(Exception e){
+							//ignore
+						}
+						
+						if (this.localRegistryOntology==null) { //THE ONTOLOGY DOES NOT EXISTS
+							System.out.println("creating ontology registry");
+							this.localRegistryOntology = connection.createOntology(
+								localRegistryURI, new HashMap<String, Object>());
+								
+							this.localRegistryOntology.addOntologyProperty(
+								Constants.VERSIONINFO, Integer.toString(1));
+						}
+					}
+					
 				}
 				
 				/*
@@ -794,6 +821,8 @@ public class Oyster2Factory {
 
 	public File getLocalRegistryFile() {
 		if (getSuperOysterIP()!=null) //To add super oyster functionality
+			return null;
+		if (!shadowCopy)  //TEST SHADOW COPY
 			return null;
 		return this.localRegistryFile;
 	}
