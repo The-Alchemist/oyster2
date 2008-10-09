@@ -114,7 +114,7 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 			public void widgetSelected(SelectionEvent e) {
 				if (StartRegistry.connection==null && StartRegistry.serverProcess==null){
 					try{
-						File tFile = new File("O2serverfiles/localRegistry.owl");
+						File tFile = new File("O2serverfiles/localRegistry.owl"); //NOT NECESSARY ANYMORE BUT JUST FOR PREV VERSIONS...
 						if (tFile.exists())	tFile.delete();
 						tFile = new File("server/localRegistry.owl");
 						if (tFile.exists())	tFile.delete();
