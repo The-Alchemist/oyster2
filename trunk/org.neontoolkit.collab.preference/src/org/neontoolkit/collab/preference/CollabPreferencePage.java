@@ -326,5 +326,4 @@ public class CollabPreferencePage extends PreferencePage implements
 		  }
 		  return null;
 	}
-
 }

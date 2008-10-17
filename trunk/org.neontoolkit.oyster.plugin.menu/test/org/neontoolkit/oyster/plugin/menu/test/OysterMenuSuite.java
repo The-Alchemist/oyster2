@@ -8,17 +8,17 @@ import org.eclipse.jface.action.IAction;
 import org.junit.Test;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 
-public class OysterStartStopTest extends OysterMenuAbstractTest {
+public class OysterMenuSuite extends OysterMenuAbstractTest {
 
 	private IAction actionNew;
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(OysterStartStopTest.class);
+		return new JUnit4TestAdapter(OysterMenuSuite.class);
 	}
 	    
     @Test
     public void startTest() throws Exception {
-    	System.out.println("Test 1: Start Registry");
     	System.out.println("-----------------------test1-------------------------");
+    	System.out.println("Test 1: Start Registry");
     	StartRegistry registry = new StartRegistry();
     	registry.run(actionNew);
     	int wait=9; //wait maximum 90 sec
@@ -31,8 +31,8 @@ public class OysterStartStopTest extends OysterMenuAbstractTest {
 	
     @Test
     public void stopTest() throws Exception {
-    	System.out.println("Test 2: Stop Registry");
     	System.out.println("-----------------------test2-------------------------");
+    	System.out.println("Test 2: Stop Registry");
     	StartRegistry registry = new StartRegistry();
     	registry.run(actionNew);
     	int wait=9; //wait maximum 90 sec
