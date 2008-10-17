@@ -22,7 +22,7 @@ import com.ontoprise.ontostudio.datamodel.DatamodelPlugin;
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 
 
-public class StartChangeLogging extends ChangeLoggingAbstractTest {
+public class ChangeLoggingTest extends ChangeLoggingBefore {
 
 	private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
 	private IAction actionNew;
@@ -30,13 +30,13 @@ public class StartChangeLogging extends ChangeLoggingAbstractTest {
 	public static final String USER_FIRSTNAME = "USER_FIRSTNAME";
 	public static final String USER_LASTNAME = "USER_LASTNAME";
 	public static junit.framework.Test suite() {
-		return new JUnit4TestAdapter(StartChangeLogging.class);
+		return new JUnit4TestAdapter(ChangeLoggingTest.class);
 	}
 	    
     @Test
     public void doLogging() throws Exception {
-    	System.out.println("Test 1: Change Logging");
     	System.out.println("-----------------------test1-------------------------");
+    	System.out.println("Test 1: Change Logging");
     	System.out.println();
     	System.out.println("Sub1: Start Registry");
     	StartRegistry registry = new StartRegistry();
@@ -68,8 +68,8 @@ public class StartChangeLogging extends ChangeLoggingAbstractTest {
     
     @Test
     public void addChange() throws Exception {
-    	System.out.println("Test 2: Check if a change is logged");
     	System.out.println("-----------------------test2-------------------------");
+    	System.out.println("Test 2: Check if a change is logged");
     	System.out.println();
     	System.out.println("Sub1: Add Change");
     	org.semanticweb.kaon2.api.owl.elements.OWLEntity ddm=null;
