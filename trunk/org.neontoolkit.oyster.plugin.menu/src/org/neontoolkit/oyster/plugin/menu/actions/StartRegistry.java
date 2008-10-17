@@ -124,11 +124,13 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 			exportJob.schedule();
 		}
 		else {
-			boolean ans=
-				MessageDialog.openQuestion(
+			boolean ans;
+			if (window!=null && window.getShell()!=null){
+				ans=MessageDialog.openQuestion(
 						window.getShell(),
 						"Menu Plug-in",
 						"Are you sure you want to stop Oyster?");
+			}else ans=true; //FOR THE JUNIT
 			if (ans){
 				stopOyster();
 				if(serverProcess!=null && !superOysterStorage()) {
@@ -158,6 +160,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void changeAction(){
+		if (actionNew==null)	return; //FOR JUNIT
 		if (start) {
 			actionNew.setChecked(false);
 			actionNew.setText(startRegistryText);	

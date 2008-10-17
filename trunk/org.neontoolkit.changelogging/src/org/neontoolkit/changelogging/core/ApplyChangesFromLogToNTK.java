@@ -451,7 +451,7 @@ public class ApplyChangesFromLogToNTK {
 									}
 
 									if (app!=null) {//check wether it is a valid axiom
-										//System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString());
+										//System.out.println("Going to apply axiom: "+app.toString()+ " "+tt.getClass().toString()+ " size to apply: "+p1.size());
 										//Add or remove axiom
 										if (tt instanceof Addition){	
 											changes.add(new OntologyChangeEvent(app,OntologyChangeEvent.ChangeType.ADD));

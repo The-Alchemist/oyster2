@@ -71,103 +71,99 @@ public class OWLChangeListener implements OntologyListener {
 			final List<OntologyChangeEvent> changes,final Set<Entity> added,final Set<Entity> removed) {
 		
 		//System.out.println("size: "+changes.size()+ " selected element "+Track.getSelectedElement());
-		shell.getDisplay().asyncExec(new Runnable() {
-	           public void run() {
-	        	   Job exportJob = new Job("Logging changes...") {
-	            		protected IStatus run(IProgressMonitor monitor) {
-	            			monitor.beginTask("Logging changes...", 100);
-	            			try {
-	            				monitor.worked(10);
-	            				String selElement = Track.getSelectedElement();
-	        		       		boolean itIs=false;
-	        		       		isChanged = true;
-	        	           
-	        		       		if (isCollab && changes.size()>1) {
-	        		    			StringBuffer sbmm = new StringBuffer();
-	        		    			for (OntologyChangeEvent mm : changes){
-	        		    				Axiom axmm = mm.getAxiom();
-	        		    				axmm.toString(sbmm, new Namespaces());
-	        		    				if (sbmm.indexOf(selElement)>0) itIs=true;
-	        		    			}
-	        		    		}
-	        		       		monitor.worked(10);
-	        		    		for (int i=0;i<changes.size();i++){
-	        		    			ChangeType changeType = changes.get(i).getChangeType();
-	        		    			StringBuffer sb = new StringBuffer();
-	        		    			Axiom ax = changes.get(i).getAxiom();
-	        		    			
-	        		    			ax.toString(sb, new Namespaces());
-	        		    			sb.deleteCharAt(sb.indexOf("["));
-	        		    			sb.deleteCharAt(sb.indexOf("]"));
-	        		    			
-	        		    			if (sb.indexOf("\"")>0){
-	        		    				int start = sb.indexOf("\"");
-	        		    				if (sb.indexOf("\"", start+1)>0){
-	        		    					int end = sb.indexOf("\"", start+1);
-	        		    					String value = sb.substring(start+1, end);
-	        		    					value = value.replace(" ", "%20");
-	        		    					value = value.replace("\b", "%20");
-	        		    					value = value.replace("\n", "%20");
-	        		    					value = value.replace("\t", "%20");
-	        		    					value = value.replace("\r", "%20");
-	        		    					value = value.replace("\f", "%20");
-	        		    					sb.replace(start, end+1, value);
-	        		    				}
-	        		    			}
-	        		    			if (sb.indexOf(OWLClass.OWL_THING)>0){
-	        		    				int start = sb.indexOf(OWLClass.OWL_THING);
-	        		    				sb.replace(start, start+OWLClass.OWL_THING.length(), owlThing);
-	        		    			}
-	        		    			List<String> args = new ArrayList<String>();
-	        		    			while(sb.length()>0){
-	        		    				if(sb.indexOf(" ") != -1){
-	        		    					String arg = sb.substring(0, sb.indexOf(" "));
-	        		    					sb.delete(0, sb.indexOf(" ")+1);
-	        		    					args.add(arg);
-	        		    				}else{
-	        		    					String arg = sb.toString();
-	        		    					sb.delete(0, sb.length());
-	        		    					args.add(arg);
-	        		    				}
-	        		    			}
-	        		    			//System.out.println("going to check this axiom: "+getSerial(args));
-	        		    			boolean doIt=false;
-	        		    			if (isCollab){
-	        		    				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
-	        		    				else if (args.size()>2 && args.get(2) != null && args.get(2).equalsIgnoreCase(selElement)) doIt=true;
-	        		    				else if (args.size()>3 && args.get(3) != null && args.get(3).equalsIgnoreCase(selElement)) doIt=true;
-	        		    				else if (args.size()>4 && args.get(4) != null && args.get(4).equalsIgnoreCase(selElement)) doIt=true;
-	        		    				else if (Track.getAddedIndividual()) {doIt=true;Track.resetAddedIndividual();}
-	        		    				else if (changes.size()>1) {if (itIs) doIt=true;}
-	        		    			}
-	        		    			else doIt=true;
-	        		    			
-	        		    			if (doIt){
-	        		    				working++;
-	        		    				ThreadRunner tr = new ThreadRunner(changeType, args, omvOnto, changedOnto, shell);
-	        		    				executor.execute(tr); 			//applyChange(changeType, args);
-	        		    			}
-	        		    			else{
-	        		    				System.out.println("didnt log this change: "+getSerial(args)+ " elementselected had: "+selElement);
-	        		    			}
-	        		    			monitor.worked(80/changes.size());
-	        		    		}
-	            			}catch (Exception e) {
-	            				e.printStackTrace();
-	            			}	
-	            			finally{
-	            				monitor.done();
-	            			}
-	            			return Status.OK_STATUS;
-	            		}
-	        		};
-	        		
-	        		exportJob.setUser(true);
-	    			exportJob.schedule();
-	    			
-	    			
-	           }
-		});
+		Job exportJob = new Job("Logging changes...") {
+    		protected IStatus run(IProgressMonitor monitor) {
+    			monitor.beginTask("Logging changes...", 100);
+    			try {
+    				monitor.worked(10);
+    				String selElement = Track.getSelectedElement();
+		       		boolean itIs=false;
+		       		isChanged = true;
+	           
+		       		if (isCollab && changes.size()>1) {
+		    			StringBuffer sbmm = new StringBuffer();
+		    			for (OntologyChangeEvent mm : changes){
+		    				Axiom axmm = mm.getAxiom();
+		    				axmm.toString(sbmm, new Namespaces());
+		    				if (sbmm.indexOf(selElement)>0) itIs=true;
+		    			}
+		    		}
+		       		monitor.worked(10);
+		    		for (int i=0;i<changes.size();i++){
+		    			ChangeType changeType = changes.get(i).getChangeType();
+		    			StringBuffer sb = new StringBuffer();
+		    			Axiom ax = changes.get(i).getAxiom();
+		    			
+		    			ax.toString(sb, new Namespaces());
+		    			sb.deleteCharAt(sb.indexOf("["));
+		    			sb.deleteCharAt(sb.indexOf("]"));
+		    			
+		    			if (sb.indexOf("\"")>0){
+		    				int start = sb.indexOf("\"");
+		    				if (sb.indexOf("\"", start+1)>0){
+		    					int end = sb.indexOf("\"", start+1);
+		    					String value = sb.substring(start+1, end);
+		    					value = value.replace(" ", "%20");
+		    					value = value.replace("\b", "%20");
+		    					value = value.replace("\n", "%20");
+		    					value = value.replace("\t", "%20");
+		    					value = value.replace("\r", "%20");
+		    					value = value.replace("\f", "%20");
+		    					sb.replace(start, end+1, value);
+		    				}
+		    			}
+		    			if (sb.indexOf(OWLClass.OWL_THING)>0){
+		    				int start = sb.indexOf(OWLClass.OWL_THING);
+		    				sb.replace(start, start+OWLClass.OWL_THING.length(), owlThing);
+		    			}
+		    			List<String> args = new ArrayList<String>();
+		    			while(sb.length()>0){
+		    				if(sb.indexOf(" ") != -1){
+		    					String arg = sb.substring(0, sb.indexOf(" "));
+		    					sb.delete(0, sb.indexOf(" ")+1);
+		    					args.add(arg);
+		    				}else{
+		    					String arg = sb.toString();
+		    					sb.delete(0, sb.length());
+		    					args.add(arg);
+		    				}
+		    			}
+		    			//System.out.println("going to check this axiom: "+getSerial(args));
+		    			boolean doIt=false;
+		    			if (isCollab){
+		    				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
+		    				else if (args.size()>2 && args.get(2) != null && args.get(2).equalsIgnoreCase(selElement)) doIt=true;
+		    				else if (args.size()>3 && args.get(3) != null && args.get(3).equalsIgnoreCase(selElement)) doIt=true;
+		    				else if (args.size()>4 && args.get(4) != null && args.get(4).equalsIgnoreCase(selElement)) doIt=true;
+		    				else if (Track.getAddedIndividual()) {doIt=true;Track.resetAddedIndividual();}
+		    				else if (changes.size()>1) {if (itIs) doIt=true;}
+		    			}
+		    			else doIt=true;
+		    			
+		    			if (doIt){
+		    				working++;
+		    				ThreadRunner tr = new ThreadRunner(changeType, args, omvOnto, changedOnto, shell);
+		    				executor.execute(tr); 			//applyChange(changeType, args);
+		    			}
+		    			else{
+		    				System.out.println("didnt log this change: "+getSerial(args)+ " elementselected had: "+selElement);
+		    			}
+		    			monitor.worked(80/changes.size());
+		    		}
+    			}catch (Exception e) {
+    				e.printStackTrace();
+    			}	
+    			finally{
+    				monitor.done();
+    			}
+    			return Status.OK_STATUS;
+    		}
+		};
+		
+		exportJob.setUser(true);
+		exportJob.schedule();
+	        	   
+ 		
 	}
 	
 	private String getSerial(List<String> args){
@@ -275,3 +271,9 @@ if(changedOnto.containsAxiom(ax,true)){
 e.printStackTrace();
 }
 */
+
+//shell.getDisplay().asyncExec(new Runnable() {
+//       public void run() {			
+			
+  //     }
+//});
