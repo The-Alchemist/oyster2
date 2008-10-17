@@ -14,6 +14,7 @@ public class Activator extends AbstractUIPlugin {
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.neontoolkit.changelogging";
 
+	
 	// The shared instance
 	private static Activator plugin;
 	
@@ -21,7 +22,8 @@ public class Activator extends AbstractUIPlugin {
 	 * The constructor
 	 */
 	public Activator() {
-		new Thread(new AddStatus(GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell())).start();
+		if (GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()!=null) //FOR THE JUNIT
+			new Thread(new AddStatus(GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell())).start();
 	}
 
 	/*

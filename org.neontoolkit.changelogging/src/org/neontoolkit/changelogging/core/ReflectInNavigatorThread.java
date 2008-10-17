@@ -20,7 +20,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
-import org.neontoolkit.registry.api.Oyster2Manager;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
 import org.neontoolkit.workflow.api.Action.EntityAction.Delete;
@@ -131,8 +130,8 @@ public class ReflectInNavigatorThread implements Runnable {
 			List<OMVChange> toApply = oyster2Conn.getChanges(t.getAppliedToOntology(), id);
 			if (toApply!=null && toApply.size()>0){
 				Collections.reverse(toApply);
-				System.out.println("To Apply (adding to existing changes of the ontology):");
-				System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
+				//System.out.println("To Apply (adding to existing changes of the ontology):");
+				//System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 				ApplyChangesFromLogToNTK.applyChanges(toApply,t.getAppliedToOntology());
 			}
 		}
@@ -146,8 +145,8 @@ public class ReflectInNavigatorThread implements Runnable {
 				List<OMVChange> toApply = oyster2Conn.getChanges(o1,null);
 				if (toApply!=null && toApply.size()>0){
 					Collections.reverse(toApply);
-					System.out.println("To Apply (initial set of changes for the ontology):");
-					System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
+					//System.out.println("To Apply (initial set of changes for the ontology):");
+					//System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
 				}
 			}
@@ -187,7 +186,7 @@ public class ReflectInNavigatorThread implements Runnable {
 		for (Action ac : listApplyActions){
 			try{
 				if (ac instanceof Delete){ //ONLY APPLY ACTION WHEN THE ELEMENT WAS SENT TO DRAFT
-					System.out.println("checking if apply delete action: "+ac.getURI());
+					//System.out.println("checking if apply delete action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((Delete)ac).getRelatedChange());
 					if (listApplyActions.size()>1){
 						List<Action> prevAsso = new LinkedList<Action>();
@@ -203,7 +202,7 @@ public class ReflectInNavigatorThread implements Runnable {
 							}
 						}
 						if (prevAsso.size()>0){ //CHECK WHAT KIND OF ACTION WAS THE EXACT PREVIOUS ONE
-							System.out.println("checking if apply delete action - previous action: "+prevAsso.get(prevAsso.size()-1));
+							//System.out.println("checking if apply delete action - previous action: "+prevAsso.get(prevAsso.size()-1));
 							Action prev =prevAsso.get(prevAsso.size()-1); //=listApplyActions.get(listApplyActions.size()-2);
 							if (prev!=null && (prev instanceof Insert || prev instanceof Update || prev instanceof RejectToDraft) )
 								applyActionDelete(c);
@@ -211,7 +210,7 @@ public class ReflectInNavigatorThread implements Runnable {
 					}
 				}
 				else if (ac instanceof SendToBeDeleted){ //APPLY ACTION ALWAYS EXCEPT WHEN IT WAS DELETED FROM NAVIGATOR STRAIGHT
-					System.out.println("checking if apply sendtobedeleted action: "+ac.getURI());
+					//System.out.println("checking if apply sendtobedeleted action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((SendToBeDeleted)ac).getRelatedChange());
 					List<Action> prevAsso = new LinkedList<Action>();
 					Date sendToBeDeletedDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(((SendToBeDeleted)ac).getTimestamp());
@@ -234,7 +233,7 @@ public class ReflectInNavigatorThread implements Runnable {
 					if (apply) applyActionSendToBeDeleted(c);
 				}
 				else if (ac instanceof RejectToApproved){
-					System.out.println("checking if apply rejecttoapproved action: "+ac.getURI());
+					//System.out.println("checking if apply rejecttoapproved action: "+ac.getURI());
 					OMVChange c = oyster2Conn.getChange(((RejectToApproved)ac).getRelatedChange());
 					applyActionRejectToApproved(c);
 				}

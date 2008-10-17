@@ -120,6 +120,8 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 						if (tFile.exists())	tFile.delete();
 						tFile = new File(".propertiesOyster");
 						if (tFile.exists())	tFile.delete();
+						tFile = new File("server");
+						if (tFile.exists())	tFile.delete();
 					}catch(Exception ex){
 						MessageDialog.openInformation(
 		           				shell,

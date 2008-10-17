@@ -52,15 +52,15 @@ import org.neontoolkit.omv.api.core.OMVOntology;
 
 public class Track extends Action implements IObjectActionDelegate {
 
+	public static Oyster2Connection oyster2Conn = null;
 	private IStructuredSelection selectionOntology;
-    // selection specific variables
+    
+	// selection specific variables
     protected String moduleId;
     protected String project;
     protected String ontoURI;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    public static Oyster2Connection oyster2Conn = null;
     private IPreferenceStore _store = GuiPlugin.getDefault().getPreferenceStore();
-
 	private Shell shell;
 	public static Map<Ontology, OWLChangeListener> OWLList = 
 	new HashMap<Ontology, OWLChangeListener>();
@@ -102,21 +102,24 @@ public class Track extends Action implements IObjectActionDelegate {
 		// TODO Auto-generated method stub
 
 		oyster2Conn = StartRegistry.connection;
-		Object first = ((IStructuredSelection) selectionOntology).getFirstElement();
-		if (first instanceof OntologyTreeElement){
-			OntologyTreeElement t = (OntologyTreeElement)first;
-			moduleId = t.getModuleId();  	//ontology
-			project = t.getProjectName(); //project
-			ontoURI = t.getOntologyUri();
-			
-			if(oyster2Conn != null){
-				executor.execute(new doTrack(shell));
-			}else
-				MessageDialog.openError(
-						shell,
-						"Change Capturing Component",
-						"Couldn´t connect to registry (make sure it is running)...");
-		}
+		if (action!=null){
+			Object first = ((IStructuredSelection) selectionOntology).getFirstElement();
+			if (first instanceof OntologyTreeElement){
+				OntologyTreeElement t = (OntologyTreeElement)first;
+				moduleId = t.getModuleId();  	//ontology
+				project = t.getProjectName(); //project
+				ontoURI = t.getOntologyUri();
+				
+				if(oyster2Conn != null){
+					executor.execute(new doTrack(shell));
+				}else
+					MessageDialog.openError(
+							shell,
+							"Change Capturing Component",
+							"Couldn´t connect to registry (make sure it is running)...");
+			}
+		}else  //FOR THE JUNIT
+			executor.execute(new doTrack(shell));
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -248,53 +251,54 @@ public class Track extends Action implements IObjectActionDelegate {
 			this.shell=arg;
 		}
 		public void run() {
-			shell.getDisplay().asyncExec(new Runnable() {
-		           public void run() {
-		        	   Job exportJob = new Job("Tracking ...") {
-			   	        	protected IStatus run(IProgressMonitor monitor) {
-			   	        		monitor.beginTask("Tracking ...", 100);
-			   	        		try {
-			   	        			OMVOntology o = new OMVOntology();
-			   						o.setURI(ontoURI);
-			   						o.setResourceLocator("");
-			   						OntologyManager connection = DatamodelPlugin.getDefault().getKaon2Connection(project);
-			   						try {
-			   							Ontology ontology = connection.getOntology(ontoURI);
-			   							if (!oyster2Conn.isTracked(o)){
-			   								addTrack(ontology, o);
-			   							}
-			   							else{
-			   								if (!Track.OWLList.containsKey(ontology)){
-			   									addTrack(ontology,o);
-			   								}
-			   								else{
-			   									openQuestion("This ontology is already being tracked. Do you want to stop tracking it?"); 
-			   									if (rep) {
-			   										oyster2Conn.stopTracking(o);
-			   										OWLChangeListener listener = Track.OWLList.remove(ontology);
-			   										ontology.removeOntologyListener(listener);
-			   										new Thread(new AddStatus(shell)).start();
-			   									}
-			   								}
-			   							}
-			   						} catch (KAON2Exception e) {
-			   							openMessage("Track failed");
-			   							e.printStackTrace();
-			   						}
-			   	        		}catch (Exception e) {
-			   	            		openMessage("Track failed");
-			   	            		e.printStackTrace();
-			   	            	}	
-			   	            	finally{
-			   	            		monitor.done();
-			   	            	}
-			   	            	return Status.OK_STATUS;
-			   	         	}
-			   			};
-			   	        exportJob.setUser(true);
-			   	    	exportJob.schedule();	        		
-		           }
-			});					
+			Job exportJob = new Job("Tracking ...") {
+   	        	protected IStatus run(IProgressMonitor monitor) {
+   	        		monitor.beginTask("Tracking ...", 100);
+   	        		try {
+   	        			OMVOntology o = new OMVOntology();
+   						o.setURI(ontoURI);
+   						o.setResourceLocator("");
+   						OntologyManager connection = DatamodelPlugin.getDefault().getKaon2Connection(project);
+   						monitor.worked(30);
+   						try {
+   							Ontology ontology = connection.getOntology(ontoURI);
+   							if (!oyster2Conn.isTracked(o)){
+   								addTrack(ontology, o);
+   								monitor.worked(40);
+   							}
+   							else{
+   								if (!Track.OWLList.containsKey(ontology)){
+   									addTrack(ontology,o);
+   									monitor.worked(40);
+   								}
+   								else{
+   									openQuestion("This ontology is already being tracked. Do you want to stop tracking it?"); 
+   									if (rep) {
+   										oyster2Conn.stopTracking(o);
+   										OWLChangeListener listener = Track.OWLList.remove(ontology);
+   										ontology.removeOntologyListener(listener);
+   										new Thread(new AddStatus(shell)).start();
+   										monitor.worked(40);
+   									}
+   								}
+   							}
+   							monitor.worked(30);
+   						} catch (KAON2Exception e) {
+   							openMessage("Track failed");
+   							e.printStackTrace();
+   						}
+   	        		}catch (Exception e) {
+   	            		openMessage("Track failed");
+   	            		e.printStackTrace();
+   	            	}	
+   	            	finally{
+   	            		monitor.done();
+   	            	}
+   	            	return Status.OK_STATUS;
+   	         	}
+   			};
+   	        exportJob.setUser(true);
+   	    	exportJob.schedule();
 		}
 		
 		private void addTrack(Ontology ontology, OMVOntology o){
@@ -312,11 +316,13 @@ public class Track extends Action implements IObjectActionDelegate {
 			OWLChangeListener listener = new OWLChangeListener(ontology, o, collab, moduleId, project, shell);
 			ontology.addOntologyListener(listener);
 			Track.OWLList.put(ontology, listener);
-			new Thread(new AddStatus(shell)).start();
+			if (shell!=null) //FOR THE JUNIT
+				new Thread(new AddStatus(shell)).start();
 		}	
 	}
 	
 	public void openMessage(final String mess){
+		if (shell!=null) //FOR THE JUNIT
 		shell.getDisplay().asyncExec(new Runnable() {
 	           public void run() {
 	        	   MessageDialog.openInformation(
@@ -327,6 +333,7 @@ public class Track extends Action implements IObjectActionDelegate {
 		});
 	}
 	public void openQuestion(final String mess){
+		if (shell!=null)  //FOR THE JUNIT
 		shell.getDisplay().syncExec(new Runnable() {
 	           public void run() {
 	        	   rep=MessageDialog.openQuestion(
@@ -336,5 +343,21 @@ public class Track extends Action implements IObjectActionDelegate {
 	            }
 		});
 	}
-		
+	
+	//FOR JUNIT TEST
+	public void setModuleId(String id){
+		moduleId=id;
+	}
+	public void setProject(String id){
+		project=id;
+	}
+	public void setOntologyURI(String id){
+		ontoURI=id;
+	}
 }
+
+//shell.getDisplay().asyncExec(new Runnable() {
+//       public void run() {
+
+  //     }
+//});

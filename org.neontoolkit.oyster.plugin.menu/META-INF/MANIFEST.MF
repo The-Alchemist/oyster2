@@ -8,6 +8,7 @@ Bundle-Vendor: UPM
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.neontoolkit.registry.api,
- com.ontoprise.ontostudio.gui
+ com.ontoprise.ontostudio.gui,
+ org.junit4;resolution:=optional
 Eclipse-LazyStart: true
 Export-Package: org.neontoolkit.oyster.plugin.menu.actions
