@@ -22,4 +22,5 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/jdom.jar
-Export-Package: org.neontoolkit.changelogging.core
+Export-Package: org.neontoolkit.changelogging.core,
+ org.neontoolkit.changelogging.test
