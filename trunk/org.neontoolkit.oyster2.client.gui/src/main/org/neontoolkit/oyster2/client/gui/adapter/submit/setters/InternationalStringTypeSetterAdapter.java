@@ -4,9 +4,7 @@
 package org.neontoolkit.oyster2.client.gui.adapter.submit.setters;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
 
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.FreeFormText;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;

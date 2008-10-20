@@ -3,15 +3,9 @@
  */
 package org.neontoolkit.oyster2.client.gui.adapter.submit.setters;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.apache.axis2.databinding.types.URI;
-import org.apache.axis2.databinding.types.URI.MalformedURIException;
 import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ReferenceURI;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 

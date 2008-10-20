@@ -3,9 +3,6 @@
  */
 package org.neontoolkit.oyster2.client.gui;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;

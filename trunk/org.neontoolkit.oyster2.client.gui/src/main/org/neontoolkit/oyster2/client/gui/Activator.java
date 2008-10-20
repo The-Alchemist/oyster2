@@ -8,7 +8,6 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.osgi.framework.BundleContext;
 
 

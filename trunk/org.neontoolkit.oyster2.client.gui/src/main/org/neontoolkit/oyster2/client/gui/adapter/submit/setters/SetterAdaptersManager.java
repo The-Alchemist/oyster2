@@ -6,7 +6,6 @@ package org.neontoolkit.oyster2.client.gui.adapter.submit.setters;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.ui.model.AdaptableList;
 
 /**
  * @author David Muñoz
@@ -33,7 +32,7 @@ public class SetterAdaptersManager {
 				StringSetterAdapter.class, URISetterAdapter.class};
 		
 		instance = new SetterAdaptersManager();
-		System.out.println("instance is" );
+		
 	}
 	
 	
@@ -43,8 +42,7 @@ public class SetterAdaptersManager {
 		for (Class clazz : adapterClasses) {
 			try {
 				adapter = (SetterAdapter) clazz.newInstance();
-				System.out.println("Adapter " + clazz.getName());
-				System.out.println("is Adapter for " + adapter.getAdapterClass());
+				
 				adapters.put(adapter.getAdapterClass(), adapter);
 			} catch (InstantiationException e) {
 				// TODO Auto-generated catch block
@@ -56,12 +54,12 @@ public class SetterAdaptersManager {
 				throw new RuntimeException(e);
 			}
 		}
-		System.out.println("End of constructor");
+		
 	}
-	
+	/*
 	public void registerAdapter(Class targetArgumentClass,SetterAdapter adapter) {
 		adapters.put(targetArgumentClass,adapter);
-	}
+	}*/
 	
 	public SetterAdapter getAdapter(Class targetArgumentClass) {
 		return adapters.get(targetArgumentClass);

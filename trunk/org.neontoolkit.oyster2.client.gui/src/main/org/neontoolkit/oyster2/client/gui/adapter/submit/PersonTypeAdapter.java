@@ -3,13 +3,9 @@
  */
 package org.neontoolkit.oyster2.client.gui.adapter.submit;
 
-import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.InternationalStringTypeSetterAdapter;
-import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdapter;
-import org.neontoolkit.oyster2.client.gui.adapter.submit.setters.SetterAdaptersManager;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.FreeFormText;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
-import org.oasis.names.tc.ebxml_regrep.xsd.rim.LocalizedString;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.LocalizedStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.PersonNameType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.PersonType;

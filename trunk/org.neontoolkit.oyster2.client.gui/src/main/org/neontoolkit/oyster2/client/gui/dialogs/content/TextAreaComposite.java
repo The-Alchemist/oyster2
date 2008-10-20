@@ -24,8 +24,6 @@ public class TextAreaComposite extends InputComposite {
 
 	private Text  text = null;
 
-	private static String ITEMS_KEY = "items";
-	
 	public TextAreaComposite(Composite parent, int style,
 			String section) {
 		super(parent,style,section,null);

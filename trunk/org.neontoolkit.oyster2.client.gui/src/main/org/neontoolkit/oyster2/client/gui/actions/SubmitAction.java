@@ -4,11 +4,8 @@
 package org.neontoolkit.oyster2.client.gui.actions;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
@@ -17,23 +14,14 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.adapter.submit.OntologyAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PartySubmitAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
-import org.neontoolkit.oyster2.client.gui.dialogs.InputDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
 import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
-
-import com.sun.corba.se.spi.ior.MakeImmutable;
 
 
 
@@ -69,9 +57,10 @@ public class SubmitAction implements IWorkbenchWindowActionDelegate {
 		Shell shell = Activator.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		PropertiesConfiguredSubmitDialog dialog =
 			new PropertiesConfiguredSubmitDialog("SUBMIT_SECTION",shell);
-		SubmitFieldReader fieldReader = new SubmitFieldReader();
+		
 		int result = dialog.open();
 		if (result == Dialog.OK) {
+			SubmitFieldReader fieldReader = new SubmitFieldReader();
 			String adapterFileName = Activator.getDefault().getResourcesDir() +
 			 File.separator  + 
 			 dialog.getAdapterFileName();
