@@ -4,15 +4,11 @@
 package org.neontoolkit.oyster2.client.gui.adapter.submit.setters;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 
-import org.neontoolkit.registry.omv.xsd.rim.OMVObjectRefType;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.FreeFormText;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.LocalizedStringType;
-import org.oasis.names.tc.ebxml_regrep.xsd.rim.ReferenceURI;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**

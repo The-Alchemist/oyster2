@@ -5,7 +5,6 @@ package org.neontoolkit.oyster2.client.gui.jobs;
 
 import java.util.List;
 
-import org.apache.axis2.AxisFault;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,7 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.IProgressConstants;
 import org.neontoolkit.oyster2.client.core.lifecycle.LifecyclePortAxis2Adapter;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.registry.omv.service.lifecyclemanager.NeOnRegistryOMVOysterStub;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ObjectRefType;
 
 /**

@@ -4,28 +4,20 @@
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.neontoolkit.oyster2.client.gui.Oyster2;
 import org.neontoolkit.registry.ui.provider.OntologyContentProvider;
 import org.neontoolkit.registry.ui.provider.OntologyLabelProvider;
-import org.semanticweb.kaon2.on;
 import org.semanticweb.kaon2.api.Entity;
 import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Ontology;

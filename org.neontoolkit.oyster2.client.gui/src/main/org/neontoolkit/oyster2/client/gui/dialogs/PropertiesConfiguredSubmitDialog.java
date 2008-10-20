@@ -47,7 +47,6 @@ import org.neontoolkit.oyster2.client.gui.TargetServerComposite;
 import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.CompositeFactory;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.TextAreaComposite;
 import org.neontoolkit.oyster2.client.gui.util.Template;
 import org.neontoolkit.oyster2.client.gui.util.TemplateManager;
 import org.semanticweb.kaon2.api.KAON2Exception;
@@ -495,9 +494,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 				group, SWT.NONE,"submitOntologyPreferences." + this.submitTarget + omvClassAttribute, //$NON-NLS-1$					
 				predefinedValues,editable,validatorName,defaultValue,
 				isRequired);
-		if (child instanceof TextAreaComposite)
-			System.out.println("Composite for " + omvClassAttribute);
-		System.out.println("Composite for " + omvClassAttribute);
+		
 		if (objectToUpdate != null) {
 			Object initialValue = objectToUpdate.getValue(omvClassAttribute); 
 			if (initialValue != null) {
@@ -522,9 +519,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			valuesSource = targetConfiguration.getString(ontologyAttribute + SOURCE_SUFFIX);
 			String path = Activator.getDefault().getResourcesDir();
 			PropertiesConfiguration configuration;
-			System.out.println("Attribute " + ontologyAttribute);
-			System.out.println("source for " + ontologyAttribute + SOURCE_SUFFIX);
-			System.out.println("		 " + valuesSource);
 			
 			
 			try {

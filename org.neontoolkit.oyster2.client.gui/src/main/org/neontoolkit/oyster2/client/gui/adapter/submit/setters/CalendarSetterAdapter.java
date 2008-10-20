@@ -4,12 +4,10 @@
 package org.neontoolkit.oyster2.client.gui.adapter.submit.setters;
 
 import java.lang.reflect.Method;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.neontoolkit.oyster2.client.gui.GUIConstants;
-import org.neontoolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**

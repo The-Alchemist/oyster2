@@ -172,8 +172,7 @@ public class PropertiesConfiguredAdapter {
 				field = identifierBuffer.substring(current, fieldEnd);
 				current = fieldEnd;
 				builtIdentifier = builtIdentifier + properties.get(field);
-				System.out.println("id " + field);
-				System.out.println("value " + properties.get(field));
+				
 				
 			}
 			

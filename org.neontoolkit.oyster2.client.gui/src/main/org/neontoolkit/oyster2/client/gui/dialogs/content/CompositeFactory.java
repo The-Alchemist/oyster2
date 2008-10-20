@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.dialogs.CalendarDialog;
-import org.neontoolkit.oyster2.client.gui.dialogs.DomainDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.InputDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.PartyDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.SimpleListSelectionDialog;

@@ -214,12 +214,7 @@ public class PersonSelectionComposite extends Composite {
 		fd.width = labelWidth;
 		nameLabel.setLayoutData(fd);
 		
-		if (nameItems != null) {
-		System.out.println("Name items class " + nameItems.getClass()); //$NON-NLS-1$
-		System.out.println("Name items values;: " ); //$NON-NLS-1$
-		for (int i = 0;i<nameItems.length;i++)
-			System.out.println(nameItems[i]);
-		}
+		
 		
 		nameCombo = new Combo(newInputComposite,SWT.DROP_DOWN);
 		if (nameItems != null) {

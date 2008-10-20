@@ -9,7 +9,6 @@ import java.util.Map;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
@@ -19,7 +18,6 @@ import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDial
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
-import org.neontoolkit.oyster2.client.gui.views.SearchResultsView;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
 /**

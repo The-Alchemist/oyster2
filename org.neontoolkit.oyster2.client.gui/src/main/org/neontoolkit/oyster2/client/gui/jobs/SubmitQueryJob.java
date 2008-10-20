@@ -17,19 +17,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressConstants;
 import org.neontoolkit.oyster2.client.core.querymanager.QueryPortAxis2Adapter;
 import org.neontoolkit.oyster2.client.core.querymanager.QueryResponse;
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.IMessageResolver;
 import org.neontoolkit.oyster2.client.gui.PerspectiveFactory;
 import org.neontoolkit.oyster2.client.gui.adapter.results.IResultsAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.results.ResultsAdapterFactory;
 import org.neontoolkit.oyster2.client.gui.views.SearchResultsView;
-import org.neontoolkit.oyster2.client.gui.views.SearchView;
 
 /**
  * @author David Muñoz
