@@ -37,5 +37,5 @@ Require-Bundle: org.eclipse.ui,
  datamodelBase,
  util,
  org.neontoolkit.registry.api,
- org.junit4
+ org.junit4;resolution:=optional
 Eclipse-LazyStart: true
