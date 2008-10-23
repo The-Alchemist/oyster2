@@ -196,6 +196,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		getTargetConfiguration();
 		formBody = new Composite(form.getBody(),SWT.NONE);
 		formBody.setLayout(makeFormBodyLayout());
+		
 		makeComposites(formBody);
 		
 		
@@ -312,13 +313,46 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		form.reflow(true);
 	}
 	
+	private boolean isEmptySection(String category,String[]categoryAttributes) {
+		Boolean isEnabled = null;
+		
+		for (String attribute : categoryAttributes) {
+			isEnabled = selection.get(attribute);
+			if (isEnabled == null)
+				selection.put(attribute,false);
+			if ((isEnabled != null) &&
+					isEnabled) {
+				return false;
+			}
+				
+		}
+		return true;
+	}
+	
+
 	private boolean makeSection(Composite parent,String category, String[] categoryAttributes) {
+		
 		
 		Group sectionGroup = (Group)currentSections.get(category);
 		Group attributeGroup = null;
 		Section section = null;
 		Composite sectionClient = null;
+		boolean emptySection = isEmptySection(category, categoryAttributes);
+		if (emptySection) {
+			// if null nothing to do, return
+			if (sectionGroup != null) {
+				section = (Section)sectionGroup.getData();
+				sectionClient = (Composite)section.getData();
+				sectionClient.dispose();
+				section.dispose();
+				sectionGroup.dispose();
+				currentSections.remove(category);
+			}
+			return ! emptySection;
+		}
+		// the section won't be empty
 		if (sectionGroup == null) {
+			
 			sectionGroup = new Group(parent,SWT.SHADOW_NONE);
 			
 			sectionGroup.setLayout(new FillLayout());
@@ -349,14 +383,11 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			sectionClient = (Composite)section.getData();
 		}
 		
-				
-		boolean emptySection = true;
-				
 		InputComposite child;
+		//CHECK
 		toolkit.createCompositeSeparator(section);
 		Boolean isEnabled = null;
-		
-		
+				
 		for (String attribute : categoryAttributes) {
 			isEnabled = selection.get(attribute);
 			if (isEnabled == null)
@@ -365,21 +396,17 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 					isEnabled) {
 				
 				// the composite must be present
-				if (! composites.containsKey(attribute)) {
+				if (! composites.containsKey(attribute)) {			
+					
 					
 					child = makeComposite(sectionClient, attribute);
-					
 					composites.put(attribute,child);
-					emptySection = false;
-				}
-				else {
-					emptySection = false;
+					
 				}
 				
 			}
 			else {
 				// the composite must not be present
-				
 				if (composites.containsKey(attribute)) {
 					attributeGroup = (Group)composites.get(attribute).getData();
 					composites.get(attribute).dispose();
@@ -391,37 +418,35 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			}
 			
 		}
-		if (emptySection) {
-			section.dispose();
-			sectionGroup.dispose();
-			currentSections.remove(category);
-		}
-		else {
-			currentSections.put(category,sectionGroup);
-//			 LAYOUT /////
-			ColumnLayout sectionClientLayout = new ColumnLayout();
-			if (sectionClient.getChildren().length == 1)
-				sectionClientLayout.maxNumColumns = 1;
-			else
-				sectionClientLayout.maxNumColumns = 2;
+		
+		
+		currentSections.put(category,sectionGroup);
+		// LAYOUT /////
+		
+		ColumnLayout sectionClientLayout = new ColumnLayout();
+		if (sectionClient.getChildren().length == 1)
+			sectionClientLayout.maxNumColumns = 1;
+		else
+			sectionClientLayout.maxNumColumns = 2;
+		
+		sectionClientLayout.minNumColumns = 1;
+		
+		sectionClient.setLayout(sectionClientLayout);
 			
-			sectionClientLayout.minNumColumns = 1;
-			
-			
-			sectionClient.setLayout(sectionClientLayout);
-			
-			section.layout(true,true);
-		}
+		section.layout(true,true);
+		
 		section.addExpansionListener(new ExpansionAdapter() {
 			public void expansionStateChanged(ExpansionEvent e) {
 				form.reflow(false);
 			}
 		});
 		
+		
 		return ! emptySection;
 		
 	}
-
+	
+	
 	private InputComposite makeComposite(Composite sectionClient, String omvClassAttribute) {
 		boolean isRequired = false;
 		String compositeType = null;
