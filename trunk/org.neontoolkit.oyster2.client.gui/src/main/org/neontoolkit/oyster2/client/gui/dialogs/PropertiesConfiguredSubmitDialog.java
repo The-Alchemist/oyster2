@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -129,7 +130,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	// dependent of the object being submitted
 	
-	private Composite formBody = null;
+	//private Composite formBody = null;
 	
 	private String adapterFileName = null;
 	
@@ -194,10 +195,10 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		serverComposite = new TargetServerComposite(form.getBody(),SWT.NONE);
 		makeTargetComposite(form.getBody());
 		getTargetConfiguration();
-		formBody = new Composite(form.getBody(),SWT.NONE);
-		formBody.setLayout(makeFormBodyLayout());
+		//formBody = new Composite(form.getBody(),SWT.NONE);
+		//formBody.setLayout(makeFormBodyLayout());
 		
-		makeComposites(formBody);
+		makeComposites(form.getBody());
 		
 		
 		
@@ -214,13 +215,16 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 					
 					
 					if (! submitTarget.equals(newTarget)) {
+						for (Entry<String,Composite> entry : currentSections.entrySet()) {
+							entry.getValue().dispose();
+						}
 						cleanTargetConfiguration();
 						getTargetConfiguration();
-						formBody.dispose();
+						//formBody.dispose();
 						
-						formBody = new Composite(form.getBody(),SWT.NONE);
-						formBody.setLayout(makeFormBodyLayout());
-						makeComposites(formBody);
+						//formBody = new Composite(form.getBody(),SWT.NONE);
+						//formBody.setLayout(makeFormBodyLayout());
+						makeComposites(form.getBody());
 					}
 				}
 				else if (event.widget == attributesSelectionButton) {
@@ -235,7 +239,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 					dialog.setMessagesResolver(targetMessagesResolver);
 					int result = dialog.open();
 					if (result == dialog.OK) {
-						makeComposites(formBody);
+						makeComposites(form.getBody());
 					}
 				}
 			}
@@ -248,8 +252,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 	
 	
 	private void cleanTargetConfiguration() {
-		
-		//TODO dispose sections too
 		
 		for (Entry<String,InputComposite> entry : composites.entrySet()) {
 			entry.getValue().dispose();
@@ -303,7 +305,6 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 			categoryAttributes = targetConfiguration.getStringArray(category + CATEGORY_ATTRIBUTES_SUFFIX);
 			categories.put(category,categoryAttributes);
 			makeSection(parent,category,categoryAttributes);
-			
 		}
 		
 		
@@ -311,6 +312,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		//form.reflow(false);
 		form.reflow(true);
+		
 	}
 	
 	private boolean isEmptySection(String category,String[]categoryAttributes) {
@@ -347,6 +349,10 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 				section.dispose();
 				sectionGroup.dispose();
 				currentSections.remove(category);
+				//remove from composites map
+				for (String attribute : categoryAttributes) {
+					composites.remove(attribute);
+				}
 			}
 			return ! emptySection;
 		}
@@ -437,7 +443,7 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		
 		section.addExpansionListener(new ExpansionAdapter() {
 			public void expansionStateChanged(ExpansionEvent e) {
-				form.reflow(false);
+				form.reflow(true);
 			}
 		});
 		
@@ -633,17 +639,22 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		form.getBody().setLayout(makeFormBodyLayout());
 		form.setBackground(baseComposite.getBackground());
 		form.setBackgroundMode(SWT.INHERIT_NONE);
+		
+		
 	}
 	
 	private Layout makeFormBodyLayout() {
 		ColumnLayout layout = new ColumnLayout();
-		
-		layout.topMargin = 0;
+		/*layout.topMargin = 0;
 		layout.bottomMargin = 5;
 		layout.leftMargin = 10;
 		layout.rightMargin = 10;
 		layout.horizontalSpacing = 10;
 		layout.verticalSpacing = 10;
+		*/
+		layout.verticalSpacing = 0;
+		layout.topMargin = 0;
+		layout.bottomMargin = 0;
 		layout.maxNumColumns = 1;
 		layout.minNumColumns = 1;
 		return layout;
