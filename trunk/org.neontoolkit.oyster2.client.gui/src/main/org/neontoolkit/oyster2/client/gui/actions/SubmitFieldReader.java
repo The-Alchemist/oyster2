@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.neontoolkit.oyster2.client.gui.adapter.submit.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 
 /**
  * @author David Muñoz

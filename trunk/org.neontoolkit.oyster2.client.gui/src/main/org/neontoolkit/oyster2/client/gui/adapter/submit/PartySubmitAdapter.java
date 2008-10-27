@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.neontoolkit.oyster2.client.gui.Activator;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 
