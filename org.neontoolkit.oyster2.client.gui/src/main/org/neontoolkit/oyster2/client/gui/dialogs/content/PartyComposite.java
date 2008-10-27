@@ -3,9 +3,7 @@
  */
 package org.neontoolkit.oyster2.client.gui.dialogs.content;
 
-import java.util.HashSet;
 
-import java.util.Set;
 
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -17,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
+import org.neontoolkit.oyster2.client.gui.adapter.submit.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.dialogs.InputDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.PartyDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
@@ -28,42 +27,6 @@ import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposi
  *
  */
 public class PartyComposite extends InputComposite {
-	/**
-	 * @author David Muñoz
-	 *
-	 */
-	public class PartyMembers {
-		private Set<Person> people = new HashSet<Person>();
-		
-		private String[] organizations = new String[0];
-
-		
-		
-		/**
-		 * @return the organizations
-		 */
-		public final String[] getOrganizations() {
-			return organizations;
-		}
-
-		/**
-		 * @param organizations the organizations to set
-		 */
-		public final void setOrganizations(String[] organizations) {
-			this.organizations = organizations;
-		}
-
-		public Set<Person> getPeople() {
-			return people;
-		}
-
-		public void setPeople(Set<Person> people) {
-			this.people = people;
-		}
-		
-	}
-
-
 	private List list = null;
 	
 	private Button editButton = null;
@@ -167,7 +130,7 @@ public class PartyComposite extends InputComposite {
 	@Override
 	public boolean testFilled() {
 		if (isRequired()) {
-			return (party.organizations.length != 0) || (party.people.size() != 0);
+			return (party.getOrganizations().length != 0) || (party.getPeople().size() != 0);
 		}
 		else return true;
 	}

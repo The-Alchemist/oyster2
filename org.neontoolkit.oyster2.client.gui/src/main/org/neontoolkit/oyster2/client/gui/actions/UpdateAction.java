@@ -12,11 +12,11 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster2.client.gui.Activator;
 import org.neontoolkit.oyster2.client.gui.adapter.IOMVObject;
+import org.neontoolkit.oyster2.client.gui.adapter.submit.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PartySubmitAdapter;
 import org.neontoolkit.oyster2.client.gui.adapter.submit.PropertiesConfiguredAdapter;
 import org.neontoolkit.oyster2.client.gui.dialogs.PropertiesConfiguredSubmitDialog;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite.PartyMembers;
 import org.neontoolkit.oyster2.client.gui.jobs.SubmitObjectsJob;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.RegistryObjectType;
 

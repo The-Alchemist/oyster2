@@ -24,7 +24,6 @@ import org.neontoolkit.omv.api.core.OMVOrganisation;
 import org.neontoolkit.omv.api.core.OMVParty;
 import org.neontoolkit.omv.api.core.OMVPerson;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.InputComposite;
-import org.neontoolkit.oyster2.client.gui.dialogs.content.PartyComposite;
 import org.neontoolkit.oyster2.client.gui.dialogs.content.PersonSelectionComposite.Person;
 
 
@@ -295,8 +294,8 @@ public class OntologyAdapter {
 	private static Set<OMVParty> getParty(Object input) {
 		Set<OMVParty> party = new HashSet<OMVParty>();
 		OMVPerson person = null;
-		PartyComposite.PartyMembers partyMembers = 
-			(PartyComposite.PartyMembers)input;
+		PartyMembers partyMembers = 
+			(PartyMembers)input;
 		
 		for (Person member : partyMembers.getPeople()) {
 			person = new OMVPerson();
