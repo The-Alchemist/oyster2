@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.part.ViewPart;
+import org.neontoolkit.changelogging.core.ChangeTableItem;
 import org.neontoolkit.collab.core.OysterTools;
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.core.OMVPerson;
@@ -412,7 +413,7 @@ public class ToBeApprovedView extends ViewPart implements SelectionListener {
 	public void addItem(final String ontoURI,final String changeURI,final String changeName,final String relatedEntity,final String persons,final String date,final String state,final String acText,final OMVPerson currentPerson){
 		shell.getDisplay().asyncExec(new Runnable() {
 	           public void run() {
-	        	   TableItem item = new TableItem(resTable, SWT.NONE);
+	        	   ChangeTableItem item = new ChangeTableItem(resTable, SWT.NONE);
 	        	   item.setText(new String[]{
 	        			   ontoURI,
 	        			   changeURI, changeName,

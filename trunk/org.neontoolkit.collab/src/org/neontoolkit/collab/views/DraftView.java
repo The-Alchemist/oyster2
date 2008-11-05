@@ -51,6 +51,7 @@ import org.neontoolkit.workflow.api.Action;
 
 import com.ontoprise.ontostudio.gui.GuiPlugin;
 import org.neontoolkit.changelogging.core.ApplyChangesFromLogToNTK;
+import org.neontoolkit.changelogging.core.ChangeTableItem;
 import org.semanticweb.kaon2.api.Namespaces;
 
 
@@ -486,7 +487,7 @@ public class DraftView extends ViewPart implements SelectionListener {
 	public void addItem(final String ontoURI,final String changeURI,final String changeName,final String relatedEntity,final String persons,final String date,final String state,final String acText,final OMVPerson currentPerson,final boolean isCurrentUser){
 		shell.getDisplay().asyncExec(new Runnable() {
 	           public void run() {
-	        	   TableItem item = new TableItem(resTable, SWT.NONE);
+	        	   ChangeTableItem item = new ChangeTableItem(resTable, SWT.NONE);
 	        	   item.setText(new String[]{
 	        			   ontoURI,
 	        			   changeURI, changeName,
