@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -55,15 +57,21 @@ import org.neontoolkit.registry.oyster2.Constants;
 import org.neontoolkit.registry.oyster2.ImportOntology;
 import org.neontoolkit.registry.oyster2.OntologyProperty;
 import org.neontoolkit.registry.oyster2.Oyster2Factory;
+import org.neontoolkit.registry.util.ContainsOWLEntityVisitor;
+import org.neontoolkit.registry.util.RDFS;
 import org.neontoolkit.workflow.api.Action;
+import org.semanticweb.kaon2.api.Cursor;
 import org.semanticweb.kaon2.api.KAON2Exception;
 import org.semanticweb.kaon2.api.KAON2Manager;
+import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent;
 import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
+import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyMember;
 import org.semanticweb.kaon2.api.owl.elements.Description;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
 import org.semanticweb.kaon2.api.owl.elements.OWLClass;
+import org.semanticweb.kaon2.api.owl.elements.OWLEntity;
 import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
 
 /**
@@ -808,6 +816,252 @@ public class ChangeManagement {
 		Individual t = getPropertyValue(changeURI, ontologyObjectProperty,conceptChange, null);
 		if (t!=null) return t.getURI();
 		else return "";
+	}
+	
+	/**
+	 * Gets all the related entities from a change. Includes the elements  
+	 * referenced from the consisting atomic change(s). 
+	 * @param changeURI the URI of the change
+	 * @param registry the registry in which the changes
+	 * will be searched
+	 * @return the set of referenced ontology elements
+	 */
+	public Set<String> getAllRelatedEntities(String changeURI, Ontology registry){
+		Set<String> allEntities= new HashSet<String>();
+		OMVAtomicChange ac;
+		OMVChange o = null;
+		
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		try{			
+			o=getChange(changeURI,targetRegistry);
+			if (o!=null){
+				if (o instanceof OMVAtomicChange){
+					ac = (OMVAtomicChange)o;
+					allEntities.addAll(getDownEntities(ac.getAppliedAxiom().getURI(), targetRegistry, Constants.OWLODMURI));//getAxiomRelatedEntities(ac.getAppliedAxiom()));
+				}
+				else if (o instanceof OMVEntityChange){
+					OMVEntityChange ec = (OMVEntityChange)o;
+					for (String acS : ec.getConsistsOfAtomicOperation()){
+						OMVChange oTemp=getChange(acS,targetRegistry);
+						ac = (OMVAtomicChange)oTemp;
+						allEntities.addAll(getDownEntities(ac.getAppliedAxiom().getURI(), targetRegistry, Constants.OWLODMURI));//getAxiomRelatedEntities(ac.getAppliedAxiom()));
+					}
+				}
+				else if (o instanceof OMVCompositeChange){
+					OMVCompositeChange comc = (OMVCompositeChange)o;
+					for (String cS: comc.getConsistsOf()){
+						OMVChange oTemp = getChange(cS,targetRegistry);
+						if (oTemp instanceof OMVAtomicChange){
+							ac = (OMVAtomicChange)o;
+							allEntities.addAll(getDownEntities(ac.getAppliedAxiom().getURI(), targetRegistry, Constants.OWLODMURI));//getAxiomRelatedEntities(ac.getAppliedAxiom()));
+						}
+						else if (oTemp instanceof OMVEntityChange){
+							OMVEntityChange ec = (OMVEntityChange)o;
+							for (String acS : ec.getConsistsOfAtomicOperation()){
+								OMVChange oTemp2=getChange(acS,targetRegistry);
+								ac = (OMVAtomicChange)oTemp2;
+								allEntities.addAll(getDownEntities(ac.getAppliedAxiom().getURI(), targetRegistry, Constants.OWLODMURI));//getAxiomRelatedEntities(ac.getAppliedAxiom()));
+							}
+						}
+					}
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		Set<String> urisNoDuplicates=removeNoise(allEntities);
+		return urisNoDuplicates;
+	}
+	
+	/**
+	 * Gets all the related changes for an ontology element. 
+	 * @param elementURI the URI of the ontology element
+	 * @param registry the registry in which the changes
+	 * will be searched
+	 * @return the set of related ontology changes
+	 */
+	public Set<String> getAllRelatedChanges(String elementURI, Ontology registry){
+		Set<String> entityChanges= new HashSet<String>();
+		
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		try{
+	        Set<String> atomicChanges = new HashSet<String>();
+	        Set<String> entities=getUpEntities(elementURI, targetRegistry, Constants.OWLODMURI);
+	        for (String st : entities)
+	        	atomicChanges.addAll(getUpEntities(st, targetRegistry,Constants.CHANGEURI));
+	        for (String st : atomicChanges)
+	        	entityChanges.addAll(getUpEntities(st, targetRegistry,Constants.CHANGEURI));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return entityChanges;
+	}
+	
+	/**
+	 * Gets all the related objectProperty axioms that refer to 
+	 * the specified element  
+	 * @param st the URI of the element (e.g. ontology element)
+	 * @param registry the registry in which the axioms will be searched
+	 * @param type the namespace of the target objectProperties
+	 * @return the set of related axioms that refer to the st uri
+	 */
+	public Set<String> getUpEntities (String st, Ontology registry, String type){
+    	Set<String> reply = new HashSet<String>();
+    	Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+    	try{
+    		Set<OWLEntity> _entities = new LinkedHashSet<OWLEntity>(Collections.singleton(KAON2Manager.factory().individual(st)));
+    		ContainsOWLEntityVisitor containsVisitor = new ContainsOWLEntityVisitor(_entities);
+    		//Set<Class<ObjectPropertyMember>> requestedAxiomTypes = Collections.singleton(ObjectPropertyMember.class); //  
+    		Set<Class<ObjectPropertyMember>> _requestedAxiomTypes=new LinkedHashSet<Class<ObjectPropertyMember>>(Collections.singleton(ObjectPropertyMember.class));//OWLAxiom.class
+    		for (Class<ObjectPropertyMember> axiomType : _requestedAxiomTypes) {
+    			Cursor<ObjectPropertyMember> i = targetRegistry.createAxiomRequest(axiomType).openCursor();
+    			while (i.hasNext()) {
+    				ObjectPropertyMember axiom = i.next();
+    				if ((Boolean)axiom.accept(containsVisitor) && axiom.getObjectProperty().toString().contains(type) && axiom.getTargetIndividual().getURI().equalsIgnoreCase(st) && !axiom.getObjectProperty().toString().contains("hasChange") && !axiom.getObjectProperty().toString().contains("hasPreviousChange")) {
+    					//System.out.println("axiom: "+axiom.toString());
+    					Individual source = axiom.getSourceIndividual();
+    					String conceptChange=null;
+    					try {
+    						conceptChange = source.getDescriptionsMemberOf(targetRegistry).iterator().next().toString();
+    					} catch (KAON2Exception e) {
+    						e.printStackTrace();
+    					}
+    					if (conceptChange!=null) {
+    						if (isDescription(conceptChange)){
+    							reply.addAll(getUpEntities(source.getURI(),targetRegistry,type));
+    						}
+    						else
+    							reply.add(source.toString());
+    					}
+    				}
+    			}
+    		}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return reply;
+    }
+    
+	/**
+	 * Gets all the related objectProperty axioms that are refer by 
+	 * the specified element  
+	 * @param st the URI of the element (e.g. axiom individual)
+	 * @param registry the registry in which the axioms will be searched
+	 * @param type the namespace of the target objectProperties
+	 * @return the set of related axioms that are refered by the st uri
+	 */
+	public Set<String> getDownEntities (String st, Ontology registry, String type){
+    	Set<String> reply = new HashSet<String>();
+    	Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+    	try{
+    		Set<OWLEntity> _entities = new LinkedHashSet<OWLEntity>(Collections.singleton(KAON2Manager.factory().individual(st)));
+    		ContainsOWLEntityVisitor containsVisitor = new ContainsOWLEntityVisitor(_entities);
+    		//Set<Class<ObjectPropertyMember>> requestedAxiomTypes = Collections.singleton(ObjectPropertyMember.class); //  
+    		Set<Class<ObjectPropertyMember>> _requestedAxiomTypes=new LinkedHashSet<Class<ObjectPropertyMember>>(Collections.singleton(ObjectPropertyMember.class));//OWLAxiom.class
+    		for (Class<ObjectPropertyMember> axiomType : _requestedAxiomTypes) {
+    			Cursor<ObjectPropertyMember> i = targetRegistry.createAxiomRequest(axiomType).openCursor();
+    			while (i.hasNext()) {
+    				ObjectPropertyMember axiom = i.next();
+    				if ((Boolean)axiom.accept(containsVisitor) && axiom.getObjectProperty().toString().contains(type) && !axiom.getTargetIndividual().toString().equalsIgnoreCase(st)){
+    					//System.out.println("axiom: "+axiom.toString());
+    					Individual source = axiom.getTargetIndividual();
+    					String conceptChange=null;
+    					try {
+    						conceptChange = source.getDescriptionsMemberOf(targetRegistry).iterator().next().toString();
+    					} catch (KAON2Exception e) {
+    						e.printStackTrace();
+    					}
+    					if (conceptChange!=null) {
+    						if (isDescription(conceptChange)){
+    							reply.addAll(getDownEntities(source.getURI(),targetRegistry,type));
+    						}
+    						else
+    							reply.add(source.toString());
+    					}
+    				}
+    			}
+    		}
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return reply;
+    }
+	
+    private boolean isDescription(String st){
+    	st = Namespaces.guessLocalName(st);
+    	if (st.equalsIgnoreCase("DataAllValuesFrom") ||
+    			st.equalsIgnoreCase("DataExactCardinality") ||
+    			st.equalsIgnoreCase("DataHasValue") ||
+    			st.equalsIgnoreCase("DataMaxCardinality") ||
+    			st.equalsIgnoreCase("DataMinCardinality") ||
+    			st.equalsIgnoreCase("DataSomeValuesFrom") ||
+    			st.equalsIgnoreCase("ObjectAllValuesFrom") ||
+    			st.equalsIgnoreCase("ObjectComplementOf") ||
+    			st.equalsIgnoreCase("ObjectExactCardinality") ||
+    			st.equalsIgnoreCase("ObjectExistsSelf") ||
+    			st.equalsIgnoreCase("ObjectHasValue") ||
+    			st.equalsIgnoreCase("ObjectIntersectionOf") ||
+    			st.equalsIgnoreCase("ObjectMaxCardinality") ||
+    			st.equalsIgnoreCase("ObjectMinCardinality") ||
+    			st.equalsIgnoreCase("ObjectOneOf") ||
+    			st.equalsIgnoreCase("ObjectSomeValuesFrom") ||
+    			st.equalsIgnoreCase("ObjectUnionOf") //||
+    			//st.equalsIgnoreCase("OWLClass")
+    			) return true;
+    	return false;
+    }
+	
+	private Set<String> removeNoise(Set<String> uris){
+		Set<String> urisNoDuplicates=new HashSet<String>();
+		for (String st : uris){
+			if (!urisNoDuplicates.contains(st)) {
+				if (!st.equalsIgnoreCase(org.semanticweb.kaon2.api.owl.elements.OWLClass.OWL_THING) &&
+						!st.equalsIgnoreCase(RDFS.LITERAL))
+					urisNoDuplicates.add(st);
+			}
+		}
+		return urisNoDuplicates;
+	}
+	
+	/**
+	 * Annotates an individual with the issue URL from Cicero
+	 * @param individualURI the individual URI
+	 * @param issueURL the URL of the issue in Cicero
+	 * @param registry the registry that has the individual
+	 */
+	public void annotateIndividual(String individualURI, String issueURL, Ontology registry)
+	{ 
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		try{
+			Individual entity = KAON2Manager.factory().individual(individualURI);
+			org.semanticweb.kaon2.api.Axiom issueEntityAnnotation = KAON2Manager.factory().annotation(
+				KAON2Manager.factory().annotationProperty(Constants.HASARGUMENTATION_ANNOTATION),
+				entity,
+				KAON2Manager.factory().constant(issueURL));
+			List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
+			changes.add(new OntologyChangeEvent(issueEntityAnnotation,OntologyChangeEvent.ChangeType.ADD));
+			try {
+				targetRegistry.applyChanges(changes);
+				targetRegistry.persist();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
