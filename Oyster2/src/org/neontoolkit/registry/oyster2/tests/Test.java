@@ -44,6 +44,8 @@ public class Test {
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.96\\new store", "F:\\My Documents\\Oyster2APIv0.96\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.96\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		
+		//oyster2Conn.annotateIndividual("http://www.fao.org/aims/aos/fi/species_v1.0.owl?location=;change=EE10C51A066F92B80047A885866024E498B7D75C", "http://localhost/wiki_2new/index.php?title=Prj:Testproject1/Issue:Testiisue4");
+		
 		if (oyster2Conn==null) shutdown();
 		
 		//HERE WE TEST IMPORT METHOD

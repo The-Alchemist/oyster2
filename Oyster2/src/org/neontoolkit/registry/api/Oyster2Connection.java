@@ -672,6 +672,16 @@ public class Oyster2Connection {
 		return OMVRet;
 	}
 
+	/**
+	 * Annotates an individual with the issue URL from Cicero
+	 * @param individualURI the individual URI
+	 * @param issueURL the URL of the issue in Cicero
+	 */
+	public void annotateIndividual(String individualURI, String issueURL){ 
+		ChangeManagement cMgmt= new ChangeManagement();
+		cMgmt.annotateIndividual(individualURI, issueURL, null);
+	}
+	
 	//ONTOLOGY SPECIFIC METHODS
 	/**
 	 * Opens an ontology file, extracts the ontology metadata 
@@ -1193,6 +1203,28 @@ public class Oyster2Connection {
 				this.mExchangeInitiatorThread=null;
 			}
 		}
+	}
+	
+	
+	/**
+	 * Gets all the related entities from a change. Includes the elements  
+	 * referenced from the consisting atomic change(s). 
+	 * @param changeURI the URI of the change
+	 * @return the set of referenced ontology elements
+	 */
+	public Set<String> getAllRelatedEntities(String changeURI){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getAllRelatedEntities(changeURI,null);
+	}
+	
+	/**
+	 * Gets all the related changes for an ontology element. 
+	 * @param elementURI the URI of the ontology element
+	 * @return the set of related ontology changes
+	 */
+	public Set<String> getAllRelatedChanges(String elementURI){
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getAllRelatedChanges(elementURI,null);
 	}
 	
 	//WORKFLOW METHODS

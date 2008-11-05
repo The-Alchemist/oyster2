@@ -10,7 +10,7 @@ public class Constants {
 	/**
 	 * The build version of this application.
 	 */
-	public static final String BUILD = "$Revision: 1.3 $".replace('$', ' ').trim() + " (" + "$Date: 2008-10-07 23:50:31 $".replace('$', ' ').trim() + ")";
+	public static final String BUILD = "$Revision: 1.4 $".replace('$', ' ').trim() + " (" + "$Date: 2008-11-05 00:28:39 $".replace('$', ' ').trim() + ")";
 
 	/**
 	 * The default listening port for incoming RMI connections.
@@ -436,6 +436,9 @@ public class Constants {
 	public static final String discoveryFrec="discoveryFrec";
 	
 	public static final String DefaultLocalRegistry = "O2serverfiles/localRegistry.owl";
+	
+	public static final String CICERO_NS = "http://isweb.uni-koblenz.de/cicero#";
+	public static final String HASARGUMENTATION_ANNOTATION = CICERO_NS + "hasArgumentation"; 
 	
 	/*
 	public static final String DefaultPDOntology = "O2serverfiles/pOMV.owl";
