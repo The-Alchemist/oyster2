@@ -65,7 +65,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 				protected IStatus run(IProgressMonitor monitor) {
 					monitor.beginTask("Starting registry...(The first time please wait few minutes)", 100);
 					try {
-						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"org.neontoolkit.registry.api_2.3.0.jar";
+						String o2File=System.getProperty("user.dir")+System.getProperty("file.separator")+"plugins"+System.getProperty("file.separator")+"org.neontoolkit.registry.api_2.3.1.jar";
 						monitor.worked(10);
 						sOyster = _store.getString("SUPEROYSTER");
 						pOyster = _store.getString("PUSHOYSTER");
