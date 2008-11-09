@@ -12,7 +12,8 @@ package org.neon_toolkit.registry.omv.xsd.rim;
  */
 public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegistryObjectType
     implements org.apache.axis2.databinding.ADBBean {
-    /**
+
+	/**
      * field for Keywords
      * This was an Array!
      */
@@ -294,17 +295,20 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
      */
     protected boolean localIsConsistentAccordingToReasoner;
 
+    
     /**
      * field for ContainsABox
      * This was an Attribute!
      */
     protected boolean localContainsABox;
 
+    
     /**
      * field for ContainsRBox
      * This was an Attribute!
      */
     protected boolean localContainsRBox;
+    
 
     /**
      * field for ContainsTBox
@@ -312,6 +316,7 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
      */
     protected boolean localContainsTBox;
 
+    
     /**
      * field for Expressiveness
      * This was an Attribute!
@@ -324,6 +329,11 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
      */
     protected java.lang.String localNotes;
 
+    
+    protected boolean localIsConsistentAccordingToReasonerTracker=false;
+    protected boolean localContainsABoxTracker=false;
+    protected boolean localContainsTBoxTracker=false;
+    protected boolean localContainsRBoxTracker=false;
     /* This type was generated from the piece of schema that had
        name = Ontology_Type
        Namespace URI = urn:neon-toolkit-org:registry:omv:xsd:rim:2.3
@@ -1422,12 +1432,17 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
     public boolean getIsConsistentAccordingToReasoner() {
         return localIsConsistentAccordingToReasoner;
     }
+    
+    public boolean getIsConsistentAccordingToReasonerTracker() {
+    	return localIsConsistentAccordingToReasonerTracker;
+    }
 
     /**
      * Auto generated setter method
      * @param param IsConsistentAccordingToReasoner
      */
     public void setIsConsistentAccordingToReasoner(boolean param) {
+    	this.localIsConsistentAccordingToReasonerTracker=true;
         this.localIsConsistentAccordingToReasoner = param;
     }
 
@@ -1439,11 +1454,16 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
         return localContainsABox;
     }
 
+    public boolean getContainsABoxTracker() {
+        return localContainsABoxTracker;
+    }
+    
     /**
      * Auto generated setter method
      * @param param ContainsABox
      */
     public void setContainsABox(boolean param) {
+    	this.localContainsABoxTracker=true;
         this.localContainsABox = param;
     }
 
@@ -1455,11 +1475,15 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
         return localContainsRBox;
     }
 
+    public boolean getContainsRBoxTracker() {
+        return localContainsRBoxTracker;
+    }
     /**
      * Auto generated setter method
      * @param param ContainsRBox
      */
     public void setContainsRBox(boolean param) {
+    	this.localContainsRBoxTracker=true;
         this.localContainsRBox = param;
     }
 
@@ -1471,11 +1495,16 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
         return localContainsTBox;
     }
 
+    public boolean getContainsTBoxTracker() {
+        return localContainsTBoxTracker;
+    }
+    
     /**
      * Auto generated setter method
      * @param param ContainsTBox
      */
     public void setContainsTBox(boolean param) {
+    	this.localContainsTBoxTracker=true;
         this.localContainsTBox = param;
     }
 
@@ -1636,18 +1665,18 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
 
         if (localIsOfType != null) {
             writeAttribute("", "isOfType", localIsOfType.toString(), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localIsOfType is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localIsOfType is null");
+        //}
 
         if (localHasOntologySyntax != null) {
             writeAttribute("", "hasOntologySyntax",
                 localHasOntologySyntax.toString(), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localHasOntologySyntax is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localHasOntologySyntax is null");
+        //}
 
         if (localHasLicense != null) {
             writeAttribute("", "hasLicense", localHasLicense.toString(),
@@ -1668,37 +1697,37 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
             writeAttribute("", "numberOfClasses",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localNumberOfClasses), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localNumberOfClasses is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localNumberOfClasses is null");
+        //}
 
         if (localNumberOfProperties != null) {
             writeAttribute("", "numberOfProperties",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localNumberOfProperties), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localNumberOfProperties is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localNumberOfProperties is null");
+        //}
 
         if (localNumberOfIndividuals != null) {
             writeAttribute("", "numberOfIndividuals",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localNumberOfIndividuals), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localNumberOfIndividuals is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localNumberOfIndividuals is null");
+        //}
 
         if (localNumberOfAxioms != null) {
             writeAttribute("", "numberOfAxioms",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localNumberOfAxioms), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localNumberOfAxioms is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localNumberOfAxioms is null");
+        //}
 
         if (localOntologyStatus != null) {
             writeAttribute("", "ontologyStatus",
@@ -1709,10 +1738,10 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
             writeAttribute("", "creationDate",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localCreationDate), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localCreationDate is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localCreationDate is null");
+        //}
 
         if (localModificationDate != null) {
             writeAttribute("", "modificationDate",
@@ -1740,30 +1769,30 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
 
         if (localVersion != null) {
             writeAttribute("", "version", localVersion.toString(), xmlWriter);
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "required attribute localVersion is null");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "required attribute localVersion is null");
+        //}
 
-        if (true) {
+        if (localIsConsistentAccordingToReasonerTracker) {
             writeAttribute("", "isConsistentAccordingToReasoner",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localIsConsistentAccordingToReasoner), xmlWriter);
         }
 
-        if (true) {
+        if (localContainsABoxTracker) {
             writeAttribute("", "containsABox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsABox), xmlWriter);
         }
 
-        if (true) {
+        if (localContainsRBoxTracker) {
             writeAttribute("", "containsRBox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsRBox), xmlWriter);
         }
 
-        if (true) {
+        if (localContainsTBoxTracker) {
             writeAttribute("", "containsTBox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsTBox), xmlWriter);
@@ -1927,10 +1956,10 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                         "hasCreator cannot be null!!");
                 }
             }
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "hasCreator cannot be null!!");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "hasCreator cannot be null!!");
+        //}
 
         if (localUsedOntologyEngineeringToolTracker) {
             if (localUsedOntologyEngineeringTool != null) {
@@ -2521,10 +2550,10 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                         "hasCreator cannot be null !!");
                 }
             }
-        } else {
-            throw new org.apache.axis2.databinding.ADBException(
-                "hasCreator cannot be null!!");
-        }
+        } //else {
+          //  throw new org.apache.axis2.databinding.ADBException(
+          //      "hasCreator cannot be null!!");
+        //}
 
         if (localUsedOntologyEngineeringToolTracker) {
             if (localUsedOntologyEngineeringTool != null) {
@@ -3096,8 +3125,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                                 tempAttribIsOfType, ""));
                     }
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute isOfType is missing");
+                  //  throw new org.apache.axis2.databinding.ADBException(
+                  //      "Required attribute isOfType is missing");
                 }
 
                 handledAttributes.add("isOfType");
@@ -3123,8 +3152,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                                 tempAttribHasOntologySyntax, ""));
                     }
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute hasOntologySyntax is missing");
+                  //  throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute hasOntologySyntax is missing");
                 }
 
                 handledAttributes.add("hasOntologySyntax");
@@ -3214,8 +3243,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                     object.setNumberOfClasses(org.apache.axis2.databinding.utils.ConverterUtil.convertToInteger(
                             tempAttribNumberOfClasses));
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute numberOfClasses is missing");
+                    //throw new org.apache.axis2.databinding.ADBException(
+                    //    "Required attribute numberOfClasses is missing");
                 }
 
                 handledAttributes.add("numberOfClasses");
@@ -3230,8 +3259,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                     object.setNumberOfProperties(org.apache.axis2.databinding.utils.ConverterUtil.convertToInteger(
                             tempAttribNumberOfProperties));
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute numberOfProperties is missing");
+                   // throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute numberOfProperties is missing");
                 }
 
                 handledAttributes.add("numberOfProperties");
@@ -3246,8 +3275,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                     object.setNumberOfIndividuals(org.apache.axis2.databinding.utils.ConverterUtil.convertToInteger(
                             tempAttribNumberOfIndividuals));
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute numberOfIndividuals is missing");
+                   // throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute numberOfIndividuals is missing");
                 }
 
                 handledAttributes.add("numberOfIndividuals");
@@ -3262,8 +3291,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                     object.setNumberOfAxioms(org.apache.axis2.databinding.utils.ConverterUtil.convertToInteger(
                             tempAttribNumberOfAxioms));
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute numberOfAxioms is missing");
+                   // throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute numberOfAxioms is missing");
                 }
 
                 handledAttributes.add("numberOfAxioms");
@@ -3303,8 +3332,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                     object.setCreationDate(org.apache.axis2.databinding.utils.ConverterUtil.convertToDateTime(
                             tempAttribCreationDate));
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute creationDate is missing");
+                   // throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute creationDate is missing");
                 }
 
                 handledAttributes.add("creationDate");
@@ -3376,8 +3405,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
                                 tempAttribVersion, ""));
                     }
                 } else {
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Required attribute version is missing");
+                   // throw new org.apache.axis2.databinding.ADBException(
+                   //     "Required attribute version is missing");
                 }
 
                 handledAttributes.add("version");
@@ -3914,8 +3943,8 @@ public class Ontology_Type extends org.neon_toolkit.registry.omv.xsd.rim.OMVRegi
 
                 else {
                     // A start element we are not expecting indicates an invalid parameter was passed
-                    throw new org.apache.axis2.databinding.ADBException(
-                        "Unexpected subelement " + reader.getLocalName());
+                //    throw new org.apache.axis2.databinding.ADBException(
+                //        "Unexpected subelement " + reader.getLocalName());
                 }
 
                 while (!reader.isStartElement() && !reader.isEndElement())

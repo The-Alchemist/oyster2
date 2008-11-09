@@ -1,10 +1,10 @@
 package org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.omv;
 
+
 import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.RegistryObjectQueryParser;
 import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.filters.FilterParser;
-
 import org.neon_toolkit.registry.omv.xsd.query.OntologyTypeQueryType;
-import org.neon_toolkit.registry.oyster2.Constants;
+import org.neontoolkit.registry.oyster2.Constants;
 
 /**
  * Parses a OntologyType query. This object is ment to be used by RegistryObjectQueryParser. 

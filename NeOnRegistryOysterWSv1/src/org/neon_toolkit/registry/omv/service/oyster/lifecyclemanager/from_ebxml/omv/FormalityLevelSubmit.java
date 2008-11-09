@@ -8,9 +8,9 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_ebxml.ClassificationSubmit;
 */
 
-import org.neon_toolkit.omv.api.core.OMVFormalityLevel;
 import org.neon_toolkit.registry.omv.xsd.rim.FormalityLevelType;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
+import org.neontoolkit.omv.api.core.OMVFormalityLevel;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 
 

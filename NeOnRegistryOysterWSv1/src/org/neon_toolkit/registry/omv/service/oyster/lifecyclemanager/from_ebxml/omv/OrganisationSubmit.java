@@ -13,11 +13,11 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.neon_toolkit.omv.api.core.OMVLocation;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.omv.api.core.OMVOrganisation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
+import org.neontoolkit.omv.api.core.OMVLocation;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.core.OMVOrganisation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.OrganizationType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.PostalAddressType;

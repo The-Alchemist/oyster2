@@ -4,7 +4,7 @@ import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.Regis
 import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.filters.FilterParser;
 import org.neon_toolkit.registry.omv.xsd.query.OntologyDomainQueryType;
 import org.neon_toolkit.registry.omv.xsd.query.OntologyTypeQueryType;
-import org.neon_toolkit.registry.oyster2.Constants;
+import org.neontoolkit.registry.oyster2.Constants;
 
 public class OntologyDomainQueryParser extends RegistryObjectQueryParser {
 	public static OntologyDomainQueryParser parse(OntologyDomainQueryType query, String ref) {

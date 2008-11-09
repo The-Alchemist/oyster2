@@ -11,12 +11,12 @@ import javax.xml.registry.infomodel.RegistryObject;
 import javax.xml.registry.infomodel.Slot;
 */
 
-import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.omv.OMVRegistryObjectSubmit;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.omv.OrganisationSubmit;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.omv.PersonSubmit;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVRegistryObjectType;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neontoolkit.omv.api.core.OMVOntology;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ClassificationType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.OrganizationType;
@@ -39,15 +39,15 @@ public class RegistryObjectSubmit {
 		if (input==null) return null;
 		
 		
-		
 		if (input instanceof OMVRegistryObjectType)
 			output=OMVRegistryObjectSubmit.submit((OMVRegistryObjectType)input, output);
 		else 
 		if (input instanceof OrganizationType)
 			output=OrganisationSubmit.submit((OrganizationType)input, output);
 		else 
-		if (input instanceof PersonType)
+		if (input instanceof PersonType){
 			output=PersonSubmit.submit((PersonType)input, output);
+		}
 		
 		/*
 		if (output==null)

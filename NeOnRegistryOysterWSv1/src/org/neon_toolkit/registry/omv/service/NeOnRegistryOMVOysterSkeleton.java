@@ -23,14 +23,14 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.axis2.databinding.types.URI;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.registry.api.Oyster2Connection;
-import org.neon_toolkit.registry.api.Oyster2Manager;
-import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.RegistryObjectQueryParser;
-import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_ebxml.ebXMLTranslator;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.RegistryObjectSubmit;
+import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_ebxml.ebXMLTranslator;
+import org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.RegistryObjectQueryParser;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
-import org.neon_toolkit.registry.oyster2.Oyster2Query;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.registry.api.Oyster2Connection;
+import org.neontoolkit.registry.api.Oyster2Manager;
+import org.neontoolkit.registry.oyster2.Oyster2Query;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.AdhocQueryResponse;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.RegistryObjectQueryType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.ResponseOptionReturnType;
@@ -113,7 +113,7 @@ public class NeOnRegistryOMVOysterSkeleton
 	       	//execute the query
 	       	
 	    
-			Set<Object> OMVSet4 = oyster2Conn.submitAdHocQuery(query_parsed.objectType+query_parsed.queryPredicate, Oyster2Query.Auto_Scope,null);
+			Set<Object> OMVSet4 = oyster2Conn.submitAdHocQuery(query_parsed.objectType+query_parsed.queryPredicate);//, Oyster2Query.Auto_Scope,null);
 			Iterator it4 = OMVSet4.iterator();
 			IdentifiableType[] result_array;
 			try{
@@ -251,7 +251,8 @@ public class NeOnRegistryOMVOysterSkeleton
  	      	ArrayList<IdentifiableType> newregobjects = new ArrayList<IdentifiableType>();
  	      	for (IdentifiableType one_ro: objectRequest.getRegistryObjectList().getIdentifiable())
  				newregobjects.add(one_ro);
- 	    	 			
+ 	    	
+ 	      	
  			for (Object one_ro:newregobjects) {
  				RegistryObjectType tempro=(RegistryObjectType)one_ro;
  				Object tempnew = RegistryObjectSubmit.submit(tempro);
@@ -345,7 +346,7 @@ public class NeOnRegistryOMVOysterSkeleton
     
     public static void main(String[] args) {
     	NeOnRegistryOMVOysterSkeleton a= new NeOnRegistryOMVOysterSkeleton();
-    	//a.connectManager();
+    	a.connectManager();
     	//OMVOntology tempOnto = new OMVOntology();
 		//tempOnto.setURI("http://a.temp.com/temp");
 		//tempOnto.addName("hola tu");
