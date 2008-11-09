@@ -13,14 +13,14 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
-import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
-import org.neon_toolkit.omv.api.core.OMVOntologyLanguage;
-import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
-import org.neon_toolkit.omv.api.core.OMVOrganisation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyLanguageType;
+import org.neontoolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
+import org.neontoolkit.omv.api.core.OMVOntologyDomain;
+import org.neontoolkit.omv.api.core.OMVOntologyLanguage;
+import org.neontoolkit.omv.api.core.OMVOntologySyntax;
+import org.neontoolkit.omv.api.core.OMVOrganisation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 
 public class OntologyLanguageSubmit extends OMVRegistryObjectSubmit {

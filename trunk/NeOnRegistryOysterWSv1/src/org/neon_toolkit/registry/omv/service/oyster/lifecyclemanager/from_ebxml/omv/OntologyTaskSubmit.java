@@ -9,9 +9,9 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 */
 
 
-import org.neon_toolkit.omv.api.core.OMVOntologyTask;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyTaskType;
+import org.neontoolkit.omv.api.core.OMVOntologyTask;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 
 public class OntologyTaskSubmit extends OMVRegistryObjectSubmit {

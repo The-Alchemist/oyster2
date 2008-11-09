@@ -9,7 +9,6 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_ebxml.RegistryObjectSubmit;
 import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_ebxml.SlotSubmit;
 */
-import org.neon_toolkit.omv.api.core.OMVOntology;
 import org.neon_toolkit.registry.omv.service.oyster.lifecyclemanager.from_ebxml.RegistryObjectSubmit;
 import org.neon_toolkit.registry.omv.xsd.rim.FormalityLevelType;
 import org.neon_toolkit.registry.omv.xsd.rim.KnowledgeRepresentationParadigmType;
@@ -24,6 +23,7 @@ import org.neon_toolkit.registry.omv.xsd.rim.OntologySyntaxType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyTaskType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyType_Type;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neontoolkit.omv.api.core.OMVOntology;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ReferenceURI;
 
 public class OMVRegistryObjectSubmit extends RegistryObjectSubmit {

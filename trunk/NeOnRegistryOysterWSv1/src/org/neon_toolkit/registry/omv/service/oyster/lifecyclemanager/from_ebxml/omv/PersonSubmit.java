@@ -12,9 +12,9 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.neon_toolkit.omv.api.core.OMVLocation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
+import org.neontoolkit.omv.api.core.OMVLocation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.EmailAddressType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.PersonType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.PostalAddressType;
@@ -31,7 +31,7 @@ public class PersonSubmit extends OMVRegistryObjectSubmit {
 			output.setFirstName(input.getPersonName().getFirstName().getShortName());
 		}
 		if (input.getPersonName().getLastName()!=null){
-			output.setFirstName(input.getPersonName().getLastName().getShortName());
+			output.setLastName(input.getPersonName().getLastName().getShortName());
 		}
 		if (input.getEmailAddress()!=null){
 			for (EmailAddressType temp_pat: input.getEmailAddress())

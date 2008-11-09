@@ -34,14 +34,6 @@ import org.apache.axis2.databinding.types.Language;
 import org.apache.axis2.databinding.types.URI;
 import org.apache.axis2.databinding.types.URI.MalformedURIException;
 
-import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringMethodology;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringTool;
-import org.neon_toolkit.omv.api.core.OMVOntologyTask;
-import org.neon_toolkit.omv.api.core.OMVOrganisation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.FormalityLevelType;
 import org.neon_toolkit.registry.omv.xsd.rim.KnowledgeRepresentationParadigmType;
 import org.neon_toolkit.registry.omv.xsd.rim.LicenseModelType;
@@ -55,6 +47,14 @@ import org.neon_toolkit.registry.omv.xsd.rim.OntologySyntaxType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyTaskType;
 import org.neon_toolkit.registry.omv.xsd.rim.OntologyType_Type;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neontoolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.core.OMVOntologyDomain;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringMethodology;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringTool;
+import org.neontoolkit.omv.api.core.OMVOntologyTask;
+import org.neontoolkit.omv.api.core.OMVOrganisation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.AssociationType1;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ClassificationNodeType;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.ClassificationType;
@@ -847,6 +847,7 @@ public class ebXMLTranslator {
      */
     public static Ontology_Type translateOntology(OMVOntology omvT) throws Exception {
     	Ontology_Type onereturn = new Ontology_Type();
+    	
     	// set ID (key)
     	String tURI="";
 		tURI=omvT.getURI();
@@ -957,25 +958,25 @@ public class ebXMLTranslator {
 			onereturn.setResourceLocator(new URI(omvT.getResourceLocator()));
 		if (omvT.getNumberOfClasses()!=null)
 			onereturn.setNumberOfClasses(new BigInteger(omvT.getNumberOfClasses().toString()));
-		else onereturn.setNumberOfClasses(new BigInteger("-1"));
+		//else onereturn.setNumberOfClasses(new BigInteger("-1"));
 		if (omvT.getNumberOfProperties()!=null)
 			onereturn.setNumberOfProperties(new BigInteger(omvT.getNumberOfProperties().toString()));
-		else onereturn.setNumberOfProperties(new BigInteger("-1"));
+		//else onereturn.setNumberOfProperties(new BigInteger("-1"));
 		if (omvT.getNumberOfIndividuals()!=null)
 			onereturn.setNumberOfIndividuals(new BigInteger(omvT.getNumberOfIndividuals().toString()));
-		else onereturn.setNumberOfIndividuals(new BigInteger("-1"));
+		//else onereturn.setNumberOfIndividuals(new BigInteger("-1"));
 		if (omvT.getNumberOfAxioms()!=null)
 			onereturn.setNumberOfAxioms(new BigInteger(omvT.getNumberOfAxioms().toString()));
-		else onereturn.setNumberOfAxioms(new BigInteger("-1"));
+		//else onereturn.setNumberOfAxioms(new BigInteger("-1"));
 		if (omvT.getVersion()!=null) {
 			FreeFormText temp_fft = new FreeFormText();
 			temp_fft.setFreeFormText(omvT.getVersion());
 			onereturn.setVersion(temp_fft);
 		}
 		else {
-			FreeFormText temp_fft = new FreeFormText();
-			temp_fft.setFreeFormText("");
-			onereturn.setVersion(temp_fft);
+			//FreeFormText temp_fft = new FreeFormText();
+			//temp_fft.setFreeFormText("");
+			//onereturn.setVersion(temp_fft);
 		}
 		if (omvT.getIsConsistentAccordingToReasoner()!=null)
 			onereturn.setIsConsistentAccordingToReasoner(omvT.getIsConsistentAccordingToReasoner());
@@ -1006,16 +1007,16 @@ public class ebXMLTranslator {
 			if (tRefURI!=null) onereturn.setIsOfType(tRefURI);
 		}
 		else{
-			ReferenceURI tRefURI=makeReferenceURI4OMV("");
-			if (tRefURI!=null) onereturn.setIsOfType(tRefURI);
+			//ReferenceURI tRefURI=makeReferenceURI4OMV("");
+			//if (tRefURI!=null) onereturn.setIsOfType(tRefURI);
 		}
 		if (omvT.getHasOntologySyntax()!=null){
 			ReferenceURI tRefURI=makeReferenceURI4OMV(omvT.getHasOntologySyntax().getName());
 			if (tRefURI!=null) onereturn.setHasOntologySyntax(tRefURI);
 		}
 		else {
-			ReferenceURI tRefURI=makeReferenceURI4OMV("");
-			if (tRefURI!=null) onereturn.setHasOntologySyntax(tRefURI);
+			//ReferenceURI tRefURI=makeReferenceURI4OMV("");
+			//if (tRefURI!=null) onereturn.setHasOntologySyntax(tRefURI);
 		}
 		if (omvT.getHasOntologyLanguage()!=null){
 			ReferenceURI tRefURI=makeReferenceURI4OMV(omvT.getHasOntologyLanguage().getName());
@@ -1092,12 +1093,12 @@ public class ebXMLTranslator {
 			}
 		}
 		else{
-			ReferenceURI tRefURI=makeReferenceURI4OMV("");
-			if (tRefURI!=null){
-				OMVObjectRefType new_objref = new OMVObjectRefType();
-				new_objref.setId(tRefURI);
-				onereturn.addHasCreator(new_objref);
-			}
+			//ReferenceURI tRefURI=makeReferenceURI4OMV("");
+			//if (tRefURI!=null){
+			//	OMVObjectRefType new_objref = new OMVObjectRefType();
+			//	new_objref.setId(tRefURI);
+			//	onereturn.addHasCreator(new_objref);
+			//}
 		}
 		if (omvT.getEndorsedBy()!=null){
 			Iterator it = omvT.getEndorsedBy().iterator();

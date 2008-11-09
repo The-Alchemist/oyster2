@@ -3,8 +3,8 @@ package org.neon_toolkit.registry.omv.service.oyster.querymanager.to_sparql.filt
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.neon_toolkit.registry.oyster2.Constants;
 import org.neon_toolkit.registry.omv.service.NeOnRegistryOMVOysterSkeleton;
+import org.neontoolkit.registry.oyster2.Constants;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.CompoundFilterType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.FilterType;
 import org.oasis.names.tc.ebxml_regrep.xsd.query.SimpleFilterType;

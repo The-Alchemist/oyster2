@@ -12,11 +12,11 @@ import org.neon_toolkit.registry.omv.service.centrasite.lifecyclemanager.from_eb
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.neon_toolkit.omv.api.core.OMVLicenseModel;
-import org.neon_toolkit.omv.api.core.OMVOrganisation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.LicenseModelType;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
+import org.neontoolkit.omv.api.core.OMVLicenseModel;
+import org.neontoolkit.omv.api.core.OMVOrganisation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 
 public class LicenseModelSumbit extends OMVRegistryObjectSubmit {

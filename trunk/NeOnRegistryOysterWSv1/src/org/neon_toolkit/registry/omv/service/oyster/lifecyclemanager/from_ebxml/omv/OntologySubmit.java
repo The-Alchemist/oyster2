@@ -17,21 +17,21 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.neon_toolkit.omv.api.core.OMVFormalityLevel;
-import org.neon_toolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
-import org.neon_toolkit.omv.api.core.OMVLicenseModel;
-import org.neon_toolkit.omv.api.core.OMVOntology;
-import org.neon_toolkit.omv.api.core.OMVOntologyDomain;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringMethodology;
-import org.neon_toolkit.omv.api.core.OMVOntologyEngineeringTool;
-import org.neon_toolkit.omv.api.core.OMVOntologyLanguage;
-import org.neon_toolkit.omv.api.core.OMVOntologySyntax;
-import org.neon_toolkit.omv.api.core.OMVOntologyTask;
-import org.neon_toolkit.omv.api.core.OMVOntologyType;
-import org.neon_toolkit.omv.api.core.OMVOrganisation;
-import org.neon_toolkit.omv.api.core.OMVPerson;
 import org.neon_toolkit.registry.omv.xsd.rim.OMVObjectRefType;
 import org.neon_toolkit.registry.omv.xsd.rim.Ontology_Type;
+import org.neontoolkit.omv.api.core.OMVFormalityLevel;
+import org.neontoolkit.omv.api.core.OMVKnowledgeRepresentationParadigm;
+import org.neontoolkit.omv.api.core.OMVLicenseModel;
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.core.OMVOntologyDomain;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringMethodology;
+import org.neontoolkit.omv.api.core.OMVOntologyEngineeringTool;
+import org.neontoolkit.omv.api.core.OMVOntologyLanguage;
+import org.neontoolkit.omv.api.core.OMVOntologySyntax;
+import org.neontoolkit.omv.api.core.OMVOntologyTask;
+import org.neontoolkit.omv.api.core.OMVOntologyType;
+import org.neontoolkit.omv.api.core.OMVOrganisation;
+import org.neontoolkit.omv.api.core.OMVPerson;
 import org.oasis.names.tc.ebxml_regrep.xsd.rim.InternationalStringTypeSequence;
 
 public class OntologySubmit extends OMVRegistryObjectSubmit {
@@ -94,14 +94,22 @@ public class OntologySubmit extends OMVRegistryObjectSubmit {
 			}
 		}
 		
+		if (input.getIsConsistentAccordingToReasonerTracker())
 		if (input.getIsConsistentAccordingToReasoner()==true)output.setIsConsistentAccordingToReasoner(true);
 		else if (input.getIsConsistentAccordingToReasoner()==false)output.setIsConsistentAccordingToReasoner(false);
+		
+		if (input.getContainsTBoxTracker())
 		if (input.getContainsTBox()==true) output.setContainsTBox(true);
 		else if (input.getContainsTBox()==false) output.setContainsTBox(false);
+		
+		if (input.getContainsABoxTracker())
 		if (input.getContainsABox()==true) output.setContainsABox(true);
 		else if (input.getContainsABox()==false) output.setContainsABox(false);
+		
+		if (input.getContainsRBoxTracker())
 		if (input.getContainsRBox()==true) output.setContainsRBox(true);
 		else if (input.getContainsRBox()==false) output.setContainsRBox(false);
+		
 		if (input.getKeyClasses()!=null){
 			for (int i=0;i<input.getKeyClasses().length;i++) {
 				output.addKeyClasses(input.getKeyClasses()[i]);			
