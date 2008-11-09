@@ -9,5 +9,9 @@
             name="Collaborative Development Preference">
       </page>
    </extension>
+   
+   <extension point="org.eclipse.help.toc"> 
+    <toc extradir="resources/html" primary="true" file="resources/xml/toc.xml"/> 
+</extension>
 
 </plugin>
