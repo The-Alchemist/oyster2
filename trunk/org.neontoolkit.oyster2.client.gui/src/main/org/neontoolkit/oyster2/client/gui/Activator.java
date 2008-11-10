@@ -7,6 +7,11 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchListener;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -50,6 +55,9 @@ public class Activator extends AbstractUIPlugin {
 			resourcesPath = resourcesFileURL.getFile();
 			webServersLocator = new WebServersLocator();
 			
+			addWorkbenchListener();
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -57,11 +65,48 @@ public class Activator extends AbstractUIPlugin {
 		
 	}
 
+	private void addWorkbenchListener() {
+		IWorkbenchListener listener = new IWorkbenchListener() {
+
+			@Override
+			public void postShutdown(IWorkbench workbench) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public boolean preShutdown(IWorkbench workbench, boolean forced) {
+				
+				String firstView = PerspectiveFactory.OYSTER2_RESULTS_VIEW_SECONDARY_ID+String.valueOf(1);
+				IWorkbenchPage page =
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				
+				IViewReference[] views = page.getViewReferences();
+				String id = null;
+				for (IViewReference viewReference : views ) {
+					id = viewReference.getId();
+					if (id.equals(PerspectiveFactory.OYSTER2_RESULTS_VIEW_ID)) {
+						String secId = viewReference.getSecondaryId();
+						System.out.println("Id " + id + secId);
+						if (! secId.equals(firstView))
+							page.hideView(viewReference.getView(false));
+					}
+				}
+				return true;
+			}
+			
+		};
+		PlatformUI.getWorkbench().addWorkbenchListener(listener);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+
+		
+		
 		plugin = null;
 		super.stop(context);
 	}

@@ -44,7 +44,7 @@ public class SubmitQueryJob extends WorkspaceJob {
 	
 	private Map<String,Object> filters = null;
 	
-	private static int resultsViewSecondaryId = 1;
+	private static int resultsViewSecondaryId = 0;
 	
 	public SubmitQueryJob(String name) {
 		super(name);
