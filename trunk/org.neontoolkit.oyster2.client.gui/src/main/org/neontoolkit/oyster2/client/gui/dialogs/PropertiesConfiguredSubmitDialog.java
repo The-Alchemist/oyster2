@@ -286,10 +286,23 @@ public class PropertiesConfiguredSubmitDialog extends ResizableDialog {
 		currentSections = new TreeMap<String,Composite>();
 		categories = new HashMap<String, String[]>();
 		selection = new HashMap<String, Boolean>();
+		
+	
+		
 		for (String enabledAttribute : templateAttributes) {
 			selection.put(enabledAttribute,true);
 		}
-		
+		if (objectToUpdate != null) {
+
+			for (String enabledAttribute : objectToUpdate.getProperties()) {
+				Object initialValue = objectToUpdate.getValue(enabledAttribute); 
+				if (initialValue != null) {
+					selection.put(enabledAttribute,true);
+				}
+				
+			}
+			
+		}
 		
 	}
 	
