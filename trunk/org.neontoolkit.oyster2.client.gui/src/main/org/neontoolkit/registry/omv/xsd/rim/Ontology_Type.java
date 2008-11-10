@@ -1,7 +1,8 @@
 /**
  * Ontology_Type.java
  *
- * This file was auto-generated from WSDL and modified by Raul Palma
+ * This file was auto-generated from WSDL and modified by Raul Palma and David Munoz
+ * to make some fields no longer required
  * by the Apache Axis2 version: 1.3  Built on : Aug 10, 2007 (04:45:58 LKT)
  */
 package org.neontoolkit.registry.omv.xsd.rim;
@@ -293,28 +294,28 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
      * field for IsConsistentAccordingToReasoner
      * This was an Attribute!
      */
-    protected boolean localIsConsistentAccordingToReasoner;
+    protected Boolean localIsConsistentAccordingToReasoner;
 
     
     /**
      * field for ContainsABox
      * This was an Attribute!
      */
-    protected boolean localContainsABox;
+    protected Boolean localContainsABox;
 
     
     /**
      * field for ContainsRBox
      * This was an Attribute!
      */
-    protected boolean localContainsRBox;
+    protected Boolean localContainsRBox;
     
 
     /**
      * field for ContainsTBox
      * This was an Attribute!
      */
-    protected boolean localContainsTBox;
+    protected Boolean localContainsTBox;
 
     
     /**
@@ -330,10 +331,7 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
     protected java.lang.String localNotes;
 
     
-    protected boolean localIsConsistentAccordingToReasonerTracker=false;
-    protected boolean localContainsABoxTracker=false;
-    protected boolean localContainsTBoxTracker=false;
-    protected boolean localContainsRBoxTracker=false;
+   
     /* This type was generated from the piece of schema that had
        name = Ontology_Type
        Namespace URI = urn:neon-toolkit-org:registry:omv:xsd:rim:2.3
@@ -1429,20 +1427,18 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
      * Auto generated getter method
      * @return boolean
      */
-    public boolean getIsConsistentAccordingToReasoner() {
+    public Boolean getIsConsistentAccordingToReasoner() {
         return localIsConsistentAccordingToReasoner;
     }
     
-    public boolean getIsConsistentAccordingToReasonerTracker() {
-    	return localIsConsistentAccordingToReasonerTracker;
-    }
+    
 
     /**
      * Auto generated setter method
      * @param param IsConsistentAccordingToReasoner
      */
     public void setIsConsistentAccordingToReasoner(boolean param) {
-    	this.localIsConsistentAccordingToReasonerTracker=true;
+    	
         this.localIsConsistentAccordingToReasoner = param;
     }
 
@@ -1450,20 +1446,17 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
      * Auto generated getter method
      * @return boolean
      */
-    public boolean getContainsABox() {
+    public Boolean getContainsABox() {
         return localContainsABox;
     }
 
-    public boolean getContainsABoxTracker() {
-        return localContainsABoxTracker;
-    }
     
     /**
      * Auto generated setter method
      * @param param ContainsABox
      */
     public void setContainsABox(boolean param) {
-    	this.localContainsABoxTracker=true;
+    	
         this.localContainsABox = param;
     }
 
@@ -1471,19 +1464,16 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
      * Auto generated getter method
      * @return boolean
      */
-    public boolean getContainsRBox() {
+    public Boolean getContainsRBox() {
         return localContainsRBox;
     }
 
-    public boolean getContainsRBoxTracker() {
-        return localContainsRBoxTracker;
-    }
     /**
      * Auto generated setter method
      * @param param ContainsRBox
      */
     public void setContainsRBox(boolean param) {
-    	this.localContainsRBoxTracker=true;
+    	
         this.localContainsRBox = param;
     }
 
@@ -1491,20 +1481,17 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
      * Auto generated getter method
      * @return boolean
      */
-    public boolean getContainsTBox() {
+    public Boolean getContainsTBox() {
         return localContainsTBox;
     }
 
-    public boolean getContainsTBoxTracker() {
-        return localContainsTBoxTracker;
-    }
     
     /**
      * Auto generated setter method
      * @param param ContainsTBox
      */
     public void setContainsTBox(boolean param) {
-    	this.localContainsTBoxTracker=true;
+    	
         this.localContainsTBox = param;
     }
 
@@ -1774,25 +1761,25 @@ public class Ontology_Type extends org.neontoolkit.registry.omv.xsd.rim.OMVRegis
           //      "required attribute localVersion is null");
         //}
 
-        if (localIsConsistentAccordingToReasonerTracker) {
+        if (localIsConsistentAccordingToReasoner!=null) {
             writeAttribute("", "isConsistentAccordingToReasoner",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localIsConsistentAccordingToReasoner), xmlWriter);
         }
 
-        if (localContainsABoxTracker) {
+        if (localContainsABox != null) {
             writeAttribute("", "containsABox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsABox), xmlWriter);
         }
 
-        if (localContainsRBoxTracker) {
+        if (localContainsRBox != null) {
             writeAttribute("", "containsRBox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsRBox), xmlWriter);
         }
 
-        if (localContainsTBoxTracker) {
+        if (localContainsTBox != null) {
             writeAttribute("", "containsTBox",
                 org.apache.axis2.databinding.utils.ConverterUtil.convertToString(
                     localContainsTBox), xmlWriter);
