@@ -104,11 +104,14 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		
 		
 		if (propertyValue instanceof String) {
+			String propertyText = (String)propertyValue;
+			if (propertyText.length() == 0)
+				return;
 			makePlainText(list, "\t" + beginTag); //$NON-NLS-1$
 			
 			linkedText = new LinkedText();
 			
-			String propertyText = (String)propertyValue;
+			
 			if (propertyText.charAt(0) == '#') {
 				propertyText = propertyText.substring(1);
 			}
@@ -127,8 +130,11 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		}
 		else if (propertyValue instanceof ArrayList) {
 			for (Object obj : (ArrayList)propertyValue) {
-				linkedText = new LinkedText();
 				String propertyText = (String)obj;
+				if (propertyText.length() == 0)
+					continue;
+				linkedText = new LinkedText();
+				
 				if (propertyText.charAt(0) == '#') {
 					propertyText = propertyText.substring(1);
 				}
@@ -206,13 +212,17 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		beginTag = configuration.getString(propertyName);
 		endTag = makeEndTag(beginTag);
 		
-		
+		String propertyText = null;
 		if (propertyValue instanceof String) {
+			propertyText = (String)propertyValue;
+			if (propertyText.length() == 0)
+				return;
+			
 			makePlainText(list, "\t" + beginTag); //$NON-NLS-1$
 			linkedText = new LinkedText();
 			link = new PartySearchLink();
 			
-			String propertyText = (String)propertyValue;
+			
 			if (propertyText.charAt(0) == '#') {
 				propertyText = propertyText.substring(1);
 			}
@@ -228,8 +238,11 @@ public class PropertiesConfiguredResultSerializer implements IResultSerializer {
 		}
 		else if (propertyValue instanceof ArrayList) {
 			for (Object obj : (ArrayList)propertyValue) {
+				propertyText = (String)obj;
+				if (propertyText.length() == 0)
+					continue;
 				linkedText = new LinkedText();
-				String propertyText = (String)obj;
+				
 				if (propertyText.charAt(0) == '#') {
 					propertyText = propertyText.substring(1);
 				}
