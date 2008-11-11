@@ -56,6 +56,12 @@ public class ResultsLabelProvider extends LabelProvider implements
 		String thisItem = null;
 		while (it.hasNext()) {
 			thisItem = it.next().toString();
+			
+			//added for empty results
+			
+			if (thisItem.length() == 0)
+				continue;
+				
 			if (thisItem.charAt(0) == '#') {
 				composedLabel.append(thisItem.substring(1) +"; ");
 			}

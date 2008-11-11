@@ -68,13 +68,13 @@ public class Activator extends AbstractUIPlugin {
 	private void addWorkbenchListener() {
 		IWorkbenchListener listener = new IWorkbenchListener() {
 
-			@Override
+			
 			public void postShutdown(IWorkbench workbench) {
 				// TODO Auto-generated method stub
 				
 			}
 
-			@Override
+			
 			public boolean preShutdown(IWorkbench workbench, boolean forced) {
 				
 				String firstView = PerspectiveFactory.OYSTER2_RESULTS_VIEW_SECONDARY_ID+String.valueOf(1);
