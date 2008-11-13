@@ -28,9 +28,12 @@ import org.semanticweb.kaon2.api.Ontology;
  */
 public class DomainTreeComposite extends InputComposite {
 
+	private Entity topicRoot = null;
 	
 	private TreeViewer topicViewer = null;
 		
+	private Ontology topicOntology = null;
+	
 	/**
 	 * @param parent
 	 * @param style
@@ -70,8 +73,8 @@ public class DomainTreeComposite extends InputComposite {
 	private TreeViewer makeTopicsViewer(Composite baseComposite) {
 		
 		//excepcion aqui
-		Ontology topicOntology = Oyster2.getSharedInstance().getTopicOntology();
-		Entity topicRoot = Oyster2.getSharedInstance().getTopicOntologyRoot();
+		topicOntology = Oyster2.getSharedInstance().getTopicOntology();
+		topicRoot = Oyster2.getSharedInstance().getTopicOntologyRoot();
 		
 		topicViewer = new TreeViewer(baseComposite, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL | SWT.BORDER| SWT.FULL_SELECTION);
@@ -146,7 +149,7 @@ public class DomainTreeComposite extends InputComposite {
 	public void setInitialValue(Object value) {
 		ArrayList<String> initialValues = (ArrayList<String>)value;
 		//Ontology topicOntology = Oyster2.getSharedInstance().getTopicOntology();
-		Entity entry = null;
+		/*Entity entry = null;
 		Entity[] topicList = new Entity[initialValues.size()];
 		int i = 0;
 		for (String topic : initialValues) {
@@ -155,7 +158,34 @@ public class DomainTreeComposite extends InputComposite {
 		}
 		StructuredSelection selection = 
 			new StructuredSelection(topicList);
+		topicViewer.expandToLevel(TreeViewer.ALL_LEVELS);
 		topicViewer.setSelection(selection);
+		*/
+		ArrayList<Entity> topicList = new ArrayList<Entity>();
+		updateSelection(topicRoot,initialValues,topicList);
+		StructuredSelection selection = 
+			new StructuredSelection(topicList);
+		topicViewer.expandAll();
+		topicViewer.setSelection(selection);
+	}
+
+
+
+	private void updateSelection(Entity topic,
+			ArrayList<String> initialValues,ArrayList<Entity> selection) {
+		OntologyContentProvider contentProvider = 
+			(OntologyContentProvider) topicViewer.getContentProvider();
+		
+		if (initialValues.contains(topic.getURI())) {
+			selection.add(topic);
+		}
+		if (contentProvider.hasChildren(topic)) {
+			Object [] children = contentProvider.getChildren(topic);
+			for (Object child : children) {
+				updateSelection((Entity)child, initialValues, selection);
+			}
+		}
+		
 	}
 	
 }
