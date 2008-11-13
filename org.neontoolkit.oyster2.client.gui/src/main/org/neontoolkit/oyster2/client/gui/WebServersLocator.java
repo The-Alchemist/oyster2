@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -36,26 +37,62 @@ public class WebServersLocator {
 	
 	public static final String DELETED = "DELETED";
 	
-	private static PropertiesConfiguration configuration = null;
+	private IDialogSettings dialogSettings = null;
+	
+	private static final String SERVER_SETTINGS_SECTION = "servers";
+	
+	private static final String SELECTION_KEY = "currentSelection";
 	
 	public WebServersLocator() {
 		servers = new HashSet<String>();
 		selectionListeners = new HashSet<Listener>();
 		contentListeners = new HashSet<Listener>();
 		try {
-			configuration =
-				new PropertiesConfiguration(Activator.getDefault().getResourcesDir() +
-						filename);
-			configuration.setAutoSave(true);
-			List<String> serversList = configuration.getList(SERVER_LIST_KEY);
-			servers.addAll(serversList);
+			
+
+			IDialogSettings generalSection = Activator.getDefault().getDialogSettings();
+			
+			dialogSettings = generalSection.getSection(SERVER_SETTINGS_SECTION);
+			
+			if (dialogSettings == null) {
+				dialogSettings = generalSection.addNewSection(SERVER_SETTINGS_SECTION);
+				PropertiesConfiguration configuration = null;
+				
+				configuration =
+					new PropertiesConfiguration(Activator.getDefault().getResourcesDir() +
+							filename);
+				configuration.setAutoSave(false);
+				List<String> serversList = configuration.getList(SERVER_LIST_KEY);
+				servers.addAll(serversList);
+				dialogSettings.put(SERVER_LIST_KEY, 
+						serversList.toArray(new String[serversList.size()]));
+			}
+			else {
+				String [] serverArray = dialogSettings.getArray(SERVER_LIST_KEY);
+				for (String server : serverArray) {
+					servers.add(server);
+				}
+			}
+			
+			
+			
+			/*
 			String selected = configuration.getString(CURRENT_SELECTION_KEY);
 			
 			if (selected == null)
 				currentSelection = serversList.get(0);
 			else 
 				currentSelection = selected;
-			
+			*/
+			String selected = dialogSettings.get(CURRENT_SELECTION_KEY);
+			if (selected == null) {
+				
+				String firstServer = servers.iterator().next();
+				currentSelection = firstServer;
+			}
+			else {
+				currentSelection = selected;
+			}
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -71,15 +108,11 @@ public class WebServersLocator {
 	public void addServer(String server) {
 		if (servers.add(server)) {
 			fireContentChanged(server,WebServersLocator.ADDED);
-		
-			configuration.addProperty(SERVER_LIST_KEY,server);
-			try {
-				configuration.save();
-			} catch (ConfigurationException e) {
+			String [] serverArray = new String[servers.size()];
+			//configuration.addProperty(SERVER_LIST_KEY,server);
 			
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
+			dialogSettings.put(SERVER_LIST_KEY, servers.toArray(serverArray));
+			
 		}
 	}
 	
@@ -87,9 +120,7 @@ public class WebServersLocator {
 		
 		if (servers.contains(server)) {
 			servers.remove(server);
-			if (server.equals(getCurrentSelection())) {
-
-				
+			if (server.equals(getCurrentSelection())) {	
 				if (!servers.isEmpty()) {
 					setCurrentSelection(servers.iterator().next());
 				}
@@ -98,7 +129,9 @@ public class WebServersLocator {
 			fireContentChanged(server,WebServersLocator.DELETED);
 			//List<String> servers = configuration.getList(SERVER_LIST_KEY);
 			
-			configuration.setProperty(SERVER_LIST_KEY, servers);
+			String [] serverArray = new String[servers.size()];
+			
+			dialogSettings.put(SERVER_LIST_KEY, servers.toArray(serverArray));
 			return true;
 		}
 		return false;
@@ -119,7 +152,7 @@ public class WebServersLocator {
 	 */
 	public final void setCurrentSelection(String server) {
 		currentSelection = server;
-		configuration.setProperty(CURRENT_SELECTION_KEY, server);
+		dialogSettings.put(CURRENT_SELECTION_KEY,server);
 		fireSelectionChanged(server);
 	}
 
@@ -154,21 +187,6 @@ public class WebServersLocator {
 		
 		for (Listener listener : selectionListeners) {
 			listener.handleEvent(null);
-		}
-	}
-	
-	public void dispose() {
-		try {
-			PropertiesConfiguration configuration =
-				new PropertiesConfiguration(Activator.getDefault().getResourcesDir() +
-						filename);
-			configuration.clear();
-			configuration.setProperty(CURRENT_SELECTION_KEY,currentSelection);
-			configuration.setProperty(SERVER_LIST_KEY, 
-					getServers());
-			
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
 		}
 	}
 	
