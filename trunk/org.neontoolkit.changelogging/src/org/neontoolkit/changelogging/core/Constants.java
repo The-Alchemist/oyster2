@@ -50,7 +50,7 @@ public class Constants {
 	
 	public static final String ACTION_ANPROPERTY = "annotationDeclaration";
 	
-	public static final String ACTION_DATATYPE = "dataTypeDeclaration";
+	public static final String ACTION_DATATYPE = "datatypeDeclaration";
 	
 	public static final String ACTION_INDIVIDUAL = "individualDeclaration";
 	public static final String ACTION_INDIVIDUAL_MEM = "classMember";

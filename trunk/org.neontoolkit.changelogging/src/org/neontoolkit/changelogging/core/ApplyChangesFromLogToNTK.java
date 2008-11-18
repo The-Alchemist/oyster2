@@ -373,7 +373,7 @@ public class ApplyChangesFromLogToNTK {
 											if (cddm.size()>1)
 												app = KAON2Manager.factory().differentIndividuals(cddm);
 										}
-										else if (ax instanceof NegativeDataPropertyAssertion){
+										else if (ax instanceof NegativeDataPropertyAssertion){ //ERROR IN V1.8.1 FORGOT TO USE negativeDataPropertyMember INSTEAD OF dataPropertyMember
 											NegativeDataPropertyAssertion axT = (NegativeDataPropertyAssertion)ax;
 											org.semanticweb.kaon2.api.owl.elements.DataProperty dp= KAON2Manager.factory().dataProperty(axT.getDataProperty().getURI());
 											org.semanticweb.kaon2.api.owl.elements.Individual in = KAON2Manager.factory().individual(axT.getSourceIndividual().getURI());
@@ -384,14 +384,14 @@ public class ApplyChangesFromLogToNTK {
 													String dataName=cleanValue.substring(cleanValue.indexOf("???")+3,cleanValue.length());
 													cleanValue=Namespaces.guessLocalName(cleanValue.substring(0, cleanValue.indexOf("???")));//cleanValue=cleanValue.replace("??", "^^");
 													if (dataName!=null)
-														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(getObject(dataName,cleanValue)));
+														app = KAON2Manager.factory().negativeDataPropertyMember(dp, in, KAON2Manager.factory().constant(getObject(dataName,cleanValue)));
 													else
-														app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+														app = KAON2Manager.factory().negativeDataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
 												}	
 												else{
 													if (cleanValue.indexOf(localURI)>=0)
 														cleanValue=cleanValue.substring(localURI.length(), cleanValue.length());
-													app = KAON2Manager.factory().dataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
+													app = KAON2Manager.factory().negativeDataPropertyMember(dp, in, KAON2Manager.factory().constant(cleanValue));
 												}
 											}	
 										}
@@ -435,12 +435,23 @@ public class ApplyChangesFromLogToNTK {
 										for (String diT : axT.getEntityAnnotation()){
 											constantValue=constantValue+" "+diT;
 										}
+										if (constantValue.contains(localURI))
+											constantValue=constantValue.substring(localURI.length());
 										constantValue=constantValue.replace("%20", " ");
 										if (oeoy instanceof OWLClass) ddm = KAON2Manager.factory().owlClass(entity);
 										else if (oeoy instanceof DataProperty) ddm = KAON2Manager.factory().dataProperty(entity);
 										else if (oeoy instanceof ObjectProperty) ddm = KAON2Manager.factory().objectProperty(entity);
 										else if (oeoy instanceof Individual) ddm = KAON2Manager.factory().individual(entity);
-										else if (oeoy instanceof Datatype) ddm = KAON2Manager.factory().datatype(xsd+entity); //assuming xsd for datatypes;
+										else if (oeoy instanceof Datatype) {
+											if (entity.startsWith(localURI)){
+												if (entity.contains(localURI)) entity=entity.substring(localURI.length());
+												ddm = KAON2Manager.factory().datatype(xsd+entity); //assuming xsd for datatypes;
+											}
+											else if (entity.startsWith("http://"))
+												ddm = KAON2Manager.factory().datatype(entity); //assuming predefined datatype;
+											else
+												ddm = KAON2Manager.factory().datatype(xsd+entity); //assuming xsd for datatypes;
+										}
 										if (constantValue.length()>1 && ddm!=null && annoProp!=null){
 											constantValue=constantValue.substring(1);
 											String localN=Namespaces.guessLocalName(annoProp); //cannot use reserved names as values in ontology
