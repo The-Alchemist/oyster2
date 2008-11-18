@@ -16,6 +16,7 @@ import org.neontoolkit.omv.api.core.OMVPerson;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLDataPropertyChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLIndividualChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLClassChange.DisjointClassChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLClassChange.DisjointUnionChange;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLClassChange.EquivalentClassChange;
@@ -72,8 +73,10 @@ import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityCha
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.AddTransitiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLObjectPropertyChange.TransitiveObjectPropertyChange.RemoveTransitiveObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDataProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.AddObjectProperty;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDataProperty;
+import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveDatatype;
 import org.neontoolkit.omv.api.extensions.OWLchange.OMVOWLChange.OMVOWLEntityChange.OWLOntologyChange.RemoveObjectProperty;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
@@ -135,11 +138,16 @@ import org.neontoolkit.owlodm.api.Description.DataMinCardinality;
 import org.neontoolkit.owlodm.api.Description.DataSomeValuesFrom;
 import org.neontoolkit.owlodm.api.Description.OWLClass;
 import org.neontoolkit.owlodm.api.Description.ObjectAllValuesFrom;
+import org.neontoolkit.owlodm.api.Description.ObjectComplementOf;
 import org.neontoolkit.owlodm.api.Description.ObjectExactCardinality;
+import org.neontoolkit.owlodm.api.Description.ObjectExistsSelf;
 import org.neontoolkit.owlodm.api.Description.ObjectHasValue;
+import org.neontoolkit.owlodm.api.Description.ObjectIntersectionOf;
 import org.neontoolkit.owlodm.api.Description.ObjectMaxCardinality;
 import org.neontoolkit.owlodm.api.Description.ObjectMinCardinality;
+import org.neontoolkit.owlodm.api.Description.ObjectOneOf;
 import org.neontoolkit.owlodm.api.Description.ObjectSomeValuesFrom;
+import org.neontoolkit.owlodm.api.Description.ObjectUnionOf;
 import org.neontoolkit.owlodm.api.OWLEntity.DataProperty;
 import org.neontoolkit.owlodm.api.OWLEntity.Datatype;
 import org.neontoolkit.owlodm.api.OWLEntity.Individual;
@@ -169,6 +177,7 @@ public class ThreadRunner implements Runnable {
 	public static String localURI="http://localhost/";
 	public static String rdfsLiteral=localURI+"Literal";//www.w3.org/2000/01/rdf-schema#
 	public static String owlThing=localURI+"Thing";//http://www.w3.org/2002/07/owl#
+	public static String xsd="http://www.w3.org/2001/XMLSchema#";
 	
 	public ThreadRunner(ChangeType cTypeX, List<String> argsX, OMVOntology o, Ontology changedOnto, Shell arg){
 		cType=cTypeX;
@@ -272,6 +281,27 @@ public class ThreadRunner implements Runnable {
         				classEntity = new AddDataProperty();
         			}else if (atomicChange instanceof Removal){
         				classEntity = new RemoveDataProperty();
+        			}
+        			classEntity.setAppliedToOntology(omvOnto);
+        			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
+        			classEntity.addHasRelatedEntity(args.get(1));
+        			classEntity.addHasAuthor(se);
+        			classEntity.setDate(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).format(Calendar.getInstance().getTime()));
+        			oyster2Conn.register(classEntity);
+        		}
+        		else if (args.get(0).equals(Constants.ACTION_DATATYPE)){ //I FORGOT IN V1.8.1 ALTHOUGH NOT SUPPORTED IN NTK
+        			Declaration declaration = new Declaration();
+        			
+        			declaration.setEntity(new Datatype(args.get(1)));
+        			atomicChange.setAppliedAxiom(declaration);
+        			
+        			changeList.add(atomicChange);
+        			oyster2Conn.register(atomicChange);
+        			OWLOntologyChange classEntity = new OWLOntologyChange();
+        			if (atomicChange instanceof Addition){
+        				classEntity = new AddDatatype();
+        			}else if (atomicChange instanceof Removal){
+        				classEntity = new RemoveDatatype();
         			}
         			classEntity.setAppliedToOntology(omvOnto);
         			classEntity.addConsistsOfAtomicOperation(oyster2Conn.getLastChangeId());
@@ -467,6 +497,79 @@ public class ThreadRunner implements Runnable {
         						e.printStackTrace();
         					}
         				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("not")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						
+        						ObjectComplementOf o = new ObjectComplementOf();
+        						o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3).replace("]", "")));
+        						subC.setSuperClass(o);
+        						
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("self")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						
+        						ObjectExistsSelf o = new ObjectExistsSelf();
+        						o.setObjectProperty(new ObjectProperty(args.get(3).replace("]", "")));
+        						subC.setSuperClass(o);
+        						
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("and")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						
+        						ObjectIntersectionOf o = new ObjectIntersectionOf();
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3)));
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        						subC.setSuperClass(o);
+        						
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("oneOf")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						
+        						ObjectOneOf o = new ObjectOneOf();
+        						o.addIndividuals(new Individual(args.get(3)));
+        						o.addIndividuals(new Individual(args.get(4).replace("]", "")));
+        						subC.setSuperClass(o);
+        						
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("or")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						
+        						ObjectUnionOf o = new ObjectUnionOf();
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3)));
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        						subC.setSuperClass(o);
+        						
+        						subC.setSubClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						atomicChange.setAppliedAxiom(subC);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
         			}
         			
         			changeList.add(atomicChange);
@@ -644,6 +747,69 @@ public class ThreadRunner implements Runnable {
         						}
         						atomicChange.setAppliedAxiom(ec);
         					} catch (KAON2Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("not")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						ObjectComplementOf o = new ObjectComplementOf();
+        						o.setOWLClass(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3).replace("]", "")));
+        						ec.addEquivalentClasses(o);
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("self")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						ObjectExistsSelf o = new ObjectExistsSelf();
+        						o.setObjectProperty(new ObjectProperty(args.get(3).replace("]", "")));
+        						ec.addEquivalentClasses(o);
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("and")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						ObjectIntersectionOf o = new ObjectIntersectionOf();
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3)));
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        						ec.addEquivalentClasses(o);
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("oneOf")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						ObjectOneOf o = new ObjectOneOf();
+        						o.addIndividuals(new Individual(args.get(3)));
+        						o.addIndividuals(new Individual(args.get(4).replace("]", "")));
+        						ec.addEquivalentClasses(o);
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (Exception e) {
+        						OWLChangeListener.working--;
+        						e.printStackTrace();
+        					}
+        				}
+        				else if (args.get(2).replace("[", "").equalsIgnoreCase("or")){ //IT WAS MISSING IN V1.8.1
+        					try {
+        						ec.addEquivalentClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(1)));
+        						ObjectUnionOf o = new ObjectUnionOf();
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(3)));
+        						o.addOWLClasses(new org.neontoolkit.owlodm.api.Description.OWLClass(args.get(4).replace("]", "")));
+        						ec.addEquivalentClasses(o);
+        						atomicChange.setAppliedAxiom(ec);
+        					} catch (Exception e) {
         						OWLChangeListener.working--;
         						e.printStackTrace();
         					}
@@ -1437,8 +1603,11 @@ public class ThreadRunner implements Runnable {
         			EntityAnnotation ec = new EntityAnnotation();
         			
         			Datatype ot;
-        			String localNE=Namespaces.guessLocalName(args.get(2)); //cannot use reserved names as values in ontology
-        			ot = new Datatype(localNE);
+        			if (args.get(2).startsWith(xsd)){
+        				String localNE=Namespaces.guessLocalName(args.get(2)); //cannot use reserved names as values in ontology
+        				ot = new Datatype(localNE);
+        			}else
+        				ot = new Datatype(args.get(2));
         			ec.setEntity(ot);
         			String localN=Namespaces.guessLocalName(args.get(1)); //cannot use reserved names as values in ontology
         			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))

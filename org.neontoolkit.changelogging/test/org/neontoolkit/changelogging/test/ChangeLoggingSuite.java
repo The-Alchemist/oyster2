@@ -9,6 +9,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	ChangeLoggingTest.class,
+	//AllOWLChangesTest.class,
 })
 
 public class ChangeLoggingSuite {
