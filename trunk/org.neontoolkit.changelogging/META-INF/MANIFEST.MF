@@ -23,4 +23,5 @@ Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  lib/jdom.jar
 Export-Package: org.neontoolkit.changelogging.core,
+ org.neontoolkit.changelogging.gui.actions,
  org.neontoolkit.changelogging.test
