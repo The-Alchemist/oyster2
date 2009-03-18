@@ -1686,16 +1686,29 @@ public class ThreadRunner implements Runnable {
         			String see="";
         			for (String as : args) see+=" "+as;
         			System.out.println("args: "+see);
-        			MessageDialog.openError(
-    						shell,
-    						"Change Capturing Error",
-    						"The operation could not be performed. (Could be incorrect permission)!");
+        			openMessage("The operation could not be performed. (Could be incorrect permission)!");
+        			//MessageDialog.openError(
+    				//		shell,
+    				//		"Change Capturing Error",
+    				//		"The operation could not be performed. (Could be incorrect permission)!");
         		}
         		OWLChangeListener.working--;
             }catch(Exception e){
         		OWLChangeListener.working--;
         		e.printStackTrace();
         	}	
+	}
+	
+	public void openMessage(final String mess){
+		if (shell!=null) //FOR THE JUNIT
+		shell.getDisplay().asyncExec(new Runnable() {
+	           public void run() {
+	        	   MessageDialog.openInformation(
+           				shell,
+           				"Change Capturing Component",
+           				mess);
+	            }
+		});
 	}
 }
 
