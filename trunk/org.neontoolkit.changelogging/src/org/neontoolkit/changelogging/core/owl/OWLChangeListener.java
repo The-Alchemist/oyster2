@@ -36,27 +36,35 @@ public class OWLChangeListener implements OntologyListener {
 	private boolean isChanged = false;
 	private List<OMVAtomicChange> changeList = new ArrayList<OMVAtomicChange>();
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
-	private Shell shell;
-	private boolean isCollab;
+	private Shell shell=null;
+	private boolean isCollab=false;
 	public static int working=0;
 	public static String localURI="http://localhost/";
 	public static String owlThing=localURI+"Thing";//http://www.w3.org/2002/07/owl#
-	//private String project;
-    //private String moduleId;
+	private String project="";
+    private String moduleId="";
 	
 	public OWLChangeListener(Ontology onto, OMVOntology o, boolean c, String m, String p, Shell s){
 		monitoredOnto = onto;
 		omvOnto=o;
 		shell = s;//GuiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell();
 		isCollab=c;
-		//moduleId=m;
-		//project=p;
+		moduleId=m;
+		project=p;
 	}
 	
 	public Ontology getMonitoredOntology(){
 		return monitoredOnto;
 	}
-
+	public OMVOntology getOMVMonitoredOntology(){
+		return omvOnto;
+	}
+	public String getMonitoredOntologyProject(){
+		return project;
+	}
+	public String getMonitoredOntologyModuleId(){
+		return moduleId;
+	}
 	public List<OMVChange> getChanges(){
 		List<OMVChange> changes = new ArrayList<OMVChange>();
 	
@@ -166,23 +174,6 @@ public class OWLChangeListener implements OntologyListener {
  		
 	}
 	
-	private String getSerial(List<String> args){
-		String see="";
-		for (String as : args) see+=" "+as;
-		return see;
-	}
-	
-	public boolean hasChanges(){
-		return isChanged;
-	}
-	
-	public void persist(){	// persist the changes on the monitored ontology
-		for(OMVAtomicChange change : changeList){
-			change.setAppliedToOntology(omvOnto);
-			//oyster2Conn.register(change);
-		}
-	}
-	
 	public void ontologyChangedDrastically(Ontology arg0) {
 		System.out.println("ontologyChangedDrastically: " + arg0.getOntologyURI());		
 	}
@@ -226,7 +217,25 @@ public class OWLChangeListener implements OntologyListener {
 		System.out.println("ontologyTermReplaced: " + arg0.getOntologyURI() + 
 				" " + arg1.getOntologyURI() + " " + arg2.toString());
 	}
-
+	
+	private String getSerial(List<String> args){
+		String see="";
+		for (String as : args) see+=" "+as;
+		return see;
+	}
+	
+	//NOT WORKING NOW MAYBE IN THE FUTURE
+	
+	public boolean hasChanges(){
+		return isChanged;
+	}
+	
+	public void persist(){	// persist the changes on the monitored ontology
+		for(OMVAtomicChange change : changeList){
+			change.setAppliedToOntology(omvOnto);
+			//oyster2Conn.register(change);
+		}
+	}
 }
 
 //private static List<OMVOntology> omvOntoList = new ArrayList<OMVOntology>();
