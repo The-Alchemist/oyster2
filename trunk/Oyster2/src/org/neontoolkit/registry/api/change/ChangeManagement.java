@@ -66,7 +66,9 @@ import org.semanticweb.kaon2.api.KAON2Manager;
 import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent;
+import org.semanticweb.kaon2.api.Request;
 import org.semanticweb.kaon2.api.formatting.OntologyFileFormat;
+import org.semanticweb.kaon2.api.owl.axioms.Annotation;
 import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyMember;
 import org.semanticweb.kaon2.api.owl.elements.Description;
 import org.semanticweb.kaon2.api.owl.elements.Individual;
@@ -78,7 +80,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class ChangeManager provides the methods to support the
  * change support 
  * @author Raul Palma
- * @version 2.2, September 2008
+ * @version 2.3.2, May 2009
  */
 public class ChangeManagement {
 	static Oyster2Factory mOyster2;// = Oyster2Factory.sharedInstance();
@@ -1062,6 +1064,39 @@ public class ChangeManagement {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Returns the URLs of the Cicero issues associated with a change
+	 * @param omvChangeURI is the URI of the change 
+	 * @param registry the registry that has the change
+	 * @return the set of URLs of Cicero issues associated
+	 * 
+	 */
+	public Set<String> getIssueURLsForChange(String omvChangeURI, Ontology registry)
+	{
+		Ontology targetRegistry;
+		if (registry==null)targetRegistry=localRegistry;
+		else targetRegistry=registry;
+		
+		Set<String> issueURLs = new HashSet<String>();
+		Request<Annotation> request = targetRegistry
+		    .createAxiomRequest(Annotation.class);
+		request.setCondition("annotationProperty", KAON2Manager.factory()
+		    .annotationProperty(Constants.HASARGUMENTATION_ANNOTATION));
+		request.setCondition("entity", KAON2Manager.factory().individual(
+		    omvChangeURI));
+		Set<Annotation> annotations = new HashSet<Annotation>();
+		try {
+			annotations = request.getAll();
+		} catch (KAON2Exception e) {
+			e.printStackTrace();
+		}
+		for (Annotation entityAnnotation : annotations) {
+			Object value = entityAnnotation.getAnnotationValue().getValue();
+			issueURLs.add(value.toString());
+		}
+		return issueURLs;
 	}
 	
 	/**
