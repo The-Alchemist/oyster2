@@ -39,7 +39,7 @@ public class Test {
 		Oyster2Manager.setLogEnabled(true);
 		//Oyster2Manager.setAutomaticSyncrhonization(false);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.getConnection();
-		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(true);
+		Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false);
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection(false,"F:\\My Documents\\Oyster2APIv0.95\\new store");
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\new store", "C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\kaon2.jar","C:\\Archivos de programa\\Java\\jdk1.5.0_07\\test\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );
 		//Oyster2Connection oyster2Conn = Oyster2Manager.newConnection("F:\\My Documents\\Oyster2APIv0.96\\new store", "F:\\My Documents\\Oyster2APIv0.96\\Oyster2\\kaon2.jar","F:\\My Documents\\Oyster2APIv0.96\\server","-ms256M -mx256M -DentityExpansionLimit=8000000" );

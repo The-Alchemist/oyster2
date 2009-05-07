@@ -79,7 +79,7 @@ import org.semanticweb.kaon2.api.owl.elements.Individual;
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
  * @author Raul Palma
- * @version 2.2, September 2008
+ * @version 2.3.2, May 2009
  */
 public class Oyster2Connection {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -112,10 +112,21 @@ public class Oyster2Connection {
 	private String lastChange;
 	ExchangeInitiator mExchangeInitiator;
 	Thread mExchangeInitiatorThread;
+	static private String oyster2ConnectionVersion="2.3.2";
 	
 	public Oyster2Connection()
     {
 		resultAPI = new ResultAPI(apiThread,Resource.RegistryResource);
+    }
+	
+	/**
+	 * Returns the current version of the Oyster2 API.
+	 * This version should be updated every time API changes.
+	 * @return Oyster2 API version information
+	 */
+	public String getOyster2Version()
+    {
+		return oyster2ConnectionVersion;
     }
 	
 	/**
@@ -680,6 +691,17 @@ public class Oyster2Connection {
 	public void annotateIndividual(String individualURI, String issueURL){ 
 		ChangeManagement cMgmt= new ChangeManagement();
 		cMgmt.annotateIndividual(individualURI, issueURL, null);
+	}
+	
+	/**
+	 * Returns the URLs of the Cicero issues associated with a change
+	 * @param omvChangeURI is the URI of the change 
+	 * @return the set of URLs of Cicero issues associated
+	 */
+	public Set<String> getIssueURLsForChange(String omvChangeURI)
+	{
+		ChangeManagement cMgmt= new ChangeManagement();
+		return cMgmt.getIssueURLsForChange(omvChangeURI,null);
 	}
 	
 	//ONTOLOGY SPECIFIC METHODS
