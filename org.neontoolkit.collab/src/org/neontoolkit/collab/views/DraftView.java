@@ -19,8 +19,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -64,6 +66,7 @@ public class DraftView extends ViewPart implements SelectionListener {
 	static Table resTable ;
 	static StyledText serialization;
 	private static Button refreshButton, removeChangeButton, toBeApprovedButton;
+	private static Button selectAll,clearAll;
 	static IPreferenceStore _store;
 	private ExecutorService executor = Executors.newSingleThreadExecutor();
 	static Color grayColor=null;
@@ -74,6 +77,9 @@ public class DraftView extends ViewPart implements SelectionListener {
 	int STATUS_COLUMN = 6;
 	
 	static HashSet<TableItem> selectedItems = new HashSet<TableItem>();
+
+	// Cicero Support
+	private TableViewer tableViewer;
 	
 	public DraftView(){
 		_store = GuiPlugin.getDefault().getPreferenceStore();
@@ -82,7 +88,7 @@ public class DraftView extends ViewPart implements SelectionListener {
 	@Override
 	public void createPartControl(Composite parent) {				
 		GridData gd = null;
-		int columns = 2;	
+		int columns = 4;	
 		int width = 800;
 		int columnWidth = 100;
 		grayColor=this.getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_GRAY);
@@ -100,30 +106,41 @@ public class DraftView extends ViewPart implements SelectionListener {
 		refreshButton.setText("  Refresh Changes List  ");
 		refreshButton.addSelectionListener(this);
 
-		
 		gd = new GridData();
 		gd.horizontalSpan = columns;
 		gd.widthHint = width;
 		gd.heightHint = 300;
 		gd.grabExcessHorizontalSpace = true;			
-		resTable = new Table(composite, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER);
+		resTable = new Table(composite, SWT.CHECK | SWT.V_SCROLL | SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION); //Added Multi for Cicero
+		
+		//Cicero Support Start
+		tableViewer = new TableViewer(resTable);
+		new ContextMenuManager("org.neontoolkit.collab.views",
+			    tableViewer, getSite()).registerContextMenu();
+		//Cicero Support Finish
+		
 		resTable.setLayoutData(gd);
 		resTable.setHeaderVisible(true);
 		resTable.setLinesVisible(true);
 		resTable.setBounds(0, 0, width, 140);
 		resTable.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {		        
-		        TableItem item = (TableItem)event.item;
-		        if(item.getChecked()){
-		        	//System.out.println(item.getText(4) + " (checked) ");
-		        	selectedItems.add(item);
-		        } else {
-		        	//System.out.println(item.getText(4) + " (nonchecked) ");
-		        	selectedItems.remove(item);
-		        }
-		        serialization.setText("");
-		        if (selectedItems.size()>0)
-		        	executor.execute(new RefreshSerializationThread(shell));
+			public void handleEvent(Event event) {
+    			if (event.detail == SWT.CHECK) {
+    				TableItem item = (TableItem)event.item;
+    				if(item.getChecked()){		        	
+    					selectedItems.add(item);
+    					//System.out.println(item.getText(3) + " (checked) "+"selected: "+selectedItems.toString());
+    				} else {
+    					selectedItems.remove(item);
+    					//System.out.println(item.getText(3) + " (nonchecked) "+"selected: "+selectedItems.toString());
+    				}
+    				resTable.setSelection(selectedItems.toArray(new TableItem[selectedItems.size()]));		        		       
+    				serialization.setText("");
+    				if (selectedItems.size()>0)
+    					executor.execute(new RefreshSerializationThread(shell));
+    			}
+    			else
+    				resTable.setSelection(selectedItems.toArray(new TableItem[selectedItems.size()]));
 		      }
 		    });
 		//first column
@@ -174,6 +191,34 @@ public class DraftView extends ViewPart implements SelectionListener {
 		toBeApprovedButton.setText("Submit Changes To Be Approved");
 		toBeApprovedButton.addSelectionListener(this);
 		
+		selectAll = new Button(composite, SWT.PUSH);
+		selectAll.setText("  Select All  ");
+		selectAll.addSelectionListener( new SelectionAdapter(){
+            public void widgetSelected( SelectionEvent e )
+            {
+                resTable.selectAll();
+                for (TableItem i : resTable.getItems()){
+                	i.setChecked(true);
+                	selectedItems.add(i);
+                }
+                serialization.setText("");
+				if (selectedItems.size()>0)
+					executor.execute(new RefreshSerializationThread(shell));
+            }
+        } );
+		clearAll = new Button(composite, SWT.PUSH);
+		clearAll.setText("  Clear All  ");
+		clearAll.addSelectionListener( new SelectionAdapter(){
+            public void widgetSelected( SelectionEvent e )
+            {
+                resTable.deselectAll();
+                for (TableItem i : resTable.getItems()){
+                	i.setChecked(false);
+                }
+                selectedItems.clear();
+                serialization.setText("");
+            }
+        } );
 		
 		gd = new GridData();
 		gd.horizontalSpan = columns;
@@ -495,6 +540,9 @@ public class DraftView extends ViewPart implements SelectionListener {
 	        			   persons, date,	state, acText	});					    					
 	        	   if(!currentPerson.getHasRole().equalsIgnoreCase(Constants.SubjectExpert) || !isCurrentUser || state.equals(Constants.ApprovedState))
 	        		   item.setForeground(grayColor);
+	        	   
+	        	   //Cicero Support
+	        	   item.setData(oyster2Conn.getChange(changeURI));
 	           }
 		});
 	}
