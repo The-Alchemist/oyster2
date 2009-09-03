@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Menu Plug-in
 Bundle-SymbolicName: org.neontoolkit.oyster.plugin.menu;singleton:=true
-Bundle-Version: 1.8.2
+Bundle-Version: 1.8.3
 Bundle-Activator: org.neontoolkit.oyster.plugin.menu.MenuActivator
 Bundle-Vendor: UPM
 Require-Bundle: org.eclipse.ui,
