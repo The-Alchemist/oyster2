@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.io.*;
 
+import org.neontoolkit.omv.api.core.OMVOntology;
+import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.registry.core.AdvertInformer;
 import org.neontoolkit.registry.core.ExchangeInitiator;
 import org.neontoolkit.registry.core.Exchanger;
@@ -29,7 +31,8 @@ import org.semanticweb.kaon2.api.*;
  * <code>sharedInstance</code> function to use this class.
  * 
  * @author <a href="mailto:Guo Rui <rui.guo@epfl.ch>">GuoRui</a>
- * @version 1.0.0
+ * @author <a href="mailto:Raul Palma <rpalma@fi.upm.es>">RaulPalma</a>
+ * @version 2.3.3
  */
 public class Oyster2Factory {
 
@@ -251,6 +254,9 @@ public class Oyster2Factory {
 	private Logger logger = Logger.getLogger("org.neon_toolkit.registry.Logging");
 	private boolean logEnabled=false;
 	private boolean shadowCopy=false; //KEEP SECOND FILE??? NO!!!!
+	
+	// Last changes synchronized
+	private  Map<OMVOntology, List<OMVChange>> lastSyncInfo=new HashMap<OMVOntology, List<OMVChange>>();
 
 
 	/**
@@ -988,6 +994,31 @@ public class Oyster2Factory {
 	
 	public void setAutomaticSyncrhonization(boolean t){
 		this.automaticSyncrhonization=t;
+	}
+	
+	public Map<OMVOntology, List<OMVChange>> getLastChangesSync(){
+		return lastSyncInfo;
+	}
+	
+	public void setLastChangesSync(OMVOntology p1, List<OMVChange> p2){
+		lastSyncInfo.put(p1,p2);
+	}
+	
+	public void addLastChangesSync(OMVOntology p1, List<OMVChange> p2){
+		List<OMVChange> cTemp=lastSyncInfo.get(p1);
+		if (cTemp!=null)	{
+			cTemp.addAll(p2);
+			lastSyncInfo.put(p1,cTemp);
+		}
+		else {
+			cTemp = new LinkedList<OMVChange>();
+			cTemp.addAll(p2);
+			lastSyncInfo.put(p1,cTemp);
+		}
+	}
+	
+	public void removeLastChangesSync(OMVOntology p1){
+		lastSyncInfo.remove(p1);
 	}
 }
 

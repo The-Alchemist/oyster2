@@ -79,7 +79,7 @@ import org.semanticweb.kaon2.api.owl.elements.Individual;
 /**
  * The class Oyster2Connection provides the API access methods to Oyster2 registry.
  * @author Raul Palma
- * @version 2.3.2, May 2009
+ * @version 2.3.3, August 2009
  */
 public class Oyster2Connection {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
@@ -112,7 +112,9 @@ public class Oyster2Connection {
 	private String lastChange;
 	ExchangeInitiator mExchangeInitiator;
 	Thread mExchangeInitiatorThread;
-	static private String oyster2ConnectionVersion="2.3.2";
+	static private String oyster2ConnectionVersion="2.3.3"; //2.3.3 AUG/SEP-09
+	//2.3.3 CHANGES: FIX GET WORKFLOW HISTORY; IMPLEMENT CASE IV OF SYNC TO SUPPORT TOTAL CONCURRENCY; NO CONFLICT RESOLUTION YET
+	
 	
 	public Oyster2Connection()
     {
@@ -1084,6 +1086,47 @@ public class Oyster2Connection {
 		return lastChange;
 	}
 	
+	/**
+	 * Gets a map containing for each ontology synchronized the
+	 * last set of changes synchronized. This is in memory, so
+	 * if Oyster is restarted or in another session this
+	 * information is lost
+	 * @return The map of ontologies with associated list of changes
+	 */
+	public Map<OMVOntology, List<OMVChange>> getLastChangesSync(){
+		return mOyster2.getLastChangesSync();
+	}
+	
+	/**
+	 * Sets a mapping of the last synchronization for ontology
+	 * p1 to the list of changes p2. 
+	 * @param p1 is the OMV ontology that we are setting
+	 * @param p2 is the list of changes last synchronized. 
+	 * 
+	 */
+	public void setLastChangesSync(OMVOntology p1, List<OMVChange> p2){
+		mOyster2.setLastChangesSync(p1,p2);
+	}
+	
+	/**
+	 * Adds the list of changes to the mapping of the last synchronization for ontology p1
+	 * @param p1 is the OMV ontology that we are setting
+	 * @param p2 is the list of changes last synchronized. 
+	 * 
+	 */
+	public void addLastChangesSync(OMVOntology p1, List<OMVChange> p2){
+		mOyster2.addLastChangesSync(p1,p2);
+	}
+	
+	/**
+	 * Remove the mapping for ontology p1 of the 
+	 * last synchronized changes, i.e., clear it.
+	 * @param p1 is the OMV ontology that we are setting
+	 * 
+	 */
+	public void removeLastChangesSync(OMVOntology p1){
+		mOyster2.removeLastChangesSync(p1);
+	}
 	/**
 	 * Gets the set of atomic changes for a specific entity
 	 * change
