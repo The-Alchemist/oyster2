@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
+//import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.neontoolkit.oyster.plugin.menu.actions.StartRegistry;
 import org.neontoolkit.registry.api.Oyster2Connection;
+import org.neontoolkit.registry.api.change.ChangeManagement;
 import org.neontoolkit.workflow.api.Action;
 import org.neontoolkit.workflow.api.Action.EntityAction;
 import org.neontoolkit.workflow.api.Action.EntityAction.Delete;
@@ -37,6 +38,7 @@ import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange.Remov
 
 public class ReflectInNavigatorThread implements Runnable {
 	public static Oyster2Connection oyster2Conn = null;
+	public static ChangeManagement cMgmt= new ChangeManagement();
 	private Shell shell;
 	
 	public ReflectInNavigatorThread (Shell arg){
@@ -51,12 +53,16 @@ public class ReflectInNavigatorThread implements Runnable {
             			monitor.beginTask("Synchronizing changes...", 100);
             			try {
             				//Get the last changeid from log
-            				Set<String> ids = new HashSet<String>();
+            				//Set<String> ids = new HashSet<String>();
+            				Map<OMVOntology, Integer> sizeBefore = new HashMap<OMVOntology, Integer>();
+            				
             				Map<String,String> timestamps = new HashMap<String,String>();
             				oyster2Conn = StartRegistry.connection;
             				Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
             				for (OMVOntology onto: tOntos){
-            					ids.add(oyster2Conn.getLastChangeIdFromLog(onto));
+            					//ids.add(oyster2Conn.getLastChangeIdFromLog(onto));
+            					sizeBefore.put(onto, oyster2Conn.getChangesIds(onto).size());
+            					
             					List<Action> allActions=oyster2Conn.getEntityActionsHistory(onto, null);
             					if (allActions.size()>0) {
             						Action lastAction = (Action)allActions.get(allActions.size()-1);
@@ -88,7 +94,10 @@ public class ReflectInNavigatorThread implements Runnable {
             		            				thread.join();
             		            				monitor.worked(40);
             		            				System.out.println("Finished. Ready to reflect in navigator "+System.currentTimeMillis());
-            		            				reflect(ids, tOntos);
+            		          
+            		            				//reflect(ids, tOntos);
+            		            				reflectNew(sizeBefore);
+            		            				
             		            				monitor.worked(20);
             		            				reflectActions(timestamps);
             		            				monitor.worked(20);
@@ -102,7 +111,9 @@ public class ReflectInNavigatorThread implements Runnable {
             		        if (!found){
             		        	monitor.worked(40);
             		        	System.out.println("No Running syncthread. Ready to reflect in navigator");
-            		        	reflect(ids, tOntos);
+            		        	//reflect(ids, tOntos);
+            		        	reflectNew(sizeBefore);
+            		        	
             		        	monitor.worked(20);
 	            				reflectActions(timestamps);
 	            				monitor.worked(20);
@@ -148,6 +159,47 @@ public class ReflectInNavigatorThread implements Runnable {
 					//System.out.println("To Apply (initial set of changes for the ontology):");
 					//System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
 					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
+				}
+			}
+		}
+	}
+	
+	public void reflectNew(Map<OMVOntology, Integer> p1){
+		//First reflect changes to ontologies that already HAD changes before syncrhonization
+		for (OMVOntology onto : p1.keySet()){
+			if (oyster2Conn.getChangesIds(onto).size()>p1.get(onto)){
+				for (OMVOntology o : oyster2Conn.getLastChangesSync().keySet()){
+					if (o.getURI().equalsIgnoreCase(onto.getURI())){
+						List<OMVChange> toApply = oyster2Conn.getLastChangesSync().get(o);
+						if (toApply!= null && toApply.size()>0)
+							ApplyChangesFromLogToNTK.applyChanges(toApply,onto);						
+						oyster2Conn.removeLastChangesSync(o);
+						break;
+					}
+				}
+				
+			}
+		}
+		//Here reflect changes to ontologies that didnt have changes before syncrhonization but now they have
+		Set<OMVOntology> tOntos = oyster2Conn.getOntologiesWithChanges();
+		for (OMVOntology o1 : tOntos){
+			boolean already=false;
+			for (OMVOntology o2 : p1.keySet())
+				if (getOntologyID(o1).equalsIgnoreCase(getOntologyID(o2))) already=true;
+			if (!already){
+				List<OMVChange> toApply = oyster2Conn.getChanges(o1,null);
+				if (toApply!=null && toApply.size()>0){
+					Collections.reverse(toApply);
+					//System.out.println("To Apply (initial set of changes for the ontology):");
+					//System.out.println(Oyster2Manager.serializeOMVChanges(toApply));
+					ApplyChangesFromLogToNTK.applyChanges(toApply,o1);
+					//REMOVE LIST OF LAST CHANGES
+					Map<OMVOntology, List<OMVChange>> rem = oyster2Conn.getLastChangesSync();
+					for (OMVOntology remOnto : rem.keySet()){
+						if (remOnto.getURI().equalsIgnoreCase(o1.getURI()))
+							oyster2Conn.removeLastChangesSync(remOnto);
+					}
+					
 				}
 			}
 		}
