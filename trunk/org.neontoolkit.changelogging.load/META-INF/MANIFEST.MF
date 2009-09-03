@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Load Change Log Plug-in
+Bundle-SymbolicName: org.neontoolkit.changelogging.load;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.neontoolkit.changelogging.load.Activator
+Bundle-Vendor: UPM
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ com.ontoprise.ontostudio.owl.gui,
+ com.ontoprise.ontostudio.datamodel,
+ com.ontoprise.ontostudio.gui,
+ org.eclipse.core.resources,
+ org.neontoolkit.registry.api,
+ org.neontoolkit.oyster.plugin.menu,
+ org.neontoolkit.changelogging
+Eclipse-LazyStart: true

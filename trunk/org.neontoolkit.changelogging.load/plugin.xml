@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="org.neontoolkit.changelogging.load.menu"
+            objectClass="com.ontoprise.ontostudio.owl.gui.navigator.ontology.OntologyTreeElement">
+         <action
+               class="org.neontoolkit.changelogging.load.gui.actions.Apply"
+               id="org.neontoolkit.changelogging.load.menu.apply"
+               label="Apply Change Log">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
