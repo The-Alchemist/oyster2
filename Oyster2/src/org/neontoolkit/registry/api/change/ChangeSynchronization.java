@@ -2,8 +2,13 @@ package org.neontoolkit.registry.api.change;
 
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
 import org.neontoolkit.registry.api.individuals.ProcessOMVIndividuals;
@@ -32,13 +37,16 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * synchronization of the changes (and workflow actions if enabled) between
  * peers 
  * @author Raul Palma
- * @version 2.0, March 2008
+ * @version 2.3.3, August 2009
  */
 public class ChangeSynchronization {
 	static Oyster2Factory mOyster2 = Oyster2Factory.sharedInstance();
 	private static ChangeManagement cMgmt = new ChangeManagement();
 	private static WorkflowManagement wMgmt= new WorkflowManagement();
 	private static AdvertInformer localInformer = mOyster2.getLocalAdvertInformer();
+	private static boolean firstWasThere =false;
+	private static String lastWasThereURI="";
+	
 	
 	public ChangeSynchronization()
     {
@@ -92,48 +100,228 @@ public class ChangeSynchronization {
 		mOyster2.getLogger().info("finished change synchronization...");
 	}
 	
-	public synchronized static void SyncrhonizeChangesWithRegistry(Ontology remoteRegistry,Individual ontoindiv,Ontology targetOntology){
-		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",targetOntology);
-		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
-			String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
-			List<OMVChange> list;
-			if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
-				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
+	public synchronized static void Sync(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology, boolean push){
+		String lastLocal=cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
+		String startsHere="";
+		String lspPlusOne="";
+		String fsp="";
+		List<OMVChange> list;
+		List<OMVChange> listOriginal;
+		List<OMVChange> listActuallyApplied;
+		
+		//RESET
+		firstWasThere=false;
+		lastWasThereURI="";
+		
+		//GET CHANGES
+		List<OMVChange> changes1 = cMgmt.getTrackedChanges(mainOntoReply, targetOntology, null); 
+		List<OMVChange> changes2 = cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
+		
+		//FIND LAST SYNC POINT - LSP
+		Map<String,String> reply =cMgmt.findLastSynchronizationPoint(mainOntoReply, targetOntology, remoteRegistry, changes1, changes2); 
+		if (reply==null) return; //ERROR
+		startsHere = reply.keySet().iterator().next(); //LSP
+		lspPlusOne = reply.get(startsHere);
+		
+		//FIND IF THERE IS A SYNC POINT OF lspPlusOne IN REMOTE LOG // - REPLACE PREVIOUS METHOD
+		boolean isFSP = cMgmt.isASynchronizationPoint(mainOntoReply, remoteRegistry,lspPlusOne, changes2);
+		if (isFSP) fsp = lspPlusOne;
+		else fsp = "";
+		
+		//FIND CASES
+		int isOlder=cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry, startsHere, lspPlusOne, fsp, changes2);
+		if (isOlder==0) return; //CASE (i or ii)
+		mOyster2.getLogger().info("local history is older ..."+mainOntoReply.getURI());
+		
+		//GET CHANGES
+		list = getChanges (mainOntoReply, startsHere, changes2);
+		if (list==null) return; //ERROR
+		listOriginal = getChanges (mainOntoReply, startsHere, changes1);
+		if (listOriginal==null) return; //ERROR
+		
+		if (isOlder==1 || isOlder==2 || isOlder==3 || isOlder==4 || isOlder==5) {
+			if (isOlder==1)	{	//CASE (iii)
+				startsHere = lastLocal; 	//START COPYING AT THE END OF THE LOG
+				//RegisterChanges(mainOntoReply,remoteRegistry,startsHere,"",list,push);
+			}//else CASE(iv) 				//START COPYING AT THE BEGINNING IF POSSIBLE
+			
+			listActuallyApplied = RegisterChanges(mainOntoReply,remoteRegistry,startsHere,fsp,list,push); //changed "" for fsp, if the lspPlusOne is not in remote fsp = "" otherwise fsp=lspPlusOne
+			if (listActuallyApplied.size()<=0 && fsp.equalsIgnoreCase("")) return; //AVOID LOOPS
+			if (firstWasThere){
+				if (listActuallyApplied.size()<=0){ //DID NOT APPLY ANY NEW CHANGES, SO ONLY THE ORDER WAS DIFFERENT
+					for (int i=list.size()-1;i>=0;i--){
+						OMVChange c = (OMVChange)list.get(i);
+						if (fsp.equalsIgnoreCase(c.getURI())) break;
+						else listActuallyApplied.add(c);
+					}
+					Collections.reverse(listActuallyApplied);
+					if (listActuallyApplied.get(0).getURI().equalsIgnoreCase(lastLocal)) lastLocal = cMgmt.getChange(listActuallyApplied.get(listActuallyApplied.size()-1).getURI(), targetOntology).getHasPreviousChange(); //REORDER ACCORDINGLY TO REMOTE LOG
+					FixHistory(mainOntoReply, listActuallyApplied, startsHere, lspPlusOne, lastLocal, targetOntology, push, false); //FIX: SET LASTLOCAL TO ORIGINAL PREVIOUS OF IMPORTED CHANGE (IF THE LAST IMPORTED CHANGE WAS THE ORIGINAL LASTLOCAL), OTHERWISE RESET TO ORIGINAL LAST; FIX PREVIOUS CHANGE OF FIRST CHANGE IMPORTED TO LSP, FIX PREVIOUS CHANGE OF LSP+1 TO LAST IMPORTED     
+				}					
+				else{ //SOME NEW CHANGES WERE APPLIED, BUT AT LEAST 1(OR MORE) AT THE BEGINNING OF THE LIST EXISTED ALREADY
+					String originalNextChange="";
+					for (OMVChange tc : listOriginal)
+						if (tc.getHasPreviousChange().equalsIgnoreCase(lastWasThereURI)) originalNextChange = tc.getURI(); // FIND THE ORIGINAL NEXT CHANGE OF THE LAST KNOWN
+					if (originalNextChange.equalsIgnoreCase("")) //ADDED SOMETHING TO THE END OF THE LOG
+						FixHistory(mainOntoReply, listActuallyApplied, startsHere, originalNextChange, "", targetOntology, push, true); // IF THE LAST KNOWN WAS THE LAST ONE, DO NOT RESET THE LAST CHANGE TO THAT CHANGE, AS IT HAS THE NEW LAST ONE
+					else //ADDED SOMETHING TO THE MIDDLE OF THE LOG (AFTER LSP)
+						FixHistory(mainOntoReply, listActuallyApplied, startsHere, originalNextChange, lastLocal, targetOntology, push, true);	//FIX: RESET LASTLOCAL TO ORIGINAL LAST, KEEP ORIGINAL FIRST IMPORTED, SET THE PREVIOUS OF THE ORIGINAL NEXT CHANGE TO THE LAST IMPORTED CHANGE  
+				}
+					
 			}
-			else{
-				list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
+			else { 
+				if (isOlder!=1) //ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) - ADDED STH AT THE END NORMALLY
+					FixHistory(mainOntoReply, listActuallyApplied, startsHere, lspPlusOne, lastLocal, targetOntology, push, false); //FIX: RESET LASTLOCAL TO ORIGINAL LAST, FIX PREVIOUS CHANGE OF FIRST CHANGE IMPORTED TO LSP, FIX PREVIOUS CHANGE OF LSP+1 TO LAST IMPORTED
+			}
+			
+			//DO IT AGAIN
+			Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+			//return;
+		}
+		else return; //error
+		
+		Map<List<Action>,List<Action>> actions=getActions(mainOntoReply,remoteRegistry,targetOntology);
+		SyncWorkflow (mainOntoReply,remoteRegistry,targetOntology, actions,push);
+	}
+	
+	public synchronized static List<OMVChange> getChanges(OMVOntology mainOntoReply, String startsHere, List<OMVChange> changesOri){
+		List<OMVChange> list = new LinkedList<OMVChange>();
+		if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
+			//list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
+			for (OMVChange c : changesOri){ 
+				if (!c.getURI().equalsIgnoreCase(startsHere))
+					list.add(c);
+				else break;
+			}
+		}
+		else{
+			//list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
+			list.addAll(changesOri);
+		}
+		return list;
+	}
+	
+	public synchronized static List<OMVChange> RegisterChanges(OMVOntology mainOntoReply, Ontology remoteRegistry, String startsHere, String stopHere, List<OMVChange> list, boolean push){
+		List<OMVChange> syncChanges = new LinkedList<OMVChange>();
+		ChangeManagement cMgmtTarget = cMgmt;
+		try{
+			if (push){
+				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+				cMgmtTarget = new ChangeManagement();
 			}
 			mOyster2.getLogger().info("will copy ..."+list.size());
 			for (int i=list.size()-1;i>=0;i--){
 				OMVChange c = (OMVChange)list.get(i);
+				if (stopHere.equalsIgnoreCase(c.getURI())) break;
 				mOyster2.getLogger().info("will copy ..."+c.getURI());
-				cMgmt.register(c);
-			}
-		}
-		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
-		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
-		for (Action ac : listActions){
-			boolean ins = false;
-			for (Action acLocal : listActionsLocal){
-				if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
-					ins = true;
-			}
-			if (!ins){
-				if (ac instanceof EntityAction){
-					mOyster2.getLogger().info("will copy action..."+ac.getURI());
-					if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
-					else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
-					else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
-					else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
-					else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
-					else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
-					else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
-					else if (ac instanceof Insert) wMgmt.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
-					else if (ac instanceof Update) wMgmt.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
+				String lastChangeURI=cMgmtTarget.register(c);
+				if (!lastChangeURI.equalsIgnoreCase("")) { //IF THE CHANGE WAS ADDED I.E. IT IS NEW
+					if (firstWasThere && lastWasThereURI.equalsIgnoreCase("")) lastWasThereURI=c.getHasPreviousChange(); //IF ENTER THIS IF, C.GETHASPREVIOUSCHANGE() MUST NOT BE NULL, IT IS LATER THEN AT LEAST THE FIRST THAT EXISTED BEFORE
+					syncChanges.add(c);
+				}
+				else { //ADD CHANGES UNTIL THE NEXT SYNC POINT (THIS IS CALLED RECURSIVELY)
+					if (i == list.size()-1) firstWasThere=true;
+					else if (firstWasThere && !lastWasThereURI.equalsIgnoreCase("")) break;
 				}
 			}
+			if (syncChanges.size()>0)	mOyster2.addLastChangesSync(mainOntoReply, syncChanges);
+			Collections.reverse(syncChanges); //THE FIX WAS EXPECTING THE ORIGINAL REVERSE ORDER
+			
+			if (push) mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			if (push) mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
+		}
+		return syncChanges;
+	}
+	
+	public synchronized static void FixHistory(OMVOntology mainOntoReply, List<OMVChange> list, String startsHere, String lspPlusOne, String lastLocal, Ontology targetOntology, boolean push, boolean keepOriginalFirstImported){
+		ChangeManagement cMgmtTarget = cMgmt;
+		ObjectProperty ontologyObjectProperty;
+		try{
+			if (push){
+				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+				cMgmtTarget = new ChangeManagement();
+			}
+			//RETURN LAST CHANGE TO THE ORGINAL ONE
+			if (!lastLocal.equalsIgnoreCase("")){
+				ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasLastChange);
+				cMgmtTarget.removeProperty(cMgmtTarget.getLogID(mainOntoReply), ontologyObjectProperty, Constants.CHANGEURI+Constants.LogConcept);
+				cMgmtTarget.addProperty(cMgmtTarget.getLogID(mainOntoReply),ontologyObjectProperty,Constants.CHANGEURI+Constants.LogConcept,lastLocal);
+			}
+			//FIX HISTORY - HASPREVIOUSCHANGE OF FIRST CHANGE IMPORTED
+			ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
+			if (!keepOriginalFirstImported){
+				cMgmtTarget.removeProperty(((OMVChange)list.get(list.size()-1)).getURI(), ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept((OMVChange)list.get(list.size()-1)));
+				if (startsHere!=null && !startsHere.equalsIgnoreCase("")) cMgmtTarget.addProperty(((OMVChange)list.get(list.size()-1)).getURI(),ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept((OMVChange)list.get(list.size()-1)),startsHere);
+			}
+			//FIX HISTORY - HASPREVIOUSCHANGE OF (NEXT CHANGE OF LSP) OR OF FSP
+			if (!lspPlusOne.equalsIgnoreCase("")){
+				cMgmtTarget.removeProperty(lspPlusOne, ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(lspPlusOne, targetOntology)));
+				cMgmtTarget.addProperty(lspPlusOne,ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(lspPlusOne, targetOntology)),((OMVChange)list.get(0)).getURI());
+			}
+			if (push) mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			if (push) mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
 		}
 	}
+	
+	public synchronized static Map<List<Action>,List<Action>>getActions(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology){
+		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
+		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
+		Map<List<Action>,List<Action>> reply = new HashMap<List<Action>,List<Action>>();
+		reply.put(listActions, listActionsLocal);
+		return reply;
+	}
+	
+	public synchronized static void SyncWorkflow(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology, Map<List<Action>,List<Action>> actions, boolean push){
+		WorkflowManagement wMgmtTarget = wMgmt;
+		try{
+			if (push){
+				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+				wMgmtTarget = new WorkflowManagement();
+			}
+			if (actions == null || actions.keySet().size()<=0) return; //error
+			List<Action> listActions = actions.keySet().iterator().next();
+			List<Action> listActionsLocal = actions.get(listActions);  
+			for (Action ac : listActions){
+				boolean ins = false;
+				for (Action acLocal : listActionsLocal){
+					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
+						ins = true;
+				}
+				if (!ins){
+					if (ac instanceof EntityAction){
+						mOyster2.getLogger().info("will copy action..."+ac.getURI());
+						if (ac instanceof Delete) wMgmtTarget.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
+						else if (ac instanceof RejectToApproved) wMgmtTarget.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
+						else if (ac instanceof RejectToBeApproved) wMgmtTarget.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
+						else if (ac instanceof RejectToDraft) wMgmtTarget.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
+						else if (ac instanceof SendToApproved) wMgmtTarget.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
+						else if (ac instanceof SendToBeApproved) wMgmtTarget.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
+						else if (ac instanceof SendToBeDeleted) wMgmtTarget.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
+						else if (ac instanceof Insert) wMgmtTarget.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
+						else if (ac instanceof Update) wMgmtTarget.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
+					}
+				}
+			}
+			
+			if (push) mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			if (push) mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized static void SyncrhonizeChangesWithRegistry(Ontology remoteRegistry,Individual ontoindiv,Ontology targetOntology){
+		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",targetOntology);
+		
+		Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+
+	}
+	
+	
 	
 	public synchronized static void SyncrhonizeChangesWithPeer(Ontology remoteRegistry,Individual peerIndiv,Ontology targetOntology){
 		Collection ontologySetRemote = localInformer.getTrackedOntologies(remoteRegistry,peerIndiv);
@@ -150,46 +338,10 @@ public class ChangeSynchronization {
 					OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(t, "ontology",targetOntology);
 					if (mainOntoReply==null) return;
 					mOyster2.getLogger().info("verifying histories of common tracked ontology ..."+mainOntoReply.getURI());
-					if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry)){
-						mOyster2.getLogger().info("local history is older ..."+mainOntoReply.getURI());
-						String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
-						List<OMVChange> list;
-						if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
-							list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
-						}
-						else{
-							list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
-						}
-						mOyster2.getLogger().info("will copy ..."+list.size());
-						for (int i=list.size()-1;i>=0;i--){
-							OMVChange c = (OMVChange)list.get(i);
-							mOyster2.getLogger().info("will copy ..."+c.getURI());
-							cMgmt.register(c);
-						}
-					}
-					List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
-					List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
-					for (Action ac : listActions){
-						boolean ins = false;
-						for (Action acLocal : listActionsLocal){
-							if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
-								ins = true;
-						}
-						if (!ins){
-							if (ac instanceof EntityAction){
-								mOyster2.getLogger().info("will copy action..."+ac.getURI());
-								if (ac instanceof Delete) wMgmt.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
-								else if (ac instanceof RejectToApproved) wMgmt.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
-								else if (ac instanceof RejectToBeApproved) wMgmt.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
-								else if (ac instanceof RejectToDraft) wMgmt.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
-								else if (ac instanceof SendToApproved) wMgmt.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
-								else if (ac instanceof SendToBeApproved) wMgmt.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
-								else if (ac instanceof SendToBeDeleted) wMgmt.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
-								else if (ac instanceof Insert) wMgmt.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
-								else if (ac instanceof Update) wMgmt.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
-							}
-						}
-					}
+					
+					Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+					
+					
 				}
 			}
 		}
@@ -197,6 +349,8 @@ public class ChangeSynchronization {
 	
 	public synchronized static void PushChangesToPeer(Ontology localRegistryFrom,Individual ontoindiv, Ontology targetOntology){
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",localRegistryFrom);
+	
+		
 		try{
 			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
 			mOyster2.openSuperOyster();
@@ -207,62 +361,32 @@ public class ChangeSynchronization {
 			mOyster2.setSuperOysterIP(null);
 			e.printStackTrace();
 		}
-		if (cMgmt.isHistoryOlder(mainOntoReply, targetOntology, localRegistryFrom)){
-			String startsHere = cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
-			List<OMVChange> list;
-			if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
-				list=cMgmt.getTrackedChanges(mainOntoReply, localRegistryFrom, startsHere);
-			}
-			else{
-				list=cMgmt.getTrackedChanges(mainOntoReply, localRegistryFrom, null);
-			}
-			try{
-				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-				ChangeManagement cMgmtSOEnd = new ChangeManagement();
-				mOyster2.getLogger().info("will copy ..."+list.size());
-				for (int i=list.size()-1;i>=0;i--){
-					OMVChange c = (OMVChange)list.get(i);
-					mOyster2.getLogger().info("will copy ..."+c.getURI());
-					cMgmtSOEnd.register(c);
-				}
-				mOyster2.setSuperOysterIP(null);
-			}catch(Exception e){
-				mOyster2.setSuperOysterIP(null);
-				e.printStackTrace();
-			}	
-		}
-		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, localRegistryFrom, null); 
-		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
-		try{
-			mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-			WorkflowManagement wMgmtSOEnd = new WorkflowManagement();
-			for (Action ac : listActions){
-				boolean ins = false;
-				for (Action acLocal : listActionsLocal){
-					if (acLocal.getURI().equalsIgnoreCase(ac.getURI()) && acLocal.getTimestamp().equalsIgnoreCase(ac.getTimestamp()))
-						ins = true;
-				}
-				if (!ins){
-					if (ac instanceof EntityAction){
-						mOyster2.getLogger().info("will copy action..."+ac.getURI());
-						if (ac instanceof Delete) wMgmtSOEnd.delete(((Delete)ac).getRelatedChange(), ((Delete)ac).getPerformedBy(), mainOntoReply, ((Delete)ac).getTimestamp());
-						else if (ac instanceof RejectToApproved) wMgmtSOEnd.rejectToApproved(((RejectToApproved)ac).getRelatedChange(), ((RejectToApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToApproved)ac).getTimestamp());
-						else if (ac instanceof RejectToBeApproved) wMgmtSOEnd.rejectToBeApproved(((RejectToBeApproved)ac).getRelatedChange(), ((RejectToBeApproved)ac).getPerformedBy(), mainOntoReply, ((RejectToBeApproved)ac).getTimestamp());
-						else if (ac instanceof RejectToDraft) wMgmtSOEnd.rejectToDraft(((RejectToDraft)ac).getRelatedChange(), ((RejectToDraft)ac).getPerformedBy(), mainOntoReply, ((RejectToDraft)ac).getTimestamp());
-						else if (ac instanceof SendToApproved) wMgmtSOEnd.submitToApproved(((SendToApproved)ac).getRelatedChange(), ((SendToApproved)ac).getPerformedBy(), mainOntoReply, ((SendToApproved)ac).getTimestamp());
-						else if (ac instanceof SendToBeApproved) wMgmtSOEnd.submitToBeApproved(((SendToBeApproved)ac).getRelatedChange(), ((SendToBeApproved)ac).getPerformedBy(), mainOntoReply, ((SendToBeApproved)ac).getTimestamp());
-						else if (ac instanceof SendToBeDeleted) wMgmtSOEnd.submitToBeDeleted(((SendToBeDeleted)ac).getRelatedChange(), ((SendToBeDeleted)ac).getPerformedBy(), mainOntoReply, ((SendToBeDeleted)ac).getTimestamp());
-						else if (ac instanceof Insert) wMgmtSOEnd.insert(((Insert)ac).getRelatedChange(), ((Insert)ac).getPerformedBy(), mainOntoReply, ((Insert)ac).getTimestamp());
-						else if (ac instanceof Update) wMgmtSOEnd.update(((Update)ac).getRelatedChange(), ((Update)ac).getPerformedBy(), mainOntoReply, ((Update)ac).getTimestamp());
-					}
-				}
-			}
-			mOyster2.setSuperOysterIP(null);
-		}catch(Exception e){
-			mOyster2.setSuperOysterIP(null);
-			e.printStackTrace();
-		}
+		
+		Sync(mainOntoReply,localRegistryFrom,targetOntology,true);
+		
 	}
 }
 
 
+//else if (isOlder==3 || isOlder==4 || isOlder==5){
+//DEAL WITH SPECIAL CASES OF 0 AND 1
+//	list = RegisterChanges(mainOntoReply,remoteRegistry,startsHere,fsp,list,push);
+//	if (list.size()<=0) return; //AVOID LOOPS
+//	FixHistory(mainOntoReply, list, startsHere, fsp, lastLocal, targetOntology,push,false); //fsp != "", fsp==lspPluOne 
+
+//DO IT AGAIN
+//	Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+//return;
+//}
+
+//String fspMinusOne="";
+//FIND FIRST SYNC POINT OF lspPlusOne
+//reply =cMgmt.findFirstSynchronizationPoint(mainOntoReply, targetOntology, remoteRegistry,lspPlusOne); //CASE(iv)
+//if (reply==null) return; //ERROR
+//fspMinusOne = reply.keySet().iterator().next();
+//fsp = reply.get(fspMinusOne);
+
+//list = getChanges (mainOntoReply,remoteRegistry,startsHere);
+//if (list==null) return; //ERROR
+//listOriginal = getChanges (mainOntoReply,targetOntology,startsHere);
+//if (listOriginal==null) return; //ERROR

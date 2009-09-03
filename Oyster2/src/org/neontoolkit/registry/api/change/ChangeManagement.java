@@ -80,13 +80,12 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class ChangeManager provides the methods to support the
  * change support 
  * @author Raul Palma
- * @version 2.3.2, May 2009
+ * @version 2.3.3, August 2009
  */
 public class ChangeManagement {
 	static Oyster2Factory mOyster2;// = Oyster2Factory.sharedInstance();
 	private ImportOntology IOntology;//= new ImportOntology();
 	private static Ontology localRegistry;// = mOyster2.getLocalHostOntology();
-	
 	
 	public ChangeManagement()
     {
@@ -194,7 +193,8 @@ public class ChangeManagement {
 			}
 			//mOyster2.getLogger().info("Finished getting class name");
 			//register change
-			IOntology.addConceptToRegistry(1,pList,30, null);
+			boolean successRegister= IOntology.addConceptToRegistry(1,pList,30, null);
+			if (!successRegister) return "";
 			//mOyster2.getLogger().info("Finished adding change");
 			//Workflow info
 			if (mOyster2.getWorkflowSupport()){
@@ -1539,32 +1539,204 @@ public class ChangeManagement {
 		}
 		return reply;
 	}
+	
 	/**
 	 * Compares if change history in registry is older than in registry2
 	 * @param o is the ontology from which we want to compare change history
 	 * @param registry1 is the registry that will be compared
 	 * @param registry2 is the registry that will be used as reference
-	 * @return true/false
+	 * @param lsp is the URI of the last synchronization point of the two logs
+	 * @param lspPlusOne is the URI of the next change after lsp
+	 * @param fsp is the URI of the first synchronization point (the position
+	 * of lspPlusOne in the remote log)
+	 * @param changes2ori is the list of changes from the remote registry (the reference)
+	 * @return int 
+	 * -1 = error 
+	 * 0 = false 
+	 * 1 = true  
+	 * 2 = unknown
+	 * 3 = special 0 - lastChange1=lastChange2, but something earlier is missing from the 
+	 * remote log 
+	 * 4 = special 1 - lastChange1<lastChange2, but something earlier is missing from the 
+	 * remote log
+	 * 5 = special 0 - lastChange1>lastChange2, but something earlier is missing from the 
+	 * remote log
 	 */
-	public boolean isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2){
-		if (registry1==null || registry2 ==null) return false;
+	public int isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2, String lsp, String lspPlusOne,  String fsp, List<OMVChange> changes2ori){
+		if (registry1==null || registry2 ==null) return -1;
 		
 		String lastChange1 = getLastChangeIdFromLog(o, registry1);
 		String lastChange2 = getLastChangeIdFromLog(o, registry2);
-		mOyster2.getLogger().info("comparing ..."+lastChange1+" with..."+lastChange2);
-		
-		if ((lastChange1==null || lastChange1.equalsIgnoreCase("")) && (lastChange2!=null && !lastChange2.equalsIgnoreCase(""))) return true;
-		else if ((lastChange2==null || lastChange2.equalsIgnoreCase("")) && (lastChange1!=null && !lastChange1.equalsIgnoreCase(""))) return false;
-		else if (lastChange1.equalsIgnoreCase(lastChange2)) return false;
 		
 		Set<String> changes2 = getChangesIds(o, registry2);
-		Iterator it = changes2.iterator();
-		while(it.hasNext()){
-			String t = (String)it.next();
-			if (t.equalsIgnoreCase(lastChange1)) return true;
+		Set<String> changes1 = getChangesIds(o, registry1);
+		mOyster2.getLogger().info("comparing ..."+lastChange1+" with..."+lastChange2);
+		
+		if ((lastChange1==null || lastChange1.equalsIgnoreCase("")) && (lastChange2!=null && !lastChange2.equalsIgnoreCase(""))) return 1; //CASE (iii) - When there is no history in the local log
+		else if ((lastChange2==null || lastChange2.equalsIgnoreCase("")) && (lastChange1!=null && !lastChange1.equalsIgnoreCase(""))) return 0; //CASE (ii) - Where there is no history in the remote log
+		else if (changes1.containsAll(changes2)) return 0;		//EQUAL TEST - LOCAL NODE HAS ALL CHANGES MAYBE IN DIFFERENT ORDER 
+		else if (lastChange1.equalsIgnoreCase(lastChange2)) { 	//EQUAL TEST
+			if (lsp.equalsIgnoreCase(lastChange1))	return 0;	//CASE (i)			
+			else return 3; 										//CASE (special i) - the logs are not synched. Something earlier in remote log is not in local log
+			
+		}
+		for (String t : changes2){ 									//OLDER TEST
+			if (t.equalsIgnoreCase(lastChange1)) {
+				if (lsp.equalsIgnoreCase(lastChange1)) 	return 1; 	//CASE (iii) where there is history in the local node but is outdated
+				else {
+					//List <OMVChange> changes2Complete = getTrackedChanges (o, registry2, lsp);
+					List <OMVChange> changes2Complete = new LinkedList<OMVChange>();
+					
+					if (!lsp.equalsIgnoreCase("")){
+						for (OMVChange c : changes2ori){ 
+							if (!c.getURI().equalsIgnoreCase(lsp))
+								changes2Complete.add(c);
+							else break;
+						}
+					} else changes2Complete.addAll(changes2ori);
+					Collections.reverse(changes2Complete);
+					
+					for (OMVChange c : changes2Complete){
+						if (c.getURI().equalsIgnoreCase(lastChange1)) break;  	//CHECK ALL CHANGES BEFORE LASTCHANGE1 
+						if (!changes1.contains(c.getURI())) return 4; 			//CASE (special iii) - the logs are not synched. Something earlier in remote node is not in the local node 
+					}
+					return 1; 										//CASE (iii) where there is history in the local node but is outdated, changes before the lastchange1 exist in local node but in different order										
+				}
+			}
+		}
+		
+		for (String t : changes1){ //NEWER TEST
+			if (t.equalsIgnoreCase(lastChange2)) {
+				if (lsp.equalsIgnoreCase(lastChange2)) return 0;	//CASE (ii) where the history in the remote node is outdated
+				else return 5; 										//CASE (special ii) - the logs are not synched. Something earlier in remote log is not in local log
+			}
+		}
+
+		return 2; //CASE (iv)
+	}
+	
+	
+	/**
+	 * Finds the last synchronization point (LSP) of the two logs (target and remote) 
+	 * to support the synchronization of concurrent changes (no conflict 
+	 * resolution for now).
+	 * @param o is the ontology from which we want to compare change history
+	 * @param registry1 is the registry that will be compared (target)
+	 * @param registry2 is the registry that will be used as reference
+	 * @param changes1ori is the list of changes from the target registry
+	 * @param changes2ori is the list of changes from the remote registry (the reference)
+	 * @return Map<String,String> the URI of the LSP and URI of LSP +1
+	 */
+	public Map<String,String> findLastSynchronizationPoint (OMVOntology o, Ontology registry1, Ontology registry2, List<OMVChange> changes1ori, List<OMVChange> changes2ori){
+		if (registry1==null || registry2 ==null) return null;
+		Map<String, String> reply = new HashMap<String,String>();
+		
+		//List<OMVChange> changes1 = getTrackedChanges(o, registry1, null); 
+		//List<OMVChange> changes2 = getTrackedChanges(o, registry2, null);
+		List<OMVChange> changes1 = new LinkedList<OMVChange>();
+		List<OMVChange> changes2 = new LinkedList<OMVChange>();
+		changes1.addAll(changes1ori);
+		changes2.addAll(changes2ori);
+		Collections.reverse(changes1);
+		Collections.reverse(changes2);
+		
+		int index=0;
+		for (OMVChange c : changes1){
+			if (index>=changes2.size()) break;
+			if (!changes2.get(index).getURI().equalsIgnoreCase(c.getURI())) break;
+			index++;
+		}
+		
+		if (index==0) {
+			if (changes1.isEmpty()) reply.put("", ""); 
+			else reply.put("", changes1.get(0).getURI());
+			return reply;
+		}
+		else {
+			if (index > changes1.size())return null; //ERROR
+			if (index == changes1.size()) 
+				reply.put(changes1.get(index-1).getURI(), "");
+			else
+				reply.put(changes1.get(index-1).getURI(), changes1.get(index).getURI());
+			return reply;
+		}
+	}
+	
+	
+	/**
+	 * Finds the first synchronization point (FSP) of the two logs (target and remote)
+	 * after the last synchronization point (LSP) (if it exists) 
+	 * to support the synchronization of concurrent changes (no conflict 
+	 * resolution for now).
+	 * @param o is the ontology from which we want to compare change history
+	 * @param registry1 is the registry that will be compared
+	 * @param registry2 is the registry that will be used as reference
+	 * @param afterLSP is the URI of the first change after the last synchronization
+	 * @param changes1ori is the list of changes from the target registry
+	 * @param changes2ori is the list of changes from the remote registry (the reference)
+	 * that will be try to find it in the remote log
+	 * @return Map<String,String> the URI of the FSP-1 and URI of FSP
+	 */
+	public Map<String,String> findFirstSynchronizationPoint (OMVOntology o, Ontology registry1, Ontology registry2, String afterLSP, List<OMVChange> changes1ori, List<OMVChange> changes2ori){
+		if (registry1==null || registry2 ==null) return null;
+		Map<String, String> reply = new HashMap<String,String>();
+		
+		//List<OMVChange> changes1 = getTrackedChanges(o, registry1, null); 
+		//List<OMVChange> changes2 = getTrackedChanges(o, registry2, null);
+		List<OMVChange> changes1 = new LinkedList<OMVChange>();
+		List<OMVChange> changes2 = new LinkedList<OMVChange>();
+		changes1.addAll(changes1ori);
+		changes2.addAll(changes2ori);
+		Collections.reverse(changes1);
+		Collections.reverse(changes2);
+		
+		//if (changes1.isEmpty()) return null; 
+		int index=0;
+		for (OMVChange c : changes2){
+			if (c.getURI().equalsIgnoreCase(afterLSP)) break;
+			index++;
+		}
+		
+		if (index==0) {
+			if (changes2.isEmpty()) reply.put("", ""); 
+			else reply.put("", changes2.get(0).getURI());
+			return reply;
+		}
+		else {
+			if (index > changes2.size())return null; //ERROR
+			if (index == changes2.size()) 
+				reply.put("", "");
+			else
+				reply.put(changes2.get(index-1).getURI(), changes2.get(index).getURI());
+			return reply;
+		}
+	}
+	
+	/**
+	 * Finds if there is a synchronization point (FSP) of the two logs (target and remote)
+	 * after the last synchronization point (LSP) (if it exists) 
+	 * to support the synchronization of concurrent changes (no conflict 
+	 * resolution for now).
+	 * @param o is the ontology from which we want to compare change history
+	 * @param registry2 is the registry that will be used as reference
+	 * @param afterLSP is the URI of the first change after the last synchronization
+	 * @param changes2ori is the list of changes from the remote registry (the reference)
+	 * that will be try to find it in the remote log
+	 * @return true/false
+	 */
+	public boolean isASynchronizationPoint (OMVOntology o, Ontology registry2, String afterLSP, List<OMVChange> changes2ori){
+		if (registry2 ==null) return false;
+
+		//List<OMVChange> changes2 = getTrackedChanges(o, registry2, null);
+		List<OMVChange> changes2 = new LinkedList<OMVChange>();
+		changes2.addAll(changes2ori);
+		
+		Collections.reverse(changes2);
+		 
+		for (OMVChange c : changes2){
+			if (c.getURI().equalsIgnoreCase(afterLSP)) return true;
 		}
 		return false;
-		
 	}
 	
 	/**
@@ -1703,7 +1875,7 @@ public class ChangeManagement {
 	}
 	
 	//UTILS	
-	private static String getChangeConcept(OMVChange a){
+	public String getChangeConcept(OMVChange a){
 		if (a.getClass().getSimpleName()!=null && a.getClass().getSimpleName()!="") return a.getClass().getSimpleName();
 		else return ""; 
 	}
@@ -1771,7 +1943,7 @@ public class ChangeManagement {
 		
 	}
 	
-	private void addProperty(String URI, ObjectProperty oP, String Concept, String targetURI){
+	public void addProperty(String URI, ObjectProperty oP, String Concept, String targetURI){
 		File localRegistryFile = mOyster2.getLocalRegistryFile();
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
 
@@ -1807,7 +1979,7 @@ public class ChangeManagement {
 		
 	}
 	
-	private void removeProperty(String URI, ObjectProperty oP, String Concept){
+	public void removeProperty(String URI, ObjectProperty oP, String Concept){
 		Map propertyMap = new HashMap();
 		File localRegistryFile = mOyster2.getLocalRegistryFile();
 		List<OntologyChangeEvent> changes=new ArrayList<OntologyChangeEvent>();
@@ -1877,7 +2049,7 @@ public class ChangeManagement {
 	}
 
 	
-	private String getOntologyID(OMVOntology o){
+	public String getOntologyID(OMVOntology o){
 		String tURN="";
 		if (o==null) return "";
 		if (o.getURI()!=null){
@@ -1897,7 +2069,7 @@ public class ChangeManagement {
 		return tURN;
 	}
 	
-	private String getCSID(OMVOntology o){
+	public String getCSID(OMVOntology o){
 		String tURN=getOntologyID(o);
 		if (tURN.indexOf("?")>0){
 			tURN=tURN+";";
@@ -1907,7 +2079,7 @@ public class ChangeManagement {
 		tURN=tURN+"changeSpecification";
 		return tURN;
 	}
-	private String getLogID(OMVOntology o){
+	public String getLogID(OMVOntology o){
 		String tURN=getOntologyID(o);
 		if (tURN.indexOf("?")>0){
 			tURN=tURN+";";
@@ -1972,3 +2144,12 @@ return reply;
 				e.printStackTrace();
 			}
 */
+
+//Map<String,String> replylsp = findLastSynchronizationPoint(o, registry1, registry2);
+//if (replylsp==null) return -1; //ERROR
+//String lsp = replylsp.keySet().iterator().next();
+//String lspPlusOne = replylsp.get(lsp);
+//Map<String,String> replyfsp = findFirstSynchronizationPoint(o, registry1, registry2,lspPlusOne);
+//if (replyfsp==null) return -1; //ERROR
+//String fspMinusOne = replyfsp.keySet().iterator().next();
+//String fsp = replyfsp.get(fspMinusOne);

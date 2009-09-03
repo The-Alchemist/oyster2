@@ -58,7 +58,7 @@ import org.semanticweb.kaon2.api.owl.elements.ObjectProperty;
  * The class WorkflowManager provides the methods to support the
  * editorial workflow 
  * @author Raul Palma
- * @version 2.2, September 2008
+ * @version 2.3.3, August 2009
  */
 public class WorkflowManagement {
 	static Oyster2Factory mOyster2;// = Oyster2Factory.sharedInstance();
@@ -895,6 +895,9 @@ public class WorkflowManagement {
 		List<OMVChange> workList = new LinkedList<OMVChange>(); 
 		ChangeManagement cMgmt= new ChangeManagement();
 		List<OMVChange> changes = cMgmt.getTrackedChanges(o, targetRegistry, fromChange);
+		
+		Collections.reverse(changes); //FIX AUG-09
+		
 		Iterator it = changes.iterator();
 		while (it.hasNext()){
 			OMVChange t = (OMVChange)it.next();
@@ -904,6 +907,8 @@ public class WorkflowManagement {
 		}
 		it = workList.iterator();
 		while (it.hasNext()){
+		  List<Action> replyActionsT = new LinkedList<Action>(); //FIX AUG-09
+		  
 		  OMVChange c = (OMVChange)it.next();
 		  for (int i=0; i<actions.length;i++){
 			OWLClass oConcept = KAON2Manager.factory().owlClass(Constants.WORKFLOWURI+actions[i]);
@@ -911,16 +916,20 @@ public class WorkflowManagement {
 			try {
 				if(targetRegistry.containsAxiom(KAON2Manager.factory().classMember(oConcept,oIndividual),true)){
 					Action reply = ProcessActionIndividuals.processActionIndividual(oIndividual, actions[i], targetRegistry);
-					replyActions.add(reply);
+					replyActionsT.add(reply);
 				}
 			} catch (KAON2Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		  }
+		  
+		  Collections.sort(replyActionsT, TIME_ORDER); //FIX AUG-09
+		  replyActions.addAll(replyActionsT);		   //FIX AUG-09	
 		}
-		//THE EXPECTED ORDER IS FROM OLDER TO NEWEST AND BY DEFAULT IS REVERSE
-		Collections.reverse(replyActions);
+		//THE EXPECTED ORDER IS FROM OLDER TO NEWEST AND BY DEFAULT IS REVERSE //FIXED AUG-09
+		//Collections.reverse(replyActions);
+		
 		return replyActions;
 	}
 	public Action getChangeAction(OMVChange o){
