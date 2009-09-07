@@ -1546,9 +1546,6 @@ public class ChangeManagement {
 	 * @param registry1 is the registry that will be compared
 	 * @param registry2 is the registry that will be used as reference
 	 * @param lsp is the URI of the last synchronization point of the two logs
-	 * @param lspPlusOne is the URI of the next change after lsp
-	 * @param fsp is the URI of the first synchronization point (the position
-	 * of lspPlusOne in the remote log)
 	 * @param changes2ori is the list of changes from the remote registry (the reference)
 	 * @return int 
 	 * -1 = error 
@@ -1562,7 +1559,7 @@ public class ChangeManagement {
 	 * 5 = special 0 - lastChange1>lastChange2, but something earlier is missing from the 
 	 * remote log
 	 */
-	public int isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2, String lsp, String lspPlusOne,  String fsp, List<OMVChange> changes2ori){
+	public int isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2, String lsp, List<OMVChange> changes2ori){
 		if (registry1==null || registry2 ==null) return -1;
 		
 		String lastChange1 = getLastChangeIdFromLog(o, registry1);
@@ -1583,25 +1580,7 @@ public class ChangeManagement {
 		for (String t : changes2){ 									//OLDER TEST
 			if (t.equalsIgnoreCase(lastChange1)) {
 				if (lsp.equalsIgnoreCase(lastChange1)) 	return 1; 	//CASE (iii) where there is history in the local node but is outdated
-				else {
-					//List <OMVChange> changes2Complete = getTrackedChanges (o, registry2, lsp);
-					List <OMVChange> changes2Complete = new LinkedList<OMVChange>();
-					
-					if (!lsp.equalsIgnoreCase("")){
-						for (OMVChange c : changes2ori){ 
-							if (!c.getURI().equalsIgnoreCase(lsp))
-								changes2Complete.add(c);
-							else break;
-						}
-					} else changes2Complete.addAll(changes2ori);
-					Collections.reverse(changes2Complete);
-					
-					for (OMVChange c : changes2Complete){
-						if (c.getURI().equalsIgnoreCase(lastChange1)) break;  	//CHECK ALL CHANGES BEFORE LASTCHANGE1 
-						if (!changes1.contains(c.getURI())) return 4; 			//CASE (special iii) - the logs are not synched. Something earlier in remote node is not in the local node 
-					}
-					return 1; 										//CASE (iii) where there is history in the local node but is outdated, changes before the lastchange1 exist in local node but in different order										
-				}
+				else return 4;										//CASE (special iii) - the logs are not synched. Something earlier in remote node is not in the local node
 			}
 		}
 		
@@ -1615,20 +1594,43 @@ public class ChangeManagement {
 		return 2; //CASE (iv)
 	}
 	
+	/**
+	 * Compares if change history in registry is older than in registry2
+	 * @param o is the ontology from which we want to compare change history
+	 * @param registry1 is the registry that will be compared
+	 * @param registry2 is the registry that will be used as reference
+	 * @return int 
+	 * -1 = error 
+	 * 0 = false 
+	 * 1 = true;
+	 */
+	public int isHistoryOlderNew(OMVOntology o, Ontology registry1, Ontology registry2 ){
+		if (registry1==null || registry2 ==null) return -1;
+		
+		String lastChange1 = getLastChangeIdFromLog(o, registry1);
+		String lastChange2 = getLastChangeIdFromLog(o, registry2);
+		
+		Set<String> changes2 = getChangesIds(o, registry2);
+		Set<String> changes1 = getChangesIds(o, registry1);
+		mOyster2.getLogger().info("comparing ..."+lastChange1+" with..."+lastChange2);
+		
+		if ((lastChange1==null || lastChange1.equalsIgnoreCase("")) && (lastChange2!=null && !lastChange2.equalsIgnoreCase(""))) return 1; //CASE (iii) - When there is no history in the local log
+		else if ((lastChange2==null || lastChange2.equalsIgnoreCase("")) && (lastChange1!=null && !lastChange1.equalsIgnoreCase(""))) return 0; //CASE (ii) - Where there is no history in the remote log
+		else if (changes1 == null || changes2 == null) return -1;
+		else if (changes1.containsAll(changes2)) return 0;		//EQUAL TEST - LOCAL NODE HAS ALL CHANGES MAYBE IN DIFFERENT ORDER 
+		else return 1;		
+	}
 	
 	/**
 	 * Finds the last synchronization point (LSP) of the two logs (target and remote) 
 	 * to support the synchronization of concurrent changes (no conflict 
 	 * resolution for now).
-	 * @param o is the ontology from which we want to compare change history
-	 * @param registry1 is the registry that will be compared (target)
-	 * @param registry2 is the registry that will be used as reference
 	 * @param changes1ori is the list of changes from the target registry
 	 * @param changes2ori is the list of changes from the remote registry (the reference)
 	 * @return Map<String,String> the URI of the LSP and URI of LSP +1
 	 */
-	public Map<String,String> findLastSynchronizationPoint (OMVOntology o, Ontology registry1, Ontology registry2, List<OMVChange> changes1ori, List<OMVChange> changes2ori){
-		if (registry1==null || registry2 ==null) return null;
+	public Map<String,String> findLastSynchronizationPoint (List<OMVChange> changes1ori, List<OMVChange> changes2ori){
+		if (changes1ori==null || changes2ori ==null) return null;
 		Map<String, String> reply = new HashMap<String,String>();
 		
 		//List<OMVChange> changes1 = getTrackedChanges(o, registry1, null); 
@@ -1668,17 +1670,14 @@ public class ChangeManagement {
 	 * after the last synchronization point (LSP) (if it exists) 
 	 * to support the synchronization of concurrent changes (no conflict 
 	 * resolution for now).
-	 * @param o is the ontology from which we want to compare change history
-	 * @param registry1 is the registry that will be compared
-	 * @param registry2 is the registry that will be used as reference
 	 * @param afterLSP is the URI of the first change after the last synchronization
 	 * @param changes1ori is the list of changes from the target registry
 	 * @param changes2ori is the list of changes from the remote registry (the reference)
 	 * that will be try to find it in the remote log
 	 * @return Map<String,String> the URI of the FSP-1 and URI of FSP
 	 */
-	public Map<String,String> findFirstSynchronizationPoint (OMVOntology o, Ontology registry1, Ontology registry2, String afterLSP, List<OMVChange> changes1ori, List<OMVChange> changes2ori){
-		if (registry1==null || registry2 ==null) return null;
+	public Map<String,String> findFirstSynchronizationPoint (String afterLSP, List<OMVChange> changes1ori, List<OMVChange> changes2ori){
+		if (changes1ori==null || changes2ori ==null) return null;
 		Map<String, String> reply = new HashMap<String,String>();
 		
 		//List<OMVChange> changes1 = getTrackedChanges(o, registry1, null); 
@@ -1717,15 +1716,13 @@ public class ChangeManagement {
 	 * after the last synchronization point (LSP) (if it exists) 
 	 * to support the synchronization of concurrent changes (no conflict 
 	 * resolution for now).
-	 * @param o is the ontology from which we want to compare change history
-	 * @param registry2 is the registry that will be used as reference
 	 * @param afterLSP is the URI of the first change after the last synchronization
 	 * @param changes2ori is the list of changes from the remote registry (the reference)
 	 * that will be try to find it in the remote log
 	 * @return true/false
 	 */
-	public boolean isASynchronizationPoint (OMVOntology o, Ontology registry2, String afterLSP, List<OMVChange> changes2ori){
-		if (registry2 ==null) return false;
+	public boolean isASynchronizationPoint (String afterLSP, List<OMVChange> changes2ori){
+		if (changes2ori ==null) return false;
 
 		//List<OMVChange> changes2 = getTrackedChanges(o, registry2, null);
 		List<OMVChange> changes2 = new LinkedList<OMVChange>();
@@ -2153,3 +2150,22 @@ return reply;
 //if (replyfsp==null) return -1; //ERROR
 //String fspMinusOne = replyfsp.keySet().iterator().next();
 //String fsp = replyfsp.get(fspMinusOne);
+
+
+//else {	
+//	List <OMVChange> changes2Complete = new LinkedList<OMVChange>();
+//	if (!lsp.equalsIgnoreCase("")){
+//		for (OMVChange c : changes2ori){ 
+//			if (!c.getURI().equalsIgnoreCase(lsp))
+//				changes2Complete.add(c);
+//			else break;
+//		}
+//	} else changes2Complete.addAll(changes2ori);
+//	Collections.reverse(changes2Complete);
+//	
+//	for (OMVChange c : changes2Complete){
+//		if (c.getURI().equalsIgnoreCase(lastChange1)) break;  	//CHECK ALL CHANGES BEFORE LASTCHANGE1 
+//		if (!changes1.contains(c.getURI())) return 4; 			//CASE (special iii) - the logs are not synched. Something earlier in remote node is not in the local node 
+//	}
+//	return 1; 										//CASE (iii) where there is history in the local node but is outdated, changes before the lastchange1 exist in local node but in different order	
+//}
