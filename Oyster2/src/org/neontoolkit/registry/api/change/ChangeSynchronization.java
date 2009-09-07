@@ -171,7 +171,10 @@ public class ChangeSynchronization {
 			}
 			else {
 				//if (isOlder!=1) //ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) - ELSE ADDED STH AT THE END NORMALLY
-				if (listActuallyApplied.size()>0 && listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange()!= null && !listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange().equalsIgnoreCase(lastLocal)) //ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) -ELSE ADDED STH AT THE END NORMALLY 
+				if (listActuallyApplied.size()<=0) return; //ERROR
+				//ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) -ELSE ADDED STH AT THE END NORMALLY
+				if ((listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange()== null && !lastLocal.equalsIgnoreCase("")) || //LOCAL LOG HAD SOMETHING
+					(listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange()!= null && !listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange().equalsIgnoreCase(lastLocal)))  
 					FixHistory(mainOntoReply, listActuallyApplied, startsHere, lspPlusOne, lastLocal, targetOntology, push, false); //FIX: RESET LASTLOCAL TO ORIGINAL LAST, FIX PREVIOUS CHANGE OF FIRST CHANGE IMPORTED TO LSP, FIX PREVIOUS CHANGE OF LSP+1 TO LAST IMPORTED
 			}
 			
