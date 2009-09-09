@@ -141,6 +141,17 @@ public class Oyster2Manager{
 		return mprop;
     }
 	/**
+	 * Specify if changes should be saved in time order
+	 * after synchronization  
+	 * @param t true=on;false=off 
+	 * default=false;
+	 */
+	public static void setKeepOrder(boolean t)
+    {
+		mOyster2.setKeepOrder(t);
+    }
+	
+	/**
 	 * Specify if automatic syncrhonization is on/off 
 	 * @param t true=on;false=off 
 	 * default=true;
