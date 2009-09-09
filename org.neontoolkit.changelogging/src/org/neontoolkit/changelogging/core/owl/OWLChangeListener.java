@@ -75,10 +75,11 @@ public class OWLChangeListener implements OntologyListener {
 		return changes;
 	}
 		
-	public void ontologyUpdated(final Ontology changedOnto,final Ontology sourceOnto,
+	public synchronized void ontologyUpdated(final Ontology changedOnto,final Ontology sourceOnto,
 			final List<OntologyChangeEvent> changes,final Set<Entity> added,final Set<Entity> removed) {
 		
 		//System.out.println("size: "+changes.size()+ " selected element "+Track.getSelectedElement());
+		//System.out.println("starting first: "+changes.get(0).getAxiom());
 		Job exportJob = new Job("Logging changes...") {
     		protected IStatus run(IProgressMonitor monitor) {
     			monitor.beginTask("Logging changes...", 100);
@@ -136,7 +137,7 @@ public class OWLChangeListener implements OntologyListener {
 		    					args.add(arg);
 		    				}
 		    			}
-		    			//System.out.println("going to check this axiom: "+getSerial(args));
+		    			//System.out.println("going to check this axiom: "+getSerial(args) + " originally: "+ changes.get(i).getAxiom());
 		    			boolean doIt=false;
 		    			if (isCollab){
 		    				if (args.size()>1 && args.get(1) != null && args.get(1).equalsIgnoreCase(selElement)) doIt=true;
@@ -170,8 +171,12 @@ public class OWLChangeListener implements OntologyListener {
 		
 		exportJob.setUser(true);
 		exportJob.schedule();
-	        	   
- 		
+		try {
+			exportJob.join();
+		} catch (InterruptedException e) {
+			
+		}
+		//System.out.println("finishing...");
 	}
 	
 	public void ontologyChangedDrastically(Ontology arg0) {
