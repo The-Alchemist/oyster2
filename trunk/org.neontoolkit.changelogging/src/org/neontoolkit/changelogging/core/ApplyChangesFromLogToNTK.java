@@ -79,6 +79,7 @@ import org.semanticweb.kaon2.api.Namespaces;
 import org.semanticweb.kaon2.api.Ontology;
 import org.semanticweb.kaon2.api.OntologyChangeEvent;
 import org.semanticweb.kaon2.api.OntologyManager;
+import org.semanticweb.kaon2.api.StringWithLanguage;
 import org.semanticweb.kaon2.api.owl.axioms.DataPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.axioms.ObjectPropertyAttribute;
 import org.semanticweb.kaon2.api.owl.elements.DataCardinality;
@@ -457,7 +458,16 @@ public class ApplyChangesFromLogToNTK {
 											String localN=Namespaces.guessLocalName(annoProp); //cannot use reserved names as values in ontology
 						        			if (localN!=null && (localN.equalsIgnoreCase("comment") || localN.equalsIgnoreCase("label")))
 						        				annoProp="http://www.w3.org/2000/01/rdf-schema#"+localN;
-											app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(constantValue));
+						        			
+						        			if (constantValue.indexOf("@")<=0) 
+						        				app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(constantValue));
+						        			else{
+						        				String language="";
+						        				language=constantValue.substring(constantValue.indexOf("@")+1);
+						        				constantValue=constantValue.substring(0,constantValue.indexOf("@"));
+						        				StringWithLanguage valueLocal = new StringWithLanguage(constantValue, language);
+						        				app = KAON2Manager.factory().entityAnnotation(KAON2Manager.factory().annotationProperty(annoProp), ddm, KAON2Manager.factory().constant(valueLocal));
+						        			}
 										}
 									}
 

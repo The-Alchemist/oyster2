@@ -191,7 +191,6 @@ public class ThreadRunner implements Runnable {
 	public void run() {
 			try{
             	OMVAtomicChange atomicChange = null;
-        		
             	try{
             		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             	}catch(Exception e){
