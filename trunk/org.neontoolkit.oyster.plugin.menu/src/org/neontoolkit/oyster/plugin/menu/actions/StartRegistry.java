@@ -38,6 +38,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 	private String sOyster = "";
 	private String pOyster = "";
 	private Boolean readLocally=false;
+	private Boolean keepOrder=false;
 	private IAction actionNew;
 	
 	
@@ -70,6 +71,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 						sOyster = _store.getString("SUPEROYSTER");
 						pOyster = _store.getString("PUSHOYSTER");
 						readLocally=_store.getBoolean("READLOCALLY");
+						keepOrder=_store.getBoolean("KEEPORDER");
 						if (readLocally) setOntologies();
 							
 						if(serverProcess==null && !superOysterStorage()) {
@@ -199,6 +201,7 @@ public class StartRegistry implements IWorkbenchWindowActionDelegate {
 			Oyster2Manager.setSuperOyster(sOyster);
 		if (pushOysterStorage())
 			Oyster2Manager.setPushChangesToOysterIP(pOyster);
+		Oyster2Manager.setKeepOrder(keepOrder);
 		connection = Oyster2Manager.newConnection(false);
 		if (connection!=null){
 			System.out.println("new connection...");

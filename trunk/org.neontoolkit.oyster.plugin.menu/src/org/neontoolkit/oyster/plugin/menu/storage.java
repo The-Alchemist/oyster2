@@ -33,6 +33,7 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 	public static final String SUPEROYSTER = "SUPEROYSTER";
 	public static final String PUSHOYSTER = "PUSHOYSTER";
 	public static final String READLOCALLY = "READLOCALLY";
+	public static final String KEEPORDER = "KEEPORDER";
 	private IPreferenceStore _store;
 	private Text superOysterIP;
 	private Text pushOysterIP;
@@ -40,6 +41,8 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 	Oyster2Connection oyster2Conn;
 	BooleanFieldEditor readLocally;
 	private Boolean isReadLocally;
+	BooleanFieldEditor keepOrder;
+	private Boolean doKeepOrder;
 	private Button reset;
 	static Shell shell=null;
 	
@@ -109,6 +112,17 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 			}
 		});
 		
+        keepOrder = new BooleanFieldEditor(KEEPORDER, "Keep time order after sync",
+				BooleanFieldEditor.SEPARATE_LABEL, loginGroup);
+        keepOrder.setPreferenceStore(_store);
+        keepOrder.load();
+        doKeepOrder=_store.getBoolean(KEEPORDER);
+        keepOrder.setPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				doKeepOrder=((Boolean) event.getNewValue()).booleanValue();
+			}
+		});
+        
         reset = new Button(loginGroup, SWT.NONE);
         reset.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -166,6 +180,7 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
 		_store.setValue(SUPEROYSTER, superOysterIP.getText().trim());
 		_store.setValue(PUSHOYSTER, pushOysterIP.getText().trim());
 		_store.setValue(READLOCALLY, isReadLocally);
+		_store.setValue(KEEPORDER, doKeepOrder);
     }
 
     @Override
@@ -178,6 +193,7 @@ public class storage extends PreferencePage implements IWorkbenchPreferencePage 
     	_store.setValue(SUPEROYSTER, "");
     	_store.setValue(PUSHOYSTER, "");
     	_store.setValue(READLOCALLY, false);
+    	_store.setValue(KEEPORDER, false);
     	superOysterIP.setText("");
     	pushOysterIP.setText("");
     	readLocally.load();
