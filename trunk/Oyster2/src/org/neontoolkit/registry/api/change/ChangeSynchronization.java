@@ -1,18 +1,27 @@
 package org.neontoolkit.registry.api.change;
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.neontoolkit.omv.api.core.OMVOntology;
 import org.neontoolkit.omv.api.extensions.change.OMVChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVAtomicChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVEntityChange;
+import org.neontoolkit.omv.api.extensions.change.OMVChange.OMVCompositeChange;
 import org.neontoolkit.registry.api.individuals.ProcessOMVIndividuals;
 import org.neontoolkit.registry.api.workflow.WorkflowManagement;
 import org.neontoolkit.registry.core.AdvertInformer;
@@ -46,8 +55,6 @@ public class ChangeSynchronization {
 	private static ChangeManagement cMgmt = new ChangeManagement();
 	private static WorkflowManagement wMgmt= new WorkflowManagement();
 	private static AdvertInformer localInformer = mOyster2.getLocalAdvertInformer();
-	private static boolean firstWasThere =false;
-	private static String lastWasThereURI="";
 	
 	
 	public ChangeSynchronization()
@@ -102,190 +109,206 @@ public class ChangeSynchronization {
 		mOyster2.getLogger().info("finished change synchronization...");
 	}
 	
-	public synchronized static void Sync(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology, boolean push){
-		String lastLocal=cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);
-		String startsHere="";
-		String lspPlusOne="";
-		String fsp="";
-		List<OMVChange> list;
-		List<OMVChange> listOriginal;
-		List<OMVChange> listActuallyApplied;
+	public synchronized static void SyncDiff(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology, boolean push){
+		String originalLastLocal=cMgmt.getLastChangeIdFromLog(mainOntoReply, targetOntology);		
+		Set<String> changes1URIs = cMgmt.getChangesIds(mainOntoReply, targetOntology);
+		Set<String> changes2URIs = cMgmt.getChangesIds(mainOntoReply, remoteRegistry);
 		
-		//RESET
-		firstWasThere=false;
-		lastWasThereURI="";
-		
-		//GET CHANGES
-		List<OMVChange> changes1 = cMgmt.getTrackedChanges(mainOntoReply, targetOntology, null); 
-		List<OMVChange> changes2 = cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
-		
-		//FIND LAST SYNC POINT - LSP
-		//Map<String,String> reply =cMgmt.findLastSynchronizationPoint(mainOntoReply, targetOntology, remoteRegistry, changes1, changes2); 
-		Map<String,String> reply =cMgmt.findLastSynchronizationPoint(changes1, changes2);
-		if (reply==null) return; //ERROR
-		startsHere = reply.keySet().iterator().next(); //LSP
-		lspPlusOne = reply.get(startsHere);
-		
-		//FIND IF THERE IS A SYNC POINT OF lspPlusOne IN REMOTE LOG // - REPLACE PREVIOUS METHOD
-		boolean isFSP = cMgmt.isASynchronizationPoint(lspPlusOne, changes2);
-		if (isFSP) fsp = lspPlusOne;
-		else fsp = "";
-		
-		//FIND CASES
-		//int isOlder=cMgmt.isHistoryOlder(mainOntoReply, targetOntology, remoteRegistry, startsHere, changes2);
-		int isOlder=cMgmt.isHistoryOlderNew(mainOntoReply, targetOntology, remoteRegistry);
-		if (isOlder==0) return; //CASE (i or ii)
-		mOyster2.getLogger().info("local history is older ..."+mainOntoReply.getURI());
-		
-		if (isOlder==1) {
-			//GET CHANGES
-			list = getChanges (startsHere, changes2);
-			if (list==null) return; //ERROR
-			listOriginal = getChanges (startsHere, changes1);
-			if (listOriginal==null) return; //ERROR
+		changes2URIs.removeAll(changes1URIs);
+		if (changes2URIs.size()>0) {//REMOTE NODE HAS CHANGES THAT ARE NOT AVAILABLE IN LOCAL NODE
 			
-			//APPLY CHANGES
-			//listActuallyApplied = RegisterChanges(mainOntoReply,fsp,list,push); //changed "" for fsp, if the lspPlusOne is not in remote fsp = "" otherwise fsp=lspPlusOne
-			listActuallyApplied = RegisterChangesNew(mainOntoReply,fsp,list,listOriginal,push); //changed "" for fsp, if the lspPlusOne is not in remote fsp = "" otherwise fsp=lspPlusOne
-			if (listActuallyApplied.size()<=0 && fsp.equalsIgnoreCase("")) return; //AVOID LOOPS
-			if (firstWasThere){
-				if (listActuallyApplied.size()<=0){ //DID NOT APPLY ANY NEW CHANGES, SO ONLY THE ORDER WAS DIFFERENT
-					for (int i=list.size()-1;i>=0;i--){
-						OMVChange c = (OMVChange)list.get(i);
-						if (fsp.equalsIgnoreCase(c.getURI())) break;
-						else listActuallyApplied.add(c);
+			//GET CHANGES - REMOTE SHOULD BE ONLY THOSE NOT IN LOCAL NODE, BUT THIS MIGHT ME BETTER PERFORMANCE: CONTACT ONLY ONCE REMOTE NODE(OR NOT - HAVE TO CHECK), BUT REMOTE CHANGES TO BE APPLIED NEED TO BE PROCESSED IN ORDER
+			List<OMVChange> changes1 = cMgmt.getTrackedChanges(mainOntoReply, targetOntology, null); 
+			List<OMVChange> changes2 = cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
+			Collections.reverse(changes1);
+			Collections.reverse(changes2);
+			
+			//GET ORIGINAL FIRST CHANGE IF AVAILABLE
+			OMVChange originalFirstLocal = null;
+			if (changes1.size()>0) originalFirstLocal=changes1.get(0);
+			
+			//USE REMOTE CHANGES IN ORDER
+			for (OMVChange change : changes2){
+				if (changes2URIs.contains(change.getURI())){ //PROCESS ONLY NEW CHANGES
+					boolean success=RegisterChangeDiff(mainOntoReply, change, push); //APPLY THE NEW CHANGE
+					if (success){
+						if (change.getHasPreviousChange()==null ){//IT IS THE FIRST CHANGE IN REMOTE LOG 
+							if (changes1.size()>0){ //THE LOCAL LOG HAD ALREADY CHANGES
+								//ADD CHANGE AT THE BEGINNING OF LOG
+								//FIX THE LASTLOCAL TO ORIGINAL LASTLOCAL, FIX THE PREVIOUS OF IMPORTED CHANGE - RETURN TO NULL BECAUSE IS THE NEW FIRST ONE, FIX THE ORIGINAL FIRST CHANGE 
+								FixHistoryDiff (mainOntoReply, change, "", originalFirstLocal.getURI(), originalLastLocal, targetOntology, push, false);
+
+								//UPDATE CHANGE LIST - ORIGINAL FIRST MUST NOT BE NULL HERE
+								changes1.remove(originalFirstLocal);
+								originalFirstLocal.setHasPreviousChange(change.getURI());
+								changes1.add(originalFirstLocal);
+							}//else IT IS ALSO THE FIRST CHANGE IN LOCAL LOG - APPEND TO THE END OF LOG
+							//UPDATE LOCAL CHANGES LIST AND URIS - ORDER NOT MATTER HERE
+							changes1.add(change);
+							changes1URIs.add(change.getURI());
+							//RESET FIRST LOCAL BECAUSE THIS CHANGE IS NOW THE FIRST LOCAL
+							originalFirstLocal = change;
+						}	
+						else if (changes1URIs.contains(change.getHasPreviousChange())){ //SINCE IT IS IN ORDER (OF REMOTE) IF THE PREVIOUS CHANGE IS NOT IN THE LOCAL LOG ALREADY ERROR
+							//FIND ORIGINAL NEXT OF PREVIOUS CHANGE
+							OMVChange originalNextChange=null;
+							for (OMVChange tc : changes1)
+								if (tc.getHasPreviousChange()!=null && tc.getHasPreviousChange().equalsIgnoreCase(change.getHasPreviousChange())){ 
+									originalNextChange = tc; // ORIGINAL NEXT CHANGE OF THE PREVIOUS OF THE NEW CHANGE 
+									break;
+								}
+							if (originalNextChange !=null){ //OTHERWISE, THE PREVIOUS WAS THE LAST ONE
+								//FIX THE ORIGINAL NEXT OF PREVIOUS CHANGE -> PREVIOUS CHANGE = NEW CHANGE, FIX THE LASTLOCAL TO ORIGINAL LASTLOCAL IF THE PREVIOUS CHANGE WAS NOT THE ORIGINAL LASTLOCAL
+								FixHistoryDiff (mainOntoReply, change, change.getHasPreviousChange(), originalNextChange.getURI(), originalLastLocal, targetOntology, push, true);
+								//RESET ORIGINAL NEXT CHANGE
+								changes1.remove(originalNextChange);
+								originalNextChange.setHasPreviousChange(change.getURI());
+								changes1.add(originalNextChange);
+							} 
+							else //RESET LASTLOCAL BECAUSE THIS NEW CHANGE IS NOW THE LAST ONE 
+								originalLastLocal = change.getURI();
+							//UPDATE LOCAL CHANGES LIST AND URIS - ORDER NOT MATTER HERE
+							changes1.add(change);
+							changes1URIs.add(change.getURI());
+						}
+						else System.out.println("error");
 					}
-					if (listActuallyApplied.size()<=0) return; //ERROR
-					Collections.reverse(listActuallyApplied);
-					if (listActuallyApplied.get(0).getURI().equalsIgnoreCase(lastLocal)) lastLocal = cMgmt.getChange(listActuallyApplied.get(listActuallyApplied.size()-1).getURI(), targetOntology).getHasPreviousChange(); //REORDER ACCORDINGLY TO REMOTE LOG
-					//FIX: SET LASTLOCAL TO ORIGINAL PREVIOUS OF FIRST IMPORTED CHANGE (IF THE LAST IMPORTED CHANGE WAS THE ORIGINAL LASTLOCAL), OTHERWISE RESET TO ORIGINAL LAST; FIX PREVIOUS CHANGE OF FIRST CHANGE IMPORTED TO LSP, FIX PREVIOUS CHANGE OF LSP+1 TO LAST IMPORTED     
-					FixHistory(mainOntoReply, listActuallyApplied, startsHere, lspPlusOne, lastLocal, targetOntology, push, false); 
-				}					
-				else{ //SOME NEW CHANGES WERE APPLIED, BUT AT LEAST 1(OR MORE) AT THE BEGINNING OF THE LIST EXISTED ALREADY
-					String originalNextChange="";
-					for (OMVChange tc : listOriginal)
-						if (tc.getHasPreviousChange().equalsIgnoreCase(lastWasThereURI)) originalNextChange = tc.getURI(); // FIND THE ORIGINAL NEXT CHANGE OF THE LAST KNOWN
-					if (!originalNextChange.equalsIgnoreCase("")) //ADDED SOMETHING TO THE MIDDLE OF THE LOG (AFTER LSP) - ELSE ADDED SOMETHING TO THE END OF THE LOG
-						FixHistory(mainOntoReply, listActuallyApplied, startsHere, originalNextChange, lastLocal, targetOntology, push, true);	//FIX: RESET LASTLOCAL TO ORIGINAL LAST, KEEP ORIGINAL FIRST IMPORTED, SET THE PREVIOUS OF THE ORIGINAL NEXT CHANGE TO THE LAST IMPORTED CHANGE  
-				}					
-			}
-			else {
-				//if (isOlder!=1) //ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) - ELSE ADDED STH AT THE END NORMALLY
-				if (listActuallyApplied.size()<=0) return; //ERROR
-				//ADDED SOMETHING AT THE BEGINNING OF THE LOG (AFTER LSP) -ELSE ADDED STH AT THE END NORMALLY
-				if ((listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange()== null && !lastLocal.equalsIgnoreCase("")) || //LOCAL LOG HAD SOMETHING
-					(listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange()!= null && !listActuallyApplied.get(listActuallyApplied.size()-1).getHasPreviousChange().equalsIgnoreCase(lastLocal)))  
-					FixHistory(mainOntoReply, listActuallyApplied, startsHere, lspPlusOne, lastLocal, targetOntology, push, false); //FIX: RESET LASTLOCAL TO ORIGINAL LAST, FIX PREVIOUS CHANGE OF FIRST CHANGE IMPORTED TO LSP, FIX PREVIOUS CHANGE OF LSP+1 TO LAST IMPORTED
-			}
-			
-			//DO IT AGAIN
-			Sync(mainOntoReply,remoteRegistry,targetOntology,false);
-			//return;
-		}
-		else return; //error
-		
-		Map<List<Action>,List<Action>> actions=getActions(mainOntoReply,remoteRegistry,targetOntology);
-		SyncWorkflow (mainOntoReply,remoteRegistry,targetOntology, actions,push);
-	}
-	
-	public synchronized static List<OMVChange> getChanges(String startsHere, List<OMVChange> changesOri){
-		List<OMVChange> list = new LinkedList<OMVChange>();
-		if (startsHere!=null && !startsHere.equalsIgnoreCase("")){
-			//list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, startsHere);
-			for (OMVChange c : changesOri){ 
-				if (!c.getURI().equalsIgnoreCase(startsHere))
-					list.add(c);
-				else break;
-			}
-		}
-		else{
-			//list=cMgmt.getTrackedChanges(mainOntoReply, remoteRegistry, null);
-			list.addAll(changesOri);
-		}
-		return list;
-	}
-	
-	public synchronized static List<OMVChange> RegisterChanges(OMVOntology mainOntoReply, String stopHere, List<OMVChange> list, boolean push){
-		List<OMVChange> syncChanges = new LinkedList<OMVChange>();
-		ChangeManagement cMgmtTarget = cMgmt;
-		try{
-			if (push){
-				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-				cMgmtTarget = new ChangeManagement();
-			}
-			mOyster2.getLogger().info("will copy ..."+list.size());
-			for (int i=list.size()-1;i>=0;i--){
-				OMVChange c = (OMVChange)list.get(i);
-				if (stopHere.equalsIgnoreCase(c.getURI())) break;
-				mOyster2.getLogger().info("will copy ..."+c.getURI());
-				String lastChangeURI=cMgmtTarget.register(c);
-				if (!lastChangeURI.equalsIgnoreCase("")) { //IF THE CHANGE WAS ADDED I.E. IT IS NEW
-					if (firstWasThere && lastWasThereURI.equalsIgnoreCase("")) lastWasThereURI=c.getHasPreviousChange(); //IF ENTER THIS IF, C.GETHASPREVIOUSCHANGE() MUST NOT BE NULL, IT IS LATER THEN AT LEAST THE FIRST THAT EXISTED BEFORE
-					syncChanges.add(c);
-				}
-				else { //ADD CHANGES UNTIL THE NEXT SYNC POINT (THIS IS CALLED RECURSIVELY)
-					if (i == list.size()-1) firstWasThere=true;
-					else if (firstWasThere && !lastWasThereURI.equalsIgnoreCase("")) break;
 				}
 			}
-			if (syncChanges.size()>0)	mOyster2.addLastChangesSync(mainOntoReply, syncChanges);
-			Collections.reverse(syncChanges); //THE FIX WAS EXPECTING THE ORIGINAL REVERSE ORDER
-			
-			if (push) mOyster2.setSuperOysterIP(null);
-		}catch(Exception e){
-			if (push) mOyster2.setSuperOysterIP(null);
-			e.printStackTrace();
+			//TRY TO SORT CHANGES ACCORDINGLY TO TIMESTAMP - IMPORTANT THE TIMESTAMP!
+			int resultSort=0;
+			if (mOyster2.getKeepOrder())	resultSort=sort(mainOntoReply, targetOntology, push);
+			if (resultSort>=0){
+				//NOW SYNC THE WORKFLOW HISTORY
+				Map<List<Action>,List<Action>> actions=getActions(mainOntoReply,remoteRegistry,targetOntology);
+				SyncWorkflow (mainOntoReply,remoteRegistry,targetOntology, actions,push);
+			}
 		}
-		return syncChanges;
 	}
 	
-	public synchronized static List<OMVChange> RegisterChangesNew(OMVOntology mainOntoReply, String stopHere, List<OMVChange> list, List<OMVChange> listOriginal, boolean push){
-		List<OMVChange> syncChanges = new LinkedList<OMVChange>();
-		Set<String> uriOriginal= new HashSet<String>();
-		boolean firstWasApplied=false;
-		String lastWasNotThereURI = "";
-		
-		for (OMVChange c : listOriginal) uriOriginal.add(c.getURI());
-		ChangeManagement cMgmtTarget = cMgmt;
-		try{
-			if (push){
-				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
-				cMgmtTarget = new ChangeManagement();
+	public synchronized static int sort(OMVOntology mainOntoReply, Ontology targetOntology, boolean push){
+		List<OMVChange> changesToSort= new ArrayList<OMVChange>();
+		String lastChange="";
+		//FIRST SORT THE CHANGES IN A LIST ACCORDINGLY TO TIMESTAMP
+		try {
+			List<OMVChange> allChanges = cMgmt.getTrackedChanges(mainOntoReply, targetOntology, null);
+			Collections.reverse(allChanges);
+			if (allChanges.size()<=0) return 0;
+			lastChange = allChanges.get(allChanges.size()-1).getURI();
+
+			Set<OMVChange> atomicChanges = new HashSet<OMVChange>();
+			Set<OMVChange> atomicChangesFinal = new HashSet<OMVChange>();
+			Set<OMVChange> entityChanges = new HashSet<OMVChange>();
+			Set<OMVChange> compositeChanges = new HashSet<OMVChange>();
+			Set<OMVChange> compositeChangesFinal = new HashSet<OMVChange>();
+			
+			for (OMVChange c: allChanges){
+				if (c instanceof OMVAtomicChange) atomicChanges.add(c);
+				else if (c instanceof OMVEntityChange) entityChanges.add(c);
+				else if (c instanceof OMVCompositeChange) compositeChanges.add(c);
 			}
-			mOyster2.getLogger().info("will copy ..."+list.size());
-			for (int i=list.size()-1;i>=0;i--){
-				OMVChange c = (OMVChange)list.get(i);
-				if (stopHere.equalsIgnoreCase(c.getURI())) break;
-				if (!uriOriginal.contains(c.getURI())){
-					if (i == list.size()-1) firstWasApplied=true; //PROCESS CHANGES UNTIL THE NEXT NOSYNCPOINT -X*NEW+Y*EXIST- (THIS IS CALLED RECURSIVELY)
-					else if (firstWasApplied && !lastWasNotThereURI.equalsIgnoreCase("")) break; //THIS IS THE NEXT NOSYNCPOINT
-					
-					mOyster2.getLogger().info("will copy ..."+c.getURI());
-					String lastChangeURI=cMgmtTarget.register(c);
-					if (!lastChangeURI.equalsIgnoreCase("")) { //IF THE CHANGE WAS ADDED I.E. IT IS NEW. 
-						if (firstWasThere && lastWasThereURI.equalsIgnoreCase("")) lastWasThereURI=c.getHasPreviousChange(); //IF ENTER THIS IF, C.GETHASPREVIOUSCHANGE() MUST NOT BE NULL, IT IS LATER THEN AT LEAST THE FIRST THAT EXISTED BEFORE
-						syncChanges.add(c);
+			
+			//IF THERE ARE ATOMIC WITH NO ENTITY CHANGE
+			Set<String> atomicURIs = new HashSet<String>();
+			for (OMVChange c: atomicChanges) atomicURIs.add(c.getURI());
+			for (OMVChange c : entityChanges)
+				for (String uriatomic : ((OMVEntityChange)c).getConsistsOfAtomicOperation())
+					atomicURIs.remove(uriatomic);
+			for (String uri: atomicURIs)
+				for (OMVChange c: atomicChanges)
+					if (c.getURI().equalsIgnoreCase(uri)) atomicChangesFinal.add(c); 
+				
+			//IF THERE ARE COMPOSITE CHANGES
+			compositeChangesFinal.addAll(compositeChanges);
+			for (OMVChange c : compositeChanges){
+				if (c instanceof OMVCompositeChange){
+					for (String cS: ((OMVCompositeChange)c).getConsistsOf()){
+						for (OMVChange ec : entityChanges)
+							if (ec.getURI().equalsIgnoreCase(cS))
+								entityChanges.remove(ec);
+						for (OMVChange cc : compositeChangesFinal)
+							if (cc.getURI().equalsIgnoreCase(cS))
+								compositeChangesFinal.remove(cc);
 					}
-					else break; //THIS SHOULD NEVER BE TRUE BECAUSE THE CONTAINS IF, OTHERWISE ERROR
-				}
-				else { 
-					if (i == list.size()-1) firstWasThere=true; //PROCESS CHANGES UNTIL THE NEXT SYNC POINT -X*EXIST+Y*NEW- (THIS IS CALLED RECURSIVELY)
-					else if (firstWasThere && !lastWasThereURI.equalsIgnoreCase("")) break; //THIS IS THE NEXT SYNC POINT
-					if (firstWasApplied && lastWasNotThereURI.equalsIgnoreCase("")) lastWasNotThereURI=c.getHasPreviousChange(); //IF ENTER THIS IF, C.GETHASPREVIOUSCHANGE() MUST NOT BE NULL, IT IS LATER THEN AT LEAST THE FIRST THAT WAS APPLIED BEFORE
 				}
 			}
-			if (syncChanges.size()>0)	mOyster2.addLastChangesSync(mainOntoReply, syncChanges);
-			Collections.reverse(syncChanges); //THE FIX WAS EXPECTING THE ORIGINAL REVERSE ORDER
 			
-			if (push) mOyster2.setSuperOysterIP(null);
-		}catch(Exception e){
-			if (push) mOyster2.setSuperOysterIP(null);
+			//SORT ENTITY (AND COMPOSITE) CHANGES IN THE LIST;
+			changesToSort.addAll(atomicChangesFinal);
+			changesToSort.addAll(entityChanges);
+			changesToSort.addAll(compositeChangesFinal);
+			Collections.sort(changesToSort, TIME_ORDER);
+		} catch (Exception e) {
 			e.printStackTrace();
+			return 0;
 		}
-		return syncChanges;
+		
+		//FIX THE PREVIOUSCHANGES HISTORY ACCORDING TO THIS ORDER
+		try {
+			String previousChange="";
+			int index=0;
+			for (OMVChange c : changesToSort){
+				if (index == 0) previousChange="";
+				else previousChange=changesToSort.get(index-1).getURI();
+				
+				if (c instanceof OMVEntityChange){
+					Set<OMVAtomicChange> changesIn=cMgmt.getAtomicChanges((OMVEntityChange)c);
+					Set<String> changesInURIs = new HashSet<String>();
+					for (OMVAtomicChange ac : changesIn) changesInURIs.add(ac.getURI());
+					for (OMVAtomicChange ac : changesIn){		
+						if (ac.getHasPreviousChange()==null || !changesInURIs.contains(ac.getHasPreviousChange())){ //IT IS THE FIRST CHANGE IN LOG OR IT IS THE FIRST ATOMIC CHANGE OF THE ENTITY CHANGE
+							String currentPrevious = (ac.getHasPreviousChange() == null) ? "" : ac.getHasPreviousChange();
+							if (!currentPrevious.equalsIgnoreCase(previousChange))
+								FixHistoryDiff (mainOntoReply, ac, previousChange, "", "", targetOntology, push, false);
+							break;
+						}
+					}
+				}
+				else if (c instanceof OMVCompositeChange){
+					Set<OMVChange> changesIn=getCompositeChangesIn(c, targetOntology);
+					Set<String> changesInURIs = new HashSet<String>();
+					for (OMVChange ac : changesIn) changesInURIs.add(ac.getURI());
+					for (OMVChange ac : changesIn){		
+						if (ac.getHasPreviousChange()==null || !changesInURIs.contains(ac.getHasPreviousChange())){ //IT IS THE FIRST CHANGE IN LOG OR IT IS THE FIRST ATOMIC CHANGE OF THE ENTITY CHANGE
+							String currentPrevious = (ac.getHasPreviousChange() == null) ? "" : ac.getHasPreviousChange();
+							if (!currentPrevious.equalsIgnoreCase(previousChange))
+								FixHistoryDiff (mainOntoReply, ac, previousChange, "", "", targetOntology, push, false);
+							break;
+						}
+					}
+				}
+				else if (c instanceof OMVAtomicChange){ //ATOMIC CHANGE NOT PART OF ANY ENTITY/COMPOSITE CHANGE
+					String currentPrevious = (c.getHasPreviousChange() == null) ? "" : c.getHasPreviousChange();
+					if (!currentPrevious.equalsIgnoreCase(previousChange))
+						FixHistoryDiff (mainOntoReply, c, previousChange, "", "", targetOntology, push, false);
+				}
+				index++;
+			}
+			//FIX THE LAST CHANGE
+			if (!lastChange.equalsIgnoreCase(changesToSort.get(changesToSort.size()-1).getURI()))
+				FixHistoryDiff (mainOntoReply, new OMVChange(), "", "", changesToSort.get(changesToSort.size()-1).getURI(), targetOntology, push, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+		return 1;
 	}
 	
-	public synchronized static void FixHistory(OMVOntology mainOntoReply, List<OMVChange> list, String startsHere, String lspPlusOne, String lastLocal, Ontology targetOntology, boolean push, boolean keepOriginalFirstImported){
+	public synchronized static Set<OMVChange> getCompositeChangesIn (OMVChange c, Ontology targetOntology){
+		Set<String> changesInURIs = new HashSet<String>();
+		Set<OMVChange> changesIn = new HashSet<OMVChange>();
+		changesInURIs.addAll(((OMVCompositeChange)c).getConsistsOf());
+		for (String cS: changesInURIs){
+			OMVChange changeIn = cMgmt.getChange(cS, targetOntology);
+			changesIn.add(changeIn);
+			if (changeIn instanceof OMVEntityChange)
+				changesIn.addAll(cMgmt.getAtomicChanges((OMVEntityChange)c));			
+			else if (changeIn instanceof OMVCompositeChange) 
+				changesIn.addAll(getCompositeChangesIn(changeIn, targetOntology));
+		}
+		return changesIn;
+	}
+	public synchronized static void FixHistoryDiff(OMVOntology mainOntoReply, OMVChange c, String originalPrevious, String originalNext, String lastLocal, Ontology targetOntology, boolean push, boolean keepOriginalFirstImported){
 		ChangeManagement cMgmtTarget = cMgmt;
 		ObjectProperty ontologyObjectProperty;
 		try{
@@ -299,24 +322,50 @@ public class ChangeSynchronization {
 				cMgmtTarget.removeProperty(cMgmtTarget.getLogID(mainOntoReply), ontologyObjectProperty, Constants.CHANGEURI+Constants.LogConcept);
 				cMgmtTarget.addProperty(cMgmtTarget.getLogID(mainOntoReply),ontologyObjectProperty,Constants.CHANGEURI+Constants.LogConcept,lastLocal);
 			}
-			//FIX HISTORY - HASPREVIOUSCHANGE OF FIRST CHANGE IMPORTED
+			//FIX HISTORY - HASPREVIOUSCHANGE OF CHANGE IMPORTED
 			ontologyObjectProperty = KAON2Manager.factory().objectProperty(Constants.CHANGEURI + Constants.hasPreviousChange);
 			if (!keepOriginalFirstImported){
-				cMgmtTarget.removeProperty(((OMVChange)list.get(list.size()-1)).getURI(), ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept((OMVChange)list.get(list.size()-1)));
-				if (startsHere!=null && !startsHere.equalsIgnoreCase("")) cMgmtTarget.addProperty(((OMVChange)list.get(list.size()-1)).getURI(),ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept((OMVChange)list.get(list.size()-1)),startsHere);
+				cMgmtTarget.removeProperty(c.getURI(), ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept(c));
+				if (originalPrevious!=null && !originalPrevious.equalsIgnoreCase("")) cMgmtTarget.addProperty(c.getURI(),ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept(c),originalPrevious);
 			}
-			//FIX HISTORY - HASPREVIOUSCHANGE OF (NEXT CHANGE OF LSP) OR OF FSP
-			if (!lspPlusOne.equalsIgnoreCase("")){
-				cMgmtTarget.removeProperty(lspPlusOne, ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(lspPlusOne, targetOntology)));
-				cMgmtTarget.addProperty(lspPlusOne,ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(lspPlusOne, targetOntology)),((OMVChange)list.get(0)).getURI());
+			//FIX HISTORY - HASPREVIOUSCHANGE OF ORIGINAL NEXT CHANGE
+			if (!originalNext.equalsIgnoreCase("")){
+				cMgmtTarget.removeProperty(originalNext, ontologyObjectProperty, Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(originalNext, targetOntology)));
+				cMgmtTarget.addProperty(originalNext,ontologyObjectProperty,Constants.CHANGEURI+cMgmtTarget.getChangeConcept(cMgmtTarget.getChange(originalNext, targetOntology)),c.getURI());
 			}
 			if (push) mOyster2.setSuperOysterIP(null);
 		}catch(Exception e){
 			if (push) mOyster2.setSuperOysterIP(null);
 			e.printStackTrace();
 		}
+	} 
+	
+	public synchronized static boolean RegisterChangeDiff(OMVOntology mainOntoReply, OMVChange change, boolean push){
+		List<OMVChange> syncChanges = new LinkedList<OMVChange>();
+		ChangeManagement cMgmtTarget = cMgmt;
+		try{
+			if (push){
+				mOyster2.setSuperOysterIP(mOyster2.getPushChangesToOysterIP());
+				cMgmtTarget = new ChangeManagement();
+			}
+			
+			mOyster2.getLogger().info("will copy ..."+change.getURI());
+			String lastChangeURI=cMgmtTarget.register(change);
+			if (!lastChangeURI.equalsIgnoreCase("")) { //IF THE CHANGE WAS ADDED SUCCESSFULLY
+				syncChanges.add(change);
+			}
+			if (syncChanges.size()>0)	mOyster2.addLastChangesSync(mainOntoReply, syncChanges);
+			else return false;
+			
+			if (push) mOyster2.setSuperOysterIP(null);
+		}catch(Exception e){
+			if (push) mOyster2.setSuperOysterIP(null);
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
+		
 	public synchronized static Map<List<Action>,List<Action>>getActions(OMVOntology mainOntoReply, Ontology remoteRegistry,Ontology targetOntology){
 		List<Action> listActions=wMgmt.getEntityActionsHistory(mainOntoReply, remoteRegistry, null);
 		List<Action> listActionsLocal=wMgmt.getEntityActionsHistory(mainOntoReply, targetOntology, null);
@@ -367,7 +416,7 @@ public class ChangeSynchronization {
 	public synchronized static void SyncrhonizeChangesWithRegistry(Ontology remoteRegistry,Individual ontoindiv,Ontology targetOntology){
 		OMVOntology mainOntoReply=(OMVOntology)ProcessOMVIndividuals.processIndividual(ontoindiv, "ontology",targetOntology);
 		
-		Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+		SyncDiff(mainOntoReply,remoteRegistry,targetOntology,false);
 
 	}
 	
@@ -389,7 +438,7 @@ public class ChangeSynchronization {
 					if (mainOntoReply==null) return;
 					mOyster2.getLogger().info("verifying histories of common tracked ontology ..."+mainOntoReply.getURI());
 					
-					Sync(mainOntoReply,remoteRegistry,targetOntology,false);
+					SyncDiff(mainOntoReply,remoteRegistry,targetOntology,false);
 					
 					
 				}
@@ -412,44 +461,21 @@ public class ChangeSynchronization {
 			e.printStackTrace();
 		}
 		
-		Sync(mainOntoReply,localRegistryFrom,targetOntology,true);
+		SyncDiff(mainOntoReply,localRegistryFrom,targetOntology,true);
 		
 	}
+	
+	static final Comparator<OMVChange> TIME_ORDER =
+        new Comparator<OMVChange>() {
+		public int compare(OMVChange e1, OMVChange e2) {
+			try {
+				Date d1=DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(e1.getDate());
+				Date d2=DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.US).parse(e2.getDate());
+				return d1.compareTo(d2);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			return 0;
+		}
+	};
 }
-
-
-//else if (isOlder==3 || isOlder==4 || isOlder==5){
-//DEAL WITH SPECIAL CASES OF 0 AND 1
-//	list = RegisterChanges(mainOntoReply,remoteRegistry,startsHere,fsp,list,push);
-//	if (list.size()<=0) return; //AVOID LOOPS
-//	FixHistory(mainOntoReply, list, startsHere, fsp, lastLocal, targetOntology,push,false); //fsp != "", fsp==lspPluOne 
-
-//DO IT AGAIN
-//	Sync(mainOntoReply,remoteRegistry,targetOntology,false);
-//return;
-//}
-
-//String fspMinusOne="";
-//FIND FIRST SYNC POINT OF lspPlusOne
-//reply =cMgmt.findFirstSynchronizationPoint(mainOntoReply, targetOntology, remoteRegistry,lspPlusOne); //CASE(iv)
-//if (reply==null) return; //ERROR
-//fspMinusOne = reply.keySet().iterator().next();
-//fsp = reply.get(fspMinusOne);
-
-//list = getChanges (mainOntoReply,remoteRegistry,startsHere);
-//if (list==null) return; //ERROR
-//listOriginal = getChanges (mainOntoReply,targetOntology,startsHere);
-//if (listOriginal==null) return; //ERROR
-
-
-//if (isOlder==1)	{	//CASE (iii)
-//	startsHere = lastLocal; 	//START COPYING AT THE END OF THE LOG
-//	fsp = "";					//RETRIEVE ALL CHANGES AFTER THE POSITION OF LASTLOCAL IN REMOTELOG
-	//RegisterChanges(mainOntoReply,remoteRegistry,startsHere,"",list,push);
-//}//else CASE(iv) 				//START COPYING AT THE BEGINNING IF POSSIBLE
-
-
-//if (originalNextChange.equalsIgnoreCase("")) //ADDED SOMETHING TO THE END OF THE LOG
-//	FixHistory(mainOntoReply, listActuallyApplied, startsHere, originalNextChange, "", targetOntology, push, true); // IF THE LAST KNOWN WAS THE LAST ONE, DO NOT RESET THE LAST CHANGE TO THAT CHANGE, AS IT HAS THE NEW LAST ONE
-//else //ADDED SOMETHING TO THE MIDDLE OF THE LOG (AFTER LSP)
-//	FixHistory(mainOntoReply, listActuallyApplied, startsHere, originalNextChange, lastLocal, targetOntology, push, true);	//FIX: RESET LASTLOCAL TO ORIGINAL LAST, KEEP ORIGINAL FIRST IMPORTED, SET THE PREVIOUS OF THE ORIGINAL NEXT CHANGE TO THE LAST IMPORTED CHANGE

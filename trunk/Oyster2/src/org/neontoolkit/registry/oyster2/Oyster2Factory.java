@@ -257,7 +257,7 @@ public class Oyster2Factory {
 	
 	// Last changes synchronized
 	private  Map<OMVOntology, List<OMVChange>> lastSyncInfo=new HashMap<OMVOntology, List<OMVChange>>();
-
+	private boolean keepOrder=false; //KEEP CHANGES SAVED IN TIME ORDER
 
 	/**
 	 * This creates the only instance of this class. This differs from the C++
@@ -1019,6 +1019,15 @@ public class Oyster2Factory {
 	
 	public void removeLastChangesSync(OMVOntology p1){
 		lastSyncInfo.remove(p1);
+	}
+	
+	public boolean getKeepOrder()
+    {
+		return this.keepOrder;
+    }
+	
+	public void setKeepOrder(boolean t){
+		this.keepOrder=t;
 	}
 }
 

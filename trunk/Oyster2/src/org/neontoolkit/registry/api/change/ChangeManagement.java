@@ -1540,60 +1540,7 @@ public class ChangeManagement {
 		return reply;
 	}
 	
-	/**
-	 * Compares if change history in registry is older than in registry2
-	 * @param o is the ontology from which we want to compare change history
-	 * @param registry1 is the registry that will be compared
-	 * @param registry2 is the registry that will be used as reference
-	 * @param lsp is the URI of the last synchronization point of the two logs
-	 * @param changes2ori is the list of changes from the remote registry (the reference)
-	 * @return int 
-	 * -1 = error 
-	 * 0 = false 
-	 * 1 = true  
-	 * 2 = unknown
-	 * 3 = special 0 - lastChange1=lastChange2, but something earlier is missing from the 
-	 * remote log 
-	 * 4 = special 1 - lastChange1<lastChange2, but something earlier is missing from the 
-	 * remote log
-	 * 5 = special 0 - lastChange1>lastChange2, but something earlier is missing from the 
-	 * remote log
-	 */
-	public int isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2, String lsp, List<OMVChange> changes2ori){
-		if (registry1==null || registry2 ==null) return -1;
 		
-		String lastChange1 = getLastChangeIdFromLog(o, registry1);
-		String lastChange2 = getLastChangeIdFromLog(o, registry2);
-		
-		Set<String> changes2 = getChangesIds(o, registry2);
-		Set<String> changes1 = getChangesIds(o, registry1);
-		mOyster2.getLogger().info("comparing ..."+lastChange1+" with..."+lastChange2);
-		
-		if ((lastChange1==null || lastChange1.equalsIgnoreCase("")) && (lastChange2!=null && !lastChange2.equalsIgnoreCase(""))) return 1; //CASE (iii) - When there is no history in the local log
-		else if ((lastChange2==null || lastChange2.equalsIgnoreCase("")) && (lastChange1!=null && !lastChange1.equalsIgnoreCase(""))) return 0; //CASE (ii) - Where there is no history in the remote log
-		else if (changes1.containsAll(changes2)) return 0;		//EQUAL TEST - LOCAL NODE HAS ALL CHANGES MAYBE IN DIFFERENT ORDER 
-		else if (lastChange1.equalsIgnoreCase(lastChange2)) { 	//EQUAL TEST
-			if (lsp.equalsIgnoreCase(lastChange1))	return 0;	//CASE (i)			
-			else return 3; 										//CASE (special i) - the logs are not synched. Something earlier in remote log is not in local log
-			
-		}
-		for (String t : changes2){ 									//OLDER TEST
-			if (t.equalsIgnoreCase(lastChange1)) {
-				if (lsp.equalsIgnoreCase(lastChange1)) 	return 1; 	//CASE (iii) where there is history in the local node but is outdated
-				else return 4;										//CASE (special iii) - the logs are not synched. Something earlier in remote node is not in the local node
-			}
-		}
-		
-		for (String t : changes1){ //NEWER TEST
-			if (t.equalsIgnoreCase(lastChange2)) {
-				if (lsp.equalsIgnoreCase(lastChange2)) return 0;	//CASE (ii) where the history in the remote node is outdated
-				else return 5; 										//CASE (special ii) - the logs are not synched. Something earlier in remote log is not in local log
-			}
-		}
-
-		return 2; //CASE (iv)
-	}
-	
 	/**
 	 * Compares if change history in registry is older than in registry2
 	 * @param o is the ontology from which we want to compare change history
@@ -1604,7 +1551,7 @@ public class ChangeManagement {
 	 * 0 = false 
 	 * 1 = true;
 	 */
-	public int isHistoryOlderNew(OMVOntology o, Ontology registry1, Ontology registry2 ){
+	public int isHistoryOlder(OMVOntology o, Ontology registry1, Ontology registry2 ){
 		if (registry1==null || registry2 ==null) return -1;
 		
 		String lastChange1 = getLastChangeIdFromLog(o, registry1);
